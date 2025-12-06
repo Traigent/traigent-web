@@ -60,7 +60,7 @@ export default function Homepage() {
               <Button 
                 size="lg" 
                 className="bg-white text-slate-900 hover:bg-gray-100 px-8 py-6 text-lg rounded-lg"
-                onClick={() => window.open('https://cal.com/gil-rosenblum', '_blank')}
+                onClick={() => window.open('https://cal.com/nimrod-busany', '_blank')}
               >
                 Request a Demo
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -342,7 +342,7 @@ export default function Homepage() {
               <Button 
                 size="lg" 
                 className="bg-white text-indigo-700 hover:bg-gray-100 px-8 py-6 text-lg rounded-lg"
-                onClick={() => window.open('https://cal.com/gil-rosenblum', '_blank')}
+                onClick={() => window.open('https://cal.com/nimrod-busany', '_blank')}
               >
                 Start Optimizing Today
                 <ArrowRight className="ml-2 h-5 w-5" />
