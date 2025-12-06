@@ -355,55 +355,38 @@ export default function Homepage() {
       {/* Footer */}
       <footer className="bg-slate-950 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-8">
             <div>
               <div className="text-xl font-bold mb-4">Traigent</div>
               <p className="text-slate-400 mb-6">
                 The first true AI agent optimization platform.
               </p>
-              <div className="flex space-x-4">
-                {['twitter', 'linkedin', 'github'].map(platform => (
-                  <a key={platform} href="#" className="text-slate-400 hover:text-white transition-colors">
-                    <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center">
-                      <span className="sr-only">{platform}</span>
-                      <div className="w-4 h-4"></div>
-                    </div>
-                  </a>
-                ))}
-              </div>
             </div>
-            
-            {[
-              {
-                title: "Company",
-                links: ["About", "Careers", "Contact", "Blog"]
-              },
-              {
-                title: "Product",
-                links: ["Features", "Pricing", "Documentation", "API"]
-              },
-              {
-                title: "Legal",
-                links: ["Privacy Policy", "Terms of Service", "Cookie Policy", "GDPR"]
-              }
-            ].map((column, index) => (
-              <div key={index}>
-                <h3 className="text-lg font-semibold mb-4">{column.title}</h3>
-                <ul className="space-y-2">
-                  {column.links.map(link => (
-                    <li key={link}>
-                      <a href="#" className="text-slate-400 hover:text-white transition-colors">
-                        {link}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Legal</h3>
+              <ul className="space-y-2">
+                <li>
+                  <a href="/privacy" className="text-slate-400 hover:text-white transition-colors">
+                    Privacy Policy
+                  </a>
+                </li>
+                <li>
+                  <a href="/terms" className="text-slate-400 hover:text-white transition-colors">
+                    Terms of Service
+                  </a>
+                </li>
+                <li>
+                  <a href="/refund" className="text-slate-400 hover:text-white transition-colors">
+                    Refund Policy
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
-          
+
           <div className="border-t border-slate-800 mt-12 pt-8 text-center text-slate-500">
-            <p>© {new Date().getFullYear()} Traigent, Inc. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} Traigent Ltd. All rights reserved.</p>
           </div>
         </div>
       </footer>
