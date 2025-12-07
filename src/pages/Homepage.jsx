@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Check, ChevronRight, ExternalLink, Terminal, Zap, Code, GitBranch, Shield, Clock, DollarSign, FileText } from "lucide-react";
+import { ArrowRight, Check, ChevronRight, ExternalLink, Terminal, Zap, Code, GitBranch, Shield, Clock, DollarSign, FileText, Play, Pause } from "lucide-react";
 import { Link } from "react-router-dom";
 
 // Placeholder for the Button component
@@ -15,6 +15,82 @@ const Button = ({ children, className, onClick, size }) => (
 
 // Placeholder for the createPageUrl function
 const createPageUrl = (path) => path;
+
+// Interactive Demo Player with pause on click
+const DemoPlayer = () => {
+  const [isPaused, setIsPaused] = useState(false);
+  const iframeRef = useRef(null);
+
+  const togglePause = () => {
+    setIsPaused(!isPaused);
+    // For SVG animations, we control via CSS
+  };
+
+  return (
+    <div className="relative">
+      {/* Terminal Window Frame */}
+      <div className="bg-slate-800 rounded-xl overflow-hidden shadow-2xl border border-slate-700">
+        {/* Terminal Header */}
+        <div className="flex items-center gap-2 px-4 py-3 bg-slate-900 border-b border-slate-700">
+          <div className="w-3 h-3 rounded-full bg-red-500"></div>
+          <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+          <div className="w-3 h-3 rounded-full bg-green-500"></div>
+          <span className="ml-3 text-slate-400 text-sm font-mono">traigent optimize</span>
+          <div className="ml-auto flex items-center gap-2">
+            <button
+              onClick={togglePause}
+              className="flex items-center gap-2 px-3 py-1 rounded bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs transition-colors"
+            >
+              {isPaused ? (
+                <>
+                  <Play className="w-3 h-3" /> Play
+                </>
+              ) : (
+                <>
+                  <Pause className="w-3 h-3" /> Pause
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Demo Content */}
+        <div
+          className="relative cursor-pointer"
+          onClick={togglePause}
+          title={isPaused ? "Click to play" : "Click to pause"}
+        >
+          <object
+            ref={iframeRef}
+            data="/demos/optimize.svg"
+            type="image/svg+xml"
+            className="w-full"
+            style={{
+              minHeight: '400px',
+              animationPlayState: isPaused ? 'paused' : 'running'
+            }}
+          >
+            <img src="/demos/optimize.svg" alt="Traigent optimization demo" className="w-full" />
+          </object>
+
+          {/* Pause Overlay */}
+          {isPaused && (
+            <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+              <div className="bg-slate-900/90 rounded-full p-4">
+                <Play className="w-12 h-12 text-white" />
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Hint Text */}
+      <p className="text-center text-slate-500 text-sm mt-4">
+        Click anywhere on the demo to {isPaused ? 'resume' : 'pause'}
+      </p>
+    </div>
+  );
+};
 
 export default function Homepage() {
   return (
@@ -352,6 +428,122 @@ export default function Homepage() {
                 )}
               </motion.div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Interactive Demo Section */}
+      <section className="py-20 bg-slate-950 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl mx-auto text-center mb-12">
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="text-3xl md:text-4xl font-bold mb-6"
+            >
+              See It In Action
+            </motion.h2>
+            <p className="text-xl text-slate-300">
+              Watch Traigent automatically optimize an LLM agent—finding the best model, prompt, and parameters in minutes.
+            </p>
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="max-w-5xl mx-auto"
+          >
+            <DemoPlayer />
+          </motion.div>
+
+          <div className="mt-12 grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-emerald-400 mb-2">60-90%</div>
+              <p className="text-slate-400">Cost Reduction</p>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-blue-400 mb-2">5-15%</div>
+              <p className="text-slate-400">Accuracy Improvement</p>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-purple-400 mb-2">2-5x</div>
+              <p className="text-slate-400">Faster Responses</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Zero-Code Integration Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              <span className="inline-block px-3 py-1 bg-emerald-100 rounded-full text-emerald-700 text-sm font-medium mb-4">
+                Zero-Code Integration
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+                One Decorator. Instant Optimization.
+              </h2>
+              <p className="text-lg text-gray-600 mb-6">
+                No rewrites. No SDK migrations. Just add a decorator to your existing AI calls and let Traigent find the optimal configuration automatically.
+              </p>
+              <ul className="space-y-3">
+                <li className="flex items-center gap-3 text-gray-700">
+                  <Check className="w-5 h-5 text-emerald-500 flex-shrink-0" />
+                  Works with OpenAI, Anthropic, Google, and more
+                </li>
+                <li className="flex items-center gap-3 text-gray-700">
+                  <Check className="w-5 h-5 text-emerald-500 flex-shrink-0" />
+                  Preserves your existing code structure
+                </li>
+                <li className="flex items-center gap-3 text-gray-700">
+                  <Check className="w-5 h-5 text-emerald-500 flex-shrink-0" />
+                  Export optimized configs to production
+                </li>
+              </ul>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="bg-slate-900 rounded-xl p-6 font-mono text-sm shadow-2xl"
+            >
+              <div className="flex items-center gap-2 mb-4 text-slate-400">
+                <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                <span className="ml-2">my_agent.py</span>
+              </div>
+              <pre className="text-slate-300 overflow-x-auto">
+                <code>{`import traigent
+
+# Just add one decorator
+@traigent.optimize(
+    models=["gpt-4o", "gpt-4o-mini", "claude-3-5-sonnet"],
+    temperatures=[0.0, 0.3, 0.7],
+    goal="maximize accuracy, minimize cost"
+)
+def analyze_document(doc: str) -> dict:
+    """Your existing AI function - unchanged"""
+    return llm.chat(
+        prompt=f"Analyze: {doc}",
+        # Traigent finds optimal settings
+    )
+
+# Run optimization
+traigent.run(analyze_document, dataset="eval.json")`}</code>
+              </pre>
+            </motion.div>
           </div>
         </div>
       </section>

@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite",
     "start": "vite",
-    "build": "vite build && powershell -Command \"Copy-Item -Path ./public/404.html -Destination ./dist/\"",
+    "build": "vite build && cp -f public/404.html dist/ 2>/dev/null || copy public\\404.html dist\\ 2>nul || true",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "predeploy": "npm run build",
