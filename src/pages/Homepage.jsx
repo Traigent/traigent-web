@@ -78,11 +78,10 @@ export default function Homepage() {
               </Button>
               <Button
                 size="lg"
-                className="bg-transparent border border-slate-500 text-white hover:bg-slate-800 px-8 py-6 text-lg rounded-lg"
-                onClick={() => window.open('https://github.com/Traigent/traigent-sdk', '_blank')}
+                className="bg-transparent border border-slate-600 text-slate-400 px-8 py-6 text-lg rounded-lg cursor-not-allowed opacity-60"
               >
                 <Code className="mr-2 h-5 w-5" />
-                View SDK
+                SDK Coming Soon
               </Button>
             </motion.div>
           </div>
@@ -531,10 +530,9 @@ export default function Homepage() {
               </Button>
               <Button
                 size="lg"
-                className="bg-transparent border-2 border-white text-white hover:bg-white/10 px-8 py-6 text-lg rounded-lg"
-                onClick={() => window.open('https://github.com/Traigent/traigent-sdk', '_blank')}
+                className="bg-transparent border-2 border-white/40 text-white/60 px-8 py-6 text-lg rounded-lg cursor-not-allowed"
               >
-                Try the SDK
+                SDK Coming Soon
                 <Code className="ml-2 h-5 w-5" />
               </Button>
             </motion.div>
@@ -564,9 +562,9 @@ export default function Homepage() {
               <h3 className="text-lg font-semibold mb-4">Resources</h3>
               <ul className="space-y-2">
                 <li>
-                  <a href="https://github.com/Traigent/traigent-sdk" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">
-                    SDK Documentation
-                  </a>
+                  <span className="text-slate-500 cursor-not-allowed">
+                    SDK Documentation <span className="text-xs">(Coming Soon)</span>
+                  </span>
                 </li>
                 <li>
                   <a href="https://tvl-lang.org" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">
