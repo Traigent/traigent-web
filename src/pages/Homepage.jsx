@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Check, ChevronRight, ExternalLink, Terminal, Zap, Code, GitBranch, Shield, Clock, DollarSign } from "lucide-react";
+import { ArrowRight, Check, ChevronRight, ExternalLink, Terminal, Zap, Code, GitBranch, Shield, Clock, DollarSign, FileText } from "lucide-react";
 import { Link } from "react-router-dom";
 
 // Placeholder for the Button component
@@ -42,7 +42,7 @@ export default function Homepage() {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight mb-6"
             >
-              Ship AI Applications Like Software
+              Ship AI Like Software—Gated, Optimized, and Regression-Safe
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -50,7 +50,7 @@ export default function Homepage() {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="text-xl md:text-2xl text-slate-300 mb-6 max-w-2xl"
             >
-              Evaluate, gate, optimize, and deploy AI agents with confidence. Traigent integrates evaluation gates into your CI/CD pipeline — ensuring accuracy, cost, latency, and safety improvements while preventing regressions.
+              Traigent adds evaluation gates to your CI/CD so every AI change is measured for accuracy, cost, latency, and safety before it ships.
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -58,9 +58,9 @@ export default function Homepage() {
               transition={{ duration: 0.5, delay: 0.25 }}
               className="flex flex-wrap gap-4 text-sm text-slate-400 mb-10"
             >
-              <span className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400" /> Zero-code attach via decorators</span>
-              <span className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400" /> Git & CI integration</span>
-              <span className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400" /> Measurable, gateable artifacts</span>
+              <span className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400" /> Decorators: attach without rewrites</span>
+              <span className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400" /> CI gates: prevent bad merges</span>
+              <span className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400" /> Git-native: version-controlled configs</span>
             </motion.div>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -133,8 +133,8 @@ export default function Homepage() {
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
             >
-              <div className="text-4xl md:text-5xl font-bold text-indigo-600 mb-2">40x</div>
-              <p className="text-slate-600">Cost reduction potential</p>
+              <div className="text-4xl md:text-5xl font-bold text-indigo-600 mb-2">Up to 40x</div>
+              <p className="text-slate-600">Cost/performance gap*</p>
             </motion.div>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -152,7 +152,7 @@ export default function Homepage() {
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               <div className="text-4xl md:text-5xl font-bold text-indigo-600 mb-2">1000s</div>
-              <p className="text-slate-600">Configurations tested automatically</p>
+              <p className="text-slate-600">Configs tested automatically</p>
             </motion.div>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -161,9 +161,10 @@ export default function Homepage() {
               transition={{ duration: 0.5, delay: 0.3 }}
             >
               <div className="text-4xl md:text-5xl font-bold text-indigo-600 mb-2">0</div>
-              <p className="text-slate-600">Regressions in production</p>
+              <p className="text-slate-600">Silent regressions</p>
             </motion.div>
           </div>
+          <p className="text-center text-xs text-slate-400 mt-6">*Observed in peer-reviewed research; actual impact varies by workload.</p>
         </div>
       </section>
 
@@ -181,7 +182,7 @@ export default function Homepage() {
               AI Development Shouldn't Be Guesswork
             </motion.h2>
             <p className="text-xl text-gray-600">
-              Most teams deploy AI without knowing if it's optimal — or if the next change will break it.
+              Most teams deploy AI without knowing if it's optimal—or if the next change will break it.
             </p>
           </div>
 
@@ -189,22 +190,22 @@ export default function Homepage() {
             {[
               {
                 title: "High Default Costs",
-                description: "Defaulting to frontier models drives costs sky-high. Without optimization data, you're flying blind.",
+                description: "Frontier-by-default burns budget without evidence. Unbudgeted token spend adds up fast.",
                 icon: <DollarSign className="w-6 h-6 text-red-600" />
               },
               {
                 title: "Manual, Slow Iteration",
-                description: "Prompt engineering by hand is slow and doesn't scale. Every change requires re-testing everything.",
+                description: "Hand-tuning prompts and models doesn't scale to real workloads. Every change requires re-testing everything.",
                 icon: <Clock className="w-6 h-6 text-amber-600" />
               },
               {
                 title: "No Quality Gates",
-                description: "Unlike software, AI changes ship without evaluation gates. Regressions slip into production undetected.",
+                description: "AI changes ship without tests. Silent regressions reach production undetected, eroding trust.",
                 icon: <Shield className="w-6 h-6 text-blue-600" />
               },
               {
                 title: "Configuration Chaos",
-                description: "Model selection, prompts, retrieval settings, hyperparameters — all disconnected from your codebase.",
+                description: "Models, prompts, retrieval depth, and hyperparameters drift away from source control.",
                 icon: <GitBranch className="w-6 h-6 text-purple-600" />
               }
             ].map((item, index) => (
@@ -244,7 +245,7 @@ export default function Homepage() {
               Treat AI Decisions as Code
             </motion.h2>
             <p className="text-xl text-gray-600">
-              Traigent makes every AI configuration decision — model, prompt, retrieval, hyperparameters — a measurable, version-controlled, gateable artifact.
+              Every model, prompt, and retrieval choice becomes a measurable, version-controlled, gateable artifact. Built for engineers: decorators, CLI, Git/CI-native—no rewrites.
             </p>
           </div>
 
@@ -252,22 +253,22 @@ export default function Homepage() {
             {[
               {
                 title: "Automated Optimization",
-                description: "Intelligently explore thousands of configurations against your KPIs on real workloads. No brute force.",
+                description: "Intelligently explore thousands of configurations against your KPIs on real workloads. No brute force, no guesswork.",
                 icon: <Zap className="w-6 h-6 text-indigo-600" />
               },
               {
                 title: "Evaluation Gates",
-                description: "CI/CD checks for accuracy, cost, latency, and safety. Ship with confidence, catch regressions early.",
+                description: "CI/CD checks for accuracy, cost, latency, and safety. Ship with confidence—catch regressions before they merge.",
                 icon: <Shield className="w-6 h-6 text-indigo-600" />
               },
               {
                 title: "Developer-First",
-                description: "Zero-code attach via decorators. CLI & playground for easy scaling. Integrates with Git and your existing workflow.",
+                description: "Zero-code attach via decorators. CLI & playground for scaling. Integrates with Git and your existing workflow.",
                 icon: <Terminal className="w-6 h-6 text-indigo-600" />
               },
               {
                 title: "Deployment Ready",
-                description: "Get deployment-ready code and actionable insights. Export optimal configurations directly to your codebase.",
+                description: "Export optimal configurations directly to your codebase. Actionable insights, not just reports.",
                 icon: <ExternalLink className="w-6 h-6 text-indigo-600" />
               }
             ].map((item, index) => (
@@ -290,7 +291,73 @@ export default function Homepage() {
         </div>
       </section>
 
-      {/* TVL Section */}
+      {/* How It Works */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl mx-auto text-center mb-16">
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="text-3xl md:text-4xl font-bold text-gray-900 mb-6"
+            >
+              How It Works
+            </motion.h2>
+            <p className="text-xl text-gray-600">
+              From evaluation to deployment in four simple steps
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              {
+                step: "01",
+                title: "Attach & Define",
+                description: "Add decorators to your AI calls. Define your evaluation dataset and success metrics."
+              },
+              {
+                step: "02",
+                title: "Set Optimization Goals",
+                description: "Choose what matters: cost, accuracy, latency, safety—or balance all four."
+              },
+              {
+                step: "03",
+                title: "Automated Exploration",
+                description: "Traigent intelligently tests configurations against your KPIs on real workloads."
+              },
+              {
+                step: "04",
+                title: "Gate & Deploy",
+                description: "Set evaluation gates in CI. Ship optimal configs with confidence, prevent regressions."
+              }
+            ].map((item, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="relative p-6 rounded-xl bg-white border border-gray-100 hover:border-indigo-100 hover:shadow-sm transition-all"
+              >
+                <div className="w-12 h-12 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-700 font-bold mb-4">
+                  {item.step}
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">{item.title}</h3>
+                <p className="text-gray-600">{item.description}</p>
+
+                {index < 3 && (
+                  <div className="hidden lg:block absolute top-1/2 -right-3 transform -translate-y-1/2 z-10">
+                    <ChevronRight className="w-6 h-6 text-indigo-400" />
+                  </div>
+                )}
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* TVL Section - Now after How It Works */}
       <section className="py-16 bg-slate-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -300,14 +367,19 @@ export default function Homepage() {
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
             >
-              <div className="inline-block px-3 py-1 bg-indigo-500/20 rounded-full text-indigo-300 text-sm font-medium mb-4">
-                Open Source
+              <div className="flex flex-wrap gap-2 mb-4">
+                <span className="inline-block px-3 py-1 bg-indigo-500/20 rounded-full text-indigo-300 text-sm font-medium">
+                  Open Source
+                </span>
+                <span className="inline-block px-3 py-1 bg-emerald-500/20 rounded-full text-emerald-300 text-sm font-medium">
+                  4 Patent Filings
+                </span>
               </div>
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
                 TVL: The Tuned Variables Language
               </h2>
               <p className="text-slate-300 text-lg mb-6">
-                A declarative language for defining how your AI systems should be tuned. TVL bridges the gap between static configuration and dynamic optimization — giving you a type-safe, version-controlled way to manage prompts, hyperparameters, and model choices.
+                A declarative language for defining how your AI systems should be tuned. TVL bridges the gap between static configuration and dynamic optimization—giving you a type-safe, version-controlled way to manage prompts, hyperparameters, and model choices.
               </p>
               <div className="flex flex-wrap gap-4">
                 <Button
@@ -351,72 +423,6 @@ export default function Homepage() {
         </div>
       </section>
 
-      {/* How It Works */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="text-3xl md:text-4xl font-bold text-gray-900 mb-6"
-            >
-              How It Works
-            </motion.h2>
-            <p className="text-xl text-gray-600">
-              From evaluation to deployment in four simple steps
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              {
-                step: "01",
-                title: "Attach & Define",
-                description: "Add decorators to your AI calls. Define your evaluation dataset and success metrics."
-              },
-              {
-                step: "02",
-                title: "Set Optimization Goals",
-                description: "Choose what matters: cost, accuracy, latency, safety — or balance all four."
-              },
-              {
-                step: "03",
-                title: "Automated Exploration",
-                description: "Traigent intelligently tests configurations against your KPIs on real workloads."
-              },
-              {
-                step: "04",
-                title: "Gate & Deploy",
-                description: "Set evaluation gates in CI. Ship optimal configs with confidence, prevent regressions."
-              }
-            ].map((item, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="relative p-6 rounded-xl bg-white border border-gray-100 hover:border-indigo-100 hover:shadow-sm transition-all"
-              >
-                <div className="w-12 h-12 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-700 font-bold mb-4">
-                  {item.step}
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{item.title}</h3>
-                <p className="text-gray-600">{item.description}</p>
-
-                {index < 3 && (
-                  <div className="hidden lg:block absolute top-1/2 -right-3 transform -translate-y-1/2 z-10">
-                    <ChevronRight className="w-6 h-6 text-indigo-400" />
-                  </div>
-                )}
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Research & Credibility Section */}
       <section className="py-20 bg-slate-950 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -429,12 +435,12 @@ export default function Homepage() {
             >
               <h2 className="text-3xl md:text-4xl font-bold mb-6">Built on Peer-Reviewed Research</h2>
               <p className="text-slate-300 text-lg mb-6">
-                Traigent emerged from academic research demonstrating that most AI deployments operate far below their potential — with 40x gaps in cost and performance due to suboptimal configurations.
+                Traigent emerged from academic research demonstrating that most AI deployments operate far below their potential—with up to 40x gaps in cost and performance due to suboptimal configurations.
               </p>
 
               <div className="space-y-4">
                 <div className="p-4 rounded-xl bg-slate-900/60 backdrop-blur-sm border border-slate-800">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between mb-2">
                     <div>
                       <h4 className="font-semibold">IEEE ICSE 2025</h4>
                       <p className="text-slate-400 text-sm">International Conference on Software Engineering</p>
@@ -443,6 +449,15 @@ export default function Homepage() {
                       Peer-Reviewed
                     </div>
                   </div>
+                  <p className="text-slate-400 text-sm">+ 2 additional papers under review at top-tier venues</p>
+                </div>
+
+                <div className="p-4 rounded-xl bg-slate-900/60 backdrop-blur-sm border border-slate-800">
+                  <div className="flex items-center gap-3 mb-3">
+                    <FileText className="w-5 h-5 text-indigo-400" />
+                    <h4 className="font-semibold">4 Patent Filings in Progress</h4>
+                  </div>
+                  <p className="text-slate-400 text-sm">Novel approaches to AI agent optimization and evaluation</p>
                 </div>
 
                 <div className="p-4 rounded-xl bg-slate-900/60 backdrop-blur-sm border border-slate-800">
@@ -468,8 +483,8 @@ export default function Homepage() {
               <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center">
                 <div className="text-7xl font-bold mb-4">40x</div>
                 <p className="text-xl text-white/90 mb-2">Performance & Cost Gap</p>
-                <p className="text-white/70 max-w-xs">
-                  Between default configurations and optimized deployments in production AI systems
+                <p className="text-white/70 max-w-xs text-sm">
+                  Between default configurations and optimized deployments in production AI systems (peer-reviewed; results vary by workload)
                 </p>
               </div>
 
@@ -497,7 +512,7 @@ export default function Homepage() {
               Stop Guessing. Start Optimizing.
             </motion.h2>
             <p className="text-xl opacity-90 mb-10">
-              Join engineering teams shipping AI applications with the same rigor as software. Reduce costs, improve accuracy, prevent regressions — automatically.
+              Join engineering teams shipping AI with the same rigor as software. Save money, prevent breakage, ship faster—automatically.
             </p>
             <motion.div
               initial={{ opacity: 0 }}
@@ -534,8 +549,15 @@ export default function Homepage() {
             <div>
               <div className="text-xl font-bold mb-4">Traigent</div>
               <p className="text-slate-400 mb-6 max-w-xs">
-                Ship AI applications like software. Evaluate, gate, optimize, and deploy with confidence.
+                Ship AI like software—gated, optimized, and regression-safe.
               </p>
+              <div className="flex flex-wrap gap-2 text-xs text-slate-500">
+                <span>IEEE ICSE 2025</span>
+                <span>|</span>
+                <span>4 Patent Filings</span>
+                <span>|</span>
+                <span>2 Papers Under Review</span>
+              </div>
             </div>
 
             <div>
