@@ -7,6 +7,9 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Unix artifact from Windows-style `2>nul` redirections
+nul
+
 # Node
 node_modules
 dist
