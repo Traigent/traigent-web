@@ -131,7 +131,10 @@ export default function Homepage() {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight mb-6"
             >
-              Ship AI Like Software—Gated, Optimized, and Regression-Safe
+              <span className="block">Ship AI Like Software</span>
+              <span className="block text-2xl md:text-3xl lg:text-4xl font-semibold text-slate-200 mt-3">
+                Gated, Optimized, and Regression-Safe
+              </span>
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
