@@ -16,6 +16,19 @@ const Button = ({ children, className, onClick, size }) => (
 // Placeholder for the createPageUrl function
 const createPageUrl = (path) => path;
 
+// Reusable animated wrapper to reduce duplication
+const FadeInView = ({ children, className, delay = 0, direction = "y" }) => (
+  <motion.div
+    initial={{ opacity: 0, [direction]: 20 }}
+    whileInView={{ opacity: 1, [direction]: 0 }}
+    viewport={{ once: true }}
+    transition={{ duration: 0.5, delay }}
+    className={className}
+  >
+    {children}
+  </motion.div>
+);
+
 // Interactive Demo Player with pause on click
 const DemoPlayer = () => {
   const [isPaused, setIsPaused] = useState(false);
@@ -179,42 +192,17 @@ export default function Homepage() {
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-            >
-              <div className="text-4xl md:text-5xl font-bold text-indigo-600 mb-2">1 Spec</div>
-              <p className="text-slate-600">One specification, many tools</p>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-            >
-              <div className="text-4xl md:text-5xl font-bold text-indigo-600 mb-2">Less Drift</div>
-              <p className="text-slate-600">Keep configs tied to source control</p>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <div className="text-4xl md:text-5xl font-bold text-indigo-600 mb-2">Every Change</div>
-              <p className="text-slate-600">Measured before it ships</p>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-            >
-              <div className="text-4xl md:text-5xl font-bold text-indigo-600 mb-2">Run History</div>
-              <p className="text-slate-600">Compare runs and configs</p>
-            </motion.div>
+            {[
+              { title: "1 Spec", desc: "One specification, many tools" },
+              { title: "Less Drift", desc: "Keep configs tied to source control" },
+              { title: "Every Change", desc: "Measured before it ships" },
+              { title: "Run History", desc: "Compare runs and configs" }
+            ].map((item, i) => (
+              <FadeInView key={i} delay={i * 0.1}>
+                <div className="text-4xl md:text-5xl font-bold text-indigo-600 mb-2">{item.title}</div>
+                <p className="text-slate-600">{item.desc}</p>
+              </FadeInView>
+            ))}
           </div>
         </div>
       </section>
