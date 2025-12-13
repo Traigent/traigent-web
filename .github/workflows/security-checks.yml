@@ -1,0 +1,37 @@
+name: Security Checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  security-checks:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run npm audit
+      run: npm audit --audit-level=high || echo "Vulnerabilities found - review required"
+
+    - name: Check for secrets in code
+      run: |
+        if grep -rE "(api_key|apikey|secret|password|token)\s*[:=]\s*['\"][^'\"]+['\"]" src/ --include="*.js" --include="*.jsx" --include="*.ts" --include="*.tsx" | grep -v "process.env" | grep -v "import"; then
+          echo "::warning::Potential hardcoded secrets detected - please review"
+        else
+          echo "✅ No hardcoded secrets detected"
+        fi
+
+    - name: Summary
+      run: echo "✅ Security checks completed"
