@@ -548,7 +548,7 @@ constraints:
                 One Decorator. Instant Optimization.
               </h2>
               <p className="text-lg text-gray-600 mb-6">
-                No rewrites. Just attach to your existing AI calls, specify what you want (and your constraints), then apply the best config—no dashboard required.
+                No rewrites. Just attach to your existing agent calls, specify what you want (and your constraints), then apply the best config—no dashboard required.
               </p>
               <ul className="space-y-3">
                 <li className="flex items-center gap-3 text-gray-700">
@@ -582,7 +582,7 @@ constraints:
                 <code>{`import asyncio
 import traigent
 from traigent.api.decorators import EvaluationOptions
-	
+
 @traigent.optimize(
     configuration_space={
         "model": ["gpt-4o-mini", "gpt-4o"],
@@ -592,7 +592,7 @@ from traigent.api.decorators import EvaluationOptions
     evaluation=EvaluationOptions(eval_dataset="eval.jsonl"),
 )
 def analyze_document(doc: str) -> str:
-    # Your existing AI logic — unchanged
+    # Your existing agent logic — unchanged
     return llm_call(doc)
 
 result = asyncio.run(analyze_document.optimize(algorithm="random", max_trials=20))
@@ -617,7 +617,7 @@ analyze_document.apply_best_config(result)`}</code>
               Start Engineering Your Agents
             </motion.h2>
             <p className="text-xl opacity-90 mb-10">
-              Join teams shipping AI with the same rigor as software. Specify. Evaluate. Optimize. Apply.
+              Join teams shipping agents with the same rigor as software. Specify. Evaluate. Optimize. Apply.
             </p>
             <motion.div
               initial={{ opacity: 0 }}
@@ -653,7 +653,7 @@ analyze_document.apply_best_config(result)`}</code>
             <div>
               <div className="text-xl font-bold mb-4">Traigent</div>
               <p className="text-slate-400 mb-6 max-w-xs">
-                The AI engineering control layer. Specify. Evaluate. Optimize. Apply.
+                The agent control layer. Specify. Evaluate. Optimize. Apply.
               </p>
             </div>
 

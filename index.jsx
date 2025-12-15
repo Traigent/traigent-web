@@ -77,7 +77,7 @@ export default function Homepage() {
               AI Teams Are Overpaying and Underperforming
             </motion.h2>
             <p className="text-xl text-gray-600">
-              Today's AI implementations face critical challenges that limit their potential.
+              Today's agentic implementations face critical challenges that limit their potential.
             </p>
           </div>
 
@@ -138,7 +138,7 @@ export default function Homepage() {
               The Smarter Way to Optimize AI Agents
             </motion.h2>
             <p className="text-xl text-gray-600">
-              Traigent provides intelligent automation to maximize your AI performance.
+              Traigent provides intelligent automation to maximize your agent performance.
             </p>
           </div>
 
@@ -207,7 +207,7 @@ export default function Homepage() {
               {
                 step: "01",
                 title: "Define Your Agent",
-                description: "Describe your AI systems and upload test sets."
+                description: "Describe your AI agents and upload test sets."
               },
               {
                 step: "02",
@@ -349,7 +349,7 @@ export default function Homepage() {
             <div>
               <div className="text-xl font-bold mb-4">Traigent</div>
               <p className="text-slate-400 mb-6">
-                The first true AI agent optimization platform.
+                The first true agent optimization platform.
               </p>
               <div className="flex space-x-4">
                 {['twitter', 'linkedin', 'github'].map(platform => (
