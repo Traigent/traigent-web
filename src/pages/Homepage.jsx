@@ -285,7 +285,7 @@ export default function Homepage() {
               transition={{ duration: 0.5 }}
               className="text-3xl md:text-4xl font-bold text-gray-900 mb-6"
             >
-              The AI Engineering Control Layer
+              The Agent Engineering Control Layer
             </motion.h2>
             <p className="text-xl text-gray-600">
               Traigent gives you the primitives to specify, evaluate, optimize, and apply agent configurations—systematically.
