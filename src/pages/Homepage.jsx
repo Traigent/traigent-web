@@ -2,6 +2,8 @@ import React, { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Check, ChevronRight, ExternalLink, Zap, GitBranch, Shield, FileText, Play, Pause } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 // Placeholder for the Button component
 const Button = ({ children, className, onClick, size }) => (
@@ -578,8 +580,18 @@ constraints:
                 <div className="w-3 h-3 rounded-full bg-green-500"></div>
                 <span className="ml-2">my_agent.py</span>
               </div>
-              <pre className="text-slate-300 overflow-x-auto">
-                <code>{`import asyncio
+              <SyntaxHighlighter
+                language="python"
+                style={vscDarkPlus}
+                customStyle={{
+                  margin: 0,
+                  padding: 0,
+                  background: 'transparent',
+                  fontSize: '0.875rem',
+                }}
+                showLineNumbers={false}
+              >
+{`import asyncio
 import traigent
 from traigent.api.decorators import EvaluationOptions
 
@@ -596,8 +608,8 @@ def analyze_document(doc: str) -> str:
     return llm_call(doc)
 
 result = asyncio.run(analyze_document.optimize(algorithm="random", max_trials=20))
-analyze_document.apply_best_config(result)`}</code>
-              </pre>
+analyze_document.apply_best_config(result)`}
+              </SyntaxHighlighter>
             </motion.div>
           </div>
         </div>
