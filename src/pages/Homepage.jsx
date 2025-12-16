@@ -591,24 +591,32 @@ constraints:
                 }}
                 showLineNumbers={false}
               >
-{`import asyncio
-import traigent
-from traigent.api.decorators import EvaluationOptions
+{`import traigent
+from langchain_openai import ChatOpenAI
 
 @traigent.optimize(
     configuration_space={
         "model": ["gpt-4o-mini", "gpt-4o"],
-        "temperature": [0.0, 0.3, 0.7],
+        "temperature": [0.1, 0.5, 0.9],
+        "use_rag": [True, False],
+        "top_k": [1, 2, 3],
     },
     objectives=["accuracy", "cost"],
-    evaluation=EvaluationOptions(eval_dataset="eval.jsonl"),
+    eval_dataset="eval.jsonl",
 )
-def analyze_document(doc: str) -> str:
-    # Your existing agent logic — unchanged
-    return llm_call(doc)
+def answer_question(question: str) -> str:
+    config = traigent.get_config()
 
-result = asyncio.run(analyze_document.optimize(algorithm="random", max_trials=20))
-analyze_document.apply_best_config(result)`}
+    # Tuned variables from config
+    model = config["model"]
+    temperature = config["temperature"]
+    use_rag = config["use_rag"]
+    top_k = config["top_k"]
+
+    context = retrieve_docs(question, k=top_k) if use_rag else ""
+
+    llm = ChatOpenAI(model=model, temperature=temperature)
+    return llm.invoke(f"{context}\\n\\nQ: {question}").content`}
               </SyntaxHighlighter>
             </motion.div>
           </div>
