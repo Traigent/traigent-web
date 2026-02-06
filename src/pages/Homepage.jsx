@@ -133,7 +133,7 @@ export default function Homepage() {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight mb-6"
             >
-              <span className="block">Ship AI Agents Like Software</span>
+              <span className="block">Ship AI Agents Like Software!</span>
               <span className="block text-2xl md:text-3xl lg:text-4xl font-semibold text-slate-200 mt-3">
                 Gated, Optimized, and Regression-Safe
               </span>
