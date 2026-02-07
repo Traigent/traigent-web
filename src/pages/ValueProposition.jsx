@@ -167,7 +167,7 @@ const ScaleGraph = () => {
           {/* Glow effect behind image */}
           <circle cx="175" cy="70" r="50" fill="url(#blueRadial)" opacity="0.6"/>
           <image
-            href="/images/robot-happy.png"
+            href={`${import.meta.env.BASE_URL}images/robot-happy.png`}
             x="120" y="15"
             width="110" height="110"
             preserveAspectRatio="xMidYMid meet"
@@ -179,7 +179,7 @@ const ScaleGraph = () => {
           {/* Glow effect behind image */}
           <circle cx="416" cy="70" r="50" fill="url(#purpleRadial)" opacity="0.5"/>
           <image
-            href="/images/robot-confused.png"
+            href={`${import.meta.env.BASE_URL}images/robot-confused.png`}
             x="361" y="15"
             width="110" height="110"
             preserveAspectRatio="xMidYMid meet"
@@ -191,7 +191,7 @@ const ScaleGraph = () => {
           {/* Glow effect behind image */}
           <circle cx="641" cy="70" r="50" fill="url(#redRadial)" opacity="0.6"/>
           <image
-            href="/images/robot-error.png"
+            href={`${import.meta.env.BASE_URL}images/robot-error.png`}
             x="586" y="15"
             width="110" height="110"
             preserveAspectRatio="xMidYMid meet"

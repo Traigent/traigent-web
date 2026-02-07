@@ -36,7 +36,7 @@ export default function OnePager() {
           <section className="bg-slate-900 rounded-xl p-6 border border-red-500/30">
             <div className="flex items-center gap-4 mb-4">
               <img
-                src="/images/robot-error.png"
+                src={`${import.meta.env.BASE_URL}images/robot-error.png`}
                 alt="AI Agent Error"
                 className="w-16 h-16 rounded-lg object-cover"
               />
@@ -69,7 +69,7 @@ export default function OnePager() {
           <section className="bg-slate-900 rounded-xl p-6 border border-emerald-500/30">
             <div className="flex items-center gap-4 mb-4">
               <img
-                src="/images/robot-happy.png"
+                src={`${import.meta.env.BASE_URL}images/robot-happy.png`}
                 alt="Optimized AI Agent"
                 className="w-16 h-16 rounded-lg object-cover"
               />
