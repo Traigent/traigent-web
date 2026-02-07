@@ -123,7 +123,7 @@ export default function Homepage() {
             <img
               src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/057ce2_TraigentLogoWhiteCropped.png"
               alt="Traigent Logo"
-              className="h-12 w-auto"
+              className="h-14 w-auto"
             />
           </motion.div>
           <div className="max-w-3xl">
@@ -425,7 +425,7 @@ constraints:
       {/* How It Works */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto text-center mb-16">
+          <div className="max-w-3xl mx-auto text-center mb-12">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -435,10 +435,93 @@ constraints:
             >
               How It Works
             </motion.h2>
-            <p className="text-xl text-gray-600">
-              From specification to gated changes in four steps
-            </p>
           </div>
+
+          {/* Flow Diagram */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="max-w-4xl mx-auto mb-16"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-7 gap-4 items-center">
+              {/* Input Box */}
+              <div className="md:col-span-2 bg-slate-900 rounded-xl p-5 border border-slate-700">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                    <span className="text-blue-400 text-lg">📥</span>
+                  </div>
+                  <h4 className="font-bold text-white">Input</h4>
+                </div>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-center gap-2 text-slate-300">
+                    <span className="w-1.5 h-1.5 bg-blue-400 rounded-full"></span>
+                    Prompts & Models
+                  </li>
+                  <li className="flex items-center gap-2 text-slate-300">
+                    <span className="w-1.5 h-1.5 bg-blue-400 rounded-full"></span>
+                    Eval Data & KPIs
+                  </li>
+                </ul>
+              </div>
+
+              {/* Arrow 1 */}
+              <div className="hidden md:flex justify-center">
+                <ArrowRight className="w-6 h-6 text-blue-500" />
+              </div>
+
+              {/* Center - Traigent Engine */}
+              <div className="md:col-span-1 flex justify-center">
+                <div className="relative">
+                  <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/25">
+                    <span className="text-3xl">⚡</span>
+                  </div>
+                  <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap">
+                    <span className="text-xs text-indigo-600 font-semibold">TRAIGENT</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Arrow 2 */}
+              <div className="hidden md:flex justify-center">
+                <ArrowRight className="w-6 h-6 text-emerald-500" />
+              </div>
+
+              {/* Output Box */}
+              <div className="md:col-span-2 bg-slate-900 rounded-xl p-5 border border-emerald-500/30">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
+                    <span className="text-emerald-400 text-lg">📤</span>
+                  </div>
+                  <h4 className="font-bold text-white">Output</h4>
+                </div>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-center gap-2 text-slate-300">
+                    <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>
+                    Optimized Configs
+                  </li>
+                  <li className="flex items-center gap-2 text-slate-300">
+                    <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>
+                    Evidence-backed Reports
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Mobile arrows */}
+            <div className="flex md:hidden justify-center my-4">
+              <div className="flex flex-col items-center gap-2 text-indigo-600">
+                <span className="rotate-90">→</span>
+                <span className="text-xs font-semibold">TRAIGENT</span>
+                <span className="rotate-90">→</span>
+              </div>
+            </div>
+          </motion.div>
+
+          <p className="text-xl text-gray-600 text-center mb-12">
+            From specification to gated changes in four steps
+          </p>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
@@ -694,6 +777,16 @@ def answer_question(question: str) -> str:
                   <a href="https://cal.com/nimrod-busany" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">
                     Request SDK access
                   </a>
+                </li>
+                <li>
+                  <Link to="/one-pager" className="text-slate-400 hover:text-white transition-colors">
+                    1-pager
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/value-proposition" className="text-slate-400 hover:text-white transition-colors">
+                    Value Proposition
+                  </Link>
                 </li>
               </ul>
             </div>
