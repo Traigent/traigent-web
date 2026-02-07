@@ -722,6 +722,8 @@ def answer_question(question: str) -> str:
 
           <div className="border-t border-slate-800 mt-12 pt-8 text-center text-slate-500">
             <p>© {new Date().getFullYear()} Traigent Ltd. All rights reserved.</p>
+            <p></p>
+            <p>v-tw-251216</p>
           </div>
         </div>
       </footer>
