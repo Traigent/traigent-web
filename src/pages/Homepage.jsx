@@ -781,7 +781,7 @@ def answer_question(question: str) -> str:
                 </li>
                 <li>
                   <Link to="/one-pager" className="text-slate-400 hover:text-white transition-colors">
-                    1-pager
+                    One Pager
                   </Link>
                 </li>
                 <li>
