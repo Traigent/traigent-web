@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Zap, TrendingUp, Users, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import { ProblemCard, SolutionCard } from "../components/ProblemSolutionSection";
 
 const FadeInView = ({ children, className, delay = 0 }) => (
   <motion.div
@@ -403,50 +404,11 @@ export default function ValueProposition() {
 
           {/* Problem & Solution Side by Side */}
           <div className="grid md:grid-cols-2 gap-6">
-            {/* The Problem */}
-            <FadeInView delay={0.1} className="bg-slate-900 rounded-xl p-6 border border-red-500/30">
-              <h2 className="text-red-400 font-bold text-xl md:text-2xl mb-4">The Problem</h2>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-2">
-                  <span className="text-red-400 mt-1">✗</span>
-                  <p className="text-slate-200 text-sm"><strong>Credibility gaps:</strong> Exploding config space</p>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-red-400 mt-1">✗</span>
-                  <p className="text-slate-200 text-sm"><strong>Inefficiency:</strong> 95% of configs are suboptimal</p>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-red-400 mt-1">✗</span>
-                  <p className="text-slate-200 text-sm"><strong>Quality & Safety:</strong> Risks in production</p>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-red-400 mt-1">✗</span>
-                  <p className="text-slate-200 text-sm"><strong>Wasted time:</strong> Manual tuning drains cycles</p>
-                </li>
-              </ul>
+            <FadeInView delay={0.1}>
+              <ProblemCard />
             </FadeInView>
-
-            {/* The Solution */}
-            <FadeInView delay={0.2} className="bg-slate-900 rounded-xl p-6 border border-emerald-500/30">
-              <h2 className="text-emerald-400 font-bold text-xl md:text-2xl mb-4">The Solution</h2>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-2">
-                  <span className="text-emerald-400 mt-1">✓</span>
-                  <p className="text-slate-200 text-sm"><strong>Credibility:</strong> Configs backed by data</p>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-emerald-400 mt-1">✓</span>
-                  <p className="text-slate-200 text-sm"><strong>Efficiency:</strong> Top 5% performance tier</p>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-emerald-400 mt-1">✓</span>
-                  <p className="text-slate-200 text-sm"><strong>Quality & Safety:</strong> Guardrails built in</p>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-emerald-400 mt-1">✓</span>
-                  <p className="text-slate-200 text-sm"><strong>40-60% faster:</strong> Reduced time-to-market</p>
-                </li>
-              </ul>
+            <FadeInView delay={0.2}>
+              <SolutionCard />
             </FadeInView>
           </div>
         </div>

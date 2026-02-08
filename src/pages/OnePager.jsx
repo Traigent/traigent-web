@@ -1,5 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import FlowDiagram from "../components/FlowDiagram";
+import ProblemSolutionSection from "../components/ProblemSolutionSection";
 
 const SectionHeader = ({ children }) => (
   <div className="bg-blue-500 text-white font-bold text-xl md:text-2xl px-6 py-3 rounded-lg mb-4">
@@ -32,73 +33,7 @@ export default function OnePager() {
         </section>
 
         {/* Problem & Solution Side by Side */}
-        <div className="grid md:grid-cols-2 gap-6 mb-10">
-          {/* The Problem */}
-          <section className="bg-slate-900 rounded-xl p-6 border border-red-500/30">
-            <div className="flex items-center gap-4 mb-4">
-              <img
-                src={`${import.meta.env.BASE_URL}images/robot-error.png`}
-                alt="AI Agent Error"
-                className="w-16 h-16 rounded-lg object-cover"
-              />
-              <div>
-                <h2 className="text-red-400 font-bold text-xl md:text-2xl">The Problem</h2>
-                <p className="text-slate-400 text-xs">AI agents break at scale</p>
-              </div>
-            </div>
-            <ul className="space-y-3">
-              <li className="flex items-center gap-2">
-                <span className="text-red-400 text-sm flex-shrink-0">✗</span>
-                <p className="text-slate-200 text-sm"><strong>Credibility gaps:</strong> Exploding config space</p>
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-red-400 text-sm flex-shrink-0">✗</span>
-                <p className="text-slate-200 text-sm"><strong>Inefficiency:</strong> 95% of configs are suboptimal</p>
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-red-400 text-sm flex-shrink-0">✗</span>
-                <p className="text-slate-200 text-sm"><strong>Quality & Safety:</strong> Risks in production</p>
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-red-400 text-sm flex-shrink-0">✗</span>
-                <p className="text-slate-200 text-sm"><strong>Wasted time:</strong> Manual tuning drains cycles</p>
-              </li>
-            </ul>
-          </section>
-
-          {/* The Solution */}
-          <section className="bg-slate-900 rounded-xl p-6 border border-emerald-500/30">
-            <div className="flex items-center gap-4 mb-4">
-              <img
-                src={`${import.meta.env.BASE_URL}images/robot-happy.png`}
-                alt="Optimized AI Agent"
-                className="w-16 h-16 rounded-lg object-cover"
-              />
-              <div>
-                <h2 className="text-white font-bold text-xl md:text-2xl">Traigent</h2>
-                <p className="text-slate-400 text-xs">Trust your AI agent at scale</p>
-              </div>
-            </div>
-            <ul className="space-y-3">
-              <li className="flex items-center gap-2">
-                <span className="text-emerald-400 text-sm flex-shrink-0">✓</span>
-                <p className="text-slate-200 text-sm"><strong>Credibility:</strong> Configs backed by data</p>
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-emerald-400 text-sm flex-shrink-0">✓</span>
-                <p className="text-slate-200 text-sm"><strong>Efficiency:</strong> Top 5% performance tier</p>
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-emerald-400 text-sm flex-shrink-0">✓</span>
-                <p className="text-slate-200 text-sm"><strong>Quality & Safety:</strong> Guardrails built in</p>
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-emerald-400 text-sm flex-shrink-0">✓</span>
-                <p className="text-slate-200 text-sm"><strong>40-60% faster:</strong> Reduced time-to-market</p>
-              </li>
-            </ul>
-          </section>
-        </div>
+        <ProblemSolutionSection showImages={true} solutionTitle="Traigent" />
 
         {/* The Product */}
         <section className="mb-10">
