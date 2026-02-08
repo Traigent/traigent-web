@@ -74,7 +74,7 @@ export default function OnePager() {
                 className="w-16 h-16 rounded-lg object-cover"
               />
               <div>
-                <h2 className="text-emerald-400 font-bold text-xl md:text-2xl">The Solution</h2>
+                <h2 className="text-white font-bold text-xl md:text-2xl">Traigent</h2>
                 <p className="text-slate-400 text-xs">Trust your AI agent at scale</p>
               </div>
             </div>
@@ -133,10 +133,14 @@ export default function OnePager() {
               {/* Center - Traigent Engine */}
               <div className="md:col-span-1 flex justify-center">
                 <div className="relative">
-                  <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/25">
-                    <span className="text-3xl">⚡</span>
+                  <div className="w-24 h-24 flex items-center justify-center">
+                    <img
+                      src={`${import.meta.env.BASE_URL}images/traigent-logo-icon.png`}
+                      alt="Traigent"
+                      className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]"
+                    />
                   </div>
-                  <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap">
+                  <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap">
                     <span className="text-xs text-blue-400 font-semibold">TRAIGENT</span>
                   </div>
                 </div>
@@ -198,10 +202,10 @@ export default function OnePager() {
           </div>
         </section>
 
-        {/* POC & Design Partner Program */}
+        {/* POC */}
         <section className="mb-10">
-          <SectionHeader>POC & Design Partner Program</SectionHeader>
-          <div className="grid md:grid-cols-3 gap-6 mb-6">
+          <SectionHeader>POC Program</SectionHeader>
+          <div className="grid md:grid-cols-3 gap-6">
             <div>
               <h4 className="font-bold text-white mb-2">Before</h4>
               <p className="text-slate-400 text-sm">Define:</p>
@@ -218,14 +222,6 @@ export default function OnePager() {
               <h4 className="font-bold text-white mb-2">After</h4>
               <p className="text-slate-300 text-sm">Compare optimized results vs. your baseline benchmark</p>
             </div>
-          </div>
-          <div className="bg-slate-800 rounded-lg p-4 border border-slate-700">
-            <h4 className="font-bold text-white mb-2 text-center">Design Partner Benefits</h4>
-            <ul className="text-slate-300 text-sm text-center space-y-1">
-              <li>Direct influence on the Traigent product roadmap</li>
-              <li>White-glove dedicated engineering integration support</li>
-              <li>Gain recognition as an AI innovator (success story)</li>
-            </ul>
           </div>
         </section>
 
@@ -257,13 +253,21 @@ export default function OnePager() {
         {/* CTA */}
         <div className="text-center mt-12">
           <a
-            href="https://cal.com/nimrod-busany"
+            href="https://calendar.app.google/2aSEhm5bxo6xoPYm8"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 px-8 py-3 rounded-lg font-semibold transition-all shadow-lg hover:shadow-xl"
+            className="group relative inline-flex items-center bg-blue-500 text-white px-10 py-4 rounded-xl font-bold text-lg transition-all duration-300 hover:bg-blue-600 hover:scale-105 shadow-[0_0_20px_rgba(59,130,246,0.5)] hover:shadow-[0_0_40px_rgba(59,130,246,0.8)] overflow-hidden"
           >
-            Request a Demo
-            <ArrowRight className="ml-2 h-5 w-5" />
+            {/* Animated shine effect */}
+            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></span>
+
+            {/* Pulse ring */}
+            <span className="absolute inset-0 rounded-xl animate-ping bg-blue-400 opacity-20"></span>
+
+            <span className="relative z-10 flex items-center">
+              Request a Demo
+              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+            </span>
           </a>
         </div>
       </div>
