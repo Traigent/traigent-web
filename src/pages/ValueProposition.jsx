@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Check, Zap, Shield, Clock, TrendingUp, Users, ArrowRight } from "lucide-react";
+import { Zap, TrendingUp, Users, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const FadeInView = ({ children, className, delay = 0 }) => (
@@ -49,7 +49,7 @@ const ScaleGraph = () => {
 
   return (
     <div className="relative w-full max-w-4xl mx-auto">
-      <svg viewBox="0 0 800 450" className="w-full h-auto">
+      <svg viewBox="0 0 800 460" className="w-full h-auto">
         <defs>
           {/* Neon glow filters */}
           <filter id="glowBlue" x="-50%" y="-50%" width="200%" height="200%">
@@ -287,9 +287,9 @@ const ScaleGraph = () => {
           custom={0.6}
         />
 
-        {/* Cost curve - bright red - GLOW LAYER (strongest glow) - asymptotic approach to ceiling */}
+        {/* Cost curve - bright red - GLOW LAYER (strongest glow) - exponential growth y=2^x */}
         <motion.path
-          d="M 60 355 C 120 350, 180 340, 240 320 C 300 295, 360 265, 420 235 C 480 210, 540 195, 600 188 C 660 183, 700 180, 740 178"
+          d="M 60 365 C 200 364, 350 362, 450 358 C 530 352, 580 330, 620 280 C 660 220, 700 180, 740 168"
           fill="none"
           stroke="#ef4444"
           strokeWidth="12"
@@ -304,7 +304,7 @@ const ScaleGraph = () => {
         />
         {/* Cost curve - main line */}
         <motion.path
-          d="M 60 355 C 120 350, 180 340, 240 320 C 300 295, 360 265, 420 235 C 480 210, 540 195, 600 188 C 660 183, 700 180, 740 178"
+          d="M 60 365 C 200 364, 350 362, 450 358 C 530 352, 580 330, 620 280 C 660 220, 700 180, 740 168"
           fill="none"
           stroke="#f87171"
           strokeWidth="4"
@@ -316,30 +316,33 @@ const ScaleGraph = () => {
           custom={0.8}
         />
 
-        {/* ===== LABELS ===== */}
-
-        {/* Curve labels */}
-        <motion.text x="80" y="170" fill="#991b1b" fontSize="10" fontFamily="monospace" fontWeight="600" filter="url(#glowRed)"
-          initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 2.5 }}>
-          AI SDLC
-        </motion.text>
-        <motion.text x="80" y="185" fill="#4b5563" fontSize="10" fontFamily="monospace" fontWeight="600"
-          initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 2.7 }}>
-          Credibility
-        </motion.text>
-        <motion.text x="80" y="200" fill="#94a3b8" fontSize="10" fontFamily="monospace" fontWeight="600" filter="url(#glowGray)"
-          initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 2.9 }}>
-          Quality
-        </motion.text>
-        <motion.text x="80" y="360" fill="#ef4444" fontSize="10" fontFamily="monospace" fontWeight="600" filter="url(#glowRed)"
-          initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 3.1 }}>
-          Cost
-        </motion.text>
-
         {/* Zone labels at bottom */}
         <text x="175" y="395" textAnchor="middle" fill="#3b82f6" fontSize="10" fontFamily="monospace" fontWeight="600" letterSpacing="1">OPTIMAL</text>
         <text x="416" y="395" textAnchor="middle" fill="#a855f7" fontSize="10" fontFamily="monospace" fontWeight="600" letterSpacing="1">DEGRADING</text>
         <text x="641" y="395" textAnchor="middle" fill="#ef4444" fontSize="10" fontFamily="monospace" fontWeight="600" letterSpacing="1" filter="url(#glowRed)">CRITICAL</text>
+
+        {/* ===== COMPACT LEGEND - Bottom ===== */}
+        <motion.g initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 2.5 }}>
+          {/* AI SDLC - dark red with glow */}
+          <line x1="85" y1="438" x2="110" y2="438" stroke="#991b1b" strokeWidth="6" strokeLinecap="round" opacity="0.4" filter="url(#glowRed)"/>
+          <line x1="85" y1="438" x2="110" y2="438" stroke="#dc2626" strokeWidth="3" strokeLinecap="round"/>
+          <text x="118" y="441" fill="#dc2626" fontSize="9" fontFamily="monospace" fontWeight="500">AI SDLC</text>
+
+          {/* Credibility - gray */}
+          <line x1="200" y1="438" x2="225" y2="438" stroke="#6b7280" strokeWidth="5" strokeLinecap="round" opacity="0.3" filter="url(#glowGray)"/>
+          <line x1="200" y1="438" x2="225" y2="438" stroke="#9ca3af" strokeWidth="2.5" strokeLinecap="round"/>
+          <text x="233" y="441" fill="#9ca3af" fontSize="9" fontFamily="monospace" fontWeight="500">Credibility</text>
+
+          {/* Quality - bright white/gray */}
+          <line x1="330" y1="438" x2="355" y2="438" stroke="#e2e8f0" strokeWidth="5" strokeLinecap="round" opacity="0.4" filter="url(#glowGray)"/>
+          <line x1="330" y1="438" x2="355" y2="438" stroke="#f1f5f9" strokeWidth="2.5" strokeLinecap="round"/>
+          <text x="363" y="441" fill="#f1f5f9" fontSize="9" fontFamily="monospace" fontWeight="500">Quality</text>
+
+          {/* Cost - bright red with strong glow */}
+          <line x1="445" y1="438" x2="470" y2="438" stroke="#ef4444" strokeWidth="8" strokeLinecap="round" opacity="0.5" filter="url(#glowRed)"/>
+          <line x1="445" y1="438" x2="470" y2="438" stroke="#f87171" strokeWidth="4" strokeLinecap="round"/>
+          <text x="478" y="441" fill="#f87171" fontSize="9" fontFamily="monospace" fontWeight="500">Cost</text>
+        </motion.g>
       </svg>
     </div>
   );
@@ -385,58 +388,66 @@ export default function ValueProposition() {
         </div>
       </header>
 
-      {/* Problem Section */}
+      {/* Graph Section */}
       <section className="py-12 border-b border-slate-800">
         <div className="max-w-5xl mx-auto px-6">
           <FadeInView>
-            <h2 className="text-2xl font-bold mb-2 text-red-400">The Problem: Do You TRUST Your AI Agent at Scale?</h2>
-            <p className="text-slate-400 mb-8">Building AI agents is easy; making them production-ready is not.</p>
+            <h2 className="text-2xl font-bold mb-2 text-center">Do You <span className="text-red-400">TRUST</span> Your AI Agent at Scale?</h2>
+            <p className="text-slate-400 mb-8 text-center">Building AI agents is easy; making them production-ready is not.</p>
           </FadeInView>
 
           {/* Animated Graph */}
-          <FadeInView className="mb-10">
+          <FadeInView className="mb-12">
             <ScaleGraph />
           </FadeInView>
 
+          {/* Problem & Solution Side by Side */}
           <div className="grid md:grid-cols-2 gap-6">
-            {[
-              { title: "Credibility", desc: "Prompt x Model x K x Temp = Unpredictable outcomes" },
-              { title: "Inefficiency", desc: "95% inefficient, 50% very inefficient - inaccurate, slow, expensive" },
-              { title: "Quality & Safety", desc: "No standardized qualification process for agents" },
-              { title: "Wasting Time", desc: "Endless cycles of manual tuning and testing" }
-            ].map((item, i) => (
-              <FadeInView key={i} delay={i * 0.1} className="bg-slate-900/50 p-4 rounded-lg border border-red-900/30">
-                <h3 className="font-semibold text-red-300 mb-1">{item.title}</h3>
-                <p className="text-slate-400 text-sm">{item.desc}</p>
-              </FadeInView>
-            ))}
-          </div>
-        </div>
-      </section>
+            {/* The Problem */}
+            <FadeInView delay={0.1} className="bg-slate-900 rounded-xl p-6 border border-red-500/30">
+              <h2 className="text-red-400 font-bold text-xl md:text-2xl mb-4">The Problem</h2>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-2">
+                  <span className="text-red-400 mt-1">✗</span>
+                  <p className="text-slate-200 text-sm"><strong>Credibility gaps:</strong> Exploding config space</p>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-red-400 mt-1">✗</span>
+                  <p className="text-slate-200 text-sm"><strong>Inefficiency:</strong> 95% of configs are suboptimal</p>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-red-400 mt-1">✗</span>
+                  <p className="text-slate-200 text-sm"><strong>Quality & Safety:</strong> Risks in production</p>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-red-400 mt-1">✗</span>
+                  <p className="text-slate-200 text-sm"><strong>Wasted time:</strong> Manual tuning drains cycles</p>
+                </li>
+              </ul>
+            </FadeInView>
 
-      {/* Solution Section */}
-      <section className="py-12 border-b border-slate-800 bg-slate-900/30">
-        <div className="max-w-5xl mx-auto px-6">
-          <FadeInView>
-            <h2 className="text-2xl font-bold mb-6 text-emerald-400">Traigent: TRUST Your AI Agent at Scale</h2>
-          </FadeInView>
-          <div className="grid md:grid-cols-2 gap-6">
-            {[
-              { icon: <Shield className="w-5 h-5" />, title: "Credibility", desc: "Systematic configuration exploration grounded in data" },
-              { icon: <Zap className="w-5 h-5" />, title: "Efficiency", desc: "Accurate, faster, cheaper - top 5% efficient" },
-              { icon: <Check className="w-5 h-5" />, title: "Quality & Safety", desc: "Qualified & standardized agents with evidence-backed reports" },
-              { icon: <Clock className="w-5 h-5" />, title: "Saving Time", desc: "40-60% lifecycle reduction" }
-            ].map((item, i) => (
-              <FadeInView key={i} delay={i * 0.1} className="bg-slate-800/50 p-4 rounded-lg border border-emerald-900/30 flex gap-4">
-                <div className="w-10 h-10 bg-emerald-900/30 rounded-lg flex items-center justify-center text-emerald-400 flex-shrink-0">
-                  {item.icon}
-                </div>
-                <div>
-                  <h3 className="font-semibold text-emerald-300 mb-1">{item.title}</h3>
-                  <p className="text-slate-400 text-sm">{item.desc}</p>
-                </div>
-              </FadeInView>
-            ))}
+            {/* The Solution */}
+            <FadeInView delay={0.2} className="bg-slate-900 rounded-xl p-6 border border-emerald-500/30">
+              <h2 className="text-emerald-400 font-bold text-xl md:text-2xl mb-4">The Solution</h2>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-400 mt-1">✓</span>
+                  <p className="text-slate-200 text-sm"><strong>Credibility:</strong> Configs backed by data</p>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-400 mt-1">✓</span>
+                  <p className="text-slate-200 text-sm"><strong>Efficiency:</strong> Top 5% performance tier</p>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-400 mt-1">✓</span>
+                  <p className="text-slate-200 text-sm"><strong>Quality & Safety:</strong> Guardrails built in</p>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-400 mt-1">✓</span>
+                  <p className="text-slate-200 text-sm"><strong>40-60% faster:</strong> Reduced time-to-market</p>
+                </li>
+              </ul>
+            </FadeInView>
           </div>
         </div>
       </section>
