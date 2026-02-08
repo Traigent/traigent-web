@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Zap, TrendingUp, Users, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ProblemCard, SolutionCard } from "../components/ProblemSolutionSection";
+import FlowDiagram from "../components/FlowDiagram";
 
 const FadeInView = ({ children, className, delay = 0 }) => (
   <motion.div
@@ -538,81 +539,9 @@ export default function ValueProposition() {
           <FadeInView>
             <h2 className="text-2xl font-bold mb-8">How It Works</h2>
           </FadeInView>
-          <div className="relative">
-            {/* Flow Diagram */}
-            <div className="grid grid-cols-1 md:grid-cols-7 gap-4 items-center">
-              {/* Input Box */}
-              <FadeInView delay={0.1} className="md:col-span-2 bg-slate-800 rounded-xl p-5 border border-slate-700">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                    <span className="text-blue-400 text-lg">📥</span>
-                  </div>
-                  <h4 className="font-bold text-white">Input</h4>
-                </div>
-                <ul className="space-y-2 text-sm">
-                  <li className="flex items-center gap-2 text-slate-300">
-                    <span className="w-1.5 h-1.5 bg-blue-400 rounded-full"></span>
-                    Prompts & Models
-                  </li>
-                  <li className="flex items-center gap-2 text-slate-300">
-                    <span className="w-1.5 h-1.5 bg-blue-400 rounded-full"></span>
-                    Eval Data & KPIs
-                  </li>
-                </ul>
-              </FadeInView>
-
-              {/* Arrow 1 */}
-              <div className="hidden md:flex justify-center">
-                <ArrowRight className="w-6 h-6 text-blue-400" />
-              </div>
-
-              {/* Center - Traigent Engine */}
-              <FadeInView delay={0.2} className="md:col-span-1 flex justify-center">
-                <div className="relative">
-                  <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/25">
-                    <span className="text-3xl">⚡</span>
-                  </div>
-                  <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap">
-                    <span className="text-xs text-blue-400 font-semibold">TRAIGENT</span>
-                  </div>
-                </div>
-              </FadeInView>
-
-              {/* Arrow 2 */}
-              <div className="hidden md:flex justify-center">
-                <ArrowRight className="w-6 h-6 text-emerald-400" />
-              </div>
-
-              {/* Output Box */}
-              <FadeInView delay={0.3} className="md:col-span-2 bg-slate-800 rounded-xl p-5 border border-emerald-500/30">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
-                    <span className="text-emerald-400 text-lg">📤</span>
-                  </div>
-                  <h4 className="font-bold text-white">Output</h4>
-                </div>
-                <ul className="space-y-2 text-sm">
-                  <li className="flex items-center gap-2 text-slate-300">
-                    <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>
-                    Optimized Configs
-                  </li>
-                  <li className="flex items-center gap-2 text-slate-300">
-                    <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>
-                    Evidence-backed Reports
-                  </li>
-                </ul>
-              </FadeInView>
-            </div>
-
-            {/* Mobile arrows */}
-            <div className="flex md:hidden justify-center my-4">
-              <div className="flex flex-col items-center gap-2 text-blue-400">
-                <span className="rotate-90">→</span>
-                <span className="text-xs">TRAIGENT</span>
-                <span className="rotate-90">→</span>
-              </div>
-            </div>
-          </div>
+          <FadeInView>
+            <FlowDiagram variant="dark" />
+          </FadeInView>
         </div>
       </section>
 
