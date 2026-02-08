@@ -46,20 +46,20 @@ export default function OnePager() {
               </div>
             </div>
             <ul className="space-y-3">
-              <li className="flex items-start gap-2">
-                <span className="text-red-400 mt-1">✗</span>
+              <li className="flex items-center gap-2">
+                <span className="text-red-400 text-sm flex-shrink-0">✗</span>
                 <p className="text-slate-200 text-sm"><strong>Credibility gaps:</strong> Exploding config space</p>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-red-400 mt-1">✗</span>
+              <li className="flex items-center gap-2">
+                <span className="text-red-400 text-sm flex-shrink-0">✗</span>
                 <p className="text-slate-200 text-sm"><strong>Inefficiency:</strong> 95% of configs are suboptimal</p>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-red-400 mt-1">✗</span>
+              <li className="flex items-center gap-2">
+                <span className="text-red-400 text-sm flex-shrink-0">✗</span>
                 <p className="text-slate-200 text-sm"><strong>Quality & Safety:</strong> Risks in production</p>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-red-400 mt-1">✗</span>
+              <li className="flex items-center gap-2">
+                <span className="text-red-400 text-sm flex-shrink-0">✗</span>
                 <p className="text-slate-200 text-sm"><strong>Wasted time:</strong> Manual tuning drains cycles</p>
               </li>
             </ul>
@@ -79,20 +79,20 @@ export default function OnePager() {
               </div>
             </div>
             <ul className="space-y-3">
-              <li className="flex items-start gap-2">
-                <span className="text-emerald-400 mt-1">✓</span>
+              <li className="flex items-center gap-2">
+                <span className="text-emerald-400 text-sm flex-shrink-0">✓</span>
                 <p className="text-slate-200 text-sm"><strong>Credibility:</strong> Configs backed by data</p>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-emerald-400 mt-1">✓</span>
+              <li className="flex items-center gap-2">
+                <span className="text-emerald-400 text-sm flex-shrink-0">✓</span>
                 <p className="text-slate-200 text-sm"><strong>Efficiency:</strong> Top 5% performance tier</p>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-emerald-400 mt-1">✓</span>
+              <li className="flex items-center gap-2">
+                <span className="text-emerald-400 text-sm flex-shrink-0">✓</span>
                 <p className="text-slate-200 text-sm"><strong>Quality & Safety:</strong> Guardrails built in</p>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-emerald-400 mt-1">✓</span>
+              <li className="flex items-center gap-2">
+                <span className="text-emerald-400 text-sm flex-shrink-0">✓</span>
                 <p className="text-slate-200 text-sm"><strong>40-60% faster:</strong> Reduced time-to-market</p>
               </li>
             </ul>
