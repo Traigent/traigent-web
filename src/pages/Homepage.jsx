@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import versionInfo from "../version.json";
+import FlowDiagram from "../components/FlowDiagram";
 
 // Placeholder for the Button component
 const Button = ({ children, className, onClick, size }) => (
@@ -446,78 +447,7 @@ constraints:
             transition={{ duration: 0.5 }}
             className="max-w-4xl mx-auto mb-16"
           >
-            <div className="grid grid-cols-1 md:grid-cols-7 gap-4 items-center">
-              {/* Input Box */}
-              <div className="md:col-span-2 bg-slate-900 rounded-xl p-5 border border-slate-700">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                    <span className="text-blue-400 text-lg">📥</span>
-                  </div>
-                  <h4 className="font-bold text-white">Input</h4>
-                </div>
-                <ul className="space-y-2 text-sm">
-                  <li className="flex items-center gap-2 text-slate-300">
-                    <span className="w-1.5 h-1.5 bg-blue-400 rounded-full"></span>
-                    Prompts & Models
-                  </li>
-                  <li className="flex items-center gap-2 text-slate-300">
-                    <span className="w-1.5 h-1.5 bg-blue-400 rounded-full"></span>
-                    Eval Data & KPIs
-                  </li>
-                </ul>
-              </div>
-
-              {/* Arrow 1 */}
-              <div className="hidden md:flex justify-center">
-                <ArrowRight className="w-6 h-6 text-blue-500" />
-              </div>
-
-              {/* Center - Traigent Engine */}
-              <div className="md:col-span-1 flex justify-center">
-                <div className="relative">
-                  <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/25">
-                    <span className="text-3xl">⚡</span>
-                  </div>
-                  <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap">
-                    <span className="text-xs text-indigo-600 font-semibold">TRAIGENT</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Arrow 2 */}
-              <div className="hidden md:flex justify-center">
-                <ArrowRight className="w-6 h-6 text-emerald-500" />
-              </div>
-
-              {/* Output Box */}
-              <div className="md:col-span-2 bg-slate-900 rounded-xl p-5 border border-emerald-500/30">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
-                    <span className="text-emerald-400 text-lg">📤</span>
-                  </div>
-                  <h4 className="font-bold text-white">Output</h4>
-                </div>
-                <ul className="space-y-2 text-sm">
-                  <li className="flex items-center gap-2 text-slate-300">
-                    <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>
-                    Optimized Configs
-                  </li>
-                  <li className="flex items-center gap-2 text-slate-300">
-                    <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>
-                    Evidence-backed Reports
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            {/* Mobile arrows */}
-            <div className="flex md:hidden justify-center my-4">
-              <div className="flex flex-col items-center gap-2 text-indigo-600">
-                <span className="rotate-90">→</span>
-                <span className="text-xs font-semibold">TRAIGENT</span>
-                <span className="rotate-90">→</span>
-              </div>
-            </div>
+            <FlowDiagram variant="light" />
           </motion.div>
 
           <p className="text-xl text-gray-600 text-center mb-12">
