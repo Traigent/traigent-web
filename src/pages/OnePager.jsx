@@ -1,3 +1,4 @@
+import { ArrowRight } from "lucide-react";
 import FlowDiagram from "../components/FlowDiagram";
 
 const SectionHeader = ({ children }) => (
