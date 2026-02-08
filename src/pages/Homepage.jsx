@@ -4,6 +4,7 @@ import { ArrowRight, Check, ChevronRight, ExternalLink, Zap, GitBranch, Shield, 
 import { Link } from "react-router-dom";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
+import versionInfo from "../version.json";
 
 // Placeholder for the Button component
 const Button = ({ children, className, onClick, size }) => (
@@ -815,6 +816,7 @@ def answer_question(question: str) -> str:
 
           <div className="border-t border-slate-800 mt-12 pt-8 text-center text-slate-500">
             <p>© {new Date().getFullYear()} Traigent Ltd. All rights reserved.</p>
+            <p className="mt-2 text-slate-950 select-none">{versionInfo.version}</p>
           </div>
         </div>
       </footer>
