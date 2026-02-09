@@ -1,5 +1,4 @@
 import { ArrowRight } from "lucide-react";
-import FlowDiagram from "../components/FlowDiagram";
 import ProblemSolutionSection from "../components/ProblemSolutionSection";
 
 const SectionHeader = ({ children }) => (
@@ -11,7 +10,7 @@ const SectionHeader = ({ children }) => (
 export default function OnePager() {
   return (
     <div className="bg-slate-950 min-h-screen">
-      <div className="max-w-4xl mx-auto px-6 py-12">
+      <div className="max-w-6xl mx-auto px-6 py-12">
         {/* Logo */}
         <div className="mb-10">
           <img
@@ -34,11 +33,67 @@ export default function OnePager() {
 
         {/* Problem & Solution Side by Side */}
         <ProblemSolutionSection showImages={true} solutionTitle="Traigent" />
-         
+
         {/* The Product */}
         <section className="mb-10">
           <SectionHeader>The Product: AI Agent Optimizer</SectionHeader>
-          <FlowDiagram variant="dark" />
+          <div className="rounded-2xl border border-slate-800 bg-gradient-to-b from-[#04103a] to-[#020617] p-4 md:p-5">
+            <div className="grid grid-cols-1 md:grid-cols-[4fr_2fr_4fr] gap-2 items-stretch">
+              {/* Input Card */}
+              <div className="bg-slate-800/70 rounded-2xl p-5 border border-cyan-300/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
+                <h4 className="font-bold text-white text-xl mb-4">
+                  <span className="text-white">Input: </span>
+                  <span className="text-blue-300">The Tunable Universe</span>
+                </h4>
+                <ul className="space-y-3 text-[15px] leading-relaxed">
+                  <li className="flex items-start gap-3 text-slate-200">
+                    <span className="w-2 h-2 rounded-full bg-blue-400 mt-2 shrink-0"></span>
+                    <span><strong className="text-white">Agent Blueprint:</strong> Initial logic, prompts, and tool definitions.</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-slate-200">
+                    <span className="w-2 h-2 rounded-full bg-blue-400 mt-2 shrink-0"></span>
+                    <span><strong className="text-white">Optimization Goal:</strong> Your EvalSet (.jsonl) and KPI weights.</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-slate-200">
+                    <span className="w-2 h-2 rounded-full bg-blue-400 mt-2 shrink-0"></span>
+                    <span><strong className="text-white">Search Space:</strong> Massive N-dimensional grid (Models × RAG × ... × k × Temp).</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Traigent Logo */}
+              <div className="flex flex-col items-center justify-center place-self-center">
+                <img
+                  src={`${import.meta.env.BASE_URL}images/traigent-logo-icon.png`}
+                  alt="Traigent"
+                  className="w-16 md:w-20 h-auto drop-shadow-[0_0_18px_rgba(59,130,246,0.45)]"
+                />
+                <span className="text-[10px] tracking-[0.18em] text-blue-300/90 font-semibold mt-1">TRAIGENT</span>
+              </div>
+
+              {/* Output Card */}
+              <div className="bg-slate-800/70 rounded-2xl p-5 border border-cyan-300/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
+                <h4 className="font-bold text-white text-xl mb-4">
+                  <span className="text-white">Output: </span>
+                  <span className="text-emerald-300">The Safest Implementation</span>
+                </h4>
+                <ul className="space-y-3 text-[15px] leading-relaxed">
+                  <li className="flex items-start gap-3 text-slate-200">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 mt-2 shrink-0"></span>
+                    <span><strong className="text-white">Optimal Config:</strong> The mathematically best-performing implementation.</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-slate-200">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 mt-2 shrink-0"></span>
+                    <span><strong className="text-white">Validated KPI:</strong> Proven accuracy, speed, and cost efficiency.</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-slate-200">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 mt-2 shrink-0"></span>
+                    <span><strong className="text-white">Evidence Report:</strong> Full trial history and KPI validation data.</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* Personas */}
@@ -101,7 +156,7 @@ export default function OnePager() {
               <p className="text-slate-300">
                 <a href="mailto:nimrod@traigent.ai" className="text-indigo-400 hover:underline">nimrod@traigent.ai</a>
                 {" | "}
-                <a href="https://linkedin.com/in/nimrodbusany" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:underline">LinkedIn</a>
+                <a href="https://www.linkedin.com/in/nimrod-busany-phd-0b938216/" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:underline">LinkedIn</a>
               </p>
               <p className="text-slate-400">+972-54-4553811</p>
             </div>
