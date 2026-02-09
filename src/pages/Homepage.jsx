@@ -4,8 +4,6 @@ import { ArrowRight, Check, ChevronRight, ExternalLink, Zap, GitBranch, Shield, 
 import { Link } from "react-router-dom";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
-import versionInfo from "../version.json";
-import FlowDiagram from "../components/FlowDiagram";
 
 // Placeholder for the Button component
 const Button = ({ children, className, onClick, size }) => (
@@ -125,7 +123,7 @@ export default function Homepage() {
             <img
               src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/057ce2_TraigentLogoWhiteCropped.png"
               alt="Traigent Logo"
-              className="h-14 w-auto"
+              className="h-12 w-auto"
             />
           </motion.div>
           <div className="max-w-3xl">
@@ -135,7 +133,7 @@ export default function Homepage() {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight mb-6"
             >
-              <span className="block">Ship AI Agents Like Software!</span>
+              <span className="block">Ship AI Agents Like Software</span>
               <span className="block text-2xl md:text-3xl lg:text-4xl font-semibold text-slate-200 mt-3">
                 Gated, Optimized, and Regression-Safe
               </span>
@@ -427,7 +425,7 @@ constraints:
       {/* How It Works */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto text-center mb-12">
+          <div className="max-w-3xl mx-auto text-center mb-16">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -437,22 +435,10 @@ constraints:
             >
               How It Works
             </motion.h2>
+            <p className="text-xl text-gray-600">
+              From specification to gated changes in four steps
+            </p>
           </div>
-
-          {/* Flow Diagram */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="max-w-4xl mx-auto mb-16"
-          >
-            <FlowDiagram variant="light" />
-          </motion.div>
-
-          <p className="text-xl text-gray-600 text-center mb-12">
-            From specification to gated changes in four steps
-          </p>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
@@ -709,16 +695,6 @@ def answer_question(question: str) -> str:
                     Request SDK access
                   </a>
                 </li>
-                <li>
-                  <Link to="/one-pager" className="text-slate-400 hover:text-white transition-colors">
-                    One Pager
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/value-proposition" className="text-slate-400 hover:text-white transition-colors">
-                    Value Proposition
-                  </Link>
-                </li>
               </ul>
             </div>
 
@@ -747,7 +723,7 @@ def answer_question(question: str) -> str:
           <div className="border-t border-slate-800 mt-12 pt-8 text-center text-slate-500">
             <p>© {new Date().getFullYear()} Traigent Ltd. All rights reserved.</p>
             <p></p>
-            <p className="mt-2 text-slate-950 selection:bg-white selection:text-slate-900">{versionInfo.version}</p>
+            <p>v-tw-251216</p>
           </div>
         </div>
       </footer>
