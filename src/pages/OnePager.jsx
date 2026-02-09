@@ -34,7 +34,7 @@ export default function OnePager() {
 
         {/* Problem & Solution Side by Side */}
         <ProblemSolutionSection showImages={true} solutionTitle="Traigent" />
-
+         
         {/* The Product */}
         <section className="mb-10">
           <SectionHeader>The Product: AI Agent Optimizer</SectionHeader>

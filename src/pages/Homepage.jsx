@@ -746,6 +746,7 @@ def answer_question(question: str) -> str:
 
           <div className="border-t border-slate-800 mt-12 pt-8 text-center text-slate-500">
             <p>© {new Date().getFullYear()} Traigent Ltd. All rights reserved.</p>
+            <p></p>
             <p className="mt-2 text-slate-950 selection:bg-white selection:text-slate-900">{versionInfo.version}</p>
           </div>
         </div>
