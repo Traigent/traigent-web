@@ -28,7 +28,7 @@ const ListItem = ({ icon, iconColor, label, text }) => (
 
 export const ProblemCard = ({ showImage = false, className = "" }) => (
   <div className={`bg-slate-900 rounded-xl p-6 border border-red-500/30 ${className}`}>
-    <div className={`flex ${showImage ? 'items-center gap-4' : ''} mb-4`}>
+    <div className={`flex ${showImage ? "items-center gap-4" : ""} mb-4`}>
       {showImage && (
         <img
           src={`${import.meta.env.BASE_URL}images/robot-error.png`}
@@ -51,7 +51,7 @@ export const ProblemCard = ({ showImage = false, className = "" }) => (
 
 export const SolutionCard = ({ showImage = false, title = "The Solution", className = "" }) => (
   <div className={`bg-slate-900 rounded-xl p-6 border border-emerald-500/30 ${className}`}>
-    <div className={`flex ${showImage ? 'items-center gap-4' : ''} mb-4`}>
+    <div className={`flex ${showImage ? "items-center gap-4" : ""} mb-4`}>
       {showImage && (
         <img
           src={`${import.meta.env.BASE_URL}images/robot-happy.png`}
@@ -60,7 +60,9 @@ export const SolutionCard = ({ showImage = false, title = "The Solution", classN
         />
       )}
       <div>
-        <h2 className={`${title === "Traigent" ? "text-white" : "text-emerald-400"} font-bold text-xl md:text-2xl`}>
+        <h2
+          className={`${title === "Traigent" ? "text-white" : "text-emerald-400"} font-bold text-xl md:text-2xl`}
+        >
           {title}
         </h2>
         {showImage && <p className="text-slate-400 text-xs">Trust your AI agent at scale</p>}
@@ -68,15 +70,24 @@ export const SolutionCard = ({ showImage = false, title = "The Solution", classN
     </div>
     <ul className="space-y-3">
       {solutionItems.map((item, i) => (
-        <ListItem key={i} icon="✓" iconColor="text-emerald-400" label={item.label} text={item.text} />
+        <ListItem
+          key={i}
+          icon="✓"
+          iconColor="text-emerald-400"
+          label={item.label}
+          text={item.text}
+        />
       ))}
     </ul>
   </div>
 );
 
-export default function ProblemSolutionSection({ showImages = false, solutionTitle = "The Solution" }) {
+export default function ProblemSolutionSection({
+  showImages = false,
+  solutionTitle = "The Solution",
+}) {
   return (
-    <div className="grid md:grid-cols-2 gap-6 mb-10">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
       <ProblemCard showImage={showImages} />
       <SolutionCard showImage={showImages} title={solutionTitle} />
     </div>
