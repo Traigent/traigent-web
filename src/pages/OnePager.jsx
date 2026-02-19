@@ -26,7 +26,7 @@ export default function OnePager() {
           <p className="text-slate-300 leading-relaxed">
             Traigent is building the AI Agents Continuous <strong>Optimization</strong>{" "}
             infrastructure. We automate the complex process of optimizing AI agent configurations by
-            balancing <strong>accuracy</strong>, <strong>latency</strong>, and <strong>cost</strong>
+            balancing <strong>accuracy</strong>, <strong>latency</strong>, <strong>cost</strong>, or any other <strong>business KPI's</strong>
             , so engineering teams can ship production-ready agents <strong>faster</strong> and with{" "}
             <strong>confidence</strong>.
           </p>
