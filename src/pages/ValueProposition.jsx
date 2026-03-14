@@ -549,7 +549,7 @@ export default function ValueProposition() {
       <section className="py-12 border-b border-slate-800">
         <div className="max-w-5xl mx-auto px-6">
           <FadeInView>
-            <h2 className="text-2xl font-bold mb-6">Who It's For</h2>
+            <h2 className="text-2xl font-bold mb-6">Who It&apos;s For</h2>
           </FadeInView>
           <div className="grid md:grid-cols-3 gap-6">
             {[

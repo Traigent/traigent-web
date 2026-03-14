@@ -1,0 +1,25 @@
+{
+  "spider_frontier": {
+    "full_matrix_cost_usd": 3.587816,
+    "thirty_pct_spend_usd": 1.138476,
+    "thirty_pct_spend_reduction": 0.6826827239746966,
+    "ten_pct_recall_mean_bounds": 1.0,
+    "ten_pct_recall_full_benchmark": 0.8,
+    "true_frontier_size": 5
+  },
+  "spider_scoring": {
+    "thirty_pct_alignment": {
+      "uniqueness_only": 0.5901597585057116,
+      "informativeness_only": 0.5362825876416705,
+      "combined_greedy": 0.522590743723043,
+      "random": 0.4984395245717163
+    },
+    "combined_beats_informativeness": false
+  },
+  "live_confirmation": {
+    "executed_evaluations": 144,
+    "total_cost_usd": 0.033616400000000005,
+    "mean_latency_ms": 1239.8585199651582,
+    "certification_matches_empirical_frontier": true
+  }
+}

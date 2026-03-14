@@ -8,7 +8,7 @@ import versionInfo from "../version.json";
 import FlowDiagram from "../components/FlowDiagram";
 
 // Placeholder for the Button component
-const Button = ({ children, className, onClick, size }) => (
+const Button = ({ children, className, onClick }) => (
   <button
     className={`inline-flex items-center justify-center font-medium ${className}`}
     onClick={onClick}
@@ -278,7 +278,7 @@ export default function Homepage() {
       </section>
 
       {/* Solution Section - Core Platform */}
-      <section className="py-20 bg-gradient-to-br from-indigo-50 to-slate-50 relative overflow-hidden">
+      <section id="control-layer" className="py-20 bg-gradient-to-br from-indigo-50 to-slate-50 relative overflow-hidden scroll-mt-24">
         <div className="absolute inset-0 bg-grid-slate-200/60 [mask-image:linear-gradient(to_bottom,white,transparent)]"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="max-w-3xl mx-auto text-center mb-16">
@@ -339,7 +339,7 @@ export default function Homepage() {
       </section>
 
       {/* TVL Section */}
-      <section className="py-16 bg-slate-900 text-white">
+      <section id="tvl" className="py-16 bg-slate-900 text-white scroll-mt-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <motion.div
@@ -425,7 +425,7 @@ constraints:
       </section>
 
       {/* How It Works */}
-      <section className="py-20 bg-white">
+      <section id="how-it-works" className="py-20 bg-white scroll-mt-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center mb-12">
             <motion.h2
@@ -503,7 +503,7 @@ constraints:
       </section>
 
       {/* Interactive Demo Section */}
-      <section className="py-20 bg-slate-950 text-white">
+      <section id="demo" className="py-20 bg-slate-950 text-white scroll-mt-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center mb-12">
             <motion.h2
@@ -548,7 +548,7 @@ constraints:
       </section>
 
       {/* Engineer-First Integration Section */}
-      <section className="py-20 bg-white">
+      <section id="integration" className="py-20 bg-white scroll-mt-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <motion.div
@@ -637,6 +637,59 @@ def answer_question(question: str) -> str:
         </div>
       </section>
 
+      <section className="border-t border-slate-200 bg-slate-50 py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl mb-10">
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600">
+              Explore further
+            </p>
+            <h2 className="mt-3 text-3xl md:text-4xl font-bold text-slate-900">
+              Keep the same story, go deeper where you need it.
+            </h2>
+            <p className="mt-4 text-lg text-slate-600">
+              Start with the docs hub, browse the public resources library, or open the one-pager
+              for the core product overview.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              {
+                title: "Docs",
+                description: "Jump into the public SDK, architecture, guide, and TVL entry points.",
+                href: "/docs",
+              },
+              {
+                title: "Resources",
+                description: "Evidence, framing, and curated public material for governed agent engineering.",
+                href: "/resources",
+              },
+              {
+                title: "One Pager",
+                description: "A compact overview of the product, personas, and optimization story.",
+                href: "/one-pager",
+              },
+            ].map((item) => (
+              <Link
+                key={item.title}
+                to={item.href}
+                className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-300 hover:shadow-md"
+              >
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600">
+                  {item.title}
+                </p>
+                <h3 className="mt-3 text-2xl font-semibold text-slate-900">{item.title}</h3>
+                <p className="mt-3 text-sm leading-6 text-slate-600">{item.description}</p>
+                <div className="mt-6 inline-flex items-center text-sm font-semibold text-slate-900 group-hover:text-indigo-600">
+                  Open
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-br from-indigo-600 to-purple-700 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -694,6 +747,16 @@ def answer_question(question: str) -> str:
             <div>
               <h3 className="text-lg font-semibold mb-4">Resources</h3>
               <ul className="space-y-2">
+                <li>
+                  <Link to="/docs" className="text-slate-400 hover:text-white transition-colors">
+                    Docs
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/resources" className="text-slate-400 hover:text-white transition-colors">
+                    Resources
+                  </Link>
+                </li>
                 <li>
                   <Link to={createPageUrl("/get-started")} className="text-slate-400 hover:text-white transition-colors">
                     Get started

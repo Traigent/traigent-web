@@ -42,3 +42,4 @@ venv.bak/
 # Workspace-specific GitHub CLI config
 .gh/
 .envrc
+.playwright-cli/
