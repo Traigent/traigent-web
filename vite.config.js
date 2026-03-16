@@ -5,4 +5,13 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   base: '/', // Use root path for custom domain (traigent.ai)
-}) 
+  server: {
+    watch: {
+      usePolling: true,
+      interval: 1000,
+      ignored: [
+        '**/node_modules.zip',
+      ],
+    },
+  },
+})

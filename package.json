@@ -3,13 +3,16 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "homepage": "http//www.traigent.ai",
+  "homepage": "https://www.traigent.ai",
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "scripts": {
     "version": "./scripts/update-version.sh",
     "dev": "vite",
     "start": "vite",
     "prebuild": "./scripts/update-version.sh",
-    "build": "vite build && cp -f public/404.html dist/ 2>/dev/null || copy public\\404.html dist\\ 2>nul || true",
+    "build": "vite build && node -e \"const fs=require('fs'); const path=require('path'); const src=path.join('public','404.html'); const dest=path.join('dist','404.html'); if (fs.existsSync(src)) fs.copyFileSync(src, dest);\"",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "predeploy": "npm run build",
@@ -20,8 +23,7 @@
     "lucide-react": "^0.284.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.16.0",
-    "react-syntax-highlighter": "^16.1.0"
+    "react-router-dom": "^6.16.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",

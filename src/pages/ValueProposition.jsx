@@ -3,6 +3,7 @@ import { Zap, TrendingUp, Users, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ProblemCard, SolutionCard } from "../components/ProblemSolutionSection";
 import FlowDiagram from "../components/FlowDiagram";
+import SiteHeader from "../components/SiteHeader";
 
 const FadeInView = ({ children, className, delay = 0 }) => (
   <motion.div
@@ -372,14 +373,10 @@ export default function ValueProposition() {
   return (
     <div className="bg-slate-950 text-white min-h-screen">
       {/* Header */}
-      <header className="bg-gradient-to-br from-slate-950 to-indigo-950 py-12 border-b border-slate-800">
+      <header className="border-b border-slate-800 bg-gradient-to-br from-slate-950 to-indigo-950 pb-12 pt-8">
         <div className="max-w-5xl mx-auto px-6">
+          <SiteHeader variant="inverse" className="mb-12" />
           <FadeInView>
-            <img
-              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/057ce2_TraigentLogoWhiteCropped.png"
-              alt="Traigent Logo"
-              className="h-14 mb-6"
-            />
             <h1 className="text-3xl md:text-4xl font-bold mb-3">
               The First <span className="text-indigo-400">AI Agents Continuous Optimization</span> Infrastructure
             </h1>
@@ -549,7 +546,7 @@ export default function ValueProposition() {
       <section className="py-12 border-b border-slate-800">
         <div className="max-w-5xl mx-auto px-6">
           <FadeInView>
-            <h2 className="text-2xl font-bold mb-6">Who It's For</h2>
+            <h2 className="text-2xl font-bold mb-6">Who It&apos;s For</h2>
           </FadeInView>
           <div className="grid md:grid-cols-3 gap-6">
             {[

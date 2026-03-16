@@ -1,15 +1,53 @@
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  color-scheme: light;
+  --bg-canvas: #f3f8ff;
+  --bg-surface: #ffffff;
+  --ink-strong: #0a1c31;
+  --ink-soft: #35506f;
+  --ring-brand: #2a7fff;
+  font-family: "Space Grotesk", "Avenir Next", "Segoe UI", sans-serif;
   line-height: 1.5;
   font-weight: 400;
+}
+
+:root.dark {
+  color-scheme: dark;
+  --bg-canvas: #030816;
+  --bg-surface: #0f172a;
+  --ink-strong: #e5f1ff;
+  --ink-soft: #b0c4db;
+  --ring-brand: #5ca9ff;
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-} 
+  color: var(--ink-strong);
+  background:
+    radial-gradient(circle at 85% -10%, rgba(92, 169, 255, 0.28), transparent 40%),
+    radial-gradient(circle at 5% 15%, rgba(130, 103, 255, 0.22), transparent 35%),
+    var(--bg-canvas);
+  transition: background-color 250ms ease, color 250ms ease;
+}
+
+h1,
+h2,
+h3 {
+  letter-spacing: -0.02em;
+}
+
+pre,
+code {
+  font-family: "JetBrains Mono", "SFMono-Regular", Menlo, monospace;
+}
+
+::selection {
+  background: rgba(42, 127, 255, 0.2);
+}

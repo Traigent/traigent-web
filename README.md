@@ -2,6 +2,10 @@
 
 A React-based frontend for Traigent - the AI Agent Optimization Platform.
 
+## Website Team Notes
+
+- Resources-section handoff and content brief: [WEBSITE_RESOURCES_HANDOFF.md](./WEBSITE_RESOURCES_HANDOFF.md)
+
 ## Setup
 
 ### Prerequisites
