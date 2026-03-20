@@ -135,9 +135,9 @@ export default function Homepage() {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight mb-6"
             >
-              <span className="block">Ship AI Agents Like Software!</span>
+              <span className="block">Trust Your AI Agents at Scale</span>
               <span className="block text-2xl md:text-3xl lg:text-4xl font-semibold text-slate-200 mt-3">
-                Gated, Optimized, and Regression-Safe
+                If you can measure it, we can improve it.
               </span>
             </motion.h1>
             <motion.p
@@ -146,15 +146,7 @@ export default function Homepage() {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="text-xl md:text-2xl text-slate-300 mb-6 max-w-2xl"
             >
-              Traigent adds evaluation gates to your CI/CD so AI changes are measured for accuracy, cost, latency, and safety before they ship.
-            </motion.p>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.23 }}
-              className="text-sm md:text-base text-slate-400 mb-6"
-            >
-              Specify (TVL) → Evaluate → Optimize → Apply (Gate in CI)
+              We improve AI agent accuracy, response time, cost, or any important business KPI. Traigent helps companies ship AI agents from lab to production, at scale, with confidence.
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -162,9 +154,9 @@ export default function Homepage() {
               transition={{ duration: 0.5, delay: 0.25 }}
               className="flex flex-wrap gap-4 text-sm text-slate-400 mb-10"
             >
-              <span className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400" /> Specification (TVL): declare what, not how</span>
-              <span className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400" /> Git hooks + CI gates: block bad pushes, catch regressions in PRs</span>
-              <span className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400" /> Governed optimization: grounded in real workloads</span>
+              <span className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400" /> Optimization as a first-class step: changes that improve KPIs get promoted, regressions get blocked</span>
+              <span className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400" /> Developer-first: zero-code attach via decorators, CLI for fast iteration</span>
+              <span className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400" /> Single optimization layer: models, prompts, routing, safety settings, and budgets</span>
             </motion.div>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
