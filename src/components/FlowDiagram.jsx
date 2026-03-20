@@ -44,19 +44,13 @@ export default function FlowDiagram({ variant = "light" }) {
         {/* Center - Traigent Engine */}
         <div className="md:col-span-1 flex justify-center">
           <div className="relative">
-            {isDark ? (
-              <div className="w-24 h-24 flex items-center justify-center">
-                <img
-                  src={`${import.meta.env.BASE_URL}images/traigent-logo-icon.png`}
-                  alt="Traigent"
-                  className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]"
-                />
-              </div>
-            ) : (
-              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/25">
-                <span className="text-3xl">⚡</span>
-              </div>
-            )}
+            <div className={isDark ? "w-24 h-24" : "w-20 h-20"}>
+              <img
+                src={`${import.meta.env.BASE_URL}images/traigent-logo-icon.png`}
+                alt="Traigent"
+                className={`w-full h-full object-contain ${isDark ? "drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]" : "drop-shadow-[0_0_12px_rgba(99,102,241,0.4)]"}`}
+              />
+            </div>
             <div className={`absolute ${isDark ? '-bottom-4' : '-bottom-6'} left-1/2 -translate-x-1/2 whitespace-nowrap`}>
               <span className={`text-xs ${isDark ? 'text-blue-400' : 'text-indigo-600'} font-semibold`}>TRAIGENT</span>
             </div>

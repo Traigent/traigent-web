@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Check, ChevronRight, ExternalLink, Zap, GitBranch, Shield, FileText, Play, Pause } from "lucide-react";
+import { ArrowRight, Check, ChevronRight, ExternalLink, Zap, GitBranch, Shield, FileText, Play, Pause, Maximize2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -36,11 +36,17 @@ const FadeInView = ({ children, className, delay = 0, direction = "y" }) => (
 // Interactive Demo Player with pause on click
 const DemoPlayer = () => {
   const [isPaused, setIsPaused] = useState(false);
-  const iframeRef = useRef(null);
+  const videoRef = useRef(null);
 
   const togglePause = () => {
+    if (videoRef.current) {
+      if (isPaused) {
+        videoRef.current.play();
+      } else {
+        videoRef.current.pause();
+      }
+    }
     setIsPaused(!isPaused);
-    // For SVG animations, we control via CSS
   };
 
   return (
@@ -77,18 +83,18 @@ const DemoPlayer = () => {
           onClick={togglePause}
           title={isPaused ? "Click to play" : "Click to pause"}
         >
-          <object
-            ref={iframeRef}
-            data="/demos/optimize.svg"
-            type="image/svg+xml"
+          <video
+            ref={videoRef}
+            autoPlay
+            loop
+            muted
+            playsInline
             className="w-full"
-            style={{
-              minHeight: '400px',
-              animationPlayState: isPaused ? 'paused' : 'running'
-            }}
+            style={{ minHeight: '400px' }}
           >
-            <img src="/demos/optimize.svg" alt="Traigent optimization demo" className="w-full" />
-          </object>
+            <source src="/demos/see_it_in_action.webm" type="video/webm" />
+            <source src="/demos/see_it_in_action.mp4" type="video/mp4" />
+          </video>
 
           {/* Pause Overlay */}
           {isPaused && (
@@ -101,10 +107,69 @@ const DemoPlayer = () => {
         </div>
       </div>
 
-      {/* Hint Text */}
-      <p className="text-center text-slate-500 text-sm mt-4">
-        Click anywhere on the demo to {isPaused ? 'resume' : 'pause'}
-      </p>
+    </div>
+  );
+};
+
+// Video player with pause/play on click and fullscreen
+const VideoPlayer = () => {
+  const videoRef = useRef(null);
+  const containerRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(true);
+
+  const togglePlayPause = () => {
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  const toggleFullscreen = (e) => {
+    e.stopPropagation();
+    if (videoRef.current) {
+      if (videoRef.current.requestFullscreen) {
+        videoRef.current.requestFullscreen();
+      } else if (videoRef.current.webkitRequestFullscreen) {
+        videoRef.current.webkitRequestFullscreen();
+      } else if (videoRef.current.webkitEnterFullscreen) {
+        videoRef.current.webkitEnterFullscreen();
+      }
+    }
+  };
+
+  return (
+    <div ref={containerRef} className="relative group cursor-pointer" onClick={togglePlayPause}>
+      <video
+        ref={videoRef}
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="w-full"
+      >
+        <source src="/demos/value_mov_02.webm" type="video/webm" />
+        <source src="/demos/value_mov_02.mp4" type="video/mp4" />
+      </video>
+      <div className={`absolute inset-0 flex items-center justify-center bg-black/30 transition-opacity duration-300 ${isPlaying ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'}`}>
+        <div className="bg-white/20 backdrop-blur-sm rounded-full p-4">
+          {isPlaying ? (
+            <Pause className="w-12 h-12 text-white" />
+          ) : (
+            <Play className="w-12 h-12 text-white ml-1" />
+          )}
+        </div>
+      </div>
+      <button
+        onClick={toggleFullscreen}
+        className="absolute bottom-4 right-4 bg-black/50 hover:bg-black/70 backdrop-blur-sm rounded-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        title="Fullscreen"
+      >
+        <Maximize2 className="w-5 h-5 text-white" />
+      </button>
     </div>
   );
 };
@@ -158,10 +223,23 @@ export default function Homepage() {
               <span className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400" /> Developer-first: zero-code attach via decorators, CLI for fast iteration</span>
               <span className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400" /> Single optimization layer: models, prompts, routing, safety settings, and budgets</span>
             </motion.div>
+          </div>
+
+          {/* Full-width centered video */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.28 }}
+            className="my-10 max-w-5xl mx-auto rounded-xl overflow-hidden shadow-2xl border border-slate-700"
+          >
+            <VideoPlayer />
+          </motion.div>
+
+          <div className="max-w-3xl">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
+              transition={{ duration: 0.5, delay: 0.35 }}
               className="flex flex-wrap gap-4"
             >
               <Button
@@ -187,234 +265,8 @@ export default function Homepage() {
         <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-500"></div>
       </section>
 
-      {/* Value Props - Numbers */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            {[
-              { title: "1 Spec", desc: "One specification, many tools" },
-              { title: "Less Drift", desc: "Keep configs tied to source control" },
-              { title: "Every Change", desc: "Measured before it ships" },
-              { title: "Run History", desc: "Compare runs and configs" }
-            ].map((item, i) => (
-              <FadeInView key={i} delay={i * 0.1}>
-                <div className="text-4xl md:text-5xl font-bold text-indigo-600 mb-2">{item.title}</div>
-                <p className="text-slate-600">{item.desc}</p>
-              </FadeInView>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* Problem Statement */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <motion.h2
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="text-3xl md:text-4xl font-bold text-gray-900 mb-6"
-            >
-              Agent Engineering Has No Engineering
-            </motion.h2>
-            <p className="text-xl text-gray-600">
-              Agent behavior emerges from model + prompt + tools + retrieval + policies—but the spec lives in engineers’ heads.
-              Classic ML has loss functions and evaluation loops. Agents don’t—so changes ship without a consistent way to measure regressions.
-            </p>
-          </div>
 
-          <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
-            {[
-              {
-                title: "Under-Specification",
-                description: "Give the same task to five engineers—you’ll get five materially different agents (personality, safety boundaries, cost tolerance, latency targets).",
-                icon: <FileText className="w-6 h-6 text-indigo-600" />
-              },
-              {
-                title: "Untestable Changes",
-                description: "A prompt tweak ships on gut feel. No consistent evaluation means you can’t tell improvement from regression—until production.",
-                icon: <Shield className="w-6 h-6 text-blue-600" />
-              },
-              {
-                title: "Configuration Drift",
-                description: "Models, prompts, retrieval depth, and policies drift away from source control. Production behavior stops matching the repo.",
-                icon: <GitBranch className="w-6 h-6 text-purple-600" />
-              },
-              {
-                title: "No Clear Path",
-                description: "No gates, no audit trail, no rollback. A bad merge hits production before anyone notices.",
-                icon: <ArrowRight className="w-6 h-6 text-emerald-600" />
-              }
-            ].map((item, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="flex gap-5 p-6 rounded-xl hover:bg-gray-50 transition-colors"
-              >
-                <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                  {item.icon}
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{item.title}</h3>
-                  <p className="text-gray-600">{item.description}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Solution Section - Core Platform */}
-      <section className="py-20 bg-gradient-to-br from-indigo-50 to-slate-50 relative overflow-hidden">
-        <div className="absolute inset-0 bg-grid-slate-200/60 [mask-image:linear-gradient(to_bottom,white,transparent)]"></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="text-3xl md:text-4xl font-bold text-gray-900 mb-6"
-            >
-              The Agent Engineering Control Layer
-            </motion.h2>
-            <p className="text-xl text-gray-600">
-              Traigent gives you the primitives to specify, evaluate, optimize, and apply agent configurations—systematically.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
-            {[
-              {
-                title: "Specification (TVL)",
-                description: "Declare tunable decisions, objectives, and constraints in a machine-checkable spec—versioned alongside your code.",
-                icon: <FileText className="w-6 h-6 text-indigo-600" />
-              },
-              {
-                title: "Git Hooks & CI Gates",
-                description: "Pre-push hooks validate constraints locally. GitHub Actions catch regressions in PRs. Block bad merges before they ship.",
-                icon: <Shield className="w-6 h-6 text-indigo-600" />
-              },
-              {
-                title: "Governed Optimization",
-                description: "Explore configurations against your KPIs on real workloads. Changes become explicit, comparable, and grounded in data—not guesswork.",
-                icon: <Zap className="w-6 h-6 text-indigo-600" />
-              },
-              {
-                title: "Results & History",
-                description: "Store runs locally, compare trials, and plot progress. Apply the best configuration for future calls.",
-                icon: <GitBranch className="w-6 h-6 text-indigo-600" />
-              }
-            ].map((item, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-all"
-              >
-                <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center mb-4">
-                  {item.icon}
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{item.title}</h3>
-                <p className="text-gray-600">{item.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* TVL Section */}
-      <section className="py-16 bg-slate-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-            >
-              <div className="flex flex-wrap gap-2 mb-4">
-                <span className="inline-block px-3 py-1 bg-indigo-500/20 rounded-full text-indigo-300 text-sm font-medium">
-                  Open Source
-                </span>
-                <span className="inline-block px-3 py-1 bg-emerald-500/20 rounded-full text-emerald-300 text-sm font-medium">
-                  4 Patent Filings
-                </span>
-              </div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                TVL: The Tuned Variables Language
-              </h2>
-              <p className="text-slate-300 text-lg mb-6">
-                TVL is a machine-checkable spec format for agentic systems. It separates what you want from how it’s achieved—capturing tunables, objectives, constraints, and budgets in a versioned file.
-              </p>
-              <div className="flex flex-wrap gap-4">
-                <Button
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg"
-                  onClick={() => window.open("https://www.tvl-lang.org/getting-started/", "_blank")}
-                >
-                  Learn TVL
-                  <ExternalLink className="ml-2 h-4 w-4" />
-                </Button>
-                <Button
-                  className="bg-transparent border border-slate-600 hover:bg-white/5 text-slate-200 px-6 py-3 rounded-lg"
-                  onClick={() => window.open("https://www.tvl-lang.org/reference/language/", "_blank")}
-                >
-                  Language reference
-                  <ExternalLink className="ml-2 h-4 w-4" />
-                </Button>
-              </div>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="bg-slate-800 rounded-xl p-6 font-mono text-sm"
-            >
-              <div className="flex items-center gap-2 mb-4 text-slate-400">
-                <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                <span className="ml-2">agent.tvl.yml</span>
-              </div>
-              <pre className="text-slate-300 overflow-x-auto">
-{`spec:
-  id: customer-support
-  version: 0.1.0
-
-configuration_space:
-  model:
-    type: categorical
-    values: ["gpt-4o-mini", "gpt-4o", "claude-3-haiku"]
-  temperature:
-    type: continuous
-    range:
-      min: 0.1
-      max: 0.8
-
-objectives:
-  - name: accuracy
-    direction: maximize
-  - name: cost
-    direction: minimize
-
-constraints:
-  - id: latency-budget
-    type: expression
-    rule: "params.response_latency_ms <= 1200"
-`}
-              </pre>
-            </motion.div>
-          </div>
-        </div>
-      </section>
 
       {/* How It Works */}
       <section className="py-20 bg-white">
@@ -441,10 +293,6 @@ constraints:
           >
             <FlowDiagram variant="light" />
           </motion.div>
-
-          <p className="text-xl text-gray-600 text-center mb-12">
-            From specification to gated changes in four steps
-          </p>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
@@ -507,9 +355,6 @@ constraints:
             >
               See It In Action
             </motion.h2>
-            <p className="text-xl text-slate-300">
-              See the control layer in action—from specification to optimized configurations.
-            </p>
           </div>
 
           <motion.div
@@ -522,20 +367,6 @@ constraints:
             <DemoPlayer />
           </motion.div>
 
-          <div className="mt-12 grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-emerald-400 mb-2">Cost ↓</div>
-              <p className="text-slate-400">Cost reduction (varies)</p>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-blue-400 mb-2">Accuracy ↑</div>
-              <p className="text-slate-400">Accuracy improvement (varies)</p>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-purple-400 mb-2">Latency ↓</div>
-              <p className="text-slate-400">Latency improvement (varies)</p>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -629,6 +460,92 @@ def answer_question(question: str) -> str:
         </div>
       </section>
 
+      {/* TVL Section */}
+      <section className="py-16 bg-slate-900 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="flex flex-wrap gap-2 mb-4">
+                <span className="inline-block px-3 py-1 bg-indigo-500/20 rounded-full text-indigo-300 text-sm font-medium">
+                  Open Source
+                </span>
+                <span className="inline-block px-3 py-1 bg-emerald-500/20 rounded-full text-emerald-300 text-sm font-medium">
+                  4 Patent Filings
+                </span>
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                TVL: The Tuned Variables Language
+              </h2>
+              <p className="text-slate-300 text-lg mb-6">
+                TVL is a machine-checkable spec format for agentic systems. It separates what you want from how it's achieved—capturing tunables, objectives, constraints, and budgets in a versioned file.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <Button
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg"
+                  onClick={() => window.open("https://www.tvl-lang.org/getting-started/", "_blank")}
+                >
+                  Learn TVL
+                  <ExternalLink className="ml-2 h-4 w-4" />
+                </Button>
+                <Button
+                  className="bg-transparent border border-slate-600 hover:bg-white/5 text-slate-200 px-6 py-3 rounded-lg"
+                  onClick={() => window.open("https://www.tvl-lang.org/reference/language/", "_blank")}
+                >
+                  Language reference
+                  <ExternalLink className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="bg-slate-800 rounded-xl p-6 font-mono text-sm"
+            >
+              <div className="flex items-center gap-2 mb-4 text-slate-400">
+                <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                <span className="ml-2">agent.tvl.yml</span>
+              </div>
+              <pre className="text-slate-300 overflow-x-auto">
+{`spec:
+  id: customer-support
+  version: 0.1.0
+
+configuration_space:
+  model:
+    type: categorical
+    values: ["gpt-4o-mini", "gpt-4o", "claude-3-haiku"]
+  temperature:
+    type: continuous
+    range:
+      min: 0.1
+      max: 0.8
+
+objectives:
+  - name: accuracy
+    direction: maximize
+  - name: cost
+    direction: minimize
+
+constraints:
+  - id: latency-budget
+    type: expression
+    rule: "params.response_latency_ms <= 1200"
+`}
+              </pre>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-br from-indigo-600 to-purple-700 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -640,10 +557,10 @@ def answer_question(question: str) -> str:
               transition={{ duration: 0.5 }}
               className="text-3xl md:text-4xl font-bold mb-6"
             >
-              Start Engineering Your Agents
+              Ready to Optimize Your AI Agents?
             </motion.h2>
             <p className="text-xl opacity-90 mb-10">
-              Join teams shipping agents with the same rigor as software. Specify. Evaluate. Optimize. Apply.
+              See how Traigent improves your KPIs in minutes, not months.
             </p>
             <motion.div
               initial={{ opacity: 0 }}
@@ -652,19 +569,12 @@ def answer_question(question: str) -> str:
               transition={{ duration: 0.5, delay: 0.2 }}
               className="flex flex-wrap justify-center gap-4"
             >
-              <Link
-                to={createPageUrl("/get-started")}
-                className="inline-flex items-center justify-center font-medium bg-white text-indigo-700 hover:bg-gray-100 px-8 py-6 text-lg rounded-lg"
-              >
-                Get started (TVL + SDK)
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
               <Button
                 size="lg"
-                className="bg-transparent border-2 border-white/40 text-white hover:bg-white/10 px-8 py-6 text-lg rounded-lg"
+                className="bg-white text-indigo-700 hover:bg-gray-100 px-8 py-6 text-lg rounded-lg"
                 onClick={() => window.open("https://calendar.app.google/VLcx8bnYahw37jva9", "_blank")}
               >
-                Request enterprise demo
+                Show me
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </motion.div>
