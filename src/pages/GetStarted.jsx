@@ -56,7 +56,7 @@ export default function GetStarted() {
             </p>
             <div className="flex flex-wrap gap-3">
               <a
-                href="https://cal.com/nimrod-busany"
+                href="https://calendar.app.google/VLcx8bnYahw37jva9"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center font-medium bg-white text-slate-900 hover:bg-gray-100 px-5 py-3 rounded-lg"
@@ -74,7 +74,7 @@ export default function GetStarted() {
             Git hooks and GitHub Actions are included in the SDK. Want managed CI/CD dashboards, team analytics, and audit trails? Let's talk about enterprise options.
           </p>
           <a
-            href="https://cal.com/nimrod-busany"
+            href="https://calendar.app.google/VLcx8bnYahw37jva9"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center font-medium bg-white text-slate-900 hover:bg-gray-100 px-6 py-3 rounded-lg"

@@ -175,7 +175,7 @@ export default function Homepage() {
               <Button
                 size="lg"
                 className="bg-white text-slate-900 hover:bg-gray-100 px-8 py-6 text-lg rounded-lg"
-                onClick={() => window.open("https://cal.com/nimrod-busany", "_blank")}
+                onClick={() => window.open("https://calendar.app.google/VLcx8bnYahw37jva9", "_blank")}
               >
                 Request a demo
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -670,7 +670,7 @@ def answer_question(question: str) -> str:
               <Button
                 size="lg"
                 className="bg-transparent border-2 border-white/40 text-white hover:bg-white/10 px-8 py-6 text-lg rounded-lg"
-                onClick={() => window.open("https://cal.com/nimrod-busany", "_blank")}
+                onClick={() => window.open("https://calendar.app.google/VLcx8bnYahw37jva9", "_blank")}
               >
                 Request enterprise demo
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -705,7 +705,7 @@ def answer_question(question: str) -> str:
                   </a>
                 </li>
                 <li>
-                  <a href="https://cal.com/nimrod-busany" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">
+                  <a href="https://calendar.app.google/VLcx8bnYahw37jva9" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">
                     Request SDK access
                   </a>
                 </li>

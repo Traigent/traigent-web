@@ -610,7 +610,7 @@ export default function ValueProposition() {
             <p className="text-slate-300 mb-6">1-week POC to compare results vs. your benchmark</p>
             <div className="flex flex-wrap justify-center gap-4">
               <a
-                href="https://cal.com/nimrod-busany"
+                href="https://calendar.app.google/VLcx8bnYahw37jva9"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center bg-white text-slate-900 hover:bg-gray-100 px-6 py-3 rounded-lg font-medium"
