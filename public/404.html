@@ -4,29 +4,21 @@
   <meta charset="utf-8">
   <title>Traigent - Redirecting</title>
   <script type="text/javascript">
-    // GitHub Pages 404 redirect for SPAs
-    var segmentCount = 1; // Change this to match your repo name depth
-    var repo = "traigent-web"; // Your repository name
+    // Root-domain SPA redirect for direct hits to client-side routes.
     var l = window.location;
-    
-    // Redirect to homepage if not in the right repo
-    if (l.pathname.split('/')[1] !== repo) {
-      l.replace(l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') + '/' + repo + '/');
-    } else {
-      // Redirect to index.html with hash-based routing
-      var redirectPath = l.pathname.slice(('/' + repo + '/').length);
-      l.replace(
-        l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') + 
-        '/' + repo + '/#/' + redirectPath +
-        (l.search ? l.search : '') +
-        (l.hash ? l.hash : '')
-      );
-    }
+    var redirectPath = l.pathname.replace(/^\/+/, '');
+
+    l.replace(
+      l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+      '/#/' + redirectPath +
+      (l.search ? l.search : '') +
+      (l.hash ? l.hash : '')
+    );
   </script>
 </head>
 <body>
   <h1>Page Not Found</h1>
   <p>Redirecting to Traigent homepage...</p>
-  <a href="/">Click here if you're not redirected automatically</a>
+  <a href="/#/">Click here if you're not redirected automatically</a>
 </body>
 </html> 
