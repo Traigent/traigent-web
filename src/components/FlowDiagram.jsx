@@ -38,7 +38,7 @@ export default function FlowDiagram({ variant = "light" }) {
 
         {/* Arrow 1 */}
         <div className="hidden md:flex justify-center">
-          <ArrowRight className={`w-6 h-6 ${arrowColor1}`} />
+          <ArrowRight className={`w-7 h-7 ${arrowColor1}`} />
         </div>
 
         {/* Center - Traigent Engine */}
@@ -59,7 +59,7 @@ export default function FlowDiagram({ variant = "light" }) {
 
         {/* Mobile connector */}
         <div className={`flex flex-col items-center gap-3 py-2 md:hidden ${mobileTextColor}`}>
-          <ArrowRight className={`h-5 w-5 rotate-90 ${arrowColor1}`} />
+          <ArrowRight className={`h-6 w-6 rotate-90 ${arrowColor1}`} />
           <div className="flex flex-col items-center gap-2">
             <div className={isDark ? "w-20 h-20" : "w-16 h-16"}>
               <img
@@ -70,12 +70,12 @@ export default function FlowDiagram({ variant = "light" }) {
             </div>
             <span className={`text-xs font-semibold tracking-[0.2em] ${mobileTextColor}`}>TRAIGENT</span>
           </div>
-          <ArrowRight className={`h-5 w-5 rotate-90 ${arrowColor2}`} />
+          <ArrowRight className={`h-6 w-6 rotate-90 ${arrowColor2}`} />
         </div>
 
         {/* Arrow 2 */}
         <div className="hidden md:flex justify-center">
-          <ArrowRight className={`w-6 h-6 ${arrowColor2}`} />
+          <ArrowRight className={`w-7 h-7 ${arrowColor2}`} />
         </div>
 
         {/* Output Box */}
