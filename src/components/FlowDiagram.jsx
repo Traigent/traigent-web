@@ -42,7 +42,7 @@ export default function FlowDiagram({ variant = "light" }) {
         </div>
 
         {/* Center - Traigent Engine */}
-        <div className="md:col-span-1 flex justify-center">
+        <div className="hidden justify-center md:col-span-1 md:flex">
           <div className="relative">
             <div className={isDark ? "w-24 h-24" : "w-20 h-20"}>
               <img
@@ -55,6 +55,22 @@ export default function FlowDiagram({ variant = "light" }) {
               <span className={`text-xs ${isDark ? 'text-blue-400' : 'text-indigo-600'} font-semibold`}>TRAIGENT</span>
             </div>
           </div>
+        </div>
+
+        {/* Mobile connector */}
+        <div className={`flex flex-col items-center gap-3 py-2 md:hidden ${mobileTextColor}`}>
+          <ArrowRight className={`h-5 w-5 rotate-90 ${arrowColor1}`} />
+          <div className="flex flex-col items-center gap-2">
+            <div className={isDark ? "w-20 h-20" : "w-16 h-16"}>
+              <img
+                src={`${import.meta.env.BASE_URL}images/traigent-logo-icon.png`}
+                alt="Traigent"
+                className={`w-full h-full object-contain ${isDark ? "drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]" : "drop-shadow-[0_0_12px_rgba(99,102,241,0.4)]"}`}
+              />
+            </div>
+            <span className={`text-xs font-semibold tracking-[0.2em] ${mobileTextColor}`}>TRAIGENT</span>
+          </div>
+          <ArrowRight className={`h-5 w-5 rotate-90 ${arrowColor2}`} />
         </div>
 
         {/* Arrow 2 */}
@@ -80,15 +96,6 @@ export default function FlowDiagram({ variant = "light" }) {
               Evidence-backed Reports
             </li>
           </ul>
-        </div>
-      </div>
-
-      {/* Mobile arrows */}
-      <div className="flex md:hidden justify-center my-4">
-        <div className={`flex flex-col items-center gap-2 ${mobileTextColor}`}>
-          <span className="rotate-90">→</span>
-          <span className="text-xs font-semibold">TRAIGENT</span>
-          <span className="rotate-90">→</span>
         </div>
       </div>
     </div>
