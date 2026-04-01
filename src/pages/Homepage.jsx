@@ -379,6 +379,7 @@ export default function Homepage() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
+              className="min-w-0"
             >
               <span className="inline-block px-3 py-1 bg-emerald-100 rounded-full text-emerald-700 text-sm font-medium mb-4">
                 Engineer-First
@@ -409,25 +410,29 @@ export default function Homepage() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
-              className="bg-slate-900 rounded-xl p-6 font-mono text-sm shadow-2xl"
+              className="min-w-0 overflow-hidden rounded-xl bg-slate-900 p-6 font-mono text-sm shadow-2xl"
             >
-              <div className="flex items-center gap-2 mb-4 text-slate-400">
+              <div className="mb-4 flex items-center gap-2 overflow-x-auto pb-1 text-slate-400">
                 <div className="w-3 h-3 rounded-full bg-red-500"></div>
                 <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
                 <div className="w-3 h-3 rounded-full bg-green-500"></div>
                 <span className="ml-2">my_agent.py</span>
               </div>
-              <SyntaxHighlighter
-                language="python"
-                style={vscDarkPlus}
-                customStyle={{
-                  margin: 0,
-                  padding: 0,
-                  background: 'transparent',
-                  fontSize: '0.875rem',
-                }}
-                showLineNumbers={false}
-              >
+              <div className="-mx-2 overflow-x-auto px-2">
+                <SyntaxHighlighter
+                  language="python"
+                  style={vscDarkPlus}
+                  customStyle={{
+                    margin: 0,
+                    padding: 0,
+                    background: 'transparent',
+                    fontSize: '0.875rem',
+                    maxWidth: '100%',
+                    overflowX: 'auto',
+                    whiteSpace: 'pre',
+                  }}
+                  showLineNumbers={false}
+                >
 {`import traigent
 from langchain_openai import ChatOpenAI
 
@@ -454,7 +459,8 @@ def answer_question(question: str) -> str:
 
     llm = ChatOpenAI(model=model, temperature=temperature)
     return llm.invoke(f"{context}\\n\\nQ: {question}").content`}
-              </SyntaxHighlighter>
+                </SyntaxHighlighter>
+              </div>
             </motion.div>
           </div>
         </div>
@@ -469,6 +475,7 @@ def answer_question(question: str) -> str:
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
+              className="min-w-0"
             >
               <div className="flex flex-wrap gap-2 mb-4">
                 <span className="inline-block px-3 py-1 bg-indigo-500/20 rounded-full text-indigo-300 text-sm font-medium">
@@ -506,15 +513,15 @@ def answer_question(question: str) -> str:
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
-              className="bg-slate-800 rounded-xl p-6 font-mono text-sm"
+              className="min-w-0 overflow-hidden rounded-xl bg-slate-800 p-6 font-mono text-sm"
             >
-              <div className="flex items-center gap-2 mb-4 text-slate-400">
+              <div className="mb-4 flex items-center gap-2 overflow-x-auto pb-1 text-slate-400">
                 <div className="w-3 h-3 rounded-full bg-red-500"></div>
                 <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
                 <div className="w-3 h-3 rounded-full bg-green-500"></div>
                 <span className="ml-2">agent.tvl.yml</span>
               </div>
-              <pre className="text-slate-300 overflow-x-auto">
+              <pre className="max-w-full overflow-x-auto text-slate-300">
 {`spec:
   id: customer-support
   version: 0.1.0
