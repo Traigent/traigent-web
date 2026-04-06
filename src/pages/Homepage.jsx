@@ -1,11 +1,12 @@
 import React, { useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Check, ChevronRight, ExternalLink, Zap, GitBranch, Shield, FileText, Play, Pause, Maximize2 } from "lucide-react";
+import { ArrowRight, Check, ChevronRight, ExternalLink, Zap, GitBranch, Shield, FileText, Play, Pause } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import versionInfo from "../version.json";
 import FlowDiagram from "../components/FlowDiagram";
+import OptimizationTable from "../components/OptimizationTable";
 
 // Placeholder for the Button component
 const Button = ({ children, className, onClick, size }) => (
@@ -111,158 +112,127 @@ const DemoPlayer = () => {
   );
 };
 
-// Video player with pause/play on click and fullscreen
-const VideoPlayer = () => {
-  const videoRef = useRef(null);
-  const containerRef = useRef(null);
-  const [isPlaying, setIsPlaying] = useState(true);
-
-  const togglePlayPause = () => {
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
-    }
-  };
-
-  const toggleFullscreen = (e) => {
-    e.stopPropagation();
-    if (videoRef.current) {
-      if (videoRef.current.requestFullscreen) {
-        videoRef.current.requestFullscreen();
-      } else if (videoRef.current.webkitRequestFullscreen) {
-        videoRef.current.webkitRequestFullscreen();
-      } else if (videoRef.current.webkitEnterFullscreen) {
-        videoRef.current.webkitEnterFullscreen();
-      }
-    }
-  };
-
-  return (
-    <div ref={containerRef} className="relative group cursor-pointer" onClick={togglePlayPause}>
-      <video
-        ref={videoRef}
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="w-full"
-      >
-        <source src="/demos/value_mov_02.webm" type="video/webm" />
-        <source src="/demos/value_mov_02.mp4" type="video/mp4" />
-      </video>
-      <div className={`absolute inset-0 flex items-center justify-center bg-black/30 transition-opacity duration-300 ${isPlaying ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'}`}>
-        <div className="bg-white/20 backdrop-blur-sm rounded-full p-4">
-          {isPlaying ? (
-            <Pause className="w-12 h-12 text-white" />
-          ) : (
-            <Play className="w-12 h-12 text-white ml-1" />
-          )}
-        </div>
-      </div>
-      <button
-        onClick={toggleFullscreen}
-        className="absolute bottom-4 right-4 bg-black/50 hover:bg-black/70 backdrop-blur-sm rounded-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-        title="Fullscreen"
-      >
-        <Maximize2 className="w-5 h-5 text-white" />
-      </button>
-    </div>
-  );
-};
-
 export default function Homepage() {
   return (
     <div className="bg-white">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-950 to-indigo-950 text-white">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1639762681057-408e52192e55?q=80&w=2832&auto=format&fit=crop')] bg-cover bg-center opacity-10"></div>
+      <section className="relative overflow-hidden bg-[#080808] text-white">
+        {/* Noise texture overlay */}
+        <div className="absolute inset-0 opacity-60 pointer-events-none" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E")`
+        }}></div>
+        {/* Blue gradient glow */}
+        <div className="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[900px] h-[600px] pointer-events-none" style={{
+          background: 'radial-gradient(ellipse, rgba(26,107,245,0.18) 0%, transparent 70%)'
+        }}></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
+          {/* Traigent Logo */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="mb-16"
+            className="mb-12 text-center"
           >
             <img
               src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/057ce2_TraigentLogoWhiteCropped.png"
               alt="Traigent Logo"
-              className="h-14 w-auto"
+              className="h-24 md:h-32 lg:h-40 w-auto mx-auto"
             />
           </motion.div>
-          <div className="max-w-3xl">
+
+          {/* Centered hero content */}
+          <div className="text-center max-w-4xl mx-auto">
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight mb-6"
+              className="text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.05] tracking-tight mb-6"
+              style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.03em' }}
             >
-              <span className="block">Trust Your AI Agents at Scale</span>
-              <span className="block text-2xl md:text-3xl lg:text-4xl font-semibold text-slate-200 mt-3">
-                If you can measure it, we can improve it.
-              </span>
+              <span className="text-[#1A6BF5]">Trust</span> Your AI Agents at Scale
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-xl md:text-2xl text-slate-300 mb-6 max-w-2xl"
+              className="text-2xl md:text-3xl lg:text-4xl font-semibold text-slate-200 italic mb-10"
             >
-              We improve AI agent accuracy, response time, cost, or any important business KPI. Traigent helps companies ship AI agents from lab to production, at scale, with confidence.
+              If you can measure it, we can improve it.
             </motion.p>
-            <motion.div
+            <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.25 }}
-              className="flex flex-wrap gap-4 text-sm text-slate-400 mb-10"
+              className="text-lg md:text-xl text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed"
             >
-              <span className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400" /> Optimization as a first-class step: changes that improve KPIs get promoted, regressions get blocked</span>
-              <span className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400" /> Developer-first: zero-code attach via decorators, CLI for fast iteration</span>
-              <span className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400" /> Single optimization layer: models, prompts, routing, safety settings, and budgets</span>
-            </motion.div>
-          </div>
-
-          {/* Full-width centered video */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.28 }}
-            className="my-10 max-w-5xl mx-auto rounded-xl overflow-hidden shadow-2xl border border-slate-700"
-          >
-            <VideoPlayer />
-          </motion.div>
-
-          <div className="max-w-3xl">
+              We improve AI agent accuracy, response time, cost, or any important business KPI. Traigent helps companies ship AI agents from lab to production, at scale, with confidence.
+            </motion.p>
+            {/* Design Partners & Early Adopters */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.35 }}
-              className="flex flex-wrap gap-4"
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="mb-12"
             >
-              <Button
-                size="lg"
-                className="bg-white text-slate-900 hover:bg-gray-100 px-8 py-6 text-lg rounded-lg"
-                onClick={() => window.open("https://calendar.app.google/VLcx8bnYahw37jva9", "_blank")}
-              >
-                Request a demo
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-              <Link
-                to={createPageUrl("/get-started")}
-                className="inline-flex items-center justify-center font-medium bg-transparent border border-slate-600 text-slate-200 hover:bg-white/5 px-8 py-6 text-lg rounded-lg"
-              >
-                Get started (TVL + SDK)
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
+              <p className="text-center text-xs text-slate-500 uppercase tracking-widest font-medium mb-6">Design partners & early adopters</p>
+              <div className="relative overflow-hidden">
+                <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#080808] to-transparent z-10"></div>
+                <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#080808] to-transparent z-10"></div>
+                <div className="flex gap-12 items-center animate-scroll" style={{ width: 'max-content', animation: 'scroll 20s linear infinite' }}>
+                  {[...Array(2)].map((_, setIndex) => (
+                    <React.Fragment key={setIndex}>
+                      <div className="text-slate-500 text-sm font-semibold whitespace-nowrap">Bazak</div>
+                      <div className="text-slate-500 text-sm font-semibold whitespace-nowrap">iForAI</div>
+                      <div className="text-slate-500 text-sm font-semibold whitespace-nowrap">Cloudzone</div>
+                      <div className="text-slate-500 text-sm font-semibold whitespace-nowrap">Profisea</div>
+                      <div className="text-slate-500 text-sm font-semibold whitespace-nowrap">Yotpo</div>
+                    </React.Fragment>
+                  ))}
+                </div>
+              </div>
+              <style>{`
+                @keyframes scroll {
+                  from { transform: translateX(0); }
+                  to { transform: translateX(-50%); }
+                }
+              `}</style>
             </motion.div>
           </div>
-        </div>
 
-        {/* Flowing gradient accent */}
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-500"></div>
+          {/* Full-width centered optimization demo */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.35 }}
+            className="max-w-5xl mx-auto rounded-xl overflow-hidden shadow-2xl border border-slate-700/50"
+          >
+            <OptimizationTable autoPlay={true} embedded={true} />
+          </motion.div>
+
+          {/* CTA Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="flex flex-wrap justify-center gap-4 mt-12"
+          >
+            <Button
+              size="lg"
+              className="bg-[#1A6BF5] text-white hover:bg-[#4D8EF8] px-8 py-4 text-lg rounded-lg border border-[#1A6BF5] hover:border-[#4D8EF8] transition-all"
+              onClick={() => window.open("https://calendar.app.google/VLcx8bnYahw37jva9", "_blank")}
+            >
+              Request a demo
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+            <Link
+              to={createPageUrl("/get-started")}
+              className="inline-flex items-center justify-center font-medium bg-transparent border border-slate-600 text-slate-200 hover:bg-white/5 hover:border-slate-500 px-8 py-4 text-lg rounded-lg transition-all"
+            >
+              Get started (TVL + SDK)
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Link>
+          </motion.div>
+        </div>
       </section>
 
 
