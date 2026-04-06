@@ -321,7 +321,6 @@ export default function OptimizationTable({ autoPlay = true, embedded = false })
           <table className="opt-table zoomed-table summary-table">
             <thead>
               <tr>
-                <th>#</th>
                 <th>model</th>
                 <th>prompt</th>
                 <th>temperature</th>
@@ -340,7 +339,6 @@ export default function OptimizationTable({ autoPlay = true, embedded = false })
 
                 return (
                   <tr key={row.id} className="zoom-target">
-                    <td className="row-id">{row.id}</td>
                     <td><span className="model-tag">{row.model}</span></td>
                     <td>{row.prompt}</td>
                     <td>{row.temperature.toFixed(1)}</td>

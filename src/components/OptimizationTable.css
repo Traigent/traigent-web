@@ -494,6 +494,14 @@
   border-spacing: 0 8px;
 }
 
+/* Override highlight-green for summary table - blend smoothly without box */
+.summary-table .zoom-target td.highlight-green {
+  background: transparent;
+  border-radius: 0;
+  text-shadow: none;
+  font-size: 1.15rem !important;
+}
+
 .summary-row {
   border-radius: 8px;
 }
