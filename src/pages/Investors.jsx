@@ -279,7 +279,7 @@ const styles = `
 }
 `
 
-const INVESTOR_PASSWORD = 'OptimizeIt!'
+const INVESTOR_PASSWORD = 'BlueOcean'
 
 export default function Investors() {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -555,7 +555,6 @@ export default function Investors() {
                   <tr><td><div className="ln">Observability</div><div className="lt3">LangSmith, Arize, Datadog</div></td><td style={{ color: 'var(--text-2)' }}>LangSmith, Arize</td><td className="cs">Show dashboards and traces. Surface failures after they happen.</td><td className="tdt"><span className="ca">Active remediation &mdash; not just visibility</span></td></tr>
                   <tr><td><div className="ln">Evaluation</div><div className="lt3">Braintrust, Galileo, RAGAS</div></td><td style={{ color: 'var(--text-2)' }}>Braintrust, Galileo</td><td className="cs">Grade outputs. Score accuracy and relevance. Still requires manual action.</td><td className="tdt"><span className="ca">Automatic improvement, not just grading</span></td></tr>
                   <tr><td><div className="ln">Optimization</div><div className="lt3">DataRobot, NeMo, manual tuning</div></td><td style={{ color: 'var(--text-2)' }}>DataRobot, Nvidia NeMo</td><td className="cs">Heavy ML-ops focus. Requires data science expertise. Not agent-specific.</td><td className="tdt"><span className="ca">Deeper agent-specific reasoning, no ML-ops team needed</span></td></tr>
-                  <tr><td><div className="ln">Production governance</div><div className="lt3">Manual, bespoke, or none</div></td><td style={{ color: 'var(--text-2)' }}>Manual review, scripts</td><td className="cs">Fragile, undocumented, no auditability. Breaks when models update.</td><td className="tdt"><span className="ca">Structured approval logic and full audit trail</span></td></tr>
                 </tbody>
               </table>
             </div>
