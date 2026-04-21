@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import MarketingNav from './components/MarketingNav'
+import { applyPageMeta } from './utils/pageMeta'
 
 const fallbackMeta = {
   '/': {
@@ -37,14 +38,6 @@ const fallbackMeta = {
   },
 }
 
-function setFallbackDescription(description) {
-  const tag = document.head.querySelector('meta[name="description"]')
-
-  if (tag) {
-    tag.setAttribute('content', description)
-  }
-}
-
 export default function Layout() {
   const location = useLocation()
 
@@ -55,13 +48,13 @@ export default function Layout() {
       return
     }
 
-    document.title = meta.title
-    setFallbackDescription(meta.description)
+    applyPageMeta({ ...meta, path: location.pathname })
   }, [location.pathname])
 
   return (
     <>
       <MarketingNav />
+      {/* Footer stays per-page because the current homepage owns its own footer. */}
       <Outlet />
     </>
   )

@@ -1,5 +1,4 @@
 import { ArrowRight, ClipboardCheck, GitBranch, Layers } from "lucide-react";
-import { Link } from "react-router-dom";
 import MarketingCard from "../components/MarketingCard";
 import MarketingFooter from "../components/MarketingFooter";
 import { courseLessons, plannedDemos, portalUrl } from "../content/siteContent";

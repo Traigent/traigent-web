@@ -12,7 +12,12 @@ module.exports = {
       jsx: true,
     },
   },
-  extends: ["eslint:recommended"],
+  extends: ["eslint:recommended", "plugin:react/recommended", "plugin:react-hooks/recommended"],
+  settings: {
+    react: {
+      version: "detect",
+    },
+  },
   ignorePatterns: [
     "dist/",
     "dist-ssr/",
@@ -21,6 +26,16 @@ module.exports = {
     "index-cf790de1.js",
   ],
   rules: {
-    "no-unused-vars": "off",
+    "react/react-in-jsx-scope": "off",
+    "react/prop-types": "off",
+    "react/no-unescaped-entities": "off",
   },
+  overrides: [
+    {
+      files: ["index.jsx", "src/pages/Homepage.jsx"],
+      rules: {
+        "no-unused-vars": "off",
+      },
+    },
+  ],
 };

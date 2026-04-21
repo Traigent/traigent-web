@@ -5,7 +5,7 @@ import { portalUrl } from "../content/siteContent";
 import { trackEvent } from "../utils/analytics";
 
 const navItems = [
-  { label: "Product", to: "/" },
+  { label: "Product", to: "/", end: true },
   { label: "Demos", to: "/demos" },
   { label: "Academy", to: "/academy" },
   { label: "Resources", to: "/resources" },
@@ -36,7 +36,7 @@ export default function MarketingNav() {
 
           <nav className="hidden md:flex items-center gap-1" aria-label="Primary navigation">
             {navItems.map((item) => (
-              <NavLink key={item.to} to={item.to} className={navClass}>
+              <NavLink key={item.to} to={item.to} end={item.end} className={navClass}>
                 {item.label}
               </NavLink>
             ))}
@@ -77,6 +77,7 @@ export default function MarketingNav() {
                 <NavLink
                   key={item.to}
                   to={item.to}
+                  end={item.end}
                   onClick={closeMenu}
                   className={({ isActive }) =>
                     [

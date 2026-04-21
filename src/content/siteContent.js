@@ -1,4 +1,4 @@
-export const portalUrl = "https://portal.traigent.ai/";
+export const portalUrl = "https://portal.traigent.ai";
 export const demoRequestUrl = "https://calendar.app.google/VLcx8bnYahw37jva9";
 export const tvlLinks = {
   home: "https://tvl-lang.org/",
