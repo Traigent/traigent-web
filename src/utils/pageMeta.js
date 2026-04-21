@@ -1,5 +1,4 @@
 export const SITE_URL = "https://traigent.ai";
-export const DEFAULT_PAGE_IMAGE = `${SITE_URL}/favicon.png`;
 
 function upsertMeta(selector, attributes) {
   let tag = document.head.querySelector(selector);
@@ -27,14 +26,13 @@ function upsertCanonical(href) {
 }
 
 export function canonicalUrlForPath(path = "/") {
-  return `${SITE_URL}${path === "/" ? "/" : path}`;
+  return `${SITE_URL}${path}`;
 }
 
 export function applyPageMeta({
   title,
   description,
   path = "/",
-  image = DEFAULT_PAGE_IMAGE,
 }) {
   const canonicalUrl = canonicalUrlForPath(path);
 
@@ -47,11 +45,9 @@ export function applyPageMeta({
     content: description,
   });
   upsertMeta('meta[property="og:url"]', { property: "og:url", content: canonicalUrl });
-  upsertMeta('meta[property="og:image"]', { property: "og:image", content: image });
   upsertMeta('meta[name="twitter:title"]', { name: "twitter:title", content: title });
   upsertMeta('meta[name="twitter:description"]', {
     name: "twitter:description",
     content: description,
   });
-  upsertMeta('meta[name="twitter:image"]', { name: "twitter:image", content: image });
 }

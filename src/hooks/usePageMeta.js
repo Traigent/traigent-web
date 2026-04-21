@@ -1,15 +1,14 @@
 import { useEffect } from "react";
-import { DEFAULT_PAGE_IMAGE, applyPageMeta } from "../utils/pageMeta";
+import { applyPageMeta } from "../utils/pageMeta";
 
 export function usePageMeta({
   title,
   description,
   path = "/",
-  image = DEFAULT_PAGE_IMAGE,
   structuredData,
 }) {
   useEffect(() => {
-    applyPageMeta({ title, description, path, image });
+    applyPageMeta({ title, description, path });
 
     const scriptId = "page-structured-data";
     document.getElementById(scriptId)?.remove();
@@ -25,5 +24,5 @@ export function usePageMeta({
     return () => {
       document.getElementById(scriptId)?.remove();
     };
-  }, [description, image, path, structuredData, title]);
+  }, [description, path, structuredData, title]);
 }
