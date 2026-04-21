@@ -2,7 +2,7 @@ import { ArrowRight, BookOpen, CheckCircle2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import MarketingCard from "../components/MarketingCard";
 import MarketingFooter from "../components/MarketingFooter";
-import { courseLessons, demoRequestUrl, portalUrl } from "../content/siteContent";
+import { courseLessons, demoRequestUrl, portalUrl, routeMeta } from "../content/siteContent";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { trackEvent } from "../utils/analytics";
 
@@ -20,10 +20,10 @@ const structuredData = {
 };
 
 export default function Academy() {
+  const meta = routeMeta["/academy"];
+
   usePageMeta({
-    title: "Academy - Agents in Production - Traigent",
-    description:
-      "A free practical course on measurement, optimization, telemetry, rollout, and governance for AI agents.",
+    ...meta,
     path: "/academy",
     structuredData,
   });

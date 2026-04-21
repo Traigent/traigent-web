@@ -8,6 +8,78 @@ export const tvlLinks = {
   book: "https://tvl-lang.org/book/",
 };
 
+export const routeMeta = {
+  "/": {
+    title: "Traigent - Trust Your AI Agents at Scale",
+    description:
+      "If you can measure it, we can improve it. Traigent helps companies ship AI agents from lab to production, at scale, with confidence.",
+  },
+  "/get-started": {
+    title: "Get started - Traigent",
+    description:
+      "Start with the Traigent SDK and TVL resources for specifying, evaluating, optimizing, and applying agent configurations.",
+  },
+  "/one-pager": {
+    title: "Traigent One Pager",
+    description:
+      "A concise overview of Traigent and AI agent continuous optimization infrastructure.",
+  },
+  "/value-proposition": {
+    title: "Traigent Value Proposition",
+    description:
+      "Traigent helps teams optimize AI agent configurations across accuracy, latency, cost, and business KPIs.",
+  },
+  "/investors": {
+    title: "Traigent - Investor Overview",
+    description: "Traigent investor overview and company materials.",
+  },
+  "/table-demo": {
+    title: "Traigent - Trust Your AI Agents at Scale",
+    description: "Interactive Traigent optimization table demo.",
+  },
+  "/demos": {
+    title: "Demos - Traigent",
+    description:
+      "Explore planned reproducible demos for governed agent optimization across quality, cost, latency, routing, and promotion decisions.",
+  },
+  "/academy": {
+    title: "Academy - Agents in Production - Traigent",
+    description:
+      "A free practical course on measurement, optimization, telemetry, rollout, and governance for AI agents.",
+  },
+  "/academy/agents-in-production": {
+    title: "Agents in Production Course - Traigent Academy",
+    description:
+      "Learn how to move from demo agents to measurable, governed production systems across goals, telemetry, rollout, and provenance.",
+  },
+  "/resources": {
+    title: "Resources - Traigent",
+    description:
+      "Read practical resources on governed optimization, production agent scorecards, and promotion gates.",
+  },
+  "/specifications": {
+    title: "Specifications - Traigent",
+    description:
+      "Learn why explicit objectives, constraints, tunable variables, and promotion criteria help teams govern production AI agents.",
+  },
+  "/privacy": {
+    title: "Redirecting - Traigent",
+    description: "The Traigent privacy page is hosted on the product portal.",
+  },
+  "/terms": {
+    title: "Redirecting - Traigent",
+    description: "The Traigent terms page is hosted on the product portal.",
+  },
+  "/refund": {
+    title: "Redirecting - Traigent",
+    description: "The Traigent refund page is hosted on the product portal.",
+  },
+  "/pricing": {
+    title: "Redirecting - Traigent",
+    description: "The Traigent pricing page is hosted on the product portal.",
+  },
+};
+
 export const plannedDemos = [
   {
     slug: "rag-support-optimizer",

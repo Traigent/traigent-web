@@ -13,6 +13,7 @@ import Specifications from './pages/Specifications'
 import Layout from './layout'
 import ExternalRedirect from './components/ExternalRedirect'
 import RouteAnalytics from './components/RouteAnalytics'
+import RouteMetadata from './components/RouteMetadata'
 
 export default function App() {
   return (
@@ -21,8 +22,14 @@ export default function App() {
       <RouteAnalytics />
       <Routes>
         {/* Investors page has its own layout/nav */}
-        <Route path="investors" element={<Investors />} />
-        <Route path="table-demo" element={<TableDemo />} />
+        <Route
+          path="investors"
+          element={<RouteMetadata path="/investors"><Investors /></RouteMetadata>}
+        />
+        <Route
+          path="table-demo"
+          element={<RouteMetadata path="/table-demo"><TableDemo /></RouteMetadata>}
+        />
 
         <Route path="/" element={<Layout />}>
           <Route index element={<Homepage />} />

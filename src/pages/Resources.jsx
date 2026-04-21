@@ -2,7 +2,7 @@ import { ArrowRight, FileText } from "lucide-react";
 import { Link } from "react-router-dom";
 import MarketingCard from "../components/MarketingCard";
 import MarketingFooter from "../components/MarketingFooter";
-import { launchArticles, portalUrl } from "../content/siteContent";
+import { launchArticles, portalUrl, routeMeta } from "../content/siteContent";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { trackEvent } from "../utils/analytics";
 
@@ -16,10 +16,10 @@ const structuredData = {
 };
 
 export default function Resources() {
+  const meta = routeMeta["/resources"];
+
   usePageMeta({
-    title: "Resources - Traigent",
-    description:
-      "Read practical resources on governed optimization, production agent scorecards, and promotion gates.",
+    ...meta,
     path: "/resources",
     structuredData,
   });

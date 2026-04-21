@@ -1,7 +1,7 @@
 import { ArrowRight, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 import MarketingFooter from "../components/MarketingFooter";
-import { portalUrl, tvlLinks } from "../content/siteContent";
+import { portalUrl, routeMeta, tvlLinks } from "../content/siteContent";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { trackEvent } from "../utils/analytics";
 
@@ -23,10 +23,10 @@ const linkItems = [
 ];
 
 export default function Specifications() {
+  const meta = routeMeta["/specifications"];
+
   usePageMeta({
-    title: "Specifications - Traigent",
-    description:
-      "Learn why explicit objectives, constraints, tunable variables, and promotion criteria help teams govern production AI agents.",
+    ...meta,
     path: "/specifications",
     structuredData,
   });

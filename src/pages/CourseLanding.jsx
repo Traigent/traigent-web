@@ -1,7 +1,7 @@
 import { ArrowRight, ClipboardCheck, GitBranch, Layers } from "lucide-react";
 import MarketingCard from "../components/MarketingCard";
 import MarketingFooter from "../components/MarketingFooter";
-import { courseLessons, plannedDemos, portalUrl } from "../content/siteContent";
+import { courseLessons, plannedDemos, portalUrl, routeMeta } from "../content/siteContent";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { trackEvent } from "../utils/analytics";
 
@@ -20,10 +20,10 @@ const structuredData = {
 };
 
 export default function CourseLanding() {
+  const meta = routeMeta["/academy/agents-in-production"];
+
   usePageMeta({
-    title: "Agents in Production Course - Traigent Academy",
-    description:
-      "Learn how to move from demo agents to measurable, governed production systems across goals, telemetry, rollout, and provenance.",
+    ...meta,
     path: "/academy/agents-in-production",
     structuredData,
   });

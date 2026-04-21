@@ -7,6 +7,7 @@ import {
   demoRequestUrl,
   plannedDemos,
   portalUrl,
+  routeMeta,
 } from "../content/siteContent";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { trackEvent } from "../utils/analytics";
@@ -21,10 +22,10 @@ const structuredData = {
 };
 
 export default function Demos() {
+  const meta = routeMeta["/demos"];
+
   usePageMeta({
-    title: "Demos - Traigent",
-    description:
-      "Explore planned reproducible demos for governed agent optimization across quality, cost, latency, routing, and promotion decisions.",
+    ...meta,
     path: "/demos",
     structuredData,
   });
