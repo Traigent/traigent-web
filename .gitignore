@@ -15,6 +15,7 @@ node_modules
 dist
 dist-ssr
 output/
+.playwright-cli/
 *.local
 
 # Editor directories and files
