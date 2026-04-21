@@ -44,6 +44,17 @@ export const plannedDemos = [
   },
 ];
 
+export const demoArtifactContract = [
+  "Public repository or public folder in a public repository",
+  "README.md with one-command or clearly sequenced reproduction steps",
+  "specs/ with the problem definition, tunables, objectives, and constraints",
+  "scripts/ for data preparation, baseline runs, optimization, evaluation, and report generation",
+  "Synthetic or permissively licensed dataset, dataset generator, and provenance notes",
+  "Pinned dependencies through a lockfile or equivalent reproducible environment",
+  "Expected outputs, checked-in result artifacts, charts, and limitations",
+  "License plus a tagged release or fixed commit for every website link",
+];
+
 export const courseLessons = [
   {
     number: "01",

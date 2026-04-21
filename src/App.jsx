@@ -12,41 +12,46 @@ import Resources from './pages/Resources'
 import Specifications from './pages/Specifications'
 import Layout from './layout'
 import ExternalRedirect from './components/ExternalRedirect'
+import RouteAnalytics from './components/RouteAnalytics'
 
 export default function App() {
   return (
-    <Routes>
-      {/* Investors page has its own layout/nav */}
-      <Route path="investors" element={<Investors />} />
-      <Route path="table-demo" element={<TableDemo />} />
+    <>
+      {/* RouteAnalytics sits above all route groups so standalone pages are measured too. */}
+      <RouteAnalytics />
+      <Routes>
+        {/* Investors page has its own layout/nav */}
+        <Route path="investors" element={<Investors />} />
+        <Route path="table-demo" element={<TableDemo />} />
 
-      <Route path="/" element={<Layout />}>
-        <Route index element={<Homepage />} />
-        <Route path="get-started" element={<GetStarted />} />
-        <Route path="one-pager" element={<OnePager />} />
-        <Route path="value-proposition" element={<ValueProposition />} />
-        <Route path="demos" element={<Demos />} />
-        <Route path="academy" element={<Academy />} />
-        <Route path="academy/agents-in-production" element={<CourseLanding />} />
-        <Route path="resources" element={<Resources />} />
-        <Route path="specifications" element={<Specifications />} />
-        <Route
-          path="privacy"
-          element={<ExternalRedirect to="https://portal.traigent.ai/privacy" label="privacy" />}
-        />
-        <Route
-          path="terms"
-          element={<ExternalRedirect to="https://portal.traigent.ai/terms" label="terms" />}
-        />
-        <Route
-          path="refund"
-          element={<ExternalRedirect to="https://portal.traigent.ai/refund" label="refund" />}
-        />
-        <Route
-          path="pricing"
-          element={<ExternalRedirect to="https://portal.traigent.ai/pricing" label="pricing" />}
-        />
-      </Route>
-    </Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Homepage />} />
+          <Route path="get-started" element={<GetStarted />} />
+          <Route path="one-pager" element={<OnePager />} />
+          <Route path="value-proposition" element={<ValueProposition />} />
+          <Route path="demos" element={<Demos />} />
+          <Route path="academy" element={<Academy />} />
+          <Route path="academy/agents-in-production" element={<CourseLanding />} />
+          <Route path="resources" element={<Resources />} />
+          <Route path="specifications" element={<Specifications />} />
+          <Route
+            path="privacy"
+            element={<ExternalRedirect to="https://portal.traigent.ai/privacy" label="privacy" />}
+          />
+          <Route
+            path="terms"
+            element={<ExternalRedirect to="https://portal.traigent.ai/terms" label="terms" />}
+          />
+          <Route
+            path="refund"
+            element={<ExternalRedirect to="https://portal.traigent.ai/refund" label="refund" />}
+          />
+          <Route
+            path="pricing"
+            element={<ExternalRedirect to="https://portal.traigent.ai/pricing" label="pricing" />}
+          />
+        </Route>
+      </Routes>
+    </>
   )
 } 

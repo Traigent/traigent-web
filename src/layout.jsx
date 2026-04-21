@@ -2,7 +2,6 @@ import { useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import MarketingNav from './components/MarketingNav'
 import { applyPageMeta } from './utils/pageMeta'
-import { trackEvent } from './utils/analytics'
 
 const fallbackMeta = {
   '/': {
@@ -50,17 +49,6 @@ export default function Layout() {
     }
 
     applyPageMeta({ ...meta, path: location.pathname })
-  }, [location.pathname])
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      trackEvent('page_view', {
-        page: location.pathname,
-        title: document.title,
-      })
-    }, 0)
-
-    return () => window.clearTimeout(timer)
   }, [location.pathname])
 
   return (
