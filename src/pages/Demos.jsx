@@ -15,6 +15,17 @@ const structuredData = {
     "Reproducible demos for governed AI agent optimization, rollout, and promotion.",
 };
 
+const artifactContract = [
+  "Public repository or public folder in a public repository",
+  "README.md with one-command or clearly sequenced reproduction steps",
+  "specs/ with the problem definition, tunables, objectives, and constraints",
+  "scripts/ for data preparation, baseline runs, optimization, evaluation, and report generation",
+  "Synthetic or permissively licensed dataset, dataset generator, and provenance notes",
+  "Pinned dependencies through a lockfile or equivalent reproducible environment",
+  "Expected outputs, checked-in result artifacts, charts, and limitations",
+  "License plus a tagged release or fixed commit for every website link",
+];
+
 export default function Demos() {
   usePageMeta({
     title: "Demos - Traigent",
@@ -140,6 +151,28 @@ export default function Demos() {
               <Github className="mb-3 h-5 w-5 text-slate-800" />
               GitHub artifact links will appear here after the public demo repository and sample
               runs are ready.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-slate-50 border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+          <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
+            <div>
+              <h2 className="text-2xl font-bold tracking-normal">Demo artifact contract</h2>
+              <p className="mt-4 text-slate-600">
+                A demo page can go live only when the linked public artifacts meet this minimum bar.
+                The preferred destination is a separate public demo repository rather than the
+                website repository.
+              </p>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {artifactContract.map((item) => (
+                <div key={item} className="rounded-lg border border-slate-200 bg-white p-4 text-sm leading-6 text-slate-700">
+                  {item}
+                </div>
+              ))}
             </div>
           </div>
         </div>
