@@ -1,11 +1,10 @@
 import React, { useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Check, ChevronRight, ExternalLink, Zap, GitBranch, Shield, FileText, Play, Pause } from "lucide-react";
+import { ArrowRight, Check, ChevronRight, ExternalLink, Play, Pause } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import versionInfo from "../version.json";
-import FlowDiagram from "../components/FlowDiagram";
 import OptimizationTable from "../components/OptimizationTable";
 
 // Placeholder for the Button component
@@ -219,18 +218,19 @@ export default function Homepage() {
             <Button
               size="lg"
               className="bg-[#1A6BF5] text-white hover:bg-[#4D8EF8] px-8 py-4 text-lg rounded-lg border border-[#1A6BF5] hover:border-[#4D8EF8] transition-all"
-              onClick={() => window.open("https://calendar.app.google/VLcx8bnYahw37jva9", "_blank")}
+              onClick={() => window.open("https://github.com/Traigent/Traigent", "_blank")}
             >
-              Request a demo
+              Try out our SDK - it's free!
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
-            <Link
-              to={createPageUrl("/get-started")}
-              className="inline-flex items-center justify-center font-medium bg-transparent border border-slate-600 text-slate-200 hover:bg-white/5 hover:border-slate-500 px-8 py-4 text-lg rounded-lg transition-all"
+            <Button
+              size="lg"
+              className="bg-transparent border border-slate-600 text-slate-200 hover:bg-white/5 hover:border-slate-500 px-8 py-4 text-lg rounded-lg transition-all"
+              onClick={() => window.open("https://calendar.app.google/VLcx8bnYahw37jva9", "_blank")}
             >
-              Get started (TVL + SDK)
+              Book a demo
               <ArrowRight className="ml-2 h-5 w-5" />
-            </Link>
+            </Button>
           </motion.div>
         </div>
       </section>
@@ -252,17 +252,6 @@ export default function Homepage() {
               How It Works
             </motion.h2>
           </div>
-
-          {/* Flow Diagram */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="max-w-4xl mx-auto mb-16"
-          >
-            <FlowDiagram variant="light" />
-          </motion.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
@@ -464,16 +453,9 @@ def answer_question(question: str) -> str:
               <div className="flex flex-wrap gap-4">
                 <Button
                   className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg"
-                  onClick={() => window.open("https://www.tvl-lang.org/getting-started/", "_blank")}
+                  onClick={() => window.open("https://www.tvl-lang.org/", "_blank")}
                 >
                   Learn TVL
-                  <ExternalLink className="ml-2 h-4 w-4" />
-                </Button>
-                <Button
-                  className="bg-transparent border border-slate-600 hover:bg-white/5 text-slate-200 px-6 py-3 rounded-lg"
-                  onClick={() => window.open("https://www.tvl-lang.org/reference/language/", "_blank")}
-                >
-                  Language reference
                   <ExternalLink className="ml-2 h-4 w-4" />
                 </Button>
               </div>
@@ -579,13 +561,13 @@ constraints:
                   </Link>
                 </li>
                 <li>
-                  <a href="https://www.tvl-lang.org/getting-started/" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">
+                  <a href="https://www.tvl-lang.org/" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">
                     Learn TVL
                   </a>
                 </li>
                 <li>
-                  <a href="https://calendar.app.google/VLcx8bnYahw37jva9" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">
-                    Request SDK access
+                  <a href="https://github.com/Traigent/Traigent" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">
+                    Try out our SDK - it's free!
                   </a>
                 </li>
                 <li>
