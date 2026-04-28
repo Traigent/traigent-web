@@ -22,46 +22,37 @@ export default function GetStarted() {
         </p>
 
         <div className="grid md:grid-cols-2 gap-6">
-          <div className="p-6 rounded-xl bg-slate-900/60 border border-slate-800">
+          <div className="p-6 rounded-xl bg-slate-900/60 border border-slate-800 flex flex-col">
             <h2 className="text-xl font-semibold mb-2">TVL (Specification)</h2>
-            <p className="text-slate-300 mb-6">
+            <p className="text-slate-300 mb-6 flex-grow">
               Write a TVL module that captures the tunable decisions, objectives, and constraints for your agentic system.
             </p>
             <div className="flex flex-wrap gap-3">
               <a
-                href="https://www.tvl-lang.org/getting-started/"
+                href="https://www.tvl-lang.org/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center font-medium bg-white text-slate-900 hover:bg-gray-100 px-5 py-3 rounded-lg"
               >
-                TVL getting started
-                <ExternalLink className="ml-2 h-4 w-4" />
-              </a>
-              <a
-                href="https://www.tvl-lang.org/reference/language/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center font-medium bg-transparent border border-slate-700 text-slate-200 hover:bg-white/5 px-5 py-3 rounded-lg"
-              >
-                Language reference
+                Learn TVL
                 <ExternalLink className="ml-2 h-4 w-4" />
               </a>
             </div>
           </div>
 
-          <div className="p-6 rounded-xl bg-slate-900/60 border border-slate-800">
+          <div className="p-6 rounded-xl bg-slate-900/60 border border-slate-800 flex flex-col">
             <h2 className="text-xl font-semibold mb-2">Traigent SDK</h2>
-            <p className="text-slate-300 mb-4">
+            <p className="text-slate-300 mb-6 flex-grow">
               Attach to your existing AI calls with a decorator, run governed optimization on real workloads, and apply the best config. Follow the SDK docs to install and get started.
             </p>
             <div className="flex flex-wrap gap-3">
               <a
-                href="https://calendar.app.google/VLcx8bnYahw37jva9"
+                href="https://github.com/Traigent/Traigent"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center font-medium bg-white text-slate-900 hover:bg-gray-100 px-5 py-3 rounded-lg"
               >
-                Request SDK access
+                Try out our SDK - it's free!
                 <ExternalLink className="ml-2 h-4 w-4" />
               </a>
             </div>
