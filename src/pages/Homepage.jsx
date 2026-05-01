@@ -219,7 +219,7 @@ export default function Homepage() {
             <InstallCommand
               command='pip install "traigent[recommended]" && traigent quickstart'
               label="Run the keyless demo on your laptop in under a minute"
-              secondary="Zero API keys. Zero outbound network calls to providers. Just python."
+              secondary="No API keys. No LLM provider calls. No spend. Just python."
             />
           </motion.div>
 
