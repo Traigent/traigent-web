@@ -217,9 +217,9 @@ export default function Homepage() {
             className="max-w-2xl mx-auto mt-10"
           >
             <InstallCommand
-              command='pip install "traigent[recommended]" && traigent quickstart'
+              command='uv tool install "traigent[recommended]" && traigent quickstart'
               label="Run the keyless demo on your laptop in under a minute"
-              secondary="No API keys. No LLM provider calls. No spend. Just python."
+              secondary="No API keys. No LLM provider calls. No spend. Just python. (Have pip instead? `pip install` works too.)"
             />
           </motion.div>
 
