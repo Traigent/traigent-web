@@ -6,6 +6,7 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import versionInfo from "../version.json";
 import OptimizationTable from "../components/OptimizationTable";
+import InstallCommand from "../components/InstallCommand";
 
 // Placeholder for the Button component
 const Button = ({ children, className, onClick, size }) => (
@@ -208,19 +209,33 @@ export default function Homepage() {
             <OptimizationTable autoPlay={true} embedded={true} />
           </motion.div>
 
+          {/* One-line install — primary onramp */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.38 }}
+            className="max-w-2xl mx-auto mt-10"
+          >
+            <InstallCommand
+              command='pip install "traigent[recommended]" && traigent quickstart'
+              label="Run the keyless demo on your laptop in under a minute"
+              secondary="No API keys. No LLM provider calls. No spend. Just python."
+            />
+          </motion.div>
+
           {/* CTA Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="flex flex-wrap justify-center gap-4 mt-12"
+            className="flex flex-wrap justify-center gap-4 mt-8"
           >
             <Button
               size="lg"
               className="bg-[#1A6BF5] text-white hover:bg-[#4D8EF8] px-8 py-4 text-lg rounded-lg border border-[#1A6BF5] hover:border-[#4D8EF8] transition-all"
               onClick={() => window.open("https://github.com/Traigent/Traigent", "_blank")}
             >
-              Try out our SDK - it's free!
+              View on GitHub
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
             <Button
