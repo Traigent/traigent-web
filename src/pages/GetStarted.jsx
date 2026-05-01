@@ -1,6 +1,7 @@
 import React from "react";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
+import InstallCommand from "../components/InstallCommand";
 
 const createPageUrl = (path) => path;
 
@@ -42,9 +43,13 @@ export default function GetStarted() {
 
           <div className="p-6 rounded-xl bg-slate-900/60 border border-slate-800 flex flex-col">
             <h2 className="text-xl font-semibold mb-2">Traigent SDK</h2>
-            <p className="text-slate-300 mb-6 flex-grow">
-              Attach to your existing AI calls with a decorator, run governed optimization on real workloads, and apply the best config. Follow the SDK docs to install and get started.
+            <p className="text-slate-300 mb-4 flex-grow">
+              Attach to your existing AI calls with a decorator, run governed optimization on real workloads, and apply the best config. The bundled <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">traigent quickstart</code> demo runs locally in mock mode — no API keys, no network — so you can validate the pipeline before pointing it at real LLMs.
             </p>
+            <InstallCommand
+              command='pip install "traigent[recommended]" && traigent quickstart'
+              className="mb-4"
+            />
             <div className="flex flex-wrap gap-3">
               <a
                 href="https://github.com/Traigent/Traigent"
@@ -52,11 +57,22 @@ export default function GetStarted() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center font-medium bg-white text-slate-900 hover:bg-gray-100 px-5 py-3 rounded-lg"
               >
-                Try out our SDK - it's free!
+                View on GitHub
                 <ExternalLink className="ml-2 h-4 w-4" />
               </a>
             </div>
           </div>
+        </div>
+
+        <div className="mt-10 p-6 rounded-xl bg-slate-900/60 border border-slate-800">
+          <h2 className="text-xl font-semibold mb-2">Drive it from your coding agent</h2>
+          <p className="text-slate-300 mb-4 max-w-3xl">
+            Claude Code, Cursor, Codex, Gemini CLI and 30+ other agents pick up the Traigent skill bundle automatically. They&apos;ll guide you through dry-run-first setup, generate the eval dataset, and apply the best config — without you leaving your editor.
+          </p>
+          <InstallCommand
+            command="npx skills add Traigent/agents-skills"
+            secondary="Pick the traigent-* skills from the interactive list. The bundle includes a dry-run-first orchestrator that validates the full pipeline at zero cost before any real spend."
+          />
         </div>
 
         <div className="mt-12 p-6 rounded-xl bg-gradient-to-br from-indigo-600/20 to-purple-700/20 border border-white/10">
