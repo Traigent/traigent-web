@@ -47,7 +47,8 @@ export default function GetStarted() {
               Attach to your existing AI calls with a decorator, run governed optimization on real workloads, and apply the best config. The bundled <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">traigent quickstart</code> demo runs locally in mock mode — no API keys, no LLM provider calls — so you can validate the pipeline before pointing it at real LLMs.
             </p>
             <InstallCommand
-              command='pip install "traigent[recommended]" && traigent quickstart'
+              command='uv tool install "traigent[recommended]" && traigent quickstart'
+              secondary="Prefer pip? `pip install` is a drop-in replacement."
               className="mb-4"
             />
             <div className="flex flex-wrap gap-3">
