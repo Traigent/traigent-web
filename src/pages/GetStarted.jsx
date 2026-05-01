@@ -44,7 +44,7 @@ export default function GetStarted() {
           <div className="p-6 rounded-xl bg-slate-900/60 border border-slate-800 flex flex-col">
             <h2 className="text-xl font-semibold mb-2">Traigent SDK</h2>
             <p className="text-slate-300 mb-4 flex-grow">
-              Attach to your existing AI calls with a decorator, run governed optimization on real workloads, and apply the best config. The bundled <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">traigent quickstart</code> demo runs locally in mock mode — no API keys, no network — so you can validate the pipeline before pointing it at real LLMs.
+              Attach to your existing AI calls with a decorator, run governed optimization on real workloads, and apply the best config. The bundled <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">traigent quickstart</code> demo runs locally in mock mode — no API keys, no LLM provider calls — so you can validate the pipeline before pointing it at real LLMs.
             </p>
             <InstallCommand
               command='pip install "traigent[recommended]" && traigent quickstart'
