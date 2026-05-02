@@ -565,6 +565,14 @@ constraints:
               <p className="text-slate-400 mb-6 max-w-xs">
                 The agent control layer. Specify. Evaluate. Optimize. Apply.
               </p>
+              <p className="text-xs text-slate-500">
+                Traigent Ltd, Hartglas 16, Tel-Aviv, Israel
+              </p>
+              <p className="mt-2 text-xs text-slate-500">
+                <a href="mailto:support@traigent.ai" className="hover:text-white transition-colors">
+                  support@traigent.ai
+                </a>
+              </p>
             </div>
 
             <div>
