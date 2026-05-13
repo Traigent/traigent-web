@@ -5,6 +5,7 @@ import OnePager from './pages/OnePager'
 import ValueProposition from './pages/ValueProposition'
 import Investors from './pages/Investors'
 import TableDemo from './pages/TableDemo'
+import Pitch from './pages/Pitch'
 import Layout from './layout'
 import ExternalRedirect from './components/ExternalRedirect'
 
@@ -14,6 +15,8 @@ export default function App() {
       {/* Investors page has its own layout/nav */}
       <Route path="investors" element={<Investors />} />
       <Route path="table-demo" element={<TableDemo />} />
+      {/* Pitch deck — no layout/nav, full-bleed slides */}
+      <Route path="pitch" element={<Pitch />} />
 
       <Route path="/" element={<Layout />}>
         <Route index element={<Homepage />} />

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Check, ChevronRight, ExternalLink, Play, Pause, Sparkles, Eye } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -6,7 +6,8 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import versionInfo from "../version.json";
 import OptimizationTable from "../components/OptimizationTable";
-import InstallCommand from "../components/InstallCommand";
+import StartNowModal from "../components/StartNowModal";
+import ContactSection from "../components/ContactSection";
 
 // Placeholder for the Button component
 const Button = ({ children, className, onClick, size }) => (
@@ -113,8 +114,24 @@ const DemoPlayer = () => {
 };
 
 export default function Homepage() {
+  const [showStartNow, setShowStartNow] = useState(false);
+  const scrollToId = (id) => (e) => {
+    e.preventDefault();
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+  // Handle scroll requests coming from other pages via TopNav
+  useEffect(() => {
+    const pending = sessionStorage.getItem("pendingScroll");
+    if (pending) {
+      sessionStorage.removeItem("pendingScroll");
+      setTimeout(() => {
+        document.getElementById(pending)?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+    }
+  }, []);
   return (
     <div className="bg-white">
+      {showStartNow && <StartNowModal onClose={() => setShowStartNow(false)} />}
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-[#080808] text-white">
         {/* Noise texture overlay */}
@@ -125,7 +142,7 @@ export default function Homepage() {
         <div className="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[900px] h-[600px] pointer-events-none" style={{
           background: 'radial-gradient(ellipse, rgba(26,107,245,0.18) 0%, transparent 70%)'
         }}></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 md:pt-32 pb-6 md:pb-8">
           {/* Traigent Logo */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -158,7 +175,7 @@ export default function Homepage() {
               className="text-lg md:text-xl text-slate-300 mb-10 max-w-3xl mx-auto leading-relaxed space-y-4"
             >
               <p>AI Agents have hundreds of model and configuration combinations to choose from. Finding the <span className="text-[#1A6BF5] font-semibold">best cost-performance combination</span> via manual brute force is impractical.</p>
-              <p>Traigent automatically finds the optimum with only a fraction of the experiments.<br/>Stop guessing aimlessly.{' '}<span className="text-[#1A6BF5] font-semibold">Start converging confidently.</span></p>
+              <p>Traigent finds the optimum in <span className="text-[#1A6BF5] font-semibold">hours, automatically</span>, vs. weeks of manual trial and error.<br/>Stop guessing aimlessly.{' '}<span className="text-[#1A6BF5] font-semibold">Start converging confidently.</span></p>
             </motion.div>
             {/* Design Partners & Early Adopters */}
             <motion.div
@@ -175,7 +192,6 @@ export default function Homepage() {
                 <div className="flex gap-12 items-center animate-scroll" style={{ width: 'max-content', animation: 'scroll 20s linear infinite' }}>
                   {[...Array(2)].map((_, setIndex) => (
                     <React.Fragment key={setIndex}>
-                      <div className="text-slate-500 text-sm font-semibold whitespace-nowrap">Amdocs</div>
                       <div className="text-slate-500 text-sm font-semibold whitespace-nowrap">Bazak</div>
                       <div className="text-slate-500 text-sm font-semibold whitespace-nowrap">iForAI</div>
                       <div className="text-slate-500 text-sm font-semibold whitespace-nowrap">Cloudzone</div>
@@ -194,66 +210,76 @@ export default function Homepage() {
             </motion.div>
           </div>
 
-          {/* One-line install — primary onramp */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.38 }}
-            className="max-w-2xl mx-auto mt-10"
-          >
-            <InstallCommand
-              command='uv tool install "traigent[recommended]" && traigent quickstart'
-              label="Run the keyless demo on your laptop in under a minute"
-              secondary="No API keys. No LLM provider calls. No spend. Just python. (Have pip instead? `pip install` works too.)"
-            />
-          </motion.div>
-
           {/* CTA Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="flex flex-wrap justify-center gap-4 mt-8"
+            className="flex flex-wrap justify-center gap-3 mt-10"
           >
             <Button
-              size="lg"
-              className="bg-[#1A6BF5] text-white hover:bg-[#4D8EF8] px-8 py-4 text-lg rounded-lg border border-[#1A6BF5] hover:border-[#4D8EF8] transition-all"
-              onClick={() => window.open("https://github.com/Traigent/Traigent", "_blank")}
+              className="bg-[#1A6BF5] text-white hover:bg-[#4D8EF8] px-6 py-2.5 text-base rounded-lg border border-[#1A6BF5] hover:border-[#4D8EF8] transition-all"
+              onClick={() => setShowStartNow(true)}
             >
-              View on GitHub
-              <ArrowRight className="ml-2 h-5 w-5" />
+              Start Now
+              <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
             <Button
-              size="lg"
-              className="bg-transparent border border-slate-600 text-slate-200 hover:bg-white/5 hover:border-slate-500 px-8 py-4 text-lg rounded-lg transition-all"
+              className="bg-transparent border border-slate-600 text-slate-200 hover:bg-white/5 hover:border-slate-500 px-6 py-2.5 text-base rounded-lg transition-all"
               onClick={() => window.open("https://calendar.app.google/VLcx8bnYahw37jva9", "_blank")}
             >
               Book a demo
-              <ArrowRight className="ml-2 h-5 w-5" />
+              <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
+          </motion.div>
+
+          {/* Tagline below CTAs */}
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            className="text-center text-white font-bold text-2xl md:text-3xl lg:text-4xl mt-12 max-w-4xl mx-auto leading-tight tracking-tight"
+            style={{ textWrap: 'balance' }}
+          >
+            <span className="text-[#1A6BF5]">Traigent</span> Platform
+          </motion.h2>
+
+          {/* Three pillars */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+            className="text-center mt-6 text-base md:text-lg font-semibold tracking-wide"
+          >
+            <a href="#optimization" onClick={scrollToId("optimization")} className="text-[#1A6BF5] hover:underline underline-offset-4 transition-all cursor-pointer">Agent Optimization</a>
+            <span className="text-slate-600 mx-3">·</span>
+            <a href="#beyond" onClick={scrollToId("beyond")} className="text-amber-400 hover:underline underline-offset-4 transition-all cursor-pointer">Benchmark Evolution</a>
+            <span className="text-slate-600 mx-3">·</span>
+            <a href="#beyond" onClick={scrollToId("beyond")} className="text-violet-400 hover:underline underline-offset-4 transition-all cursor-pointer">Observability and Tracing</a>
           </motion.div>
         </div>
       </section>
 
       {/* Two Components Section */}
-      <section id="product" className="py-24 bg-[#080808] border-t border-slate-800/50 scroll-mt-20">
+      <section id="product" className="pt-8 md:pt-12 pb-24 bg-[#080808] border-t border-slate-800/50 scroll-mt-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
+            id="optimization"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="text-center mb-12"
+            className="text-center mb-12 scroll-mt-20"
           >
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Traigent Optimization is fully automated</h2>
             <p className="text-xl md:text-2xl font-semibold text-[#1A6BF5] mb-6 max-w-xl mx-auto leading-snug" style={{ textWrap: 'balance' }}>
               Needs only a fraction of the model and configuration combinations to experiment with
             </p>
             <p className="text-slate-400 max-w-2xl mx-auto leading-relaxed">
-              Two components working in a tight feedback loop — an optimization engine that picks the next best configuration based on run history, and an agent wrapper that runs it against your benchmark and reports KPIs back to the optimization engine.
+              Two components working in a tight feedback loop — an <span className="text-white font-semibold">optimization engine</span> that picks the next best configuration based on run history, and an <span className="text-white font-semibold">agent wrapper</span> that runs it against your benchmark and reports KPIs back to the optimization engine.
             </p>
           </motion.div>
-          <div className="flex flex-col lg:flex-row gap-6 items-stretch">
+          <div className="flex flex-col gap-6 items-stretch lg:grid lg:grid-cols-[1fr_180px_1fr] lg:gap-6">
 
             {/* Left: Optimization Engine (component 2) */}
             <motion.div
@@ -333,20 +359,21 @@ export default function Homepage() {
                 <text x="120" y="238" textAnchor="middle" fill="#94a3b8" fontSize="8" fontFamily="monospace">tested (under 10%)</text>
                 <text x="254" y="238" textAnchor="middle" fill="#475569" fontSize="8" fontFamily="monospace">not needed</text>
               </svg>
-              <p className="text-slate-400 text-sm text-center mt-3">Algorithm finds the optimum needing only a fraction of the model and configuration combinations to experiment with</p>
+              <p className="text-slate-400 text-sm text-center mt-3">Finds the optimum needing only a fraction of the model and configuration combinations to experiment with</p>
             </motion.div>
 
             {/* Center: feedback loop connector */}
-            <div className="flex lg:flex-col items-center justify-center gap-4 py-4 lg:py-0 lg:min-w-[100px]">
-              <div className="flex flex-col items-center gap-1">
-                <span className="text-[#1A6BF5] text-sm font-semibold font-mono whitespace-nowrap">next combo</span>
-                <span className="text-[#1A6BF5] text-4xl font-bold leading-none">⟶</span>
-              </div>
-              <div className="w-16 h-px lg:w-px lg:h-16 bg-slate-700"></div>
-              <div className="flex flex-col items-center gap-1">
-                <span className="text-[#1A6BF5] text-4xl font-bold leading-none">⟵</span>
-                <span className="text-[#1A6BF5] text-sm font-semibold font-mono whitespace-nowrap">KPI results</span>
-              </div>
+            <div className="flex lg:flex-col items-center justify-center gap-3 py-4 lg:py-0 lg:min-w-[180px]">
+              <span className="text-[#1A6BF5] text-base font-semibold font-mono whitespace-nowrap">next combo</span>
+              <svg width="160" height="94" viewBox="0 0 160 94" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                {/* Top arrow: points RIGHT */}
+                <line x1="4" y1="14" x2="142" y2="14" stroke="#1A6BF5" strokeWidth="3" strokeLinecap="round"/>
+                <polygon points="140,6 156,14 140,22" fill="#1A6BF5"/>
+                {/* Bottom arrow: points LEFT — exact horizontal mirror of the top */}
+                <line x1="18" y1="80" x2="156" y2="80" stroke="#1A6BF5" strokeWidth="3" strokeLinecap="round"/>
+                <polygon points="20,72 4,80 20,88" fill="#1A6BF5"/>
+              </svg>
+              <span className="text-[#1A6BF5] text-base font-semibold font-mono whitespace-nowrap">KPI results</span>
             </div>
 
             {/* Right: Agent Wrapper (component 1) */}
@@ -439,11 +466,12 @@ export default function Homepage() {
       <section id="capabilities" className="py-20 bg-[#080808] border-t border-slate-800/50 scroll-mt-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
+            id="beyond"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="text-center mb-12"
+            className="text-center mb-12 scroll-mt-20"
           >
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Beyond Optimization</h2>
             <p className="text-slate-400 max-w-2xl mx-auto leading-relaxed">
@@ -455,11 +483,12 @@ export default function Homepage() {
 
             {/* Card 1: Self-Improving Benchmark */}
             <motion.div
+              id="benchmark"
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="bg-slate-900/60 border border-amber-500/30 rounded-2xl p-8"
+              className="bg-slate-900/60 border border-amber-500/30 rounded-2xl p-8 scroll-mt-24"
             >
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
@@ -494,11 +523,12 @@ export default function Homepage() {
 
             {/* Card 2: Full Observability & Tracing */}
             <motion.div
+              id="observability"
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="bg-slate-900/60 border border-amber-500/30 rounded-2xl p-8"
+              className="bg-slate-900/60 border border-amber-500/30 rounded-2xl p-8 scroll-mt-24"
             >
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
@@ -898,6 +928,8 @@ constraints:
           </div>
         </div>
       </section>
+
+      <ContactSection />
 
       {/* Footer */}
       <footer className="bg-slate-950 text-white py-16">

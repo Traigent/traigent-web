@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { ChevronDown, Github, X, ArrowRight } from "lucide-react";
-import InstallCommand from "./InstallCommand";
+import { useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { ChevronDown, Github } from "lucide-react";
+import StartNowModal from "./StartNowModal";
 
 const productItems = [
-  { label: "Optimization Engine", href: "/#product", desc: "Picks next best config from run history" },
-  { label: "Agent Wrapper", href: "/#product", desc: "Automated execution + KPI capture" },
-  { label: "Observability & Tracing", href: "/#capabilities", desc: "Full trace tree · spans · tokens · cost" },
-  { label: "Benchmark Insights", href: "/#capabilities", desc: "Flags easy / always-fail / redundant questions" },
+  { label: "Optimization Engine", scrollId: "optimization", desc: "Picks next best config from run history" },
+  { label: "Agent Wrapper", scrollId: "product", desc: "Automated execution + KPI capture" },
+  { label: "Observability & Tracing", scrollId: "observability", desc: "Full trace tree · spans · tokens · cost" },
+  { label: "Benchmark Insights", scrollId: "benchmark", desc: "Flags easy / always-fail / redundant questions" },
   { label: "TVL", href: "https://www.tvl-lang.org/", external: true, desc: "Tuned Variables Language" },
 ];
 
@@ -18,18 +18,7 @@ const resourcesItems = [
   { label: "For Investors", href: "/investors" },
 ];
 
-function NavLink({ children, ...props }) {
-  return (
-    <a
-      {...props}
-      className="text-slate-300 hover:text-white transition-colors"
-    >
-      {children}
-    </a>
-  );
-}
-
-function MenuItem({ item }) {
+function MenuItem({ item, onScroll }) {
   const content = (
     <>
       <div className="text-sm text-white font-medium">{item.label}</div>
@@ -45,13 +34,17 @@ function MenuItem({ item }) {
       </a>
     );
   }
-  if (item.href.startsWith("/#") || item.href.includes("#")) {
-    return <a href={item.href} className={className}>{content}</a>;
+  if (item.scrollId) {
+    return (
+      <a href="#" onClick={onScroll(item.scrollId)} className={className}>
+        {content}
+      </a>
+    );
   }
   return <Link to={item.href} className={className}>{content}</Link>;
 }
 
-function Dropdown({ label, items, isOpen, onOpen, onClose }) {
+function Dropdown({ label, items, isOpen, onOpen, onClose, onScroll }) {
   return (
     <div
       className="relative"
@@ -69,7 +62,7 @@ function Dropdown({ label, items, isOpen, onOpen, onClose }) {
         <div className="absolute top-full left-0 pt-3">
           <div className="w-72 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl p-2">
             {items.map((item) => (
-              <MenuItem key={item.label} item={item} />
+              <MenuItem key={item.label} item={item} onScroll={onScroll} />
             ))}
           </div>
         </div>
@@ -78,70 +71,26 @@ function Dropdown({ label, items, isOpen, onOpen, onClose }) {
   );
 }
 
-function StartNowModal({ onClose }) {
-  useEffect(() => {
-    const onKey = (e) => {
-      if (e.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", onKey);
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
-    };
-  }, [onClose]);
-
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <div
-        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
-        onClick={onClose}
-        aria-hidden="true"
-      />
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="start-now-title"
-        className="relative bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl max-w-2xl w-full p-8"
-      >
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors"
-          aria-label="Close"
-        >
-          <X className="w-5 h-5" />
-        </button>
-
-        <h2 id="start-now-title" className="text-2xl font-bold text-white mb-2">Start Now</h2>
-        <p className="text-slate-400 mb-6">
-          Run the keyless demo on your laptop in under a minute — no API keys, no LLM provider calls, no spend.
-        </p>
-
-        <InstallCommand
-          command='uv tool install "traigent[recommended]" && traigent quickstart'
-          secondary="No API keys. No LLM provider calls. No spend. Just python. (Have pip instead? `pip install` works too.)"
-        />
-
-        <div className="flex flex-wrap gap-3 mt-6">
-          <a
-            href="https://github.com/Traigent/Traigent"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white px-6 py-3 rounded-lg text-sm font-medium transition-colors"
-          >
-            <Github className="mr-2 h-4 w-4" />
-            View on GitHub
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </a>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function TopNav() {
   const [openMenu, setOpenMenu] = useState(null);
   const [showStartNow, setShowStartNow] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Click handler for in-page anchor scrolling.
+  // If we're on the homepage, scrollIntoView directly.
+  // If on another framed page, navigate home with a sessionStorage flag
+  // so Homepage can scroll after mount.
+  const scrollOrNavigate = (id) => (e) => {
+    e.preventDefault();
+    setOpenMenu(null);
+    if (location.pathname === "/") {
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      sessionStorage.setItem("pendingScroll", id);
+      navigate("/");
+    }
+  };
 
   return (
     <>
@@ -161,24 +110,49 @@ export default function TopNav() {
                 isOpen={openMenu === "product"}
                 onOpen={() => setOpenMenu("product")}
                 onClose={() => setOpenMenu(null)}
+                onScroll={scrollOrNavigate}
               />
               <Link to="/value-proposition" className="text-slate-300 hover:text-white transition-colors">
                 Use Cases
               </Link>
-              <NavLink href="/#customers">Customers</NavLink>
-              <NavLink href="https://github.com/Traigent/Traigent" target="_blank" rel="noopener noreferrer">
+              <a
+                href="#"
+                onClick={scrollOrNavigate("customers")}
+                className="text-slate-300 hover:text-white transition-colors cursor-pointer"
+              >
+                Customers
+              </a>
+              <a
+                href="https://github.com/Traigent/Traigent"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-slate-300 hover:text-white transition-colors"
+              >
                 Docs
-              </NavLink>
-              <NavLink href="https://portal.traigent.ai/pricing" target="_blank" rel="noopener noreferrer">
+              </a>
+              <a
+                href="https://portal.traigent.ai/pricing"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-slate-300 hover:text-white transition-colors"
+              >
                 Pricing
-              </NavLink>
+              </a>
               <Dropdown
                 label="Resources"
                 items={resourcesItems}
                 isOpen={openMenu === "resources"}
                 onOpen={() => setOpenMenu("resources")}
                 onClose={() => setOpenMenu(null)}
+                onScroll={scrollOrNavigate}
               />
+              <a
+                href="#"
+                onClick={scrollOrNavigate("contact")}
+                className="text-slate-300 hover:text-white transition-colors cursor-pointer"
+              >
+                Contact
+              </a>
             </div>
 
             {/* CTAs */}
