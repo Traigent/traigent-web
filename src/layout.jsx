@@ -1,9 +1,13 @@
 import { Outlet } from 'react-router-dom'
+import TopNav from './components/TopNav'
 
 export default function Layout() {
   return (
-    <main>
-      <Outlet />
-    </main>
+    <>
+      <TopNav />
+      <main>
+        <Outlet />
+      </main>
+    </>
   )
-} 
+}
