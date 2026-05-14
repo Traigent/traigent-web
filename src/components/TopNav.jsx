@@ -21,7 +21,6 @@ const resourcesItems = [
   { label: "Get Started", href: "/get-started" },
   { label: "One Pager", href: "/one-pager" },
   { label: "Value Proposition", href: "/value-proposition" },
-  { label: "For Investors", href: "/investors" },
 ];
 
 function MenuItem({ item, onScroll }) {
@@ -103,8 +102,17 @@ export default function TopNav() {
       <nav className="sticky top-0 z-50 bg-[#080808]/95 backdrop-blur-md border-b border-slate-800/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <Link to="/" className="flex items-center text-xl font-bold text-white">
+            {/* Logo — click always returns to the top of the homepage. When already
+                on `/`, React Router skips the navigation, so we scroll manually. */}
+            <Link
+              to="/"
+              onClick={() => {
+                if (location.pathname === "/") {
+                  window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+                }
+              }}
+              className="flex items-center text-xl font-bold text-white"
+            >
               Traigent
             </Link>
 

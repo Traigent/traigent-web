@@ -3,30 +3,31 @@ import { motion } from "framer-motion";
 import { Send } from "lucide-react";
 import { trackEvent } from "../lib/analytics";
 
-// HubSpot Forms API config — values from your form's embed snippet.
+// HubSpot Forms API config — values from the embed snippet in HubSpot.
 // These are PUBLIC (already in the public embed code), so it's fine to inline.
 const HUBSPOT = {
   portalId: "148486827",
   formId: "b60362d8-a1d8-4cfc-86ed-3034c4549665",
-  region: "eu1", // EU data center
 };
 
-// HubSpot Forms API submission endpoint (region-specific).
-const HUBSPOT_API = `https://api-${HUBSPOT.region}.hsforms.com/submissions/v3/integration/submit/${HUBSPOT.portalId}/${HUBSPOT.formId}`;
+// HubSpot's classic v2 submission endpoint. We use this instead of the
+// JSON-based v3 integration/submit endpoint because v2 accepts
+// application/x-www-form-urlencoded — which is a "simple" CORS request
+// that doesn't trigger a preflight OPTIONS check. That makes it the
+// reliable choice for in-browser cross-origin submissions.
+const HUBSPOT_API = `https://forms.hubspot.com/uploads/form/v2/${HUBSPOT.portalId}/${HUBSPOT.formId}`;
 
-// Field names below MUST match the internal field names in your HubSpot form.
-// HubSpot defaults: email, firstname, lastname, company, message.
-// If your form uses different field names, update them here.
+// Field names MUST match the internal field names in the HubSpot form.
+// The Traigent form has exactly 4 fields: firstname, lastname, email, message.
+// (No company field — HubSpot rejects unknown field names.)
 const FIELDS = {
-  email: "email",
   firstname: "firstname",
   lastname: "lastname",
-  company: "company",
+  email: "email",
   message: "message",
 };
 
 // Block submissions from personal/consumer email providers.
-// Traigent wants leads tied to a business identity.
 const FREE_EMAIL_DOMAINS = new Set([
   "gmail.com", "googlemail.com",
   "yahoo.com", "yahoo.co.uk", "yahoo.fr", "yahoo.de", "yahoo.co.in",
@@ -53,14 +54,14 @@ function validateBusinessEmail(email) {
   if (!EMAIL_RE.test(email)) return "Please enter a valid email address.";
   const domain = email.split("@")[1].toLowerCase();
   if (FREE_EMAIL_DOMAINS.has(domain)) {
-    return "Please use your business email — personal email addresses (gmail, yahoo, outlook, etc.) are not accepted.";
+    return "Please use your business email — personal addresses (gmail, yahoo, outlook, etc.) are not accepted.";
   }
   return null;
 }
 
 export default function ContactSection() {
   const sectionRef = useRef(null);
-  const [form, setForm] = useState({ firstname: "", lastname: "", email: "", company: "", message: "" });
+  const [form, setForm] = useState({ firstname: "", lastname: "", email: "", message: "" });
   const [emailError, setEmailError] = useState("");
   const [submitError, setSubmitError] = useState("");
   const [sending, setSending] = useState(false);
@@ -96,36 +97,36 @@ export default function ContactSection() {
     setSubmitError("");
     setSending(true);
 
-    const payload = {
-      fields: [
-        { name: FIELDS.firstname, value: form.firstname },
-        { name: FIELDS.lastname, value: form.lastname },
-        { name: FIELDS.email, value: form.email },
-        { name: FIELDS.company, value: form.company },
-        { name: FIELDS.message, value: form.message },
-      ].filter((f) => f.value), // omit empty fields so HubSpot doesn't reject blanks
-      context: {
+    // Build form-encoded body (URLSearchParams ⇒ Content-Type:
+    // application/x-www-form-urlencoded, a "simple" CORS request — no preflight).
+    const body = new URLSearchParams();
+    body.append(FIELDS.firstname, form.firstname);
+    body.append(FIELDS.lastname, form.lastname);
+    body.append(FIELDS.email, form.email);
+    body.append(FIELDS.message, form.message);
+    // hs_context carries page metadata so HubSpot records where the lead came from.
+    body.append(
+      "hs_context",
+      JSON.stringify({
         pageUri: typeof window !== "undefined" ? window.location.href : "",
         pageName: typeof document !== "undefined" ? document.title : "Traigent",
-      },
-    };
+      })
+    );
 
     try {
       const res = await fetch(HUBSPOT_API, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body,
       });
-      if (res.ok) {
-        trackEvent("contact_form_submitted", { company: form.company || "(unspecified)" });
+      // v2 returns 204 No Content (or sometimes 302) on success.
+      if (res.ok || res.status === 204 || res.status === 302) {
+        trackEvent("contact_form_submitted");
         setSent(true);
-        setForm({ firstname: "", lastname: "", email: "", company: "", message: "" });
+        setForm({ firstname: "", lastname: "", email: "", message: "" });
       } else {
-        const data = await res.json().catch(() => ({}));
         trackEvent("contact_form_error", { reason: "server", status: res.status });
         setSubmitError(
-          data.message ||
-            "Something went wrong sending your message. Please email us directly at amir@traigent.ai."
+          "Something went wrong sending your message. Please email us directly at amir@traigent.ai."
         );
       }
     } catch {
@@ -212,18 +213,6 @@ export default function ContactSection() {
                   className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-white placeholder:text-slate-500 focus:outline-none focus:border-[#1A6BF5] focus:ring-1 focus:ring-[#1A6BF5]/40 transition-colors"
                 />
               </div>
-            </div>
-
-            <div>
-              <label htmlFor="company" className="block text-sm font-medium text-slate-300 mb-2">Company</label>
-              <input
-                id="company"
-                type="text"
-                value={form.company}
-                onChange={update("company")}
-                placeholder="Acme Corp"
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-white placeholder:text-slate-500 focus:outline-none focus:border-[#1A6BF5] focus:ring-1 focus:ring-[#1A6BF5]/40 transition-colors"
-              />
             </div>
 
             <div>

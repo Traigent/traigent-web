@@ -209,7 +209,7 @@ export default function Homepage() {
               className="text-lg md:text-xl text-slate-300 mb-10 max-w-4xl mx-auto leading-relaxed"
               style={{ textWrap: "balance" }}
             >
-              Traigent finds your agent's <span className="text-[#1A6BF5] font-semibold">best cost-performance configuration</span> — in <span className="text-[#1A6BF5] font-semibold">a fraction of the search space</span> — and continuously re-optimizes as your models, costs, and usage shift.
+              Traigent finds your agent's <span className="text-[#1A6BF5] font-semibold">best cost-performance configuration</span> — in <span className="text-[#1A6BF5] font-semibold">a fraction of the search space</span> — and continuously re-optimizes as your models, costs, and usage drift.
             </motion.p>
 
             {/* Skeptic hook → routes to the Why Traigent section (blog index) */}
@@ -252,8 +252,12 @@ export default function Homepage() {
               <div className="relative overflow-hidden">
                 <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#080808] to-transparent z-10"></div>
                 <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#080808] to-transparent z-10"></div>
-                <div className="flex gap-12 items-center animate-scroll" style={{ width: 'max-content', animation: 'scroll 20s linear infinite' }}>
-                  {[...Array(2)].map((_, setIndex) => (
+                <div className="flex gap-12 items-center animate-scroll" style={{ width: 'max-content', animation: 'scroll 40s linear infinite' }}>
+                  {/* 8 copies of the 5-logo set so total content is always wide
+                      enough to keep the right half filled on large viewports.
+                      The animation translates -50% (= 4 copies), which lands
+                      on the visually-identical 5th copy → seamless loop. */}
+                  {[...Array(8)].map((_, setIndex) => (
                     <React.Fragment key={setIndex}>
                       <div className="text-slate-500 text-sm font-semibold whitespace-nowrap">Bazak</div>
                       <div className="text-slate-500 text-sm font-semibold whitespace-nowrap">iForAI</div>
