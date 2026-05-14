@@ -206,7 +206,7 @@ export default function OnePager() {
         {/* CTA */}
         <div className="text-center mt-12">
           <a
-            href="https://calendar.app.google/2aSEhm5bxo6xoPYm8"
+            href="https://meetings-eu1.hubspot.com/amir8"
             target="_blank"
             rel="noopener noreferrer"
             className="group relative inline-flex items-center bg-blue-500 text-white px-10 py-4 rounded-xl font-bold text-lg transition-all duration-300 hover:bg-blue-600 hover:scale-105 shadow-[0_0_20px_rgba(59,130,246,0.5)] hover:shadow-[0_0_40px_rgba(59,130,246,0.8)] overflow-hidden"

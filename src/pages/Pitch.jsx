@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+﻿import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Home, Maximize2 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -229,13 +229,13 @@ function SlideCTA() {
           <h3 className="text-2xl font-bold text-white mb-4">Book a 15-min call</h3>
           <p className="text-slate-400 mb-5 text-sm">We'll walk through your agent and show you what's possible.</p>
           <a
-            href="https://calendar.app.google/VLcx8bnYahw37jva9"
+            href="https://meetings-eu1.hubspot.com/amir8"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block text-white px-6 py-3 rounded-lg font-medium text-base hover:opacity-90 transition-opacity"
             style={{ backgroundColor: BLUE }}
           >
-            calendar.app.google
+            Book a meeting →
           </a>
         </div>
       </div>

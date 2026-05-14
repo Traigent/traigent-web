@@ -1,7 +1,8 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { ChevronDown, Github } from "lucide-react";
 import StartNowModal from "./StartNowModal";
+import { trackEvent } from "../lib/analytics";
 
 const productItems = [
   { label: "Optimization Engine", scrollId: "optimization", desc: "Picks next best config from run history" },
@@ -12,6 +13,11 @@ const productItems = [
 ];
 
 const resourcesItems = [
+  { label: "Blog", href: "/blog", desc: "Insights on agent optimization" },
+  { label: "ROI Calculator", href: "/roi", desc: "Estimate your 12-month savings" },
+  { label: "Compare", href: "/compare", desc: "vs. Langfuse · Arize · Helicone · Braintrust" },
+  { label: "FAQ", href: "/faq", desc: "Common questions" },
+  { label: "About", href: "/about", desc: "Team, mission, values" },
   { label: "Get Started", href: "/get-started" },
   { label: "One Pager", href: "/one-pager" },
   { label: "Value Proposition", href: "/value-proposition" },
@@ -161,6 +167,7 @@ export default function TopNav() {
                 href="https://github.com/Traigent/Traigent"
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => trackEvent("github_clicked", { location: "topnav" })}
                 className="text-slate-400 hover:text-white transition-colors hidden sm:flex"
                 title="GitHub"
                 aria-label="GitHub"
@@ -171,20 +178,25 @@ export default function TopNav() {
                 href="https://portal.traigent.ai"
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => trackEvent("sign_in_clicked", { location: "topnav" })}
                 className="text-sm text-slate-300 hover:text-white transition-colors hidden sm:inline"
               >
                 Sign in
               </a>
               <button
-                onClick={() => setShowStartNow(true)}
+                onClick={() => {
+                  trackEvent("start_now_clicked", { location: "topnav" });
+                  setShowStartNow(true);
+                }}
                 className="border border-slate-600 hover:border-slate-400 text-slate-200 hover:text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
               >
                 Start Now
               </button>
               <a
-                href="https://calendar.app.google/VLcx8bnYahw37jva9"
+                href="https://meetings-eu1.hubspot.com/amir8"
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => trackEvent("demo_booking_clicked", { location: "topnav" })}
                 className="bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
               >
                 Book a demo

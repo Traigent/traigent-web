@@ -1,9 +1,32 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Send } from "lucide-react";
+import { trackEvent } from "../lib/analytics";
 
-// Common free / consumer email providers. Submissions from these domains
-// are rejected — Traigent wants leads with a business identity.
+// HubSpot Forms API config — values from your form's embed snippet.
+// These are PUBLIC (already in the public embed code), so it's fine to inline.
+const HUBSPOT = {
+  portalId: "148486827",
+  formId: "b60362d8-a1d8-4cfc-86ed-3034c4549665",
+  region: "eu1", // EU data center
+};
+
+// HubSpot Forms API submission endpoint (region-specific).
+const HUBSPOT_API = `https://api-${HUBSPOT.region}.hsforms.com/submissions/v3/integration/submit/${HUBSPOT.portalId}/${HUBSPOT.formId}`;
+
+// Field names below MUST match the internal field names in your HubSpot form.
+// HubSpot defaults: email, firstname, lastname, company, message.
+// If your form uses different field names, update them here.
+const FIELDS = {
+  email: "email",
+  firstname: "firstname",
+  lastname: "lastname",
+  company: "company",
+  message: "message",
+};
+
+// Block submissions from personal/consumer email providers.
+// Traigent wants leads tied to a business identity.
 const FREE_EMAIL_DOMAINS = new Set([
   "gmail.com", "googlemail.com",
   "yahoo.com", "yahoo.co.uk", "yahoo.fr", "yahoo.de", "yahoo.co.in",
@@ -35,59 +58,78 @@ function validateBusinessEmail(email) {
   return null;
 }
 
-// Posts directly to Formsubmit.co, which emails amir@traigent.ai.
-// First submission triggers a one-time activation email to that address —
-// click "Activate" once, then all future submissions arrive normally.
-const FORMSUBMIT_ENDPOINT = "https://formsubmit.co/ajax/amir@traigent.ai";
-
 export default function ContactSection() {
-  const [form, setForm] = useState({ name: "", email: "", company: "", message: "" });
+  const sectionRef = useRef(null);
+  const [form, setForm] = useState({ firstname: "", lastname: "", email: "", company: "", message: "" });
   const [emailError, setEmailError] = useState("");
-  const [sent, setSent] = useState(false);
-  const [sending, setSending] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
 
   const update = (field) => (e) => setForm({ ...form, [field]: e.target.value });
+
+  // Fire viewed event once for engagement attribution.
+  useEffect(() => {
+    if (!sectionRef.current) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          trackEvent("contact_section_viewed");
+          obs.disconnect();
+        }
+      },
+      { threshold: 0.4 }
+    );
+    obs.observe(sectionRef.current);
+    return () => obs.disconnect();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const err = validateBusinessEmail(form.email);
     if (err) {
       setEmailError(err);
+      trackEvent("contact_form_validation_failed", { reason: "personal_email" });
       return;
     }
     setEmailError("");
     setSubmitError("");
     setSending(true);
 
+    const payload = {
+      fields: [
+        { name: FIELDS.firstname, value: form.firstname },
+        { name: FIELDS.lastname, value: form.lastname },
+        { name: FIELDS.email, value: form.email },
+        { name: FIELDS.company, value: form.company },
+        { name: FIELDS.message, value: form.message },
+      ].filter((f) => f.value), // omit empty fields so HubSpot doesn't reject blanks
+      context: {
+        pageUri: typeof window !== "undefined" ? window.location.href : "",
+        pageName: typeof document !== "undefined" ? document.title : "Traigent",
+      },
+    };
+
     try {
-      const res = await fetch(FORMSUBMIT_ENDPOINT, {
+      const res = await fetch(HUBSPOT_API, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          name: form.name,
-          email: form.email,
-          company: form.company,
-          message: form.message,
-          _subject: `Traigent inquiry — ${form.name}${form.company ? ` · ${form.company}` : ""}`,
-          _template: "table",
-          _captcha: "false",
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
-      const data = await res.json().catch(() => ({}));
-      if (res.ok && (data.success === "true" || data.success === true)) {
+      if (res.ok) {
+        trackEvent("contact_form_submitted", { company: form.company || "(unspecified)" });
         setSent(true);
-        setForm({ name: "", email: "", company: "", message: "" });
+        setForm({ firstname: "", lastname: "", email: "", company: "", message: "" });
       } else {
+        const data = await res.json().catch(() => ({}));
+        trackEvent("contact_form_error", { reason: "server", status: res.status });
         setSubmitError(
           data.message ||
             "Something went wrong sending your message. Please email us directly at amir@traigent.ai."
         );
       }
     } catch {
+      trackEvent("contact_form_error", { reason: "network" });
       setSubmitError(
         "Network error sending your message. Please email us directly at amir@traigent.ai."
       );
@@ -97,7 +139,11 @@ export default function ContactSection() {
   };
 
   return (
-    <section id="contact" className="py-20 bg-[#080808] border-t border-slate-800/50 scroll-mt-20">
+    <section
+      ref={sectionRef}
+      id="contact"
+      className="py-20 bg-[#080808] border-t border-slate-800/50 scroll-mt-20"
+    >
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -134,27 +180,40 @@ export default function ContactSection() {
             </button>
           </motion.div>
         ) : (
-        <motion.form
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          onSubmit={handleSubmit}
-          className="bg-slate-900/60 border border-slate-700/50 rounded-2xl p-6 md:p-8 space-y-5"
-        >
-          <div className="grid md:grid-cols-2 gap-5">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-slate-300 mb-2">Name</label>
-              <input
-                id="name"
-                type="text"
-                required
-                value={form.name}
-                onChange={update("name")}
-                placeholder="Jane Doe"
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-white placeholder:text-slate-500 focus:outline-none focus:border-[#1A6BF5] focus:ring-1 focus:ring-[#1A6BF5]/40 transition-colors"
-              />
+          <motion.form
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            onSubmit={handleSubmit}
+            className="bg-slate-900/60 border border-slate-700/50 rounded-2xl p-6 md:p-8 space-y-5"
+          >
+            <div className="grid md:grid-cols-2 gap-5">
+              <div>
+                <label htmlFor="firstname" className="block text-sm font-medium text-slate-300 mb-2">First name</label>
+                <input
+                  id="firstname"
+                  type="text"
+                  required
+                  value={form.firstname}
+                  onChange={update("firstname")}
+                  placeholder="Jane"
+                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-white placeholder:text-slate-500 focus:outline-none focus:border-[#1A6BF5] focus:ring-1 focus:ring-[#1A6BF5]/40 transition-colors"
+                />
+              </div>
+              <div>
+                <label htmlFor="lastname" className="block text-sm font-medium text-slate-300 mb-2">Last name</label>
+                <input
+                  id="lastname"
+                  type="text"
+                  value={form.lastname}
+                  onChange={update("lastname")}
+                  placeholder="Doe"
+                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-white placeholder:text-slate-500 focus:outline-none focus:border-[#1A6BF5] focus:ring-1 focus:ring-[#1A6BF5]/40 transition-colors"
+                />
+              </div>
             </div>
+
             <div>
               <label htmlFor="company" className="block text-sm font-medium text-slate-300 mb-2">Company</label>
               <input
@@ -166,70 +225,69 @@ export default function ContactSection() {
                 className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-white placeholder:text-slate-500 focus:outline-none focus:border-[#1A6BF5] focus:ring-1 focus:ring-[#1A6BF5]/40 transition-colors"
               />
             </div>
-          </div>
 
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">
-              Business Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              required
-              value={form.email}
-              onChange={(e) => {
-                setForm({ ...form, email: e.target.value });
-                if (emailError) setEmailError("");
-              }}
-              placeholder="jane@company.com"
-              className={`w-full bg-slate-950 border rounded-lg px-4 py-2.5 text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 transition-colors ${
-                emailError
-                  ? "border-red-500/70 focus:border-red-500 focus:ring-red-500/40"
-                  : "border-slate-700 focus:border-[#1A6BF5] focus:ring-[#1A6BF5]/40"
-              }`}
-            />
-            {emailError ? (
-              <p className="text-red-400 text-xs mt-2">{emailError}</p>
-            ) : (
-              <p className="text-slate-500 text-xs mt-2">
-                Please use your company email — gmail, yahoo, outlook, etc. won't be accepted.
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label htmlFor="message" className="block text-sm font-medium text-slate-300 mb-2">Message</label>
-            <textarea
-              id="message"
-              rows={5}
-              required
-              value={form.message}
-              onChange={update("message")}
-              placeholder="Tell us about your agents and what you're trying to optimize..."
-              className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-white placeholder:text-slate-500 focus:outline-none focus:border-[#1A6BF5] focus:ring-1 focus:ring-[#1A6BF5]/40 transition-colors resize-y"
-            />
-          </div>
-
-          {submitError && (
-            <div className="bg-red-500/10 border border-red-500/40 text-red-300 text-sm rounded-lg px-4 py-3">
-              {submitError}
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">
+                Business Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                required
+                value={form.email}
+                onChange={(e) => {
+                  setForm({ ...form, email: e.target.value });
+                  if (emailError) setEmailError("");
+                }}
+                placeholder="jane@company.com"
+                className={`w-full bg-slate-950 border rounded-lg px-4 py-2.5 text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 transition-colors ${
+                  emailError
+                    ? "border-red-500/70 focus:border-red-500 focus:ring-red-500/40"
+                    : "border-slate-700 focus:border-[#1A6BF5] focus:ring-[#1A6BF5]/40"
+                }`}
+              />
+              {emailError ? (
+                <p className="text-red-400 text-xs mt-2">{emailError}</p>
+              ) : (
+                <p className="text-slate-500 text-xs mt-2">
+                  Please use your company email — gmail, yahoo, outlook, etc. won't be accepted.
+                </p>
+              )}
             </div>
-          )}
 
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
-            <p className="text-xs text-slate-500">
-              {sending ? "Sending..." : "Sends directly to the Traigent team."}
-            </p>
-            <button
-              type="submit"
-              disabled={sending}
-              className="inline-flex items-center justify-center bg-[#1A6BF5] hover:bg-[#4D8EF8] disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-medium px-6 py-2.5 rounded-lg text-sm transition-colors whitespace-nowrap"
-            >
-              <Send className="w-4 h-4 mr-2" />
-              {sending ? "Sending..." : "Send Message"}
-            </button>
-          </div>
-        </motion.form>
+            <div>
+              <label htmlFor="message" className="block text-sm font-medium text-slate-300 mb-2">Message</label>
+              <textarea
+                id="message"
+                rows={5}
+                required
+                value={form.message}
+                onChange={update("message")}
+                placeholder="Tell us about your agents and what you're trying to optimize..."
+                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-white placeholder:text-slate-500 focus:outline-none focus:border-[#1A6BF5] focus:ring-1 focus:ring-[#1A6BF5]/40 transition-colors resize-y"
+              />
+            </div>
+
+            {submitError && (
+              <div className="bg-red-500/10 border border-red-500/40 text-red-300 text-sm rounded-lg px-4 py-3">
+                {submitError}
+              </div>
+            )}
+
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
+              <p className="text-xs text-slate-500">
+                {sending ? "Sending..." : "Submissions land in our HubSpot CRM."}
+              </p>
+              <button
+                type="submit"
+                disabled={sending}
+                className="inline-flex items-center justify-center bg-[#1A6BF5] hover:bg-[#4D8EF8] disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-medium px-6 py-2.5 rounded-lg text-sm transition-colors whitespace-nowrap"
+              >
+                <Send className="w-4 h-4 mr-2" />
+                {sending ? "Sending..." : "Send Message"}
+              </button>
+            </div>
+          </motion.form>
         )}
       </div>
     </section>

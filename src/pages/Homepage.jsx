@@ -1,13 +1,15 @@
-import React, { useState, useRef, useEffect } from "react";
+﻿import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Check, ChevronRight, ExternalLink, Play, Pause, Sparkles, Eye } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import versionInfo from "../version.json";
+import { Helmet } from "react-helmet-async";
 import OptimizationTable from "../components/OptimizationTable";
 import StartNowModal from "../components/StartNowModal";
 import ContactSection from "../components/ContactSection";
+import { trackEvent } from "../lib/analytics";
 
 // Placeholder for the Button component
 const Button = ({ children, className, onClick, size }) => (
@@ -131,6 +133,40 @@ export default function Homepage() {
   }, []);
   return (
     <div className="bg-white">
+      <Helmet>
+        <title>Traigent — The most advanced AI Agent Optimization Platform</title>
+        <meta name="description" content="Traigent finds the optimum agent configuration in hours not weeks, automatically not manually. Optimization + Benchmark Evolution + Observability and Tracing — in one platform." />
+        <meta property="og:title" content="Traigent — AI Agent Optimization Platform" />
+        <meta property="og:description" content="Find the optimum agent configuration in hours, automatically. Optimization + Benchmark Evolution + Observability — in one platform." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://traigent.ai" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Traigent — AI Agent Optimization Platform" />
+        <meta name="twitter:description" content="Find the optimum agent configuration in hours, automatically." />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: "Traigent",
+            url: "https://traigent.ai",
+            description: "The most advanced AI Agent Optimization Platform on the market.",
+            sameAs: [
+              "https://github.com/Traigent/Traigent",
+            ],
+          })}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            name: "Traigent",
+            applicationCategory: "DeveloperApplication",
+            description: "AI Agent Optimization Platform — optimization, benchmark evolution, and observability in one.",
+            offers: { "@type": "Offer", priceCurrency: "USD" },
+            operatingSystem: "Cross-platform",
+          })}
+        </script>
+      </Helmet>
       {showStartNow && <StartNowModal onClose={() => setShowStartNow(false)} />}
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-[#080808] text-white">
@@ -175,7 +211,8 @@ export default function Homepage() {
               className="text-lg md:text-xl text-slate-300 mb-10 max-w-3xl mx-auto leading-relaxed space-y-4"
             >
               <p>AI Agents have hundreds of model and configuration combinations to choose from. Finding the <span className="text-[#1A6BF5] font-semibold">best cost-performance combination</span> via manual brute force is impractical.</p>
-              <p>Traigent finds the optimum in <span className="text-[#1A6BF5] font-semibold">hours, automatically</span>, vs. weeks of manual trial and error.<br/>Stop guessing aimlessly.{' '}<span className="text-[#1A6BF5] font-semibold">Start converging confidently.</span></p>
+              <p>Traigent finds the optimum in <span className="text-[#1A6BF5] font-semibold">hours</span> not weeks, <span className="text-[#1A6BF5] font-semibold">automatically</span> not manually.<br/>Stop guessing aimlessly.{' '}<span className="text-[#1A6BF5] font-semibold">Start converging confidently.</span></p>
+              <p>Models evolve. Usage shifts. Costs change.<br/>Traigent <span className="text-[#1A6BF5] font-semibold">continuously re-optimizes</span> throughout the agent lifecycle.</p>
             </motion.div>
             {/* Design Partners & Early Adopters */}
             <motion.div
@@ -219,14 +256,20 @@ export default function Homepage() {
           >
             <Button
               className="bg-[#1A6BF5] text-white hover:bg-[#4D8EF8] px-6 py-2.5 text-base rounded-lg border border-[#1A6BF5] hover:border-[#4D8EF8] transition-all"
-              onClick={() => setShowStartNow(true)}
+              onClick={() => {
+                trackEvent("start_now_clicked", { location: "hero" });
+                setShowStartNow(true);
+              }}
             >
               Start Now
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
             <Button
               className="bg-transparent border border-slate-600 text-slate-200 hover:bg-white/5 hover:border-slate-500 px-6 py-2.5 text-base rounded-lg transition-all"
-              onClick={() => window.open("https://calendar.app.google/VLcx8bnYahw37jva9", "_blank")}
+              onClick={() => {
+                trackEvent("demo_booking_clicked", { location: "hero" });
+                window.open("https://meetings-eu1.hubspot.com/amir8", "_blank");
+              }}
             >
               Book a demo
               <ArrowRight className="ml-2 h-4 w-4" />
@@ -919,7 +962,7 @@ constraints:
               <Button
                 size="lg"
                 className="bg-white text-indigo-700 hover:bg-gray-100 px-8 py-6 text-lg rounded-lg"
-                onClick={() => window.open("https://calendar.app.google/VLcx8bnYahw37jva9", "_blank")}
+                onClick={() => window.open("https://meetings-eu1.hubspot.com/amir8", "_blank")}
               >
                 Show me
                 <ArrowRight className="ml-2 h-5 w-5" />
