@@ -1,10 +1,133 @@
-﻿import { motion } from "framer-motion";
-import { Zap, TrendingUp, Users, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
+import {
+  Zap,
+  TrendingUp,
+  Users,
+  ArrowRight,
+  AlertCircle,
+  TrendingDown,
+  GitCompare,
+  GitMerge,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { ProblemCard, SolutionCard } from "../components/ProblemSolutionSection";
-import FlowDiagram from "../components/FlowDiagram";
 
+// ============================================================================
+// V2's 6 truths — logical chain that leads to the Traigent Solution.
+// ============================================================================
+const TRUTHS = [
+  {
+    n: 1,
+    text:
+      "<strong class=\"text-[#4D8EF8]\">Running AI Agents costs money,</strong> and those costs " +
+      "<strong class=\"text-white\">compound the more they are used</strong>. ROI depends on quality — but also, " +
+      "most importantly, on <strong class=\"text-[#4D8EF8]\">reducing run costs</strong>.",
+  },
+  {
+    n: 2,
+    text:
+      "<strong class=\"text-[#4D8EF8]\">It's NOT all about the model.</strong> Non-model configuration options can affect both " +
+      "<strong class=\"text-white\">accuracy and cost dramatically</strong> — so picking the premium model is " +
+      "<strong class=\"text-white\">usually not</strong> the smartest path to better ROI.",
+  },
+  {
+    n: 3,
+    text:
+      "There are <strong class=\"text-[#4D8EF8]\">hundreds of model and non-model configuration options</strong> to consider, " +
+      "so it's <strong class=\"text-[#4D8EF8]\">impractical to manually test them all</strong> before you go to market.",
+  },
+  {
+    n: 4,
+    text:
+      "As a result, teams scramble and resort to <strong class=\"text-[#4D8EF8]\">\"intuitive\" guesswork</strong> — " +
+      "releasing whatever they can when time-to-market pressures them. It takes them " +
+      "<strong class=\"text-white\">weeks of trial and error</strong> — but " +
+      "<strong class=\"text-[#4D8EF8]\">they can never be confident they've found the optimum.</strong>",
+  },
+  {
+    n: 5,
+    text:
+      "As a result, it's very likely they <strong class=\"text-[#4D8EF8]\">could have saved a lot of runtime costs</strong>, " +
+      "without sacrificing quality, if they could have just managed to test more configurations.",
+  },
+  {
+    n: 6,
+    text:
+      "During the lifecycle, <strong class=\"text-[#4D8EF8]\">models evolve</strong>, " +
+      "<strong class=\"text-[#4D8EF8]\">usage patterns shift</strong>, and <strong class=\"text-[#4D8EF8]\">prices change</strong>. " +
+      "You need to constantly evaluate new configurations.",
+  },
+];
+
+// ============================================================================
+// V2's 5 problem-pattern rows.
+// ============================================================================
+const PROBLEMS = [
+  {
+    id: "cost-explosion",
+    icon: TrendingDown,
+    accent: "from-red-500/15 to-orange-500/10",
+    problemHeadline: "\"Our AI bill keeps doubling and no one can explain why.\"",
+    problemDetail:
+      "Same agent. Same product. Different month, very different invoice. The CFO is asking questions Engineering can't answer. The instinct is to throttle features — which kills the value the agent was supposed to create.",
+    valueHeadline: "Find the configuration that's 30–60% cheaper at equal or better quality.",
+    valueDetail:
+      "Traigent searches the full model × prompt × parameter space and converges on the most cost-efficient configuration for your actual benchmark. Then re-runs automatically when prices or models shift.",
+    outcome: "Predictable, optimized spend — without sacrificing quality.",
+  },
+  {
+    id: "silent-drift",
+    icon: AlertCircle,
+    accent: "from-amber-500/15 to-red-500/10",
+    problemHeadline: "\"Our agent's quality silently degraded last quarter — and we didn't catch it.\"",
+    problemDetail:
+      "Nothing alerted you. Logs looked fine. Then a customer escalation revealed answers had been getting worse for weeks. By the time you noticed, retention had taken a hit you'll spend two quarters earning back.",
+    valueHeadline: "Drift detection plus automatic re-optimization.",
+    valueDetail:
+      "Traigent continuously evaluates your agent against the benchmark and triggers a fresh optimization run when quality moves outside tolerance. The fix lands before the support tickets do.",
+    outcome: "Stays at peak quality. Always.",
+  },
+  {
+    id: "model-paralysis",
+    icon: GitCompare,
+    accent: "from-violet-500/15 to-blue-500/10",
+    problemHeadline: "\"We can't decide between GPT-4, Claude, and Gemini.\"",
+    problemDetail:
+      "Every team has an opinion. None of them have hard data on your specific use case. So you ship whichever the loudest engineer prefers and hope. Switching costs make the decision feel permanent.",
+    valueHeadline: "Run all three on your actual benchmark. Let the data pick.",
+    valueDetail:
+      "Traigent treats model choice as one more tunable variable. It runs your agent across every candidate and reports cost-quality-latency tradeoffs side by side — for your workload, not a generic eval.",
+    outcome: "Model selection backed by evidence, not vibes.",
+  },
+  {
+    id: "model-refresh-pain",
+    icon: Zap,
+    accent: "from-blue-500/15 to-cyan-500/10",
+    problemHeadline: "\"Every new model release means weeks of re-evaluation.\"",
+    problemDetail:
+      "GPT-5 drops. Claude releases an update. Your competitors ship faster. You can't justify another month of manual re-testing — but you also can't risk shipping on yesterday's optimum.",
+    valueHeadline: "Re-converge on the new optimum in hours, not weeks.",
+    valueDetail:
+      "Same wrapper. Same benchmark. New model. Traigent runs the optimization loop again and returns a new optimum, fully tested, ready to ship. The marginal cost of trying a new model collapses.",
+    outcome: "Ship new models the day they drop.",
+  },
+  {
+    id: "regression-cascade",
+    icon: GitMerge,
+    accent: "from-pink-500/15 to-violet-500/10",
+    problemHeadline: "\"Adding a new feature regressed quality on three other paths.\"",
+    problemDetail:
+      "You tuned for the new use case. It works. Two weeks later you discover the prompt changes you made degraded answer quality on the original use cases. Your team is now playing whack-a-mole across the agent's surface area.",
+    valueHeadline: "Multi-KPI weighted optimization across all your use cases.",
+    valueDetail:
+      "Traigent optimizes against every KPI you care about simultaneously — not just the loudest one. It won't ship a configuration that improves one path at the cost of three others.",
+    outcome: "No silent regressions when you ship new capability.",
+  },
+];
+
+// ============================================================================
+// V1's fade-in wrapper (used throughout)
+// ============================================================================
 const FadeInView = ({ children, className, delay = 0 }) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
@@ -17,369 +140,268 @@ const FadeInView = ({ children, className, delay = 0 }) => (
   </motion.div>
 );
 
-const DifficultyBadge = ({ level }) => {
-  const styles = {
-    hard: "bg-red-500/15 text-red-400",
-    medium: "bg-yellow-500/15 text-yellow-400",
-    easy: "bg-blue-500/15 text-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.2)]"
-  };
+// ============================================================================
+// V2's QuickScanCard + ProblemRow
+// ============================================================================
+function QuickScanCard({ p, idx }) {
+  const Icon = p.icon;
   return (
-    <span className={`text-[8px] px-1.5 py-0.5 rounded uppercase tracking-wide font-mono ${styles[level]}`}>
-      {level}
-    </span>
+    <a
+      href={`#${p.id}`}
+      onClick={(e) => {
+        e.preventDefault();
+        document.getElementById(p.id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }}
+      className="group block bg-slate-900/40 hover:bg-slate-900/70 border border-slate-800 hover:border-slate-700 rounded-xl p-4 transition-colors"
+    >
+      <div className="flex items-start gap-3">
+        <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 group-hover:text-white transition-colors">
+          <Icon className="w-4 h-4" />
+        </div>
+        <div className="min-w-0">
+          <div className="text-[10px] font-mono uppercase tracking-wider text-slate-500 mb-1">
+            #{String(idx + 1).padStart(2, "0")}
+          </div>
+          <div className="text-sm text-slate-200 leading-snug line-clamp-2">
+            {p.problemHeadline.replace(/^"|"$/g, "")}
+          </div>
+        </div>
+      </div>
+    </a>
   );
-};
+}
 
-// Cyberpunk Neon Scale Graph Component
-const ScaleGraph = () => {
-  const pathVariants = {
-    hidden: { pathLength: 0, opacity: 0 },
-    visible: (delay) => ({
-      pathLength: 1,
-      opacity: 1,
-      transition: { duration: 2, delay, ease: "easeInOut" }
-    })
-  };
-
-  const fadeVariants = {
-    hidden: { opacity: 0, scale: 0.8 },
-    visible: (delay) => ({
-      opacity: 1,
-      scale: 1,
-      transition: { duration: 0.5, delay }
-    })
-  };
-
+function ProblemRow({ p, idx }) {
+  const Icon = p.icon;
   return (
-    <div className="relative w-full max-w-4xl mx-auto">
-      <svg viewBox="0 0 800 460" className="w-full h-auto">
-        <defs>
-          {/* Neon glow filters */}
-          <filter id="glowBlue" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="4" result="blur"/>
-            <feFlood floodColor="#3b82f6" floodOpacity="0.8"/>
-            <feComposite in2="blur" operator="in"/>
-            <feMerge>
-              <feMergeNode/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-          <filter id="glowPurple" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="4" result="blur"/>
-            <feFlood floodColor="#a855f7" floodOpacity="0.8"/>
-            <feComposite in2="blur" operator="in"/>
-            <feMerge>
-              <feMergeNode/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-          <filter id="glowRed" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="5" result="blur"/>
-            <feFlood floodColor="#ef4444" floodOpacity="0.9"/>
-            <feComposite in2="blur" operator="in"/>
-            <feMerge>
-              <feMergeNode/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-          <filter id="glowGray" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="3" result="blur"/>
-            <feFlood floodColor="#94a3b8" floodOpacity="0.6"/>
-            <feComposite in2="blur" operator="in"/>
-            <feMerge>
-              <feMergeNode/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-          <filter id="glowCyan" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="6" result="blur"/>
-            <feFlood floodColor="#22d3ee" floodOpacity="0.8"/>
-            <feComposite in2="blur" operator="in"/>
-            <feMerge>
-              <feMergeNode/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-
-          {/* Zone backgrounds */}
-          <linearGradient id="rightZoneGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="transparent"/>
-            <stop offset="100%" stopColor="rgba(127, 29, 29, 0.15)"/>
-          </linearGradient>
-
-          {/* Radial gradients for image glow */}
-          <radialGradient id="blueRadial" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.6"/>
-            <stop offset="70%" stopColor="#1e40af" stopOpacity="0.2"/>
-            <stop offset="100%" stopColor="transparent" stopOpacity="0"/>
-          </radialGradient>
-          <radialGradient id="purpleRadial" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#a855f7" stopOpacity="0.5"/>
-            <stop offset="70%" stopColor="#6b21a8" stopOpacity="0.15"/>
-            <stop offset="100%" stopColor="transparent" stopOpacity="0"/>
-          </radialGradient>
-          <radialGradient id="redRadial" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#ef4444" stopOpacity="0.7"/>
-            <stop offset="70%" stopColor="#991b1b" stopOpacity="0.3"/>
-            <stop offset="100%" stopColor="transparent" stopOpacity="0"/>
-          </radialGradient>
-
-          {/* Arrowhead markers */}
-          <marker id="arrowRed" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
-            <path d="M0,0 L0,6 L9,3 z" fill="#ef4444"/>
-          </marker>
-          <marker id="arrowGray" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
-            <path d="M0,0 L0,6 L9,3 z" fill="#64748b"/>
-          </marker>
-          <marker id="arrowDarkRed" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
-            <path d="M0,0 L0,6 L9,3 z" fill="#991b1b"/>
-          </marker>
-        </defs>
-
-        {/* Deep black background */}
-        <rect x="0" y="0" width="800" height="450" fill="#000000"/>
-
-        {/* Right zone red tint */}
-        <rect x="533" y="120" width="237" height="280" fill="url(#rightZoneGradient)"/>
-
-        {/* Subtle grid */}
-        {[0, 1, 2, 3, 4, 5].map((i) => (
-          <line key={`h-${i}`} x1="50" y1={170 + i * 40} x2="750" y2={170 + i * 40} stroke="#1a1a2e" strokeWidth="1" />
-        ))}
-
-        {/* Zone dividers - dashed lines */}
-        <line x1="300" y1="120" x2="300" y2="400" stroke="#334155" strokeWidth="1" strokeDasharray="8,4" />
-        <line x1="533" y1="120" x2="533" y2="400" stroke="#4a1515" strokeWidth="1" strokeDasharray="8,4" />
-
-        {/* Axes */}
-        <line x1="50" y1="370" x2="750" y2="370" stroke="#374151" strokeWidth="2" />
-        <line x1="50" y1="170" x2="50" y2="370" stroke="#374151" strokeWidth="2" />
-
-        {/* Axis labels */}
-        <text x="400" y="420" textAnchor="middle" fill="#4b5563" fontSize="11" fontFamily="monospace" letterSpacing="1">
-          LOAD (REQ/SEC • DATA VOLUME • COMPLEXITY) →
-        </text>
-        <text x="20" y="270" textAnchor="middle" fill="#4b5563" fontSize="11" fontFamily="monospace" letterSpacing="1" transform="rotate(-90, 20, 270)">
-          EFFICIENCY
-        </text>
-
-        {/* ===== ANDROID ILLUSTRATIONS - Image placeholders ===== */}
-
-        {/* Left Zone - Happy Blue Android */}
-        <motion.g variants={fadeVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0.5}>
-          {/* Glow effect behind image */}
-          <circle cx="175" cy="70" r="50" fill="url(#blueRadial)" opacity="0.6"/>
-          <image
-            href={`${import.meta.env.BASE_URL}images/robot-happy.png`}
-            x="120" y="15"
-            width="110" height="110"
-            preserveAspectRatio="xMidYMid meet"
-          />
-        </motion.g>
-
-        {/* Middle Zone - Confused Purple Android */}
-        <motion.g variants={fadeVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1}>
-          {/* Glow effect behind image */}
-          <circle cx="416" cy="70" r="50" fill="url(#purpleRadial)" opacity="0.5"/>
-          <image
-            href={`${import.meta.env.BASE_URL}images/robot-confused.png`}
-            x="361" y="15"
-            width="110" height="110"
-            preserveAspectRatio="xMidYMid meet"
-          />
-        </motion.g>
-
-        {/* Right Zone - Error Red Android */}
-        <motion.g variants={fadeVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1.5}>
-          {/* Glow effect behind image */}
-          <circle cx="641" cy="70" r="50" fill="url(#redRadial)" opacity="0.6"/>
-          <image
-            href={`${import.meta.env.BASE_URL}images/robot-error.png`}
-            x="586" y="15"
-            width="110" height="110"
-            preserveAspectRatio="xMidYMid meet"
-          />
-        </motion.g>
-
-        {/* ===== CURVES with enhanced glow ===== */}
-
-        {/* AI SDLC curve - dark red, starts high, drops strongly - GLOW LAYER */}
-        <motion.path
-          d="M 60 180 C 120 182, 180 195, 240 215 C 300 235, 360 270, 420 305 C 480 340, 540 355, 600 360 C 660 365, 700 367, 740 368"
-          fill="none"
-          stroke="#991b1b"
-          strokeWidth="8"
-          strokeLinecap="round"
-          opacity="0.4"
-          filter="url(#glowRed)"
-          variants={pathVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          custom={0.2}
-        />
-        {/* AI SDLC curve - main line */}
-        <motion.path
-          d="M 60 180 C 120 182, 180 195, 240 215 C 300 235, 360 270, 420 305 C 480 340, 540 355, 600 360 C 660 365, 700 367, 740 368"
-          fill="none"
-          stroke="#dc2626"
-          strokeWidth="3"
-          strokeLinecap="round"
-          variants={pathVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          custom={0.2}
-        />
-
-        {/* Credibility curve - dark gray - GLOW LAYER */}
-        <motion.path
-          d="M 60 195 C 140 198, 220 210, 300 235 C 380 260, 460 290, 540 315 C 620 340, 680 350, 740 355"
-          fill="none"
-          stroke="#6b7280"
-          strokeWidth="6"
-          strokeLinecap="round"
-          opacity="0.3"
-          filter="url(#glowGray)"
-          variants={pathVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          custom={0.4}
-        />
-        {/* Credibility curve - main line */}
-        <motion.path
-          d="M 60 195 C 140 198, 220 210, 300 235 C 380 260, 460 290, 540 315 C 620 340, 680 350, 740 355"
-          fill="none"
-          stroke="#9ca3af"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          variants={pathVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          custom={0.4}
-        />
-
-        {/* Quality curve - bright gray - GLOW LAYER */}
-        <motion.path
-          d="M 60 210 C 140 215, 220 235, 300 260 C 380 285, 460 310, 540 332 C 620 354, 680 360, 740 362"
-          fill="none"
-          stroke="#e2e8f0"
-          strokeWidth="6"
-          strokeLinecap="round"
-          opacity="0.4"
-          filter="url(#glowGray)"
-          variants={pathVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          custom={0.6}
-        />
-        {/* Quality curve - main line */}
-        <motion.path
-          d="M 60 210 C 140 215, 220 235, 300 260 C 380 285, 460 310, 540 332 C 620 354, 680 360, 740 362"
-          fill="none"
-          stroke="#f1f5f9"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          variants={pathVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          custom={0.6}
-        />
-
-        {/* Cost curve - bright red - GLOW LAYER (strongest glow) - exponential growth y=2^x */}
-        <motion.path
-          d="M 60 365 C 200 364, 350 362, 450 358 C 530 352, 580 330, 620 280 C 660 220, 700 180, 740 168"
-          fill="none"
-          stroke="#ef4444"
-          strokeWidth="12"
-          strokeLinecap="round"
-          opacity="0.5"
-          filter="url(#glowRed)"
-          variants={pathVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          custom={0.8}
-        />
-        {/* Cost curve - main line */}
-        <motion.path
-          d="M 60 365 C 200 364, 350 362, 450 358 C 530 352, 580 330, 620 280 C 660 220, 700 180, 740 168"
-          fill="none"
-          stroke="#f87171"
-          strokeWidth="4"
-          strokeLinecap="round"
-          variants={pathVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          custom={0.8}
-        />
-
-        {/* Zone labels at bottom */}
-        <text x="175" y="395" textAnchor="middle" fill="#3b82f6" fontSize="10" fontFamily="monospace" fontWeight="600" letterSpacing="1">OPTIMAL</text>
-        <text x="416" y="395" textAnchor="middle" fill="#a855f7" fontSize="10" fontFamily="monospace" fontWeight="600" letterSpacing="1">DEGRADING</text>
-        <text x="641" y="395" textAnchor="middle" fill="#ef4444" fontSize="10" fontFamily="monospace" fontWeight="600" letterSpacing="1" filter="url(#glowRed)">CRITICAL</text>
-
-        {/* ===== COMPACT LEGEND - Bottom ===== */}
-        <motion.g initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 2.5 }}>
-          {/* AI SDLC - dark red with glow */}
-          <line x1="85" y1="438" x2="110" y2="438" stroke="#991b1b" strokeWidth="6" strokeLinecap="round" opacity="0.4" filter="url(#glowRed)"/>
-          <line x1="85" y1="438" x2="110" y2="438" stroke="#dc2626" strokeWidth="3" strokeLinecap="round"/>
-          <text x="118" y="441" fill="#dc2626" fontSize="9" fontFamily="monospace" fontWeight="500">AI SDLC</text>
-
-          {/* Credibility - gray */}
-          <line x1="200" y1="438" x2="225" y2="438" stroke="#6b7280" strokeWidth="5" strokeLinecap="round" opacity="0.3" filter="url(#glowGray)"/>
-          <line x1="200" y1="438" x2="225" y2="438" stroke="#9ca3af" strokeWidth="2.5" strokeLinecap="round"/>
-          <text x="233" y="441" fill="#9ca3af" fontSize="9" fontFamily="monospace" fontWeight="500">Credibility</text>
-
-          {/* Quality - bright white/gray */}
-          <line x1="330" y1="438" x2="355" y2="438" stroke="#e2e8f0" strokeWidth="5" strokeLinecap="round" opacity="0.4" filter="url(#glowGray)"/>
-          <line x1="330" y1="438" x2="355" y2="438" stroke="#f1f5f9" strokeWidth="2.5" strokeLinecap="round"/>
-          <text x="363" y="441" fill="#f1f5f9" fontSize="9" fontFamily="monospace" fontWeight="500">Quality</text>
-
-          {/* Cost - bright red with strong glow */}
-          <line x1="445" y1="438" x2="470" y2="438" stroke="#ef4444" strokeWidth="8" strokeLinecap="round" opacity="0.5" filter="url(#glowRed)"/>
-          <line x1="445" y1="438" x2="470" y2="438" stroke="#f87171" strokeWidth="4" strokeLinecap="round"/>
-          <text x="478" y="441" fill="#f87171" fontSize="9" fontFamily="monospace" fontWeight="500">Cost</text>
-        </motion.g>
-      </svg>
-    </div>
+    <FadeInView>
+      <div id={p.id} className="scroll-mt-24 pt-12 pb-12 border-b border-slate-900/80">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex items-center gap-4 mb-8">
+            <span className="text-[11px] font-mono text-slate-500 tracking-widest">
+              PROBLEM #{String(idx + 1).padStart(2, "0")}
+            </span>
+            <div className="flex-1 h-px bg-slate-800" />
+          </div>
+          <div className="grid lg:grid-cols-[1fr_auto_1fr] gap-6 items-stretch">
+            <div className={`relative bg-gradient-to-br ${p.accent} border border-red-500/20 rounded-2xl p-7`}>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-red-500/15 flex items-center justify-center text-red-400">
+                  <Icon className="w-4 h-4" />
+                </div>
+                <span className="text-[11px] font-mono uppercase tracking-widest text-red-400">
+                  The Problem
+                </span>
+              </div>
+              <h3 className="text-xl lg:text-2xl font-bold text-white leading-snug mb-4">
+                {p.problemHeadline}
+              </h3>
+              <p className="text-slate-400 leading-relaxed">{p.problemDetail}</p>
+            </div>
+            <div className="hidden lg:flex items-center justify-center w-14">
+              <ArrowRight className="w-7 h-7 text-slate-600" />
+            </div>
+            <div className="flex lg:hidden items-center justify-center py-2">
+              <ArrowRight className="w-6 h-6 text-slate-600 rotate-90" />
+            </div>
+            <div className="relative bg-gradient-to-br from-[#1A6BF5]/10 to-slate-900/40 border border-[#1A6BF5]/40 rounded-2xl p-7 shadow-[0_0_30px_rgba(26,107,245,0.08)]">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-[#1A6BF5]/15 flex items-center justify-center text-[#4D8EF8]">
+                  <Zap className="w-4 h-4" />
+                </div>
+                <span className="text-[11px] font-mono uppercase tracking-widest text-[#4D8EF8]">
+                  Traigent's Response
+                </span>
+              </div>
+              <h3 className="text-xl lg:text-2xl font-bold text-white leading-snug mb-4">
+                {p.valueHeadline}
+              </h3>
+              <p className="text-slate-300 leading-relaxed">{p.valueDetail}</p>
+              <div className="mt-5 pt-5 border-t border-slate-800/80">
+                <div className="text-[10px] font-mono uppercase tracking-widest text-slate-500 mb-1">
+                  Outcome
+                </div>
+                <div className="text-sm text-white font-medium">{p.outcome}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </FadeInView>
   );
-};
+}
 
-const LifecycleRow = ({ step, before, after, difficulty, beforeDiff, afterDiff, same, highlight, beforeWidth = "w-14", afterWidth = "w-14" }) => (
-  <div className={`grid grid-cols-[180px_1fr_1fr] gap-4 px-3 py-1.5 items-center ${highlight ? "bg-blue-500/5 rounded-md border border-blue-500/10 -mx-3 px-6" : ""}`}>
-    <div className="text-xs text-white font-medium truncate">{step}</div>
-    <div className="flex items-center gap-2">
-      <div className={`h-5 rounded flex items-center px-2 ${same ? "bg-slate-700" : "bg-gradient-to-r from-red-400 to-red-300"} ${same ? beforeWidth : beforeWidth}`}>
-        <span className={`text-[9px] font-mono font-medium ${same ? "text-slate-400" : "text-slate-900"}`}>{before}</span>
-      </div>
-      {(difficulty || beforeDiff) && <DifficultyBadge level={beforeDiff || difficulty} />}
-    </div>
-    <div className="flex items-center gap-2">
-      <div className={`h-5 rounded flex items-center px-2 ${same ? "bg-slate-700" : "bg-gradient-to-r from-blue-500 to-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.5)]"} ${same ? afterWidth : afterWidth}`}>
-        <span className={`text-[9px] font-mono font-medium ${same ? "text-slate-400" : "text-slate-900"}`}>{after}</span>
-      </div>
-      {afterDiff && <DifficultyBadge level={afterDiff} />}
-    </div>
-  </div>
-);
-
+// ============================================================================
+// Page
+// ============================================================================
 export default function ValueProposition() {
   return (
     <div className="bg-slate-950 text-white min-h-screen">
       <Helmet>
-        <title>Value Proposition · Traigent</title>
-        <meta name="description" content="Why Traigent: better agents, lower spend, higher confidence. The full value story for AI/ML engineers and engineering leaders optimizing production agents." />
-        <meta property="og:title" content="Traigent — Value Proposition" />
-        <meta property="og:description" content="Better agents. Lower spend. Higher confidence. The case for AI Agent Optimization." />
+        <title>The Problem · Traigent</title>
+        <meta name="description" content="Six truths about running AI agents in production that lead to one conclusion: optimization is not optional. Plus five specific pain patterns and how Traigent solves them." />
+        <meta property="og:title" content="Traigent — The Problem" />
+        <meta property="og:description" content="Six truths that lead to one conclusion. Why AI agent optimization is not optional." />
         <meta property="og:type" content="website" />
       </Helmet>
-      {/* Header */}
+
+      {/* ===== Problem section ===== */}
+      <section className="relative overflow-hidden border-b border-slate-900 bg-[#080808]">
+        <div className="absolute inset-0 bg-gradient-to-b from-red-950/30 via-transparent to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(239,68,68,0.1),transparent_60%)] pointer-events-none" />
+
+        {/* Section hero */}
+        <div className="relative max-w-4xl mx-auto px-6 pt-20 pb-12 text-center">
+          <FadeInView>
+            <div className="inline-flex items-center gap-4 mb-8">
+              <span className="w-3 h-3 rounded-full bg-red-500 animate-pulse" />
+              <span className="text-2xl md:text-3xl lg:text-4xl font-extrabold uppercase tracking-tight text-red-400">
+                The Problem
+              </span>
+              <span className="w-3 h-3 rounded-full bg-red-500 animate-pulse" />
+            </div>
+          </FadeInView>
+          <FadeInView delay={0.1}>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6 leading-[1.05]" style={{ textWrap: "balance" }}>
+              Six truths that lead to{" "}
+              <span className="text-[#1A6BF5]">one conclusion.</span>
+            </h2>
+          </FadeInView>
+          <FadeInView delay={0.2}>
+            <p className="text-lg md:text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed" style={{ textWrap: "balance" }}>
+              Each truth follows from the last. Together they explain why optimizing AI agents is not optional.
+            </p>
+          </FadeInView>
+        </div>
+
+        {/* Truths chain */}
+        <div className="relative max-w-3xl mx-auto px-6 pb-16">
+          {TRUTHS.map((t, i) => (
+            <FadeInView key={t.n} delay={0.05 * i}>
+              <div className="relative pl-24 pb-6">
+                {i < TRUTHS.length - 1 && (
+                  <div className="absolute left-[39px] top-20 bottom-0 w-px bg-gradient-to-b from-slate-700 to-slate-800" />
+                )}
+                <div className="absolute left-0 top-0 w-20 h-20 rounded-full bg-gradient-to-br from-red-500/25 to-red-500/5 border border-red-500/50 flex flex-col items-center justify-center">
+                  <span className="text-[13px] font-mono uppercase tracking-wider text-red-400 leading-tight font-bold">Truth</span>
+                  <span className="text-3xl font-extrabold font-mono text-red-300 leading-tight">#{t.n}</span>
+                </div>
+                <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-5 ml-2">
+                  <p className="text-base md:text-lg text-slate-200 leading-relaxed" style={{ textWrap: "pretty" }} dangerouslySetInnerHTML={{ __html: t.text }} />
+                </div>
+              </div>
+            </FadeInView>
+          ))}
+
+          {/* The Traigent Solution divider */}
+          <FadeInView delay={0.4}>
+            <div className="flex flex-col items-center justify-center my-12 gap-4">
+              <div className="flex items-center w-full gap-4">
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[#1A6BF5]/60" />
+                <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#1A6BF5]/60" />
+              </div>
+              <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-center">
+                <span className="text-white">The </span>
+                <span className="text-[#4D8EF8]">Traigent</span>
+                <span className="text-white"> Solution</span>
+              </h2>
+              <div className="flex items-center w-full gap-4">
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[#1A6BF5]/60" />
+                <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#1A6BF5]/60" />
+              </div>
+            </div>
+          </FadeInView>
+
+          {/* Conclusion card 1 — what Traigent does */}
+          <FadeInView delay={0.45}>
+            <div className="relative bg-gradient-to-br from-[#1A6BF5]/15 to-slate-900/40 border-2 border-[#1A6BF5]/50 rounded-2xl p-7 mb-4 shadow-[0_0_40px_rgba(26,107,245,0.12)]">
+              <div className="text-3xl md:text-4xl font-extrabold text-[#4D8EF8] mb-4 tracking-tight">Traigent</div>
+              <ul className="space-y-3">
+                {[
+                  { before: "Finds the optimum in ", blue: "hours, not weeks", after: "." },
+                  { before: "", blue: "Automatically", after: ", not manually." },
+                  { before: "Requiring only ", blue: "a fraction of the search space", after: " to converge." },
+                  { before: "With ", blue: "confidence", after: ", not guesswork." },
+                ].map((b, i) => (
+                  <li key={i} className="flex items-start gap-3 text-lg md:text-xl font-bold text-white leading-snug">
+                    <span className="text-[#4D8EF8] mt-1 flex-shrink-0 font-bold">✓</span>
+                    <span>
+                      {b.before}
+                      <span className="text-[#4D8EF8]">{b.blue}</span>
+                      {b.after}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </FadeInView>
+
+          {/* Conclusion card 2 — outcomes */}
+          <FadeInView delay={0.5}>
+            <div className="relative bg-gradient-to-br from-[#1A6BF5]/15 to-slate-900/40 border-2 border-[#1A6BF5]/50 rounded-2xl p-7 shadow-[0_0_40px_rgba(26,107,245,0.12)]">
+              <div className="text-3xl md:text-4xl font-extrabold text-[#4D8EF8] mb-4 tracking-tight">Traigent Benefits</div>
+              <ul className="space-y-3">
+                {[
+                  { phrase: "Saves you ", strong: "a lot of LLM costs", rest: " over the lifecycle." },
+                  { phrase: "Reduces ", strong: "engineering costs", rest: "." },
+                  { phrase: "Shortens ", strong: "time to market", rest: "." },
+                  { phrase: "Increases ", strong: "confidence significantly", rest: "." },
+                ].map((b, i) => (
+                  <li key={i} className="flex items-start gap-3 text-lg md:text-xl font-bold text-white leading-snug">
+                    <span className="text-[#4D8EF8] mt-1 flex-shrink-0 font-bold">✓</span>
+                    <span>
+                      {b.phrase}
+                      <strong className="text-white">{b.strong}</strong>
+                      {b.rest}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </FadeInView>
+
+          <FadeInView delay={0.55}>
+            <div className="text-center mt-8 text-sm text-slate-500">
+              <a
+                href="#cost-explosion"
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById("cost-explosion")?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="text-slate-400 hover:text-white inline-flex items-center gap-1 transition-colors"
+              >
+                See the five pain patterns in detail <ArrowRight className="w-4 h-4" />
+              </a>
+            </div>
+          </FadeInView>
+        </div>
+      </section>
+
+      {/* Quick scan grid */}
+      <section className="bg-slate-950/40 border-b border-slate-900">
+        <div className="max-w-7xl mx-auto px-6 py-10">
+          <FadeInView>
+            <div className="flex items-baseline justify-between mb-6">
+              <h2 className="text-sm font-mono uppercase tracking-widest text-slate-400">The Five Problems</h2>
+              <span className="text-xs text-slate-600 font-mono hidden md:block">click any tile to jump</span>
+            </div>
+          </FadeInView>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {PROBLEMS.map((p, i) => (
+              <FadeInView key={p.id} delay={0.05 * i}>
+                <QuickScanCard p={p} idx={i} />
+              </FadeInView>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 5 detailed rows */}
+      {PROBLEMS.map((p, i) => (
+        <ProblemRow key={p.id} p={p} idx={i} />
+      ))}
+
+      {/* V1 Header — moved here from the top */}
       <header className="bg-gradient-to-br from-slate-950 to-indigo-950 py-12 border-b border-slate-800">
         <div className="max-w-5xl mx-auto px-6">
           <FadeInView>
@@ -388,9 +410,9 @@ export default function ValueProposition() {
               alt="Traigent Logo"
               className="h-14 mb-6"
             />
-            <h1 className="text-3xl md:text-4xl font-bold mb-3">
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">
               The First <span className="text-indigo-400">AI Agents Continuous Optimization</span> Infrastructure
-            </h1>
+            </h2>
             <p className="text-xl text-slate-300">
               Building AI agents is easy; making them production-ready is not.
             </p>
@@ -398,162 +420,7 @@ export default function ValueProposition() {
         </div>
       </header>
 
-      {/* Graph Section */}
-      <section className="py-12 border-b border-slate-800">
-        <div className="max-w-5xl mx-auto px-6">
-          <FadeInView>
-            <h2 className="text-2xl font-bold mb-2 text-center">Do You <span className="text-red-400">TRUST</span> Your AI Agent at Scale?</h2>
-            <p className="text-slate-400 mb-8 text-center">Building AI agents is easy; making them production-ready is not.</p>
-          </FadeInView>
-
-          {/* Animated Graph */}
-          <FadeInView className="mb-12">
-            <ScaleGraph />
-          </FadeInView>
-
-          {/* Problem & Solution Side by Side */}
-          <div className="grid md:grid-cols-2 gap-6">
-            <FadeInView delay={0.1}>
-              <ProblemCard />
-            </FadeInView>
-            <FadeInView delay={0.2}>
-              <SolutionCard />
-            </FadeInView>
-          </div>
-        </div>
-      </section>
-
-      {/* Lifecycle Comparison */}
-      <section className="py-12 border-b border-slate-800">
-        <div className="max-w-6xl mx-auto px-6">
-          <FadeInView>
-            <h2 className="text-2xl font-bold mb-2">AI Agent Development <span className="text-blue-400">Lifecycle</span></h2>
-            <p className="text-slate-400 text-sm mb-6">Timeline comparison: Before vs. With Traigent</p>
-          </FadeInView>
-
-          {/* Legend */}
-          <div className="flex gap-6 mb-6 text-xs">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded bg-red-400"></div>
-              <span className="text-slate-400">Before Traigent</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
-              <span className="text-slate-400">With Traigent</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded bg-gray-600"></div>
-              <span className="text-slate-400">Unchanged</span>
-            </div>
-          </div>
-
-          <div className="grid lg:grid-cols-[1fr_280px] gap-8">
-            {/* Timeline */}
-            <div className="space-y-4">
-              {/* Header */}
-              <div className="grid grid-cols-[180px_1fr_1fr] gap-4 px-3 text-[10px] uppercase tracking-wider text-slate-500">
-                <span>Step</span>
-                <span className="text-red-400">Before</span>
-                <span className="text-blue-400">With Traigent</span>
-              </div>
-
-              {/* Planning Phase */}
-              <div>
-                <div className="flex items-center gap-2 px-3 py-2 bg-slate-900/50 rounded-md mb-2">
-                  <span>📋</span>
-                  <span className="text-xs font-semibold uppercase tracking-wide text-purple-400">Planning</span>
-                </div>
-                <LifecycleRow step="Problem Definition" before="1-5d" after="Same" difficulty="medium" same />
-                <LifecycleRow step="Architecture Design" before="1-2w" after="Same" difficulty="medium" same />
-              </div>
-
-              {/* Building Phase */}
-              <div>
-                <div className="flex items-center gap-2 px-3 py-2 bg-slate-900/50 rounded-md mb-2">
-                  <span>🔧</span>
-                  <span className="text-xs font-semibold uppercase tracking-wide text-blue-400">Building</span>
-                </div>
-                <LifecycleRow step="Data Preparation" before="2-6w" after="Same" difficulty="hard" same />
-                <LifecycleRow step="Prompt Engineering" before="3-8 weeks" after="<1w" beforeDiff="hard" afterDiff="easy" highlight beforeWidth="w-48" afterWidth="w-12" />
-                <LifecycleRow step="Core Development" before="1-4 weeks" after="<1w" beforeDiff="medium" afterDiff="easy" highlight beforeWidth="w-32" afterWidth="w-12" />
-                <LifecycleRow step="UX Design" before="2d-2w" after="Same" difficulty="easy" same />
-              </div>
-
-              {/* Testing Phase */}
-              <div>
-                <div className="flex items-center gap-2 px-3 py-2 bg-slate-900/50 rounded-md mb-2">
-                  <span>🛡️</span>
-                  <span className="text-xs font-semibold uppercase tracking-wide text-yellow-400">Testing & Safety</span>
-                </div>
-                <LifecycleRow step="Evaluation & Benchmarking" before="1-6 weeks" after="<1w" beforeDiff="hard" afterDiff="easy" highlight beforeWidth="w-40" afterWidth="w-12" />
-                <LifecycleRow step="Safety & Guardrails" before="2-4 weeks" after="<1w" beforeDiff="hard" afterDiff="easy" highlight beforeWidth="w-32" afterWidth="w-12" />
-              </div>
-
-              {/* Launch Phase */}
-              <div>
-                <div className="flex items-center gap-2 px-3 py-2 bg-slate-900/50 rounded-md mb-2">
-                  <span>🚀</span>
-                  <span className="text-xs font-semibold uppercase tracking-wide text-blue-400">Launch</span>
-                </div>
-                <LifecycleRow step="Deployment & Monitoring" before="1-5d" after="Same" difficulty="easy" same />
-              </div>
-            </div>
-
-            {/* Summary Panel */}
-            <div className="space-y-4">
-              {/* Time to Market */}
-              <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-4">
-                <div className="text-xs font-semibold text-slate-400 mb-3">Total Time to Market</div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 text-center">
-                    <div className="text-xl font-bold font-mono text-red-400">12-34w</div>
-                    <div className="text-[10px] text-slate-500 uppercase mt-1">Before</div>
-                  </div>
-                  <div className="bg-blue-500/10 border border-blue-500/40 rounded-lg p-3 text-center shadow-[0_0_20px_rgba(59,130,246,0.2)]">
-                    <div className="text-xl font-bold font-mono text-blue-400">7-18w</div>
-                    <div className="text-[10px] text-slate-500 uppercase mt-1">With Traigent</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Ongoing Iteration */}
-              <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-4">
-                <div className="text-xs font-semibold text-slate-400 mb-3">Ongoing Iteration & Improvement</div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 text-center">
-                    <div className="text-xl font-bold font-mono text-red-400">0.5</div>
-                    <div className="text-[10px] text-slate-500 uppercase mt-1">Person/Week</div>
-                  </div>
-                  <div className="bg-blue-500/10 border border-blue-500/40 rounded-lg p-3 text-center shadow-[0_0_20px_rgba(59,130,246,0.2)]">
-                    <div className="text-xl font-bold font-mono text-blue-400">0.25</div>
-                    <div className="text-[10px] text-slate-500 uppercase mt-1">Person/Week</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Time Saved Badge */}
-              <div className="bg-blue-500/10 border border-blue-500/40 rounded-lg p-4 text-center shadow-[0_0_25px_rgba(59,130,246,0.25)]">
-                <span className="text-xs text-slate-400 uppercase tracking-wider">Time Saved</span>
-                <div className="text-2xl font-bold font-mono text-blue-400 mt-1">40-60%</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section className="py-12 border-b border-slate-800 bg-slate-900/30">
-        <div className="max-w-5xl mx-auto px-6">
-          <FadeInView>
-            <h2 className="text-2xl font-bold mb-8">How It Works</h2>
-          </FadeInView>
-          <FadeInView>
-            <FlowDiagram variant="dark" />
-          </FadeInView>
-        </div>
-      </section>
-
-      {/* Target Users */}
+      {/* V1 Target Users */}
       <section className="py-12 border-b border-slate-800">
         <div className="max-w-5xl mx-auto px-6">
           <FadeInView>
@@ -563,7 +430,7 @@ export default function ValueProposition() {
             {[
               { icon: <Users className="w-5 h-5" />, title: "AI Engineers", desc: "SDK integration for code-first optimization" },
               { icon: <TrendingUp className="w-5 h-5" />, title: "No-Code Users", desc: "Studio interface for visual configuration" },
-              { icon: <Zap className="w-5 h-5" />, title: "Business Stakeholders", desc: "Goals & ROI tracking with clear metrics" }
+              { icon: <Zap className="w-5 h-5" />, title: "Business Stakeholders", desc: "Goals & ROI tracking with clear metrics" },
             ].map((item, i) => (
               <FadeInView key={i} delay={i * 0.1} className="flex gap-4 items-start">
                 <div className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center text-indigo-400 flex-shrink-0">
@@ -579,7 +446,7 @@ export default function ValueProposition() {
         </div>
       </section>
 
-      {/* Team */}
+      {/* V1 Team */}
       <section className="py-12 border-b border-slate-800 bg-slate-900/30">
         <div className="max-w-5xl mx-auto px-6">
           <FadeInView>
@@ -610,34 +477,33 @@ export default function ValueProposition() {
         </div>
       </section>
 
-      {/* CTA */}
+      {/* CTA — standard site-wide buttons */}
       <section className="py-12 bg-gradient-to-br from-indigo-900/30 to-purple-900/30">
         <div className="max-w-5xl mx-auto px-6 text-center">
           <FadeInView>
             <h2 className="text-2xl font-bold mb-3">See These Results On Your System</h2>
             <p className="text-slate-300 mb-6">1-week POC to compare results vs. your benchmark</p>
-            <div className="flex flex-wrap justify-center gap-4">
+            <div className="flex flex-wrap justify-center gap-3">
               <a
                 href="https://meetings-eu1.hubspot.com/amir8"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center bg-white text-slate-900 hover:bg-gray-100 px-6 py-3 rounded-lg font-medium"
+                className="inline-flex items-center gap-2 bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white px-6 py-3 rounded-lg font-medium transition-colors"
               >
-                Request a Demo
-                <ArrowRight className="ml-2 h-4 w-4" />
+                Book a 15-min call <ArrowRight className="w-4 h-4" />
               </a>
               <Link
-                to="/"
-                className="inline-flex items-center bg-transparent border border-slate-600 text-slate-200 hover:bg-white/5 px-6 py-3 rounded-lg font-medium"
+                to="/roi"
+                className="inline-flex items-center gap-2 border border-slate-700 hover:border-slate-500 text-slate-200 hover:text-white px-6 py-3 rounded-lg font-medium transition-colors"
               >
-                Back to Homepage
+                Run the ROI calculator
               </Link>
             </div>
           </FadeInView>
         </div>
       </section>
 
-      {/* Footer */}
+      {/* V1 Footer */}
       <footer className="py-8 border-t border-slate-800">
         <div className="max-w-5xl mx-auto px-6 text-center text-slate-500 text-sm">
           <p>© {new Date().getFullYear()} Traigent Ltd. All rights reserved.</p>

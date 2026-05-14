@@ -127,15 +127,8 @@ export default function TopNav() {
                 onScroll={scrollOrNavigate}
               />
               <Link to="/value-proposition" className="text-slate-300 hover:text-white transition-colors">
-                Use Cases
+                The Problem
               </Link>
-              <a
-                href="#"
-                onClick={scrollOrNavigate("customers")}
-                className="text-slate-300 hover:text-white transition-colors cursor-pointer"
-              >
-                Customers
-              </a>
               <Link
                 to="/blog"
                 className="text-slate-300 hover:text-white transition-colors"
@@ -163,7 +156,7 @@ export default function TopNav() {
                 onClick={scrollOrNavigate("contact")}
                 className="text-slate-300 hover:text-white transition-colors cursor-pointer"
               >
-                Contact
+                Contact Us
               </a>
             </div>
 

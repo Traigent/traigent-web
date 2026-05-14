@@ -77,7 +77,7 @@ function SlideStat() {
   return (
     <div className="max-w-6xl mx-auto">
       <h2 className="text-4xl md:text-5xl font-bold text-white mb-3 text-center" style={{ textWrap: "balance" }}>
-        Find the Best Configuration in <span style={{ color: BLUE }}>Hours, Not Days</span>
+        Find the Best Configuration in <span style={{ color: BLUE }}>Hours, Not Weeks</span>
       </h2>
       <p className="text-lg md:text-xl text-slate-400 mb-8 text-center">
         Traigent's optimization engine converges to the optimum in <span className="text-white font-semibold">under 10%</span> of the experiments.
@@ -93,7 +93,7 @@ function SlideStat() {
         {[ [95,180],[135,210],[170,155],[210,200],[245,135],[280,195],[320,165],[355,215],[395,175],[430,195] ].map(([cx,cy],i)=>(
           <circle key={i} cx={cx} cy={cy} r="4" fill="#64748b"/>
         ))}
-        <text x="255" y="252" textAnchor="middle" fill="#475569" fontSize="13" fontFamily="monospace">5–20 guesses · days · no certainty</text>
+        <text x="255" y="252" textAnchor="middle" fill="#475569" fontSize="13" fontFamily="monospace">5–20 guesses · weeks · no certainty</text>
 
         {/* Right: Traigent */}
         <rect x="510" y="20" width="450" height="240" rx="12" fill="#0f172a" stroke={BLUE} strokeWidth="2.5"/>
@@ -118,7 +118,7 @@ function SlideStat() {
         </div>
         <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-4">
           <div className="text-2xl md:text-3xl font-bold" style={{ color: BLUE }}>Hours</div>
-          <p className="text-slate-400 text-sm mt-1">not days</p>
+          <p className="text-slate-400 text-sm mt-1">not weeks</p>
         </div>
         <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-4">
           <div className="text-2xl md:text-3xl font-bold" style={{ color: BLUE }}>Certain</div>
@@ -254,7 +254,7 @@ function SlideCTA() {
 const slides = [
   { title: "Hook", component: SlideHook },
   { title: "The 60-Second Problem", component: SlideProblem },
-  { title: "Hours, Not Days", component: SlideStat },
+  { title: "Hours, Not Weeks", component: SlideStat },
   { title: "Customers (Early Adopters)", component: SlideCustomers },
   { title: "Three Products In One", component: SlideThreeProducts },
   { title: "Two Ways to See It", component: SlideCTA },
