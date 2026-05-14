@@ -3,7 +3,7 @@ title: "The Model Myth: Why Configuration Beats Model Choice for Agent ROI"
 slug: "the-model-myth"
 date: "2026-05-14"
 summary: "A common assumption in AI engineering: pick the best model, done. The reality: configuration space is vast, and a cheap model with smart config routinely beats an expensive model with default settings."
-author: "Amir Barzelay"
+author: "Amir Barnea"
 readingTime: "6 min read"
 tags: "optimization,configuration,llm-cost"
 featured: true

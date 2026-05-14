@@ -3,7 +3,7 @@ title: "The Business Case for Automated Cost-Performance Optimization for AI Age
 slug: "the-business-case"
 date: "2026-05-16"
 summary: "Production AI agents are recurring-cost products. The configuration you ship under time pressure becomes the monthly bill you pay forever. This post lays out the economics of treating agent configuration as a real optimization problem — and the cost of treating it as a one-time engineering decision."
-author: "Amir Barzelay"
+author: "Amir Barnea"
 readingTime: "9 min read"
 tags: "business-case,roi,optimization,cost"
 featured: true

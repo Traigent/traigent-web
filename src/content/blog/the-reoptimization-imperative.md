@@ -3,7 +3,7 @@ title: "The Re-Optimization Imperative: Why Your Best Configuration Has a Shelf 
 slug: "the-reoptimization-imperative"
 date: "2026-05-15"
 summary: "You tuned your agent six months ago and it still runs. So you're done, right? Wrong. The optimum drifts continuously as models release, prices shift, and usage patterns evolve. Tuned-and-forgotten is the silent ROI leak in most production AI teams."
-author: "Amir Barzelay"
+author: "Amir Barnea"
 readingTime: "5 min read"
 tags: "optimization,lifecycle,cost"
 featured: true

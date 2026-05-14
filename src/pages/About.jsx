@@ -8,15 +8,39 @@ const BLUE = "#1A6BF5";
 // === Team — fill in real bios and photos. ===
 // Photo paths can point to /public/team/*.jpg (recommended) or external URLs.
 const TEAM = [
+  // Founders (per OnePager / Investors pages):
+  // - Achi Solomon — Co-founder, CEO (achi@traigent.ai)
+  // - Dr. Nimrod Busany — Founder (nimrod@traigent.ai)
+  // - Michael Sokolski — Co-founder, CTO (michael@traigent.ai)
+  // Fill in real bios and photos when ready; placeholders below.
   {
-    name: "Amir Barzelay",
-    role: "Founder & CEO",
-    photo: null, // e.g. "/team/amir.jpg"
-    bio: "Building Traigent to make AI agent optimization a solved problem.",
+    name: "Achi Solomon",
+    role: "Co-founder & CEO",
+    photo: null,
+    bio: "Driving Traigent's mission to make AI agent optimization a solved problem.",
     linkedin: "",
   },
-  // Add additional team members here:
-  // { name: "...", role: "...", photo: "/team/...jpg", bio: "...", linkedin: "..." },
+  {
+    name: "Dr. Nimrod Busany",
+    role: "Founder",
+    photo: null,
+    bio: "",
+    linkedin: "",
+  },
+  {
+    name: "Michael Sokolski",
+    role: "Co-founder & CTO",
+    photo: null,
+    bio: "",
+    linkedin: "",
+  },
+  {
+    name: "Amir Barnea",
+    role: "VP Sales",
+    photo: null,
+    bio: "Helping engineering leaders see what Traigent can save them — in inference cost, engineer time, and shipping speed.",
+    linkedin: "",
+  },
 ];
 
 const VALUES = [

@@ -3,7 +3,7 @@ title: "The Eval Trap: Why Measurement Isn't Optimization"
 slug: "the-eval-trap"
 date: "2026-05-15"
 summary: "Evaluation frameworks tell you how each configuration scored. They don't tell you which configuration to try next, search the configuration space, or refine your benchmark over time. Eval is necessary — but it's not sufficient for ROI."
-author: "Amir Barzelay"
+author: "Amir Barnea"
 readingTime: "5 min read"
 tags: "optimization,evaluation,benchmarks"
 ---

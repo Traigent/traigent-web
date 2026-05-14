@@ -1,8 +1,11 @@
 // Tiny frontmatter parser. We avoid `gray-matter` because it has Node deps that
 // don't tree-shake cleanly into the browser bundle.
 function parseFrontmatter(raw) {
-  const m = raw.match(/^---\r?\n([\s\S]+?)\r?\n---\r?\n([\s\S]*)$/);
-  if (!m) return { meta: {}, body: raw };
+  // Strip UTF-8 BOM if present (Windows PowerShell 5.1's `-Encoding utf8`
+  // prepends U+FEFF, which would otherwise break the `^---` match).
+  const clean = raw.replace(/^﻿/, "");
+  const m = clean.match(/^---\r?\n([\s\S]+?)\r?\n---\r?\n([\s\S]*)$/);
+  if (!m) return { meta: {}, body: clean };
   const meta = {};
   for (const line of m[1].split(/\r?\n/)) {
     const kv = line.match(/^(\w+):\s*(.+)$/);

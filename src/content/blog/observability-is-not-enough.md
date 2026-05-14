@@ -3,7 +3,7 @@ title: "Observability Is Necessary But Not Sufficient"
 slug: "observability-is-not-enough"
 date: "2026-05-16"
 summary: "Observability tools tell you what happened on each agent call. That's the prerequisite for optimization, not the substitute. If your stack ends at 'we have traces,' you're paying for instrumentation while making configuration decisions on gut feel."
-author: "Amir Barzelay"
+author: "Amir Barnea"
 readingTime: "5 min read"
 tags: "optimization,observability,tracing"
 ---
