@@ -32,7 +32,7 @@ Probably not anymore. Models drop monthly, provider prices shift ~5–10× year-
 
 For ~3–5 dimensions, yes — slowly. The full configuration space has 10+ dimensions and millions of valid combinations. Manual search hits less than 0.001% of it, and the dimensions an engineer can't hold in working memory get defaulted and ignored. → [Why manual catch-up fails ↓](#why-manual-catch-up-fails)
 
-**Q: How much do teams typically save?**
+**Q: How much can teams typically save?**
 
 30–60% LLM cost reduction at the same accuracy. On a representative $20k/month agent, that's **$6–12k/month — $72k–$144k/year — recurring.** Plus reclaimed engineer time. → [See the math ↓](#the-math)
 
