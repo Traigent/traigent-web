@@ -13,10 +13,10 @@ const productItems = [
 ];
 
 const resourcesItems = [
-  { label: "Blog", href: "/blog", desc: "Insights on agent optimization" },
   { label: "ROI Calculator", href: "/roi", desc: "Estimate your 12-month savings" },
   { label: "Compare", href: "/compare", desc: "vs. Langfuse · Arize · Helicone · Braintrust" },
   { label: "FAQ", href: "/faq", desc: "Common questions" },
+  { label: "Docs", href: "https://github.com/Traigent/Traigent", external: true, desc: "SDK on GitHub" },
   { label: "About", href: "/about", desc: "Team, mission, values" },
   { label: "Get Started", href: "/get-started" },
   { label: "One Pager", href: "/one-pager" },
@@ -128,14 +128,12 @@ export default function TopNav() {
               >
                 Customers
               </a>
-              <a
-                href="https://github.com/Traigent/Traigent"
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                to="/blog"
                 className="text-slate-300 hover:text-white transition-colors"
               >
-                Docs
-              </a>
+                Why Traigent
+              </Link>
               <a
                 href="https://portal.traigent.ai/pricing"
                 target="_blank"

@@ -1,6 +1,7 @@
 ﻿import { motion } from "framer-motion";
 import { Zap, TrendingUp, Users, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { ProblemCard, SolutionCard } from "../components/ProblemSolutionSection";
 import FlowDiagram from "../components/FlowDiagram";
 
@@ -371,6 +372,13 @@ const LifecycleRow = ({ step, before, after, difficulty, beforeDiff, afterDiff, 
 export default function ValueProposition() {
   return (
     <div className="bg-slate-950 text-white min-h-screen">
+      <Helmet>
+        <title>Value Proposition · Traigent</title>
+        <meta name="description" content="Why Traigent: better agents, lower spend, higher confidence. The full value story for AI/ML engineers and engineering leaders optimizing production agents." />
+        <meta property="og:title" content="Traigent — Value Proposition" />
+        <meta property="og:description" content="Better agents. Lower spend. Higher confidence. The case for AI Agent Optimization." />
+        <meta property="og:type" content="website" />
+      </Helmet>
       {/* Header */}
       <header className="bg-gradient-to-br from-slate-950 to-indigo-950 py-12 border-b border-slate-800">
         <div className="max-w-5xl mx-auto px-6">

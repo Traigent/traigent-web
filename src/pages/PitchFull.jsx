@@ -319,7 +319,7 @@ function Slide08OptEngine() {
         Inside the <span style={{ color: BLUE }}>Optimization Engine</span>
       </h2>
       <p className="text-xl text-slate-400 mb-12 text-center max-w-3xl mx-auto">
-        Bayesian-style smart exploration — gets smarter with every run.
+        Principled, learning-based exploration — gets smarter with every run.
       </p>
       <div className="grid md:grid-cols-3 gap-6">
         <div className="bg-slate-900/60 border border-slate-700/50 rounded-2xl p-6">

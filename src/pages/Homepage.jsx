@@ -9,6 +9,7 @@ import { Helmet } from "react-helmet-async";
 import OptimizationTable from "../components/OptimizationTable";
 import StartNowModal from "../components/StartNowModal";
 import ContactSection from "../components/ContactSection";
+import BlogHighlights from "../components/BlogHighlights";
 import { trackEvent } from "../lib/analytics";
 
 // Placeholder for the Button component
@@ -274,6 +275,26 @@ export default function Homepage() {
               Book a demo
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
+          </motion.div>
+
+          {/* Skeptic hook → routes to objection-handler blog */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.45 }}
+            className="text-center mt-5"
+          >
+            <Link
+              to="/blog/the-model-myth"
+              onClick={() => trackEvent("hero_skeptic_hook_clicked", { post: "the-model-myth" })}
+              className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-[#1A6BF5] transition-colors group"
+            >
+              <span className="italic">Skeptical?</span>
+              <span className="underline underline-offset-4 decoration-slate-700 group-hover:decoration-[#1A6BF5]">
+                The model isn't what's costing you
+              </span>
+              <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
+            </Link>
           </motion.div>
 
           {/* Tagline below CTAs */}
@@ -971,6 +992,9 @@ constraints:
           </div>
         </div>
       </section>
+
+      {/* From the blog — objection-handler content surfaced on the homepage */}
+      <BlogHighlights />
 
       <ContactSection />
 

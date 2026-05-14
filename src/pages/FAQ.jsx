@@ -1,16 +1,33 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom";
 import { trackEvent } from "../lib/analytics";
 
 const BLUE = "#1A6BF5";
 
 // Edit FAQs here. Each Q/A is rendered AND injected into FAQPage JSON-LD.
+// Optional `readMore: { href, label }` adds a deep-dive blog link below the answer.
 const FAQS = [
   {
     q: "What is Traigent?",
     a: "Traigent is an AI Agent Optimization Platform. We automatically find the best cost-performance configuration for your agent across hundreds (or millions) of model and configuration combinations. The platform also includes built-in benchmark evolution and full observability and tracing.",
+  },
+  {
+    q: "Doesn't the model determine most of the quality and cost?",
+    a: "No — configuration variance is often larger than model variance. A cheaper model with the right prompt, retrieval, and sampling settings routinely beats a frontier model used at defaults. A typical production agent has millions of valid configurations; the chance that frontier-model + default-everything-else happens to be the cost-optimal point for your task is vanishingly small.",
+    readMore: { href: "/blog/the-model-myth", label: "Read the full case — The Model Myth" },
+  },
+  {
+    q: "How is Traigent different from evaluation frameworks (Braintrust, Phoenix, etc.)?",
+    a: "Evaluation frameworks help you measure quality on a fixed benchmark. Traigent treats evaluation as one half of an optimization loop: the agent wrapper evaluates, the optimization engine learns from each evaluation, and the system converges to the best configuration. Standalone eval tools stop at measurement — they don't decide what to try next.",
+    readMore: { href: "/blog/the-eval-trap", label: "Read the full case — The Eval Trap" },
+  },
+  {
+    q: "How is Traigent different from observability tools like Langfuse, Helicone, or Arize?",
+    a: "Observability tools tell you what happened on each agent call. Traigent tells you what configuration to use next. Observability is necessary for optimization to work — which is why Traigent ships its own production-grade tracing as a built-in capability — but observability alone doesn't optimize your agent. Traigent closes that loop.",
+    readMore: { href: "/blog/observability-is-not-enough", label: "Read the full case — Observability Is Necessary But Not Sufficient" },
   },
   {
     q: "Do I need to rewrite my agent to use Traigent?",
@@ -19,14 +36,6 @@ const FAQS = [
   {
     q: "How long does optimization take?",
     a: "For a typical configuration space (~720 combinations), Traigent converges to the optimum in roughly 18 experiments — hours of runtime rather than weeks of manual tuning. The exact time depends on your benchmark size, agent latency, and the number of variables you're tuning.",
-  },
-  {
-    q: "How is Traigent different from observability tools like Langfuse, Helicone, or Arize?",
-    a: "Observability tools tell you what happened on each agent call. Traigent tells you what configuration to use next. Observability is necessary for optimization to work — which is why Traigent ships its own production-grade tracing as a built-in capability — but observability alone doesn't optimize your agent. Traigent closes that loop.",
-  },
-  {
-    q: "How is Traigent different from evaluation frameworks?",
-    a: "Evaluation frameworks help you measure quality on a fixed benchmark. Traigent treats evaluation as one half of an optimization loop: the agent wrapper evaluates, the optimization engine learns from each evaluation, and the system converges to the best configuration. Standalone eval tools stop at measurement.",
   },
   {
     q: "What KPIs can Traigent optimize?",
@@ -58,7 +67,7 @@ const FAQS = [
   },
 ];
 
-function FAQItem({ q, a, isOpen, onToggle }) {
+function FAQItem({ q, a, readMore, isOpen, onToggle }) {
   return (
     <div className="border-b border-slate-800">
       <button
@@ -73,9 +82,21 @@ function FAQItem({ q, a, isOpen, onToggle }) {
         />
       </button>
       <div
-        className={`overflow-hidden transition-all duration-300 ease-out ${isOpen ? "max-h-96 pb-5" : "max-h-0"}`}
+        className={`overflow-hidden transition-all duration-300 ease-out ${isOpen ? "max-h-[32rem] pb-5" : "max-h-0"}`}
       >
         <p className="text-slate-300 leading-relaxed">{a}</p>
+        {readMore && (
+          <Link
+            to={readMore.href}
+            onClick={() => trackEvent("faq_readmore_clicked", { href: readMore.href })}
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-[#1A6BF5] hover:text-[#4D8EF8] mt-3 group/link"
+          >
+            <span className="underline underline-offset-4 decoration-[#1A6BF5]/40 group-hover/link:decoration-[#4D8EF8]">
+              {readMore.label}
+            </span>
+            <span className="inline-block transition-transform group-hover/link:translate-x-1">→</span>
+          </Link>
+        )}
       </div>
     </div>
   );
@@ -136,6 +157,7 @@ export default function FAQ() {
                 key={i}
                 q={faq.q}
                 a={faq.a}
+                readMore={faq.readMore}
                 isOpen={openIdx === i}
                 onToggle={() => handleToggle(i)}
               />

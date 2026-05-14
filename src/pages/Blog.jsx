@@ -10,15 +10,15 @@ export default function Blog() {
   return (
     <>
       <Helmet>
-        <title>Blog · Traigent</title>
+        <title>Why Traigent · The Case for AI Agent Optimization</title>
         <meta
           name="description"
-          content="Insights on AI agent optimization, configuration spaces, observability, and the economics of running agents in production."
+          content="The case for Traigent. Direct arguments for engineering leaders evaluating AI agent optimization — addressing the assumptions, misconceptions, and trade-offs at play."
         />
-        <meta property="og:title" content="Traigent Blog" />
+        <meta property="og:title" content="Why Traigent — The Case for AI Agent Optimization" />
         <meta
           property="og:description"
-          content="Insights on AI agent optimization, configuration spaces, observability, and the economics of running agents in production."
+          content="Direct arguments for engineering leaders evaluating AI agent optimization. Each post tackles a common objection with evidence and intuition."
         />
         <meta property="og:type" content="website" />
       </Helmet>
@@ -32,9 +32,9 @@ export default function Blog() {
             transition={{ duration: 0.5 }}
             className="mb-16"
           >
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4">Blog</h1>
-            <p className="text-lg md:text-xl text-slate-400 max-w-2xl">
-              Insights on AI agent optimization, configuration spaces, observability, and the economics of running agents in production.
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4">Why Traigent</h1>
+            <p className="text-lg md:text-xl text-slate-400 max-w-2xl leading-relaxed">
+              Direct arguments for engineering leaders evaluating AI agent optimization. Each post takes on a common objection or misconception with evidence and intuition.
             </p>
           </motion.div>
 

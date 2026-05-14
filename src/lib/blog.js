@@ -31,12 +31,19 @@ const posts = Object.entries(modules).map(([path, raw]) => {
     author: meta.author || "",
     readingTime: meta.readingTime || "",
     tags: (meta.tags || "").split(",").map((t) => t.trim()).filter(Boolean),
+    featured: meta.featured === "true" || meta.featured === true,
+    order: meta.order ? Number(meta.order) : Infinity,
     body,
   };
 });
 
-// Sort newest first
-posts.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+// Featured posts first (ordered by explicit `order` field, ascending).
+// Then non-featured posts by date descending.
+posts.sort((a, b) => {
+  if (a.featured !== b.featured) return a.featured ? -1 : 1;
+  if (a.featured && b.featured) return a.order - b.order;
+  return (b.date || "").localeCompare(a.date || "");
+});
 
 export function getAllPosts() {
   return posts;

@@ -70,7 +70,7 @@ export default function BlogPost() {
   return (
     <>
       <Helmet>
-        <title>{post.title} · Traigent Blog</title>
+        <title>{post.title} · Why Traigent</title>
         <meta name="description" content={ogDescription} />
         <meta property="og:title" content={post.title} />
         <meta property="og:description" content={ogDescription} />
@@ -101,7 +101,7 @@ export default function BlogPost() {
             className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors mb-10"
           >
             <ArrowLeft className="w-4 h-4" />
-            All posts
+            Why Traigent
           </Link>
 
           <motion.header
