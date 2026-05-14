@@ -118,10 +118,6 @@ const DemoPlayer = () => {
 
 export default function Homepage() {
   const [showStartNow, setShowStartNow] = useState(false);
-  const scrollToId = (id) => (e) => {
-    e.preventDefault();
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
   // Handle scroll requests coming from other pages via TopNav
   useEffect(() => {
     const pending = sessionStorage.getItem("pendingScroll");
@@ -203,18 +199,47 @@ export default function Homepage() {
               className="text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.05] tracking-tight mb-6"
               style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.03em' }}
             >
-              Optimize Agent ROI. Fast.
+              Optimize AI Agents.<br/>
+              <span className="text-[#1A6BF5]">Automatically.</span> In hours.
             </motion.h1>
-            <motion.div
+            <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-lg md:text-xl text-slate-300 mb-10 max-w-3xl mx-auto leading-relaxed space-y-4"
+              className="text-lg md:text-xl text-slate-300 mb-10 max-w-4xl mx-auto leading-relaxed"
+              style={{ textWrap: "balance" }}
             >
-              <p>AI Agents have hundreds of model and configuration combinations to choose from. Finding the <span className="text-[#1A6BF5] font-semibold">best cost-performance combination</span> via manual brute force is impractical.</p>
-              <p>Traigent finds the optimum in <span className="text-[#1A6BF5] font-semibold">hours</span> not weeks, <span className="text-[#1A6BF5] font-semibold">automatically</span> not manually.<br/>Stop guessing aimlessly.{' '}<span className="text-[#1A6BF5] font-semibold">Start converging confidently.</span></p>
-              <p>Models evolve. Usage shifts. Costs change.<br/>Traigent <span className="text-[#1A6BF5] font-semibold">continuously re-optimizes</span> throughout the agent lifecycle.</p>
+              Traigent finds your agent's <span className="text-[#1A6BF5] font-semibold">best cost-performance configuration</span> — in <span className="text-[#1A6BF5] font-semibold">a fraction of the search space</span> — and continuously re-optimizes as your models, costs, and usage shift.
+            </motion.p>
+
+            {/* Skeptic hook → routes to the Why Traigent section (blog index) */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.25 }}
+              className="text-center mb-10"
+            >
+              <Link
+                to="/blog/the-business-case"
+                onClick={() => trackEvent("hero_skeptic_hook_clicked", { destination: "the-business-case" })}
+                className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-base md:text-lg text-slate-200 group max-w-3xl"
+              >
+                <span className="italic">Want to see why this matters?</span>
+                <span
+                  className="underline underline-offset-4 decoration-[#1A6BF5]/50 group-hover:decoration-[#1A6BF5] font-semibold transition-colors"
+                  style={{ color: "#1A6BF5" }}
+                >
+                  Read the business case
+                </span>
+                <span
+                  className="inline-block transition-transform group-hover:translate-x-1 font-semibold"
+                  style={{ color: "#1A6BF5" }}
+                >
+                  →
+                </span>
+              </Link>
             </motion.div>
+
             {/* Design Partners & Early Adopters */}
             <motion.div
               id="customers"
@@ -277,50 +302,6 @@ export default function Homepage() {
             </Button>
           </motion.div>
 
-          {/* Skeptic hook → routes to objection-handler blog */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.45 }}
-            className="text-center mt-5"
-          >
-            <Link
-              to="/blog/the-model-myth"
-              onClick={() => trackEvent("hero_skeptic_hook_clicked", { post: "the-model-myth" })}
-              className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-[#1A6BF5] transition-colors group"
-            >
-              <span className="italic">Skeptical?</span>
-              <span className="underline underline-offset-4 decoration-slate-700 group-hover:decoration-[#1A6BF5]">
-                The model isn't what's costing you
-              </span>
-              <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
-            </Link>
-          </motion.div>
-
-          {/* Tagline below CTAs */}
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-            className="text-center text-white font-bold text-2xl md:text-3xl lg:text-4xl mt-12 max-w-4xl mx-auto leading-tight tracking-tight"
-            style={{ textWrap: 'balance' }}
-          >
-            <span className="text-[#1A6BF5]">Traigent</span> Platform
-          </motion.h2>
-
-          {/* Three pillars */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-            className="text-center mt-6 text-base md:text-lg font-semibold tracking-wide"
-          >
-            <a href="#optimization" onClick={scrollToId("optimization")} className="text-[#1A6BF5] hover:underline underline-offset-4 transition-all cursor-pointer">Agent Optimization</a>
-            <span className="text-slate-600 mx-3">·</span>
-            <a href="#beyond" onClick={scrollToId("beyond")} className="text-amber-400 hover:underline underline-offset-4 transition-all cursor-pointer">Benchmark Evolution</a>
-            <span className="text-slate-600 mx-3">·</span>
-            <a href="#beyond" onClick={scrollToId("beyond")} className="text-violet-400 hover:underline underline-offset-4 transition-all cursor-pointer">Observability and Tracing</a>
-          </motion.div>
         </div>
       </section>
 

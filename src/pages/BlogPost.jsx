@@ -6,17 +6,34 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { getPostBySlug } from "../lib/blog";
 
+// Slugify heading text so in-post anchor links work (e.g. [Read more](#the-math)).
+function slugify(children) {
+  const flatten = (node) => {
+    if (node == null) return "";
+    if (typeof node === "string") return node;
+    if (typeof node === "number") return String(node);
+    if (Array.isArray(node)) return node.map(flatten).join("");
+    if (typeof node === "object" && node.props) return flatten(node.props.children);
+    return "";
+  };
+  return flatten(children)
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-");
+}
+
 // Renderers that map Markdown elements to our brand typography.
 // Keep this small and easy to tweak.
 const mdComponents = {
-  h1: ({ node, ...props }) => (
-    <h1 className="text-3xl md:text-4xl font-bold text-white mt-12 mb-6 tracking-tight" {...props} />
+  h1: ({ node, children, ...props }) => (
+    <h1 id={slugify(children)} className="text-3xl md:text-4xl font-bold text-white mt-12 mb-6 tracking-tight scroll-mt-24" {...props}>{children}</h1>
   ),
-  h2: ({ node, ...props }) => (
-    <h2 className="text-2xl md:text-3xl font-bold text-white mt-12 mb-4 tracking-tight" {...props} />
+  h2: ({ node, children, ...props }) => (
+    <h2 id={slugify(children)} className="text-2xl md:text-3xl font-bold text-white mt-12 mb-4 tracking-tight scroll-mt-24" {...props}>{children}</h2>
   ),
-  h3: ({ node, ...props }) => (
-    <h3 className="text-xl md:text-2xl font-semibold text-white mt-8 mb-3" {...props} />
+  h3: ({ node, children, ...props }) => (
+    <h3 id={slugify(children)} className="text-xl md:text-2xl font-semibold text-white mt-8 mb-3 scroll-mt-24" {...props}>{children}</h3>
   ),
   p: ({ node, ...props }) => <p className="text-slate-300 leading-relaxed my-5" {...props} />,
   ul: ({ node, ...props }) => <ul className="list-disc list-outside ml-6 space-y-2 my-5 text-slate-300" {...props} />,

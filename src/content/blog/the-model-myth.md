@@ -7,7 +7,7 @@ author: "Amir Barzelay"
 readingTime: "6 min read"
 tags: "optimization,configuration,llm-cost"
 featured: true
-order: 1
+order: 2
 ---
 
 *A common assumption in AI engineering goes like this:*
