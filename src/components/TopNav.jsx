@@ -135,14 +135,12 @@ export default function TopNav() {
               >
                 Why Traigent
               </Link>
-              <a
-                href="https://portal.traigent.ai/pricing"
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                to="/pricing"
                 className="text-slate-300 hover:text-white transition-colors"
               >
                 Pricing
-              </a>
+              </Link>
               <Dropdown
                 label="Resources"
                 items={resourcesItems}

@@ -22,6 +22,8 @@ const TRUTHS = [
       "<strong class=\"text-[#4D8EF8]\">Running AI Agents costs money,</strong> and those costs " +
       "<strong class=\"text-white\">compound the more they are used</strong>. ROI depends on quality — but also, " +
       "most importantly, on <strong class=\"text-[#4D8EF8]\">reducing run costs</strong>.",
+    blog: { href: "/blog/the-business-case", label: "See the math" },
+    refs: [],
   },
   {
     n: 2,
@@ -29,12 +31,16 @@ const TRUTHS = [
       "<strong class=\"text-[#4D8EF8]\">It's NOT all about the model.</strong> Non-model configuration options can affect both " +
       "<strong class=\"text-white\">accuracy and cost dramatically</strong> — so picking the premium model is " +
       "<strong class=\"text-white\">usually not</strong> the smartest path to better ROI.",
+    blog: { href: "/blog/the-model-myth", label: "Read 'The Model Myth'" },
+    refs: [1, 2, 3, 5],
   },
   {
     n: 3,
     text:
       "There are <strong class=\"text-[#4D8EF8]\">hundreds of model and non-model configuration options</strong> to consider, " +
       "so it's <strong class=\"text-[#4D8EF8]\">impractical to manually test them all</strong> before you go to market.",
+    blog: { href: "/blog/the-agent-operating-point", label: "The operating-point frame" },
+    refs: [4],
   },
   {
     n: 4,
@@ -43,12 +49,16 @@ const TRUTHS = [
       "releasing whatever they can when time-to-market pressures them. It takes them " +
       "<strong class=\"text-white\">weeks of trial and error</strong> — but " +
       "<strong class=\"text-[#4D8EF8]\">they can never be confident they've found the optimum.</strong>",
+    blog: { href: "/blog/the-eval-trap", label: "Why evals mislead" },
+    refs: [4],
   },
   {
     n: 5,
     text:
       "As a result, it's very likely they <strong class=\"text-[#4D8EF8]\">could have saved a lot of runtime costs</strong>, " +
       "without sacrificing quality, if they could have just managed to test more configurations.",
+    blog: { href: "/blog/the-business-case", label: "Quantify the savings" },
+    refs: [1, 2, 3],
   },
   {
     n: 6,
@@ -56,6 +66,8 @@ const TRUTHS = [
       "During the lifecycle, <strong class=\"text-[#4D8EF8]\">models evolve</strong>, " +
       "<strong class=\"text-[#4D8EF8]\">usage patterns shift</strong>, and <strong class=\"text-[#4D8EF8]\">prices change</strong>. " +
       "You need to constantly evaluate new configurations.",
+    blog: { href: "/blog/the-reoptimization-imperative", label: "Why re-optimize" },
+    refs: [],
   },
 ];
 
@@ -91,10 +103,10 @@ const PROBLEMS = [
     id: "model-paralysis",
     icon: GitCompare,
     accent: "from-violet-500/15 to-blue-500/10",
-    problemHeadline: "\"We can't decide between GPT-4, Claude, and Gemini.\"",
+    problemHeadline: "\"We can't decide which LLM vendor/flavor to use.\"",
     problemDetail:
       "Every team has an opinion. None of them have hard data on your specific use case. So you ship whichever the loudest engineer prefers and hope. Switching costs make the decision feel permanent.",
-    valueHeadline: "Run all three on your actual benchmark. Let the data pick.",
+    valueHeadline: "Run several of them with many configuration options each.",
     valueDetail:
       "Traigent treats model choice as one more tunable variable. It runs your agent across every candidate and reports cost-quality-latency tradeoffs side by side — for your workload, not a generic eval.",
     outcome: "Model selection backed by evidence, not vibes.",
@@ -288,6 +300,33 @@ export default function ValueProposition() {
                 </div>
                 <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-5 ml-2">
                   <p className="text-base md:text-lg text-slate-200 leading-relaxed" style={{ textWrap: "pretty" }} dangerouslySetInnerHTML={{ __html: t.text }} />
+                  {(t.blog || (t.refs && t.refs.length > 0)) && (
+                    <div className="mt-4 pt-3 border-t border-slate-800/80 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
+                      {t.blog && (
+                        <Link
+                          to={t.blog.href}
+                          className="text-[#4D8EF8] hover:text-[#1A6BF5] inline-flex items-center gap-1 transition-colors"
+                        >
+                          {t.blog.label} <ArrowRight className="w-3 h-3" />
+                        </Link>
+                      )}
+                      {t.refs && t.refs.length > 0 && (
+                        <span className="text-slate-500 flex items-center gap-1.5 font-mono">
+                          <span className="text-slate-600">backed by</span>
+                          {t.refs.map((n) => (
+                            <Link
+                              key={n}
+                              to="/roi#references"
+                              className="text-slate-400 hover:text-[#4D8EF8] transition-colors"
+                              title={`Academic reference ${n} (see ROI calculator)`}
+                            >
+                              [{n}]
+                            </Link>
+                          ))}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </FadeInView>

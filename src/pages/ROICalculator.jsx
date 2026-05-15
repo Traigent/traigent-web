@@ -181,23 +181,23 @@ export default function ROICalculator() {
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Stat
-                label="Conservative · 30%"
+                label="Conservative · 30% [1]"
                 value={formatUSD(results.llm.conservative)}
-                sublabel="first optimization run"
+                sublabel="matches prompt-compression studies"
                 icon={TrendingDown}
                 accent="#94a3b8"
               />
               <Stat
-                label="Typical · 45%"
+                label="Typical · 45% [2]"
                 value={formatUSD(results.llm.typical)}
-                sublabel="recommended target"
+                sublabel="in line with model-routing results"
                 icon={TrendingDown}
                 accent={BLUE}
               />
               <Stat
-                label="Optimistic · 60%"
+                label="Optimistic · 60% [3]"
                 value={formatUSD(results.llm.optimistic)}
-                sublabel="continuous re-optimization"
+                sublabel="well below cascading headline of 98%"
                 icon={TrendingDown}
                 accent="#4ade80"
               />
@@ -232,6 +232,95 @@ export default function ROICalculator() {
               icon={DollarSign}
               accent="#a78bfa"
             />
+          </motion.div>
+
+          {/* References — academic backing for the savings tiers */}
+          <motion.div
+            id="references"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.37 }}
+            className="bg-slate-900/40 border border-slate-800/70 rounded-2xl p-6 md:p-8 mb-12 scroll-mt-20"
+          >
+            <div className="text-xs font-mono uppercase tracking-wider text-slate-400 mb-4">
+              References
+            </div>
+            <p className="text-sm text-slate-400 mb-3 max-w-3xl">
+              Savings tiers are anchored in published research. Traigent applies these techniques jointly via principled optimization; the cited results show the cost-reduction potential from individual techniques alone.
+            </p>
+            <p className="text-sm text-slate-300 mb-5 max-w-3xl">
+              Intelligently exploring multiple dimensions simultaneously increases the probability of <span className="text-white font-semibold">large cost savings at similar or better response quality</span> — which is what Traigent is all about.
+            </p>
+            <ol className="space-y-3 text-sm text-slate-400">
+              <li>
+                <span className="font-mono text-slate-300 mr-2">[1]</span>
+                Jiang et al., <em className="text-slate-200">LLMLingua: Compressing Prompts for Accelerated Inference of Large Language Models</em>, Microsoft Research, EMNLP 2023.{" "}
+                <a
+                  href="https://arxiv.org/abs/2310.05736"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#4D8EF8] hover:text-[#1A6BF5] underline underline-offset-2"
+                >
+                  arXiv:2310.05736
+                </a>
+                {" "}— up to 20× prompt compression with minimal quality loss.
+              </li>
+              <li>
+                <span className="font-mono text-slate-300 mr-2">[2]</span>
+                Ong et al., <em className="text-slate-200">RouteLLM: Learning to Route LLMs with Preference Data</em>, UC Berkeley, 2024.{" "}
+                <a
+                  href="https://arxiv.org/abs/2406.18665"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#4D8EF8] hover:text-[#1A6BF5] underline underline-offset-2"
+                >
+                  arXiv:2406.18665
+                </a>
+                {" "}— GPT-4-level quality at ~25–50% of the cost via query routing alone.
+              </li>
+              <li>
+                <span className="font-mono text-slate-300 mr-2">[3]</span>
+                Chen, Zaharia, Zou, <em className="text-slate-200">FrugalGPT: How to Use Large Language Models While Reducing Cost and Improving Performance</em>, Stanford, 2023.{" "}
+                <a
+                  href="https://arxiv.org/abs/2305.05176"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#4D8EF8] hover:text-[#1A6BF5] underline underline-offset-2"
+                >
+                  arXiv:2305.05176
+                </a>
+                {" "}— up to 98% cost reduction via LLM cascading at comparable or improved quality.
+              </li>
+              <li>
+                <span className="font-mono text-slate-300 mr-2">[4]</span>
+                Bergstra & Bengio, <em className="text-slate-200">Random Search for Hyper-Parameter Optimization</em>, Université de Montréal, JMLR 2012.{" "}
+                <a
+                  href="https://jmlr.org/papers/v13/bergstra12a.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#4D8EF8] hover:text-[#1A6BF5] underline underline-offset-2"
+                >
+                  JMLR v13
+                </a>
+                {" "}— foundational evidence that searching multiple dimensions jointly captures most of the value, even with a simple sampler, because effective dimensionality is far lower than the apparent search space.
+              </li>
+              <li>
+                <span className="font-mono text-slate-300 mr-2">[5]</span>
+                Fernando et al., <em className="text-slate-200">Promptbreeder: Self-Referential Self-Improvement Via Prompt Evolution</em>, DeepMind, 2023.{" "}
+                <a
+                  href="https://arxiv.org/abs/2309.16797"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#4D8EF8] hover:text-[#1A6BF5] underline underline-offset-2"
+                >
+                  arXiv:2309.16797
+                </a>
+                {" "}— evolutionary joint search over prompts beats hand-crafted prompts on reasoning benchmarks, even with the model held fixed.
+              </li>
+            </ol>
+            <p className="text-xs text-slate-500 mt-5 max-w-3xl">
+              These papers benchmark on academic tasks (HellaSwag, MMLU, AlpacaEval, etc.) — not your production agent. Your specific savings depend on baseline configuration and workload, which is what a pilot measures.
+            </p>
           </motion.div>
 
           {/* CTA */}
