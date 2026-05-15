@@ -8,6 +8,10 @@ import {
   TrendingDown,
   GitCompare,
   GitMerge,
+  SlidersHorizontal,
+  LayoutGrid,
+  Dices,
+  RefreshCw,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
@@ -18,6 +22,8 @@ import { Helmet } from "react-helmet-async";
 const TRUTHS = [
   {
     n: 1,
+    summary: "Cost compounds with usage.",
+    icon: TrendingUp,
     text:
       "<strong class=\"text-[#4D8EF8]\">Running AI Agents costs money,</strong> and those costs " +
       "<strong class=\"text-white\">compound the more they are used</strong>. ROI depends on quality — but also, " +
@@ -27,6 +33,8 @@ const TRUTHS = [
   },
   {
     n: 2,
+    summary: "The model is one knob of many.",
+    icon: SlidersHorizontal,
     text:
       "<strong class=\"text-[#4D8EF8]\">It's NOT all about the model.</strong> Non-model configuration options can affect both " +
       "<strong class=\"text-white\">accuracy and cost dramatically</strong> — so picking the premium model is " +
@@ -36,6 +44,8 @@ const TRUTHS = [
   },
   {
     n: 3,
+    summary: "The search space is too big to brute-force.",
+    icon: LayoutGrid,
     text:
       "There are <strong class=\"text-[#4D8EF8]\">hundreds of model and non-model configuration options</strong> to consider, " +
       "so it's <strong class=\"text-[#4D8EF8]\">impractical to manually test them all</strong> before you go to market.",
@@ -44,6 +54,8 @@ const TRUTHS = [
   },
   {
     n: 4,
+    summary: "Manual tuning is guesswork.",
+    icon: Dices,
     text:
       "As a result, teams scramble and resort to <strong class=\"text-[#4D8EF8]\">\"intuitive\" guesswork</strong> — " +
       "releasing whatever they can when time-to-market pressures them. It takes them " +
@@ -54,6 +66,8 @@ const TRUTHS = [
   },
   {
     n: 5,
+    summary: "Untested configs = unrealized savings.",
+    icon: TrendingDown,
     text:
       "As a result, it's very likely they <strong class=\"text-[#4D8EF8]\">could have saved a lot of runtime costs</strong>, " +
       "without sacrificing quality, if they could have just managed to test more configurations.",
@@ -62,6 +76,8 @@ const TRUTHS = [
   },
   {
     n: 6,
+    summary: "Yesterday's optimum is today's leak.",
+    icon: RefreshCw,
     text:
       "During the lifecycle, <strong class=\"text-[#4D8EF8]\">models evolve</strong>, " +
       "<strong class=\"text-[#4D8EF8]\">usage patterns shift</strong>, and <strong class=\"text-[#4D8EF8]\">prices change</strong>. " +
@@ -281,14 +297,16 @@ export default function ValueProposition() {
           </FadeInView>
           <FadeInView delay={0.2}>
             <p className="text-lg md:text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed" style={{ textWrap: "balance" }}>
-              Each truth follows from the last. Together they explain why optimizing AI agents is not optional.
+              Each truth follows from the previous. Together they explain why optimizing AI agents is not optional.
             </p>
           </FadeInView>
         </div>
 
         {/* Truths chain */}
         <div className="relative max-w-3xl mx-auto px-6 pb-16">
-          {TRUTHS.map((t, i) => (
+          {TRUTHS.map((t, i) => {
+            const Icon = t.icon;
+            return (
             <FadeInView key={t.n} delay={0.05 * i}>
               <div className="relative pl-24 pb-6">
                 {i < TRUTHS.length - 1 && (
@@ -299,6 +317,16 @@ export default function ValueProposition() {
                   <span className="text-3xl font-extrabold font-mono text-red-300 leading-tight">#{t.n}</span>
                 </div>
                 <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-5 ml-2">
+                  {t.summary && (
+                    <div className="flex items-center gap-3 mb-3 pb-3 border-b border-slate-800/80">
+                      <div className="w-10 h-10 rounded-lg bg-red-500/10 border border-red-500/30 flex items-center justify-center flex-shrink-0">
+                        <Icon className="w-5 h-5 text-red-300" />
+                      </div>
+                      <h3 className="text-lg md:text-xl font-bold text-white leading-tight" style={{ textWrap: "balance" }}>
+                        {t.summary}
+                      </h3>
+                    </div>
+                  )}
                   <p className="text-base md:text-lg text-slate-200 leading-relaxed" style={{ textWrap: "pretty" }} dangerouslySetInnerHTML={{ __html: t.text }} />
                   {(t.blog || (t.refs && t.refs.length > 0)) && (
                     <div className="mt-4 pt-3 border-t border-slate-800/80 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
@@ -330,7 +358,8 @@ export default function ValueProposition() {
                 </div>
               </div>
             </FadeInView>
-          ))}
+            );
+          })}
 
           {/* The Traigent Solution divider */}
           <FadeInView delay={0.4}>
@@ -381,7 +410,7 @@ export default function ValueProposition() {
               <div className="text-3xl md:text-4xl font-extrabold text-[#4D8EF8] mb-4 tracking-tight">Traigent Benefits</div>
               <ul className="space-y-3">
                 {[
-                  { phrase: "Saves you ", strong: "a lot of LLM costs", rest: " over the lifecycle." },
+                  { phrase: "Saves you ", strong: "30–60% on LLM costs", rest: " over the lifecycle." },
                   { phrase: "Reduces ", strong: "engineering costs", rest: "." },
                   { phrase: "Shortens ", strong: "time to market", rest: "." },
                   { phrase: "Increases ", strong: "confidence significantly", rest: "." },

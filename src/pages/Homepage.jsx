@@ -217,7 +217,7 @@ export default function Homepage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.25 }}
-              className="text-center mb-10"
+              className="text-center mb-10 flex flex-col items-center gap-3"
             >
               <Link
                 to="/blog/the-business-case"
@@ -230,6 +230,26 @@ export default function Homepage() {
                   style={{ color: "#1A6BF5" }}
                 >
                   Read the business case
+                </span>
+                <span
+                  className="inline-block transition-transform group-hover:translate-x-1 font-semibold"
+                  style={{ color: "#1A6BF5" }}
+                >
+                  →
+                </span>
+              </Link>
+
+              <Link
+                to="/value-proposition"
+                onClick={() => trackEvent("hero_problem_hook_clicked", { destination: "value-proposition" })}
+                className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-base md:text-lg text-slate-200 group max-w-3xl"
+              >
+                <span className="italic">Or</span>
+                <span
+                  className="underline underline-offset-4 decoration-[#1A6BF5]/50 group-hover:decoration-[#1A6BF5] font-semibold transition-colors"
+                  style={{ color: "#1A6BF5" }}
+                >
+                  let's dive into the problem we solve
                 </span>
                 <span
                   className="inline-block transition-transform group-hover:translate-x-1 font-semibold"

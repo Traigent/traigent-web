@@ -276,7 +276,7 @@ export default function ROICalculator() {
                 >
                   arXiv:2406.18665
                 </a>
-                {" "}— GPT-4-level quality at ~25–50% of the cost via query routing alone.
+                {" "}— cost reduction of 2× or more in some settings via query routing, without compromising response quality.
               </li>
               <li>
                 <span className="font-mono text-slate-300 mr-2">[3]</span>
@@ -302,7 +302,7 @@ export default function ROICalculator() {
                 >
                   JMLR v13
                 </a>
-                {" "}— foundational evidence that searching multiple dimensions jointly captures most of the value, even with a simple sampler, because effective dimensionality is far lower than the apparent search space.
+                {" "}— random search across multiple hyper-parameters jointly outperforms systematic grid search, because for most problems only a few hyper-parameters matter — and which ones varies by problem.
               </li>
               <li>
                 <span className="font-mono text-slate-300 mr-2">[5]</span>
@@ -315,7 +315,7 @@ export default function ROICalculator() {
                 >
                   arXiv:2309.16797
                 </a>
-                {" "}— evolutionary joint search over prompts beats hand-crafted prompts on reasoning benchmarks, even with the model held fixed.
+                {" "}— evolutionary joint search over prompts outperforms state-of-the-art hand-crafted prompt strategies (Chain-of-Thought, Plan-and-Solve) on arithmetic and commonsense reasoning benchmarks.
               </li>
             </ol>
             <p className="text-xs text-slate-500 mt-5 max-w-3xl">
