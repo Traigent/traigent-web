@@ -48,7 +48,7 @@ function StackDiagram() {
           </div>
         </div>
         <p className="text-sm md:text-base text-slate-300 leading-relaxed pl-13">
-          Auto-finds the best cost-performance configuration. Multi-KPI weighted. Re-optimizes when models, costs, or usage drift. <span className="text-white font-semibold">Benchmark insights</span> surface easy / always-fail / redundant test cases so your benchmark <span className="text-white font-semibold">keeps improving</span>. <span className="text-white font-semibold">No one else does this.</span>
+          Auto-finds the best cost-performance configuration. Multi-KPI weighted. Re-optimizes when models, costs, or usage drift. <span className="text-white font-semibold">Benchmark insights</span> surface easy / always-fail / redundant test cases so your benchmark <span className="text-white font-semibold">keeps improving</span>. <span className="text-white font-semibold">The piece other tooling leaves out.</span>
         </p>
       </div>
 

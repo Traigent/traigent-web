@@ -1,19 +1,39 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
-// Scrolls to the top of the page whenever the route changes.
-// React Router (v6) does NOT do this by default — without this component,
-// clicking a link from a scrolled position keeps the same scroll on the
-// new page, which feels broken to users.
+// Handles scroll behavior on route change.
 //
-// Skips the scroll-to-top if a `pendingScroll` is queued by TopNav for
-// cross-page anchor navigation (e.g. "Customers" link from /value-proposition),
-// so anchor-jumps still work cleanly.
+// Priority order:
+//   1. If `pendingScroll` is queued in sessionStorage (cross-page anchor
+//      from TopNav), let the destination page handle the scroll — do nothing.
+//   2. If the URL has a `#hash` portion (e.g. /roi#references), scroll
+//      to the element with that id. Retried briefly to handle pages that
+//      lazy-mount their target.
+//   3. Otherwise scroll to top.
 export default function ScrollToTop() {
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
+
   useEffect(() => {
     if (sessionStorage.getItem("pendingScroll")) return;
+
+    if (hash) {
+      const targetId = hash.replace(/^#/, "");
+      // Retry up to ~600ms so animated/lazy sections have time to mount.
+      let tries = 0;
+      const tryScroll = () => {
+        const el = document.getElementById(targetId);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+          return;
+        }
+        if (++tries < 6) setTimeout(tryScroll, 100);
+      };
+      tryScroll();
+      return;
+    }
+
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-  }, [pathname]);
+  }, [pathname, hash]);
+
   return null;
 }

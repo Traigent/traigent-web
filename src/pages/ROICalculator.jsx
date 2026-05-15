@@ -177,7 +177,7 @@ export default function ROICalculator() {
           >
             <h2 className="text-xl md:text-2xl font-bold text-white mb-4">LLM cost savings range</h2>
             <p className="text-sm text-slate-400 mb-6 max-w-3xl">
-              Range reflects what we typically observe across design partners. Conservative = first optimization pass. Optimistic = after re-optimizing across the agent lifecycle.
+              <span className="text-slate-300 font-medium">Modeled estimates</span>, anchored in published research on individual techniques (see references below). Conservative = first optimization pass. Optimistic = after re-optimizing across the agent lifecycle. Actual savings vary by baseline configuration, workload, and quality constraints — a pilot is the only way to know your number.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Stat
