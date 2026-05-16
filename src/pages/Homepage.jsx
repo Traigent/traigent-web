@@ -217,18 +217,59 @@ export default function Homepage() {
               className="text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.05] tracking-tight mb-6"
               style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.03em' }}
             >
-              Optimize AI Agents.<br/>
-              <span className="text-[#1A6BF5]">Automatically.</span> In hours.
+              Optimize AI Agent<br/>
+              <span className="text-[#1A6BF5]">Cost-Performance</span><br/>
+              <span className="block text-3xl md:text-4xl lg:text-5xl mt-4 text-slate-200 font-bold tracking-tight">
+                Automatically. Fast.
+              </span>
             </motion.h1>
-            <motion.p
+            {/* Two-column value summary: HOW (method) + BENEFITS (outcomes) */}
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-lg md:text-xl text-slate-300 mb-10 max-w-4xl mx-auto leading-relaxed"
-              style={{ textWrap: "balance" }}
+              className="grid md:grid-cols-2 gap-5 md:gap-6 max-w-4xl mx-auto mb-10 text-left"
             >
-              Traigent <span className="text-[#1A6BF5] font-semibold">rapidly</span> finds your agent's <span className="text-[#1A6BF5] font-semibold">best cost-performance configuration</span> and <span className="text-[#1A6BF5] font-semibold">continuously re-optimizes</span> as models, costs, and usage patterns drift.
-            </motion.p>
+              {/* Left — how Traigent finds the optimum */}
+              <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 md:p-7">
+                <div className="text-[11px] font-mono uppercase tracking-widest text-slate-500 mb-4">
+                  How Traigent finds the optimum
+                </div>
+                <ul className="space-y-3">
+                  {[
+                    <>Finds the optimum in <span className="text-white font-semibold">hours, not weeks</span>.</>,
+                    <><span className="text-white font-semibold">Automatically</span>, not manually.</>,
+                    <>Requires only a <span className="text-white font-semibold">fraction of the search space.</span></>,
+                    <>With <span className="text-white font-semibold">confidence</span>, not guesswork.</>,
+                  ].map((item, i) => (
+                    <li key={i} className="flex items-start gap-2.5 text-slate-300 leading-snug">
+                      <Check className="w-5 h-5 mt-0.5 flex-shrink-0 text-[#4D8EF8]" strokeWidth={3} />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Right — what you get out of it */}
+              <div className="bg-gradient-to-br from-blue-500/10 to-slate-900/0 border-2 rounded-2xl p-6 md:p-7" style={{ borderColor: "#1A6BF5" }}>
+                <div className="text-[11px] font-mono uppercase tracking-widest mb-4" style={{ color: "#4D8EF8" }}>
+                  Traigent benefits
+                </div>
+                <ul className="space-y-3">
+                  {[
+                    <><span className="text-white font-semibold">Reduces engineering costs.</span></>,
+                    <><span className="text-white font-semibold">Saves LLM costs</span> over the lifecycle.</>,
+                    <><span className="text-white font-semibold">Shortens time to market.</span></>,
+                    <><span className="text-white font-semibold">Increases confidence</span> significantly.</>,
+                  ].map((item, i) => (
+                    <li key={i} className="flex items-start gap-2.5 text-slate-300 leading-snug">
+                      <Check className="w-5 h-5 mt-0.5 flex-shrink-0 text-[#4D8EF8]" strokeWidth={3} />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </motion.div>
 
             {/* Hero CTA — single dropdown consolidating calculators + reading */}
             <motion.div
