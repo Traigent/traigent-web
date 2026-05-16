@@ -16,7 +16,7 @@ const MIN_PER_CONFIG_DEFAULT = 30;
 
 // Default fully-loaded engineer hourly rate. Maps to a ~$250k total-comp
 // US mid-tier senior ML engineer. User can adjust via slider.
-const DEFAULT_HOURLY_RATE = 150;
+const DEFAULT_HOURLY_RATE = 100;
 
 function formatUSD(n) {
   return new Intl.NumberFormat("en-US", {
@@ -575,7 +575,7 @@ export default function TTMCalculator() {
               onChange={setHourlyRate}
               minLabel="$50"
               maxLabel="$400"
-              examples={`Default $${DEFAULT_HOURLY_RATE} ≈ US mid-tier senior ML engineer (~$250k total comp). Synced with the ROI Calculator.`}
+              examples={`Default $${DEFAULT_HOURLY_RATE}/hr ≈ $200k/yr ÷ 2,000 hrs. Synced with ROI Calc.`}
               accent={AMBER}
             />
           </motion.div>

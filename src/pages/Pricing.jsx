@@ -47,8 +47,26 @@ function StackDiagram() {
             <h3 className="text-xl md:text-2xl font-bold text-white">Agent Optimization</h3>
           </div>
         </div>
-        <p className="text-sm md:text-base text-slate-300 leading-relaxed pl-13">
-          Auto-finds the best cost-performance configuration. Multi-KPI weighted. Re-optimizes when models, costs, or usage drift. <span className="text-white font-semibold">Benchmark insights</span> surface easy / always-fail / redundant test cases so your benchmark <span className="text-white font-semibold">keeps improving</span>. <span className="text-white font-semibold">The piece other tooling leaves out.</span>
+        <ul className="space-y-2 text-sm md:text-base text-slate-300 leading-relaxed pl-13">
+          <li className="flex items-start gap-2">
+            <Check className="w-4 h-4 mt-1 flex-shrink-0 text-[#4D8EF8]" />
+            <span><span className="text-white font-semibold">Auto-finds</span> the best cost-performance configuration.</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <Check className="w-4 h-4 mt-1 flex-shrink-0 text-[#4D8EF8]" />
+            <span><span className="text-white font-semibold">Multi-KPI weighted</span> optimization.</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <Check className="w-4 h-4 mt-1 flex-shrink-0 text-[#4D8EF8]" />
+            <span><span className="text-white font-semibold">Re-optimizes</span> when models, costs, or usage drift.</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <Check className="w-4 h-4 mt-1 flex-shrink-0 text-[#4D8EF8]" />
+            <span><span className="text-white font-semibold">Benchmark insights</span> — flag easy / always-fail / redundant test cases so your benchmark <span className="text-white font-semibold">keeps improving</span>.</span>
+          </li>
+        </ul>
+        <p className="text-sm md:text-base text-slate-200 italic leading-relaxed pl-13 mt-3 font-semibold">
+          The piece other tooling leaves out.
         </p>
       </div>
 
@@ -244,8 +262,8 @@ export default function Pricing() {
               <PricingCard
                 tier="Free"
                 price="$0"
-                priceSuffix="forever"
-                summary="Observability free forever. Full optimization on a POC basis."
+                priceSuffix="per month"
+                summary="Observability free as defined. Full optimization on a POC basis."
                 observability={[
                   "Full trace tree · spans · tokens · costs",
                   "Eval framework",
@@ -268,7 +286,7 @@ export default function Pricing() {
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => trackEvent("pricing_cta_clicked", { tier: "free" })}
-                    className="inline-flex items-center justify-center gap-2 w-full bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white px-5 py-3 rounded-lg font-medium transition-colors"
+                    className="inline-flex items-center justify-center gap-2 w-full h-12 bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white px-5 rounded-lg font-medium transition-colors"
                   >
                     <Github className="w-4 h-4" />
                     Start free on GitHub
@@ -282,8 +300,8 @@ export default function Pricing() {
               <PricingCard
                 tier="Starter"
                 price="$99"
-                priceSuffix="per month · up to 3 users"
-                summary="For one team optimizing one agent. Real observability volume plus core optimization."
+                priceSuffix="per month"
+                summary="For one team optimizing one agent. Plus observability volumes as defined."
                 observability={[
                   "<strong>100K observations / month</strong>",
                   "30-day retention",
@@ -302,7 +320,7 @@ export default function Pricing() {
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => trackEvent("pricing_cta_clicked", { tier: "starter" })}
-                    className="inline-flex items-center justify-center gap-2 w-full bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white px-5 py-3 rounded-lg font-medium transition-colors"
+                    className="inline-flex items-center justify-center gap-2 w-full h-12 bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white px-5 rounded-lg font-medium transition-colors"
                   >
                     Get Starter
                     <ArrowRight className="w-4 h-4" />
@@ -316,8 +334,8 @@ export default function Pricing() {
               <PricingCard
                 tier="Pro"
                 price="$249"
-                priceSuffix="per month · up to 10 users"
-                summary="For multiple teams optimizing several agents. Full observability volume plus the complete optimization suite."
+                priceSuffix="per month"
+                summary="Full observability volume plus the complete optimization suite. Up to 5 agents · 5 teams."
                 badge="Most popular"
                 highlight
                 observability={[
@@ -328,7 +346,6 @@ export default function Pricing() {
                   "Email + Slack support",
                 ]}
                 optimization={[
-                  "<strong class=\"text-white\">Up to 5 agents · Up to 5 teams</strong>",
                   "Multi-KPI weighted optimization",
                   "Drift detection &amp; re-optimization",
                   "<strong class=\"text-[#4D8EF8]\">Benchmark insights</strong> (flag easy/fail/redundant)",
@@ -339,7 +356,7 @@ export default function Pricing() {
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => trackEvent("pricing_cta_clicked", { tier: "pro" })}
-                    className="inline-flex items-center justify-center gap-2 w-full bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white px-5 py-3 rounded-lg font-medium transition-colors"
+                    className="inline-flex items-center justify-center gap-2 w-full h-12 bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white px-5 rounded-lg font-medium transition-colors"
                   >
                     Get Pro
                     <ArrowRight className="w-4 h-4" />
@@ -369,7 +386,7 @@ export default function Pricing() {
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => trackEvent("pricing_cta_clicked", { tier: "enterprise" })}
-                    className="inline-flex items-center justify-center gap-2 w-full bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white px-5 py-3 rounded-lg font-medium transition-colors"
+                    className="inline-flex items-center justify-center gap-2 w-full h-12 bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white px-5 rounded-lg font-medium transition-colors"
                   >
                     <MessageSquare className="w-4 h-4" />
                     Talk to sales
@@ -382,9 +399,6 @@ export default function Pricing() {
           {/* ROI callout */}
           <FadeIn delay={0.3}>
             <div className="mt-12 max-w-3xl mx-auto bg-slate-900/40 border border-slate-800 rounded-2xl p-6 text-center">
-              <p className="text-sm text-slate-300 mb-3">
-                <span className="text-white font-semibold">At a $50K/month LLM spend</span>, Pro typically pays back in days, not months.
-              </p>
               <Link
                 to="/roi"
                 className="inline-flex items-center gap-1 text-[#4D8EF8] hover:text-[#1A6BF5] text-sm font-medium transition-colors"

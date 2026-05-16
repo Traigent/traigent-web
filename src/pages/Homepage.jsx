@@ -210,6 +210,21 @@ export default function Homepage() {
 
           {/* Centered hero content */}
           <div className="text-center max-w-4xl mx-auto">
+            {/* Category eyebrow — names the category we're claiming */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.05 }}
+              className="mb-5"
+            >
+              <Link
+                to="/agent-optimization"
+                className="inline-block px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-xs font-mono tracking-widest hover:bg-blue-500/20 hover:border-blue-500/60 transition-colors"
+                style={{ color: "#4D8EF8" }}
+              >
+                AGENT OPTIMIZATION PLATFORM
+              </Link>
+            </motion.div>
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -217,11 +232,8 @@ export default function Homepage() {
               className="text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.05] tracking-tight mb-6"
               style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.03em' }}
             >
-              Optimize AI Agent<br/>
-              <span className="text-[#1A6BF5]">Cost-Performance</span><br/>
-              <span className="block text-3xl md:text-4xl lg:text-5xl mt-4 text-slate-200 font-bold tracking-tight">
-                Automatically. Fast.
-              </span>
+              <span className="whitespace-nowrap">AI Agent <span className="text-[#1A6BF5]">Cost-Performance</span></span><br/>
+              Optimized. <span className="text-[#1A6BF5]">Automatically.</span>
             </motion.h1>
             {/* Two-column value summary: HOW (method) + BENEFITS (outcomes) */}
             <motion.div
@@ -233,11 +245,11 @@ export default function Homepage() {
               {/* Left — how Traigent finds the optimum */}
               <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 md:p-7">
                 <div className="text-[11px] font-mono uppercase tracking-widest text-slate-500 mb-4">
-                  How Traigent finds the optimum
+                  Traigent's unique capabilities
                 </div>
                 <ul className="space-y-3">
                   {[
-                    <>Finds the optimum in <span className="text-white font-semibold">hours, not weeks</span>.</>,
+                    <>Finds <span className="text-white font-semibold">optimal model and configuration combo</span> in <span className="text-white font-semibold">hours, not weeks</span>.</>,
                     <><span className="text-white font-semibold">Automatically</span>, not manually.</>,
                     <>Requires only a <span className="text-white font-semibold">fraction of the search space.</span></>,
                     <>With <span className="text-white font-semibold">confidence</span>, not guesswork.</>,
@@ -257,14 +269,39 @@ export default function Homepage() {
                 </div>
                 <ul className="space-y-3">
                   {[
-                    <><span className="text-white font-semibold">Reduces engineering costs.</span></>,
-                    <><span className="text-white font-semibold">Saves LLM costs</span> over the lifecycle.</>,
-                    <><span className="text-white font-semibold">Shortens time to market.</span></>,
-                    <><span className="text-white font-semibold">Increases confidence</span> significantly.</>,
-                  ].map((item, i) => (
+                    {
+                      content: <><span className="text-white font-semibold">Reduces engineering costs.</span></>,
+                      to: "/ttm",
+                      linkLabel: "TTM calc",
+                    },
+                    {
+                      content: <><span className="text-white font-semibold">Saves LLM costs</span> over the lifecycle.</>,
+                      to: "/roi",
+                      linkLabel: "ROI calc",
+                    },
+                    {
+                      content: <><span className="text-white font-semibold">Shortens time to market.</span></>,
+                    },
+                    {
+                      content: <><span className="text-white font-semibold">Increases confidence</span> significantly.</>,
+                    },
+                  ].map((b, i) => (
                     <li key={i} className="flex items-start gap-2.5 text-slate-300 leading-snug">
                       <Check className="w-5 h-5 mt-0.5 flex-shrink-0 text-[#4D8EF8]" strokeWidth={3} />
-                      <span>{item}</span>
+                      <span className="flex-1">
+                        {b.content}
+                        {b.to && (
+                          <>
+                            {" "}
+                            <Link
+                              to={b.to}
+                              className="inline-flex items-center gap-0.5 text-[#4D8EF8] hover:text-white underline underline-offset-2 decoration-[#4D8EF8]/50 hover:decoration-white font-medium whitespace-nowrap"
+                            >
+                              {b.linkLabel} →
+                            </Link>
+                          </>
+                        )}
+                      </span>
                     </li>
                   ))}
                 </ul>

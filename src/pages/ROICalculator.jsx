@@ -11,11 +11,31 @@ const BLUE = "#1A6BF5";
 // Savings assumptions. These are the published ranges we stand behind.
 // Tune in one place.
 const COST_SAVINGS = { conservative: 0.30, typical: 0.45, optimistic: 0.60 };
-const DEFAULT_HOURLY_RATE = 150;    // Senior ML engineer fully-loaded hourly cost (US mid-tier)
+const DEFAULT_HOURLY_RATE = 100;   // $200k fully-loaded engineer ÷ 2,000 work hours/year
 const DEFAULT_MANUAL_HOURS_PER_PASS = 72;  // matches TTM defaults (720 × 20% × 30 min)
 const TRAIGENT_HOURS_PER_PASS = 1;  // matches TTM: engineer involvement per optimization pass
 const DEFAULT_PASSES_PER_YEAR = 1;  // conservative: one optimization pass per year
 const DEFAULT_MONTHLY_SPEND = 5000;  // realistic early-adopter LLM bill — small team running an agent in prod
+
+// Logarithmic mapping for the LLM-spend slider. Linear would push 95% of the
+// real-world range into the bottom 5% of the slider. We use 1000 'positions'
+// mapped log-scale onto [$100, $200K], rounded to nice round-number $ values.
+const SPEND_MIN = 100;
+const SPEND_MAX = 200000;
+const SPEND_POSITIONS = 1000;
+function spendFromPosition(pos) {
+  const raw = SPEND_MIN * Math.pow(SPEND_MAX / SPEND_MIN, pos / SPEND_POSITIONS);
+  if (raw < 1000)   return Math.round(raw / 50) * 50;
+  if (raw < 10000)  return Math.round(raw / 100) * 100;
+  if (raw < 100000) return Math.round(raw / 500) * 500;
+  return Math.round(raw / 1000) * 1000;
+}
+function positionFromSpend(spend) {
+  const s = Math.max(SPEND_MIN, Math.min(SPEND_MAX, spend));
+  return Math.round(
+    (Math.log(s / SPEND_MIN) / Math.log(SPEND_MAX / SPEND_MIN)) * SPEND_POSITIONS
+  );
+}
 
 // Traigent pricing tiers — kept in sync with /pricing.
 const TIERS = {
@@ -67,7 +87,7 @@ export default function ROICalculator() {
   // Which savings scenario drives the headline math. 'custom' lets the user
   // dial in their own % rather than commit to one of the three published ranges.
   const [savingsScenario, setSavingsScenario] = useState("conservative");
-  const [customSavingsPct, setCustomSavingsPct] = useState(45);
+  const [customSavingsPct, setCustomSavingsPct] = useState(15);
 
   function resetToDefaults() {
     setMonthlySpend(DEFAULT_MONTHLY_SPEND);
@@ -75,7 +95,7 @@ export default function ROICalculator() {
     setPassesPerYear(DEFAULT_PASSES_PER_YEAR);
     setTier("pro");
     setSavingsScenario("conservative");
-    setCustomSavingsPct(45);
+    setCustomSavingsPct(15);
     trackEvent("roi_reset_clicked");
   }
 
@@ -192,11 +212,11 @@ export default function ROICalculator() {
                 <span className="text-slate-500 text-sm">/ month</span>
               </div>
               {/* Quick presets — let visitors self-segment in one click instead of dragging */}
-              <div className="flex flex-wrap gap-1.5 mb-4">
+              <div className="flex flex-wrap gap-1.5 mb-4 min-h-[1.75rem]">
                 {[
-                  { value: 2000, label: "$2k POC" },
-                  { value: 5000, label: "$5k Early prod" },
-                  { value: 25000, label: "$25k Mid-market" },
+                  { value: 1000, label: "$1k POC" },
+                  { value: 3000, label: "$3k Early prod" },
+                  { value: 10000, label: "$10k Mid" },
                 ].map((p) => {
                   const active = monthlySpend === p.value;
                   return (
@@ -223,19 +243,21 @@ export default function ROICalculator() {
               </div>
               <input
                 type="range"
-                min="500"
-                max="200000"
-                step="500"
-                value={monthlySpend}
-                onChange={(e) => setMonthlySpend(Number(e.target.value))}
+                min="0"
+                max={SPEND_POSITIONS}
+                step="1"
+                value={positionFromSpend(monthlySpend)}
+                onChange={(e) => setMonthlySpend(spendFromPosition(Number(e.target.value)))}
                 className="w-full accent-[#1A6BF5]"
               />
               <div className="flex justify-between text-xs text-slate-500 mt-2 font-mono">
-                <span>$500</span>
+                <span>$100</span>
+                <span>$1k</span>
+                <span>$10k</span>
                 <span>$200k</span>
               </div>
               <div className="mt-auto pt-3 border-t border-slate-800/80 text-[11px] text-slate-500 leading-snug min-h-[3.5rem]">
-                Your blended monthly inference + embeddings spend across providers.
+                Your blended monthly inference + embeddings spend across providers and all the agents you've licensed for.
               </div>
             </Card>
             <Card accent={BLUE}>
@@ -247,11 +269,11 @@ export default function ROICalculator() {
                 <span className="text-4xl md:text-5xl font-bold text-white">{Math.round(manualHoursPerPass * passesPerYear)}</span>
                 <span className="text-slate-500 text-sm">hrs / year</span>
               </div>
-              <div className="text-xs text-slate-500 mb-4 leading-snug">
-                = <span className="text-slate-300">{Math.round(manualHoursPerPass)} hrs/pass</span> × <span className="text-slate-300">{passesPerYear}</span> {passesPerYear === 1 ? "pass" : "passes"} per year
+              <div className="text-xs text-slate-500 mb-4 leading-snug min-h-[3.5rem] flex items-center">
+                <span>= <span className="text-slate-300">{Math.round(manualHoursPerPass)} hrs/pass</span> × <span className="text-white font-bold tabular-nums">{passesPerYear}</span> <span className="text-slate-300">{passesPerYear === 1 ? "pass" : "passes"} / year</span></span>
               </div>
               <div className="text-[10px] font-mono uppercase tracking-wider text-slate-500 mb-2">
-                Optimization passes / year
+                Optimization passes / year · <span className="text-white font-bold tabular-nums">{passesPerYear} / yr</span>
               </div>
               <input
                 type="range"
@@ -264,7 +286,7 @@ export default function ROICalculator() {
               />
               <div className="flex justify-between text-xs text-slate-500 mt-2 font-mono">
                 <span>1 / yr</span>
-                <span>monthly</span>
+                <span>12 / yr</span>
               </div>
               <div className="mt-auto pt-3 border-t border-slate-800/80 text-[11px] text-slate-500 leading-snug min-h-[3.5rem]">
                 Per-pass hours come from your <Link to="/ttm" className="text-[#4D8EF8] hover:text-[#1A6BF5] underline underline-offset-2">TTM Calculator</Link> settings — adjust the search space there.
@@ -279,7 +301,7 @@ export default function ROICalculator() {
                 <span className="text-4xl md:text-5xl font-bold text-white">${hourlyRate}</span>
                 <span className="text-slate-500 text-sm">/ hour</span>
               </div>
-              <div className="text-xs mb-4 leading-snug invisible" aria-hidden="true">spacer</div>
+              <div className="text-xs mb-4 leading-snug invisible min-h-[3.5rem]" aria-hidden="true">spacer</div>
               <div className="text-[10px] font-mono uppercase tracking-wider mb-2 invisible" aria-hidden="true">spacer</div>
               <input
                 type="range"
@@ -708,7 +730,7 @@ export default function ROICalculator() {
               </Link>
             </div>
             <p className="text-xs text-slate-500 mt-6 max-w-2xl mx-auto">
-              Estimates assume typical observed savings ranges across early-adopter deployments. Actual savings depend on baseline configuration, accuracy requirements, and traffic volume. Engineering rate is configurable — default {`$${DEFAULT_HOURLY_RATE}`}/hr maps to a US mid-tier senior ML engineer (~$250k total comp, fully-loaded).
+              Estimates assume typical observed savings ranges across early-adopter deployments. Actual savings depend on baseline configuration, accuracy requirements, and traffic volume. Engineering rate is configurable — default {`$${DEFAULT_HOURLY_RATE}`}/hr ≈ $200k fully-loaded engineer ÷ 2,000 work hours/year.
             </p>
           </motion.div>
         </div>
