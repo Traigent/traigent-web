@@ -12,6 +12,13 @@ const COST_SAVINGS = { conservative: 0.30, typical: 0.45, optimistic: 0.60 };
 const HOURLY_RATE = 150;            // Senior ML engineer fully-loaded hourly cost
 const HOURS_RECLAIMED_PCT = 0.7;    // Fraction of tuning hours Traigent removes
 
+// Traigent pricing tiers — kept in sync with /pricing.
+const TIERS = {
+  free:    { label: "Free POC",       monthly: 0,   blurb: "Full optimization, no spend" },
+  starter: { label: "Starter",        monthly: 99,  blurb: "1 agent · 1 team · flat" },
+  pro:     { label: "Pro",            monthly: 249, blurb: "Up to 5 agents · 5 teams · flat" },
+};
+
 function formatUSD(n) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -47,6 +54,7 @@ function Stat({ label, value, sublabel, icon: Icon, accent }) {
 export default function ROICalculator() {
   const [monthlySpend, setMonthlySpend] = useState(20000);
   const [hoursTuningPerMonth, setHoursTuningPerMonth] = useState(20);
+  const [tier, setTier] = useState("pro");
 
   const results = useMemo(() => {
     const llm = {
@@ -55,9 +63,13 @@ export default function ROICalculator() {
       optimistic: monthlySpend * COST_SAVINGS.optimistic * 12,
     };
     const engineering = hoursTuningPerMonth * HOURS_RECLAIMED_PCT * HOURLY_RATE * 12;
-    const totalTypical = llm.typical + engineering;
-    return { llm, engineering, totalTypical };
-  }, [monthlySpend, hoursTuningPerMonth]);
+    const grossTypical = llm.typical + engineering;
+    const traigentAnnual = TIERS[tier].monthly * 12;
+    const netTypical = grossTypical - traigentAnnual;
+    // ROI = net return ÷ investment. For Free POC (cost=0) we display "Pure win".
+    const roiPct = traigentAnnual > 0 ? (netTypical / traigentAnnual) * 100 : null;
+    return { llm, engineering, grossTypical, traigentAnnual, netTypical, roiPct };
+  }, [monthlySpend, hoursTuningPerMonth, tier]);
 
   return (
     <>
@@ -90,7 +102,10 @@ export default function ROICalculator() {
               How much could <span style={{ color: BLUE }}>Traigent</span> save you?
             </h1>
             <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto">
-              Plug in two numbers. See your projected 12-month savings on LLM spend and engineering time.
+              Plug in your numbers. Pick a tier. See your <span className="text-white font-semibold">net 12-month ROI</span> after the Traigent investment.
+            </p>
+            <p className="text-sm text-slate-500 max-w-2xl mx-auto mt-3">
+              The Free POC carries zero investment — any improvement in cost, accuracy, or latency is pure upside, and the reclaimed engineering time alone usually justifies the pilot.
             </p>
           </motion.div>
 
@@ -149,7 +164,42 @@ export default function ROICalculator() {
             </Card>
           </motion.div>
 
-          {/* Headline result */}
+          {/* Traigent tier selector — needed for true ROI math */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.15 }}
+            className="mb-8"
+          >
+            <div className="flex items-center gap-3 text-xs font-mono uppercase tracking-wider text-slate-500 mb-3">
+              <span>Which Traigent tier?</span>
+              <div className="flex-1 h-px bg-slate-800" />
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              {Object.entries(TIERS).map(([key, t]) => (
+                <button
+                  key={key}
+                  onClick={() => setTier(key)}
+                  className={`text-left rounded-xl p-4 border transition-all ${
+                    tier === key
+                      ? "bg-[#1A6BF5]/15 border-[#1A6BF5]/60 shadow-[0_0_25px_rgba(26,107,245,0.12)]"
+                      : "bg-slate-900/40 border-slate-800 hover:border-slate-700"
+                  }`}
+                >
+                  <div className={`text-sm font-bold ${tier === key ? "text-[#4D8EF8]" : "text-white"}`}>
+                    {t.label}
+                  </div>
+                  <div className="text-lg font-extrabold text-white mt-1">
+                    {t.monthly === 0 ? "$0" : `$${t.monthly}`}
+                    <span className="text-xs text-slate-500 font-normal ml-1">/ mo</span>
+                  </div>
+                  <div className="text-xs text-slate-500 mt-1 leading-tight">{t.blurb}</div>
+                </button>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Headline result — NET ROI after Traigent investment */}
           <motion.div
             initial={{ opacity: 0, scale: 0.97 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -158,13 +208,35 @@ export default function ROICalculator() {
             style={{ borderColor: BLUE }}
           >
             <div className="text-sm font-mono uppercase tracking-wider text-slate-400 mb-2">
-              Projected 12-month savings
+              Net 12-month savings <span className="text-slate-500 normal-case font-sans">(after Traigent cost)</span>
             </div>
             <div className="text-6xl md:text-7xl lg:text-8xl font-extrabold tracking-tight mb-3" style={{ color: BLUE }}>
-              {formatUSD(results.totalTypical)}
+              {formatUSD(results.netTypical)}
             </div>
-            <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto">
-              Combined: <span className="text-white font-semibold">{formatUSD(results.llm.typical)}</span> in LLM cost reduction + <span className="text-white font-semibold">{formatUSD(results.engineering)}</span> in reclaimed engineer time.
+            <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto mb-4">
+              <span className="text-white font-semibold">{formatUSD(results.grossTypical)}</span> gross savings
+              <span className="text-slate-600"> − </span>
+              <span className="text-white font-semibold">{formatUSD(results.traigentAnnual)}</span> Traigent annual cost
+              <span className="text-slate-600"> = </span>
+              <span className="text-[#4D8EF8] font-bold">{formatUSD(results.netTypical)}</span>
+            </p>
+            {results.roiPct !== null ? (
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#1A6BF5]/15 border border-[#1A6BF5]/40">
+                <span className="text-xs font-mono uppercase tracking-wider text-slate-400">ROI</span>
+                <span className="text-lg font-extrabold" style={{ color: BLUE }}>
+                  {Math.round(results.roiPct).toLocaleString()}%
+                </span>
+              </div>
+            ) : (
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-green-500/15 border border-green-500/40">
+                <span className="text-xs font-mono uppercase tracking-wider text-slate-400">Free POC</span>
+                <span className="text-lg font-extrabold text-green-300">
+                  Pure win — zero investment
+                </span>
+              </div>
+            )}
+            <p className="text-xs text-slate-500 mt-4 max-w-2xl mx-auto">
+              Gross savings = LLM cost reduction <span className="text-slate-400">{formatUSD(results.llm.typical)}</span> + reclaimed engineer time <span className="text-slate-400">{formatUSD(results.engineering)}</span>.
             </p>
           </motion.div>
 
@@ -345,7 +417,9 @@ export default function ROICalculator() {
                   location: "roi_calculator",
                   monthly_spend: monthlySpend,
                   hours_tuning: hoursTuningPerMonth,
-                  projected_savings: Math.round(results.totalTypical),
+                  gross_savings: Math.round(results.grossTypical),
+                  net_savings: Math.round(results.netTypical),
+                  tier,
                 })}
                 className="inline-flex items-center bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white font-medium px-6 py-3 rounded-lg transition-colors"
               >

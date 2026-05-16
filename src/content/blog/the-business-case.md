@@ -36,9 +36,9 @@ For ~3–5 dimensions, yes — slowly. The full configuration space has 10+ dime
 
 30–60% LLM cost reduction at the same accuracy. On a representative $20k/month agent, that's **$6–12k/month — $72k–$144k/year — recurring.** Plus reclaimed engineer time. → [See the math ↓](#the-math)
 
-**Q: Does this make sense for a small team or sub-$5k/month spend?**
+**Q: Does this make sense for a small team or low monthly spend?**
 
-Honestly, often not. The economics tilt favorable at **$5k+/month per agent in production**. Below that threshold, the math is harder to defend. → [When this pays off ↓](#when-this-pays-off)
+Yes, in most cases. With Traigent Starter at **$99/month flat**, the breakeven on Traigent cost alone is roughly **$330/month** of LLM spend (at the conservative 30% savings rate). Below that, the **Free POC** is the right starting point — zero risk, no Traigent investment, and even reaching a better accuracy/latency point without spending more is a net engineering win. → [When this pays off ↓](#when-this-pays-off)
 
 **Q: We already use Langfuse / Arize / Helicone for observability. Isn't that enough?**
 
@@ -159,20 +159,21 @@ The pivot is from *"optimization as a project"* (multi-week, expensive, infreque
 
 ## When This Pays Off
 
-Automated cost-performance optimization is most defensible when:
+Automated cost-performance optimization makes economic sense any time the recurring LLM spend exceeds the Traigent tier cost — which, at current pricing, is a low bar:
 
-- You have one or more **production agents** (not prototypes or one-shot internal tools)
-- Inference spend is **>$5k/month** per agent (the threshold where multiplicative savings exceed automation cost)
-- You expect the agent to run **>12 months** (so recurring savings compound)
-- You're sensitive to either **cost**, **accuracy**, or **latency** as a competitive vector
+| Traigent tier | Annual cost | Breakeven LLM spend (at 30% conservative savings) |
+|---|---|---|
+| **Free POC** | $0 | Any production agent — even zero-cost savings + engineering time saved is net positive |
+| **Starter** ($99/mo) | $1,188 | ~$330/month of LLM spend |
+| **Pro** ($249/mo) | $2,988 | ~$830/month of LLM spend |
+| **Enterprise** | Custom | Negotiated against your specific spend profile |
 
 The investment is **less compelling** for:
 
-- Prototypes with no production traffic yet
-- Internal tools with negligible inference spend (<$500/month)
+- Prototypes with no production traffic at all (no recurring spend to optimize against)
 - Agents shipped against a fixed model contract with no ability to vary configuration
 
-For everyone in the first category, the math is one-sided: the cost of *not* optimizing exceeds the cost of optimizing by an order of magnitude over any reasonable horizon.
+For everyone else — the math is one-sided. The cost of *not* optimizing exceeds the cost of optimizing by an order of magnitude over any reasonable horizon, and the Free POC means the only cost of finding out is engineering time, which the optimization itself reclaims.
 
 ## The Bottom Line
 
