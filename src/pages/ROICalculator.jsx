@@ -105,7 +105,7 @@ export default function ROICalculator() {
               The justification for Traigent is <span className="text-white font-semibold">reduced engineering effort</span> + <span className="text-white font-semibold">faster convergence</span> + <span className="text-white font-semibold">confidence in the outcome</span>. LLM cost savings are the <span className="text-[#4D8EF8] font-semibold">huge potential bonus</span>.
             </p>
             <p className="text-sm text-slate-500 max-w-2xl mx-auto mt-3">
-              Plug in your numbers. Pick a tier. See your net 12-month ROI both with and without LLM cost reduction.
+              Plug in your numbers. Pick a tier. Calculate your 12-month savings.
             </p>
           </motion.div>
 
