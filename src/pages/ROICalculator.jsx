@@ -15,6 +15,7 @@ const DEFAULT_HOURLY_RATE = 150;    // Senior ML engineer fully-loaded hourly co
 const DEFAULT_MANUAL_HOURS_PER_PASS = 72;  // matches TTM defaults (720 × 20% × 30 min)
 const TRAIGENT_HOURS_PER_PASS = 1;  // matches TTM: engineer involvement per optimization pass
 const DEFAULT_PASSES_PER_YEAR = 1;  // conservative: one optimization pass per year
+const DEFAULT_MONTHLY_SPEND = 5000;  // realistic early-adopter LLM bill — small team running an agent in prod
 
 // Traigent pricing tiers — kept in sync with /pricing.
 const TIERS = {
@@ -56,7 +57,7 @@ function Stat({ label, value, sublabel, icon: Icon, accent }) {
 }
 
 export default function ROICalculator() {
-  const [monthlySpend, setMonthlySpend] = useState(20000);
+  const [monthlySpend, setMonthlySpend] = useState(DEFAULT_MONTHLY_SPEND);
   // Engineering side is now derived from the TTM Calculator's per-pass figure
   // multiplied by a user-set optimization cadence. Both are shared via localStorage.
   const [hourlyRate, setHourlyRate] = useSharedSetting("traigent_hourly_rate", DEFAULT_HOURLY_RATE);
@@ -69,7 +70,7 @@ export default function ROICalculator() {
   const [customSavingsPct, setCustomSavingsPct] = useState(45);
 
   function resetToDefaults() {
-    setMonthlySpend(20000);
+    setMonthlySpend(DEFAULT_MONTHLY_SPEND);
     setHourlyRate(DEFAULT_HOURLY_RATE);
     setPassesPerYear(DEFAULT_PASSES_PER_YEAR);
     setTier("pro");
@@ -190,8 +191,36 @@ export default function ROICalculator() {
                 <span className="text-4xl md:text-5xl font-bold text-white">{formatUSD(monthlySpend)}</span>
                 <span className="text-slate-500 text-sm">/ month</span>
               </div>
-              <div className="text-xs mb-4 leading-snug invisible" aria-hidden="true">spacer</div>
-              <div className="text-[10px] font-mono uppercase tracking-wider mb-2 invisible" aria-hidden="true">spacer</div>
+              {/* Quick presets — let visitors self-segment in one click instead of dragging */}
+              <div className="flex flex-wrap gap-1.5 mb-4">
+                {[
+                  { value: 2000, label: "$2k POC" },
+                  { value: 5000, label: "$5k Early prod" },
+                  { value: 25000, label: "$25k Mid-market" },
+                ].map((p) => {
+                  const active = monthlySpend === p.value;
+                  return (
+                    <button
+                      key={p.value}
+                      type="button"
+                      onClick={() => {
+                        setMonthlySpend(p.value);
+                        trackEvent("roi_spend_preset_clicked", { preset: p.value });
+                      }}
+                      className={`text-[10px] font-mono uppercase tracking-wider px-2 py-1 rounded-md border transition-colors ${
+                        active
+                          ? "border-[#1A6BF5] bg-[#1A6BF5]/15 text-white"
+                          : "border-slate-700 text-slate-400 hover:border-[#4D8EF8] hover:text-white"
+                      }`}
+                    >
+                      {p.label}
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="text-[10px] font-mono uppercase tracking-wider text-slate-500 mb-2">
+                Or drag to fine-tune
+              </div>
               <input
                 type="range"
                 min="500"

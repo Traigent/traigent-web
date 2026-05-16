@@ -1,6 +1,6 @@
 ﻿import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Check, ChevronRight, ExternalLink, Play, Pause, Sparkles, Eye } from "lucide-react";
+import { ArrowRight, Check, ChevronRight, ChevronDown, ExternalLink, Play, Pause, Sparkles, Eye } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -118,6 +118,8 @@ const DemoPlayer = () => {
 
 export default function Homepage() {
   const [showStartNow, setShowStartNow] = useState(false);
+  const [benefitsOpen, setBenefitsOpen] = useState(false);
+  const benefitsRef = useRef(null);
   // Handle scroll requests coming from other pages via TopNav
   useEffect(() => {
     const pending = sessionStorage.getItem("pendingScroll");
@@ -128,6 +130,22 @@ export default function Homepage() {
       }, 100);
     }
   }, []);
+  // Close the 'Benefits quantified and explained' dropdown on outside click / Esc
+  useEffect(() => {
+    if (!benefitsOpen) return;
+    function onDocClick(e) {
+      if (benefitsRef.current && !benefitsRef.current.contains(e.target)) setBenefitsOpen(false);
+    }
+    function onKey(e) {
+      if (e.key === "Escape") setBenefitsOpen(false);
+    }
+    document.addEventListener("mousedown", onDocClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDocClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [benefitsOpen]);
   return (
     <div className="bg-white">
       <Helmet>
@@ -166,7 +184,7 @@ export default function Homepage() {
       </Helmet>
       {showStartNow && <StartNowModal onClose={() => setShowStartNow(false)} />}
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-[#080808] text-white">
+      <section className="relative overflow-x-clip bg-[#080808] text-white">
         {/* Noise texture overlay */}
         <div className="absolute inset-0 opacity-60 pointer-events-none" style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E")`
@@ -212,77 +230,114 @@ export default function Homepage() {
               Traigent <span className="text-[#1A6BF5] font-semibold">rapidly</span> finds your agent's <span className="text-[#1A6BF5] font-semibold">best cost-performance configuration</span> and <span className="text-[#1A6BF5] font-semibold">continuously re-optimizes</span> as models, costs, and usage patterns drift.
             </motion.p>
 
-            {/* Hero numbers hook — only the two calculator links remain */}
+            {/* Hero CTA — single dropdown consolidating calculators + reading */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.25 }}
               className="text-center mb-10 flex flex-col items-center gap-3"
             >
-              <div className="inline-flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-base md:text-lg text-slate-200 max-w-3xl">
-                <span className="italic">See it on your numbers:</span>
-                <Link
-                  to="/roi"
-                  onClick={() => trackEvent("hero_roi_hook_clicked", { destination: "roi" })}
-                  className="group inline-flex items-center gap-1 transition-colors"
+              {/* Benefits dropdown — consolidates calculators + reading material into one item */}
+              <div ref={benefitsRef} className="relative inline-block text-base md:text-lg text-slate-200">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setBenefitsOpen((v) => !v);
+                    trackEvent("hero_benefits_dropdown_toggled", { open: !benefitsOpen });
+                  }}
+                  aria-haspopup="menu"
+                  aria-expanded={benefitsOpen}
+                  className="group inline-flex items-center gap-1.5 transition-colors"
                   style={{ color: "#1A6BF5" }}
                 >
                   <span className="underline underline-offset-4 decoration-[#1A6BF5]/50 group-hover:decoration-[#1A6BF5] font-semibold">
-                    ROI Calculator
+                    Benefits quantified and explained
                   </span>
-                  <span className="inline-block transition-transform group-hover:translate-x-1 font-semibold">→</span>
-                </Link>
-                <span className="text-slate-500">·</span>
-                <Link
-                  to="/ttm"
-                  onClick={() => trackEvent("hero_ttm_hook_clicked", { destination: "ttm" })}
-                  className="group inline-flex items-center gap-1 transition-colors"
-                  style={{ color: "#1A6BF5" }}
-                >
-                  <span className="underline underline-offset-4 decoration-[#1A6BF5]/50 group-hover:decoration-[#1A6BF5] font-semibold">
-                    TTM Calculator
-                  </span>
-                  <span className="inline-block transition-transform group-hover:translate-x-1 font-semibold">→</span>
-                </Link>
-              </div>
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform ${benefitsOpen ? "rotate-180" : ""}`}
+                    aria-hidden="true"
+                  />
+                </button>
+                {benefitsOpen && (
+                  <div
+                    role="menu"
+                    className="absolute left-1/2 -translate-x-1/2 mt-2 w-[min(92vw,640px)] z-30 bg-slate-950 border border-slate-700 rounded-xl shadow-2xl overflow-hidden text-left grid grid-cols-1 md:grid-cols-2 md:divide-x md:divide-slate-800"
+                  >
+                    {/* Left column — calculators */}
+                    <div>
+                      <div className="px-4 pt-3 pb-1 text-[10px] font-mono uppercase tracking-widest text-slate-500">
+                        See it on your numbers
+                      </div>
+                      <Link
+                        to="/roi"
+                        role="menuitem"
+                        onClick={() => {
+                          setBenefitsOpen(false);
+                          trackEvent("hero_roi_hook_clicked", { destination: "roi" });
+                        }}
+                        className="block px-4 py-3 text-sm text-slate-200 hover:bg-slate-900 hover:text-white border-b border-slate-800 transition-colors"
+                      >
+                        <div className="font-semibold text-[#4D8EF8]">ROI Calculator</div>
+                        <div className="text-xs text-slate-400 mt-0.5">12-month savings</div>
+                      </Link>
+                      <Link
+                        to="/ttm"
+                        role="menuitem"
+                        onClick={() => {
+                          setBenefitsOpen(false);
+                          trackEvent("hero_ttm_hook_clicked", { destination: "ttm" });
+                        }}
+                        className="block px-4 py-3 text-sm text-slate-200 hover:bg-slate-900 hover:text-white transition-colors"
+                      >
+                        <div className="font-semibold text-[#4D8EF8]">TTM Calculator</div>
+                        <div className="text-xs text-slate-400 mt-0.5">Engineering time saved</div>
+                      </Link>
+                    </div>
 
-              <div className="inline-flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-base md:text-lg text-slate-200 max-w-3xl">
-                <span className="italic">Read more:</span>
-                <Link
-                  to="/blog/the-business-case"
-                  onClick={() => trackEvent("hero_skeptic_hook_clicked", { destination: "the-business-case" })}
-                  className="group inline-flex items-center gap-1 transition-colors"
-                  style={{ color: "#1A6BF5" }}
-                >
-                  <span className="underline underline-offset-4 decoration-[#1A6BF5]/50 group-hover:decoration-[#1A6BF5] font-semibold">
-                    the business case
-                  </span>
-                  <span className="inline-block transition-transform group-hover:translate-x-1 font-semibold">→</span>
-                </Link>
-                <span className="text-slate-500">·</span>
-                <Link
-                  to="/value-proposition"
-                  onClick={() => trackEvent("hero_problem_hook_clicked", { destination: "value-proposition" })}
-                  className="group inline-flex items-center gap-1 transition-colors"
-                  style={{ color: "#1A6BF5" }}
-                >
-                  <span className="underline underline-offset-4 decoration-[#1A6BF5]/50 group-hover:decoration-[#1A6BF5] font-semibold">
-                    the problem we solve
-                  </span>
-                  <span className="inline-block transition-transform group-hover:translate-x-1 font-semibold">→</span>
-                </Link>
-                <span className="text-slate-500">·</span>
-                <Link
-                  to="/blog"
-                  onClick={() => trackEvent("hero_blog_hook_clicked", { destination: "blog" })}
-                  className="group inline-flex items-center gap-1 transition-colors"
-                  style={{ color: "#1A6BF5" }}
-                >
-                  <span className="underline underline-offset-4 decoration-[#1A6BF5]/50 group-hover:decoration-[#1A6BF5] font-semibold">
-                    Why Traigent
-                  </span>
-                  <span className="inline-block transition-transform group-hover:translate-x-1 font-semibold">→</span>
-                </Link>
+                    {/* Right column — reading */}
+                    <div className="border-t border-slate-800 md:border-t-0">
+                      <div className="px-4 pt-3 pb-1 text-[10px] font-mono uppercase tracking-widest text-slate-500">
+                        Read more
+                      </div>
+                      <Link
+                        to="/blog/the-business-case"
+                        role="menuitem"
+                        onClick={() => {
+                          setBenefitsOpen(false);
+                          trackEvent("hero_skeptic_hook_clicked", { destination: "the-business-case" });
+                        }}
+                        className="block px-4 py-3 text-sm text-slate-200 hover:bg-slate-900 hover:text-white border-b border-slate-800 transition-colors"
+                      >
+                        <div className="font-semibold text-[#4D8EF8]">The business case</div>
+                        <div className="text-xs text-slate-400 mt-0.5">Quantified savings, the math behind ROI.</div>
+                      </Link>
+                      <Link
+                        to="/value-proposition"
+                        role="menuitem"
+                        onClick={() => {
+                          setBenefitsOpen(false);
+                          trackEvent("hero_problem_hook_clicked", { destination: "value-proposition" });
+                        }}
+                        className="block px-4 py-3 text-sm text-slate-200 hover:bg-slate-900 hover:text-white border-b border-slate-800 transition-colors"
+                      >
+                        <div className="font-semibold text-[#4D8EF8]">The problem we solve</div>
+                        <div className="text-xs text-slate-400 mt-0.5">The 6-truth chain that leads to Traigent.</div>
+                      </Link>
+                      <Link
+                        to="/blog"
+                        role="menuitem"
+                        onClick={() => {
+                          setBenefitsOpen(false);
+                          trackEvent("hero_blog_hook_clicked", { destination: "blog" });
+                        }}
+                        className="block px-4 py-3 text-sm text-slate-200 hover:bg-slate-900 hover:text-white transition-colors"
+                      >
+                        <div className="font-semibold text-[#4D8EF8]">Why Traigent</div>
+                        <div className="text-xs text-slate-400 mt-0.5">Deeper reading: model myth, eval trap, more.</div>
+                      </Link>
+                    </div>
+                  </div>
+                )}
               </div>
             </motion.div>
 
@@ -1051,6 +1106,11 @@ constraints:
             <div>
               <h3 className="text-lg font-semibold mb-4">Resources</h3>
               <ul className="space-y-2">
+                <li>
+                  <Link to="/agent-optimization" className="text-slate-400 hover:text-white transition-colors">
+                    Agent Optimization
+                  </Link>
+                </li>
                 <li>
                   <Link to={createPageUrl("/get-started")} className="text-slate-400 hover:text-white transition-colors">
                     Get started
