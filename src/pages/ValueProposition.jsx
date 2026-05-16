@@ -410,7 +410,7 @@ export default function ValueProposition() {
               <div className="text-3xl md:text-4xl font-extrabold text-[#4D8EF8] mb-4 tracking-tight">Traigent Benefits</div>
               <ul className="space-y-3">
                 {[
-                  { phrase: "Saves you ", strong: "30–60% on LLM costs", rest: " over the lifecycle." },
+                  { phrase: "Saves you ", strong: "over 20% on LLM costs", rest: " over the lifecycle." },
                   { phrase: "Reduces ", strong: "engineering costs", rest: "." },
                   { phrase: "Shortens ", strong: "time to market", rest: "." },
                   { phrase: "Increases ", strong: "confidence significantly", rest: "." },

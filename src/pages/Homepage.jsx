@@ -245,11 +245,11 @@ export default function Homepage() {
               {/* Left — how Traigent finds the optimum */}
               <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 md:p-7">
                 <div className="text-[11px] font-mono uppercase tracking-widest text-slate-500 mb-4">
-                  Traigent's unique capabilities
+                  Traigent's unique capability
                 </div>
                 <ul className="space-y-3">
                   {[
-                    <>Finds <span className="text-white font-semibold">optimal model and configuration combo</span> in <span className="text-white font-semibold">hours, not weeks</span>.</>,
+                    <>Finds <span className="text-white font-semibold"><span className="underline underline-offset-4">the</span> optimal model and configuration combo</span> in <span className="text-white font-semibold">hours, not weeks</span>.</>,
                     <><span className="text-white font-semibold">Automatically</span>, not manually.</>,
                     <>Requires only a <span className="text-white font-semibold">fraction of the search space.</span></>,
                     <>With <span className="text-white font-semibold">confidence</span>, not guesswork.</>,
