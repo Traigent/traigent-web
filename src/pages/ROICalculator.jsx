@@ -102,10 +102,10 @@ export default function ROICalculator() {
               How much could <span style={{ color: BLUE }}>Traigent</span> save you?
             </h1>
             <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto">
-              Plug in your numbers. Pick a tier. See your <span className="text-white font-semibold">net 12-month ROI</span> after the Traigent investment.
+              The justification for Traigent is <span className="text-white font-semibold">reduced engineering effort</span> + <span className="text-white font-semibold">faster convergence</span> + <span className="text-white font-semibold">confidence in the outcome</span>. LLM cost savings are the <span className="text-[#4D8EF8] font-semibold">huge potential bonus</span>.
             </p>
             <p className="text-sm text-slate-500 max-w-2xl mx-auto mt-3">
-              The Free POC carries zero investment — any improvement in cost, accuracy, or latency is pure upside, and the reclaimed engineering time alone usually justifies the pilot.
+              Plug in your numbers. Pick a tier. See your net 12-month ROI both with and without LLM cost reduction.
             </p>
           </motion.div>
 
@@ -238,6 +238,63 @@ export default function ROICalculator() {
             <p className="text-xs text-slate-500 mt-4 max-w-2xl mx-auto">
               Gross savings = LLM cost reduction <span className="text-slate-400">{formatUSD(results.llm.typical)}</span> + reclaimed engineer time <span className="text-slate-400">{formatUSD(results.engineering)}</span>.
             </p>
+          </motion.div>
+
+          {/* Floor vs bonus — Traigent is justified even at $0 LLM savings */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.25 }}
+            className="bg-slate-900/40 border border-slate-800 rounded-2xl p-6 md:p-8 mb-12"
+          >
+            <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-slate-400 mb-4">
+              <span>The floor</span>
+              <div className="flex-1 h-px bg-slate-800" />
+              <span className="text-slate-500">vs. the bonus</span>
+            </div>
+
+            <p className="text-base md:text-lg text-slate-200 leading-relaxed mb-6" style={{ textWrap: "balance" }}>
+              <span className="text-white font-semibold">Traigent is justified before you save a single dollar on LLM costs.</span>{" "}
+              You converge to better accuracy and lower latency <span className="font-semibold text-white">faster, with confidence</span>, and you reclaim engineering time you'd otherwise spend hand-tuning. LLM cost reduction is the bonus on top.
+            </p>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              {/* The floor */}
+              <div className="bg-slate-950/40 border border-slate-700/50 rounded-xl p-5">
+                <div className="text-[11px] font-mono uppercase tracking-widest text-slate-400 mb-2">
+                  The floor — engineering only
+                </div>
+                <div className="text-3xl md:text-4xl font-extrabold text-white mb-2">
+                  {formatUSD(results.engineering)}
+                </div>
+                <div className="text-sm text-slate-400 leading-relaxed">
+                  Reclaimed engineer time at $150/hr.
+                  {results.traigentAnnual > 0 && (
+                    <>
+                      {" "}Covers the {TIERS[tier].label} tier{" "}
+                      ({formatUSD(results.traigentAnnual)}/yr) when you save more than{" "}
+                      <span className="text-white font-semibold">
+                        {Math.ceil(results.traigentAnnual / HOURLY_RATE / 12)} hr/month
+                      </span>{" "}
+                      of tuning effort.
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* The bonus */}
+              <div className="bg-[#1A6BF5]/10 border border-[#1A6BF5]/30 rounded-xl p-5">
+                <div className="text-[11px] font-mono uppercase tracking-widest text-[#4D8EF8] mb-2">
+                  The bonus — LLM cost reduction
+                </div>
+                <div className="text-3xl md:text-4xl font-extrabold text-[#4D8EF8] mb-2">
+                  {formatUSD(results.llm.typical)}
+                </div>
+                <div className="text-sm text-slate-400 leading-relaxed">
+                  Typical 45% savings on your <span className="text-white font-semibold">{formatUSD(monthlySpend)}/mo</span> LLM spend. Range <span className="text-white font-semibold">{formatUSD(results.llm.conservative)}–{formatUSD(results.llm.optimistic)}</span> depending on baseline.
+                </div>
+              </div>
+            </div>
           </motion.div>
 
           {/* Breakdown */}
