@@ -210,21 +210,6 @@ export default function Homepage() {
 
           {/* Centered hero content */}
           <div className="text-center max-w-4xl mx-auto">
-            {/* Category eyebrow — names the category we're claiming */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.05 }}
-              className="mb-5"
-            >
-              <Link
-                to="/agent-optimization"
-                className="inline-block px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-xs font-mono tracking-widest hover:bg-blue-500/20 hover:border-blue-500/60 transition-colors"
-                style={{ color: "#4D8EF8" }}
-              >
-                AGENT OPTIMIZATION PLATFORM
-              </Link>
-            </motion.div>
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -244,9 +229,18 @@ export default function Homepage() {
             >
               {/* Left — how Traigent finds the optimum */}
               <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 md:p-7">
-                <div className="text-[11px] font-mono uppercase tracking-widest text-slate-500 mb-4">
-                  Traigent's unique capability
-                </div>
+                <a
+                  href="#product"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document.getElementById("product")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                    trackEvent("hero_aop_chip_clicked", { destination: "product" });
+                  }}
+                  className="inline-block px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-[10px] md:text-[11px] font-mono tracking-widest hover:bg-blue-500/20 hover:border-blue-500/60 transition-colors mb-4"
+                  style={{ color: "#4D8EF8" }}
+                >
+                  AGENT OPTIMIZATION PLATFORM
+                </a>
                 <ul className="space-y-3">
                   {[
                     <>Finds <span className="text-white font-semibold"><span className="underline underline-offset-4">the</span> optimal model and configuration combo</span> in <span className="text-white font-semibold">hours, not weeks</span>.</>,
@@ -264,9 +258,12 @@ export default function Homepage() {
 
               {/* Right — what you get out of it */}
               <div className="bg-gradient-to-br from-blue-500/10 to-slate-900/0 border-2 rounded-2xl p-6 md:p-7" style={{ borderColor: "#1A6BF5" }}>
-                <div className="text-[11px] font-mono uppercase tracking-widest mb-4" style={{ color: "#4D8EF8" }}>
-                  Traigent benefits
-                </div>
+                <span
+                  className="inline-block px-3 py-1 rounded-full bg-blue-500/15 border border-blue-500/40 text-[10px] md:text-[11px] font-mono tracking-widest mb-4"
+                  style={{ color: "#4D8EF8" }}
+                >
+                  TRAIGENT BENEFITS
+                </span>
                 <ul className="space-y-3">
                   {[
                     {
@@ -305,42 +302,32 @@ export default function Homepage() {
                     </li>
                   ))}
                 </ul>
-              </div>
-            </motion.div>
-
-            {/* Hero CTA — single dropdown consolidating calculators + reading */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.25 }}
-              className="text-center mb-10 flex flex-col items-center gap-3"
-            >
-              {/* Benefits dropdown — consolidates calculators + reading material into one item */}
-              <div ref={benefitsRef} className="relative inline-block text-base md:text-lg text-slate-200">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setBenefitsOpen((v) => !v);
-                    trackEvent("hero_benefits_dropdown_toggled", { open: !benefitsOpen });
-                  }}
-                  aria-haspopup="menu"
-                  aria-expanded={benefitsOpen}
-                  className="group inline-flex items-center gap-1.5 transition-colors"
-                  style={{ color: "#1A6BF5" }}
-                >
-                  <span className="underline underline-offset-4 decoration-[#1A6BF5]/50 group-hover:decoration-[#1A6BF5] font-semibold">
-                    Benefits quantified and explained
-                  </span>
-                  <ChevronDown
-                    className={`w-4 h-4 transition-transform ${benefitsOpen ? "rotate-180" : ""}`}
-                    aria-hidden="true"
-                  />
-                </button>
-                {benefitsOpen && (
-                  <div
-                    role="menu"
-                    className="absolute left-1/2 -translate-x-1/2 mt-2 w-[min(92vw,640px)] z-30 bg-slate-950 border border-slate-700 rounded-xl shadow-2xl overflow-hidden text-left grid grid-cols-1 md:grid-cols-2 md:divide-x md:divide-slate-800"
+                {/* Benefits dropdown — at bottom of Benefits card */}
+                <div ref={benefitsRef} className="relative mt-5 pt-4 border-t border-blue-500/30 text-center">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setBenefitsOpen((v) => !v);
+                      trackEvent("hero_benefits_dropdown_toggled", { open: !benefitsOpen });
+                    }}
+                    aria-haspopup="menu"
+                    aria-expanded={benefitsOpen}
+                    className="group inline-flex items-center gap-1.5 text-base md:text-lg transition-colors"
+                    style={{ color: "#4D8EF8" }}
                   >
+                    <span className="underline underline-offset-4 decoration-[#4D8EF8]/50 group-hover:decoration-[#4D8EF8] font-semibold">
+                      Benefits explained
+                    </span>
+                    <ChevronDown
+                      className={`w-4 h-4 transition-transform ${benefitsOpen ? "rotate-180" : ""}`}
+                      aria-hidden="true"
+                    />
+                  </button>
+                  {benefitsOpen && (
+                    <div
+                      role="menu"
+                      className="absolute left-1/2 -translate-x-1/2 mt-2 w-[min(92vw,640px)] z-30 bg-slate-950 border border-slate-700 rounded-xl shadow-2xl overflow-hidden text-left grid grid-cols-1 md:grid-cols-2 md:divide-x md:divide-slate-800"
+                    >
                     {/* Left column — calculators */}
                     <div>
                       <div className="px-4 pt-3 pb-1 text-[10px] font-mono uppercase tracking-widest text-slate-500">
@@ -415,7 +402,8 @@ export default function Homepage() {
                       </Link>
                     </div>
                   </div>
-                )}
+                  )}
+                </div>
               </div>
             </motion.div>
 
@@ -456,35 +444,6 @@ export default function Homepage() {
             </motion.div>
           </div>
 
-          {/* CTA Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="flex flex-wrap justify-center gap-3 mt-10"
-          >
-            <Button
-              className="bg-[#1A6BF5] text-white hover:bg-[#4D8EF8] px-6 py-2.5 text-base rounded-lg border border-[#1A6BF5] hover:border-[#4D8EF8] transition-all"
-              onClick={() => {
-                trackEvent("start_now_clicked", { location: "hero" });
-                setShowStartNow(true);
-              }}
-            >
-              Start Now
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-            <Button
-              className="bg-transparent border border-slate-600 text-slate-200 hover:bg-white/5 hover:border-slate-500 px-6 py-2.5 text-base rounded-lg transition-all"
-              onClick={() => {
-                trackEvent("demo_booking_clicked", { location: "hero" });
-                window.open("https://meetings-eu1.hubspot.com/amir8", "_blank");
-              }}
-            >
-              Book a demo
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </motion.div>
-
         </div>
       </section>
 
@@ -499,9 +458,9 @@ export default function Homepage() {
             transition={{ duration: 0.5 }}
             className="text-center mb-12 scroll-mt-20"
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Traigent Optimization is fully automated</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Agent Optimization Platform</h2>
             <p className="text-xl md:text-2xl font-semibold text-[#1A6BF5] mb-6 max-w-xl mx-auto leading-snug" style={{ textWrap: 'balance' }}>
-              Needs only a fraction of the model and configuration combinations to experiment with
+              Fully automated. Needs only a fraction of the model and configuration combinations to experiment with.
             </p>
             <p className="text-slate-400 max-w-2xl mx-auto leading-relaxed">
               Two components working in a tight feedback loop — an <span className="text-white font-semibold">optimization engine</span> that picks the next best configuration based on run history, and an <span className="text-white font-semibold">agent wrapper</span> that runs it against your benchmark and reports KPIs back to the optimization engine.
