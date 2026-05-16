@@ -2,6 +2,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight, TrendingDown, Clock, DollarSign } from "lucide-react";
 import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom";
 import { trackEvent } from "../lib/analytics";
 
 const BLUE = "#1A6BF5";
@@ -9,7 +10,7 @@ const BLUE = "#1A6BF5";
 // Savings assumptions. These are the published ranges we stand behind.
 // Tune in one place.
 const COST_SAVINGS = { conservative: 0.30, typical: 0.45, optimistic: 0.60 };
-const HOURLY_RATE = 150;            // Senior ML engineer fully-loaded hourly cost
+const DEFAULT_HOURLY_RATE = 150;    // Senior ML engineer fully-loaded hourly cost (US mid-tier)
 const HOURS_RECLAIMED_PCT = 0.7;    // Fraction of tuning hours Traigent removes
 
 // Traigent pricing tiers — kept in sync with /pricing.
@@ -54,6 +55,7 @@ function Stat({ label, value, sublabel, icon: Icon, accent }) {
 export default function ROICalculator() {
   const [monthlySpend, setMonthlySpend] = useState(20000);
   const [hoursTuningPerMonth, setHoursTuningPerMonth] = useState(20);
+  const [hourlyRate, setHourlyRate] = useState(DEFAULT_HOURLY_RATE);
   const [tier, setTier] = useState("pro");
 
   const results = useMemo(() => {
@@ -62,14 +64,14 @@ export default function ROICalculator() {
       typical: monthlySpend * COST_SAVINGS.typical * 12,
       optimistic: monthlySpend * COST_SAVINGS.optimistic * 12,
     };
-    const engineering = hoursTuningPerMonth * HOURS_RECLAIMED_PCT * HOURLY_RATE * 12;
+    const engineering = hoursTuningPerMonth * HOURS_RECLAIMED_PCT * hourlyRate * 12;
     const grossTypical = llm.typical + engineering;
     const traigentAnnual = TIERS[tier].monthly * 12;
     const netTypical = grossTypical - traigentAnnual;
     // ROI = net return ÷ investment. For Free POC (cost=0) we display "Pure win".
     const roiPct = traigentAnnual > 0 ? (netTypical / traigentAnnual) * 100 : null;
     return { llm, engineering, grossTypical, traigentAnnual, netTypical, roiPct };
-  }, [monthlySpend, hoursTuningPerMonth, tier]);
+  }, [monthlySpend, hoursTuningPerMonth, hourlyRate, tier]);
 
   return (
     <>
@@ -114,7 +116,7 @@ export default function ROICalculator() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="grid md:grid-cols-2 gap-6 mb-12"
+            className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"
           >
             <Card accent={BLUE}>
               <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-slate-500 mb-3">
@@ -160,6 +162,29 @@ export default function ROICalculator() {
               <div className="flex justify-between text-xs text-slate-500 mt-2 font-mono">
                 <span>0</span>
                 <span>160 (1 FTE)</span>
+              </div>
+            </Card>
+            <Card accent={BLUE}>
+              <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-slate-500 mb-3">
+                <DollarSign className="w-3.5 h-3.5" />
+                Engineer hourly rate (fully-loaded)
+              </div>
+              <div className="flex items-baseline gap-2 mb-4">
+                <span className="text-4xl md:text-5xl font-bold text-white">${hourlyRate}</span>
+                <span className="text-slate-500 text-sm">/ hour</span>
+              </div>
+              <input
+                type="range"
+                min="50"
+                max="400"
+                step="5"
+                value={hourlyRate}
+                onChange={(e) => setHourlyRate(Number(e.target.value))}
+                className="w-full accent-[#1A6BF5]"
+              />
+              <div className="flex justify-between text-xs text-slate-500 mt-2 font-mono">
+                <span>$50</span>
+                <span>$400</span>
               </div>
             </Card>
           </motion.div>
@@ -268,13 +293,13 @@ export default function ROICalculator() {
                   {formatUSD(results.engineering)}
                 </div>
                 <div className="text-sm text-slate-400 leading-relaxed">
-                  Reclaimed engineer time at $150/hr.
+                  Reclaimed engineer time at ${hourlyRate}/hr.
                   {results.traigentAnnual > 0 && (
                     <>
                       {" "}Covers the {TIERS[tier].label} tier{" "}
                       ({formatUSD(results.traigentAnnual)}/yr) when you save more than{" "}
                       <span className="text-white font-semibold">
-                        {Math.ceil(results.traigentAnnual / HOURLY_RATE / 12)} hr/month
+                        {Math.ceil(results.traigentAnnual / hourlyRate / 12)} hr/month
                       </span>{" "}
                       of tuning effort.
                     </>
@@ -355,7 +380,7 @@ export default function ROICalculator() {
               accent="#a78bfa"
             />
             <Stat
-              label="At $150/hr loaded cost"
+              label={`At $${hourlyRate}/hr loaded cost`}
               value={formatUSD(results.engineering)}
               sublabel="reclaimed engineer time × rate"
               icon={DollarSign}
@@ -493,9 +518,16 @@ export default function ROICalculator() {
                 View the SDK on GitHub
                 <ArrowRight className="ml-2 h-4 w-4" />
               </a>
+              <Link
+                to="/ttm"
+                className="inline-flex items-center border border-slate-600 hover:border-slate-400 text-slate-200 hover:text-white font-medium px-6 py-3 rounded-lg transition-colors"
+              >
+                See the TTM calculator
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
             </div>
             <p className="text-xs text-slate-500 mt-6 max-w-2xl mx-auto">
-              Estimates assume typical observed savings ranges across early-adopter deployments. Actual savings depend on baseline configuration, accuracy requirements, and traffic volume. Engineering hours assume $150/hour fully-loaded senior ML engineer cost.
+              Estimates assume typical observed savings ranges across early-adopter deployments. Actual savings depend on baseline configuration, accuracy requirements, and traffic volume. Engineering rate is configurable — default {`$${DEFAULT_HOURLY_RATE}`}/hr maps to a US mid-tier senior ML engineer (~$250k total comp, fully-loaded).
             </p>
           </motion.div>
         </div>

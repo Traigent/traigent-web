@@ -98,7 +98,7 @@ function SlideStat() {
         {/* Right: Traigent */}
         <rect x="510" y="20" width="450" height="240" rx="12" fill="#0f172a" stroke={BLUE} strokeWidth="2.5"/>
         <text x="735" y="55" textAnchor="middle" fill="white" fontSize="22" fontWeight="700">With Traigent</text>
-        <text x="735" y="80" textAnchor="middle" fill={BLUE} fontSize="14" fontWeight="600">18 runs → converged to optimal</text>
+        <text x="735" y="80" textAnchor="middle" fill={BLUE} fontSize="14" fontWeight="600">under 10% of the space → converged to optimal</text>
         <line x1="530" y1="225" x2="940" y2="225" stroke="#334155" strokeWidth="0.8"/>
         <line x1="530" y1="100" x2="530" y2="225" stroke="#334155" strokeWidth="0.8"/>
         <line x1="540" y1="145" x2="930" y2="145" stroke="#4ade80" strokeWidth="0.8" strokeDasharray="4,3" opacity="0.5"/>
@@ -108,13 +108,13 @@ function SlideStat() {
           <circle key={i} cx={cx} cy={cy} r="5" fill={BLUE}/>
         ))}
         <circle cx="920" cy="145" r="8" fill="#4ade80"/>
-        <text x="735" y="252" textAnchor="middle" fill={BLUE} fontSize="13" fontFamily="monospace">18 principled runs · hours · certain</text>
+        <text x="735" y="252" textAnchor="middle" fill={BLUE} fontSize="13" fontFamily="monospace">&lt;10% of search space · hours · certain</text>
       </svg>
 
       <div className="grid grid-cols-3 gap-3 max-w-4xl mx-auto text-center">
         <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-4">
-          <div className="text-2xl md:text-3xl font-bold" style={{ color: BLUE }}>18 / 720</div>
-          <p className="text-slate-400 text-sm mt-1">configurations</p>
+          <div className="text-2xl md:text-3xl font-bold" style={{ color: BLUE }}>&lt;10%</div>
+          <p className="text-slate-400 text-sm mt-1">of the search space</p>
         </div>
         <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-4">
           <div className="text-2xl md:text-3xl font-bold" style={{ color: BLUE }}>Hours</div>
@@ -172,7 +172,7 @@ function SlideThreeProducts() {
           <h3 className="text-2xl font-bold text-white mb-4">Optimization</h3>
           <ul className="space-y-2 text-slate-300 text-base">
             <li>Auto-finds best config</li>
-            <li>18 runs vs 720</li>
+            <li>Converges in &lt;10% of the search space</li>
             <li>Multi-KPI weighted</li>
           </ul>
         </div>

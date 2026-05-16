@@ -14,6 +14,7 @@ const productItems = [
 
 const resourcesItems = [
   { label: "ROI Calculator", href: "/roi", desc: "Estimate your 12-month savings" },
+  { label: "TTM Calculator", href: "/ttm", desc: "Engineer-weeks saved per optimization pass" },
   { label: "Compare", href: "/compare", desc: "vs. Langfuse · Arize · Helicone · Braintrust" },
   { label: "FAQ", href: "/faq", desc: "Common questions" },
   { label: "Docs", href: "https://github.com/Traigent/Traigent", external: true, desc: "SDK on GitHub" },

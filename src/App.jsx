@@ -9,6 +9,7 @@ import PitchFull from './pages/PitchFull'
 import Blog from './pages/Blog'
 import BlogPost from './pages/BlogPost'
 import ROICalculator from './pages/ROICalculator'
+import TTMCalculator from './pages/TTMCalculator'
 import FAQ from './pages/FAQ'
 import Compare from './pages/Compare'
 import About from './pages/About'
@@ -32,6 +33,7 @@ export default function App() {
         <Route path="blog" element={<Blog />} />
         <Route path="blog/:slug" element={<BlogPost />} />
         <Route path="roi" element={<ROICalculator />} />
+        <Route path="ttm" element={<TTMCalculator />} />
         <Route path="faq" element={<FAQ />} />
         <Route path="compare" element={<Compare />} />
         <Route path="about" element={<About />} />

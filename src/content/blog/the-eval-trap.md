@@ -54,9 +54,9 @@ Concretely:
 
 - After 3 runs, the engine has 3 data points and a model of which dimensions matter most
 - After 10 runs, it has narrowed the promising region of the configuration space
-- After 18 runs (in a 720-combination space), it has converged
+- After **under 10% of the configuration space**, it has converged
 
-A standalone eval framework would, in those same 18 runs, produce 18 unconnected scores — and you'd be no closer to the optimum than at run 1, unless *you* personally extrapolated patterns and made the next call.
+A standalone eval framework would, in those same handful of runs, produce unconnected scores — and you'd be no closer to the optimum than at run 1, unless *you* personally extrapolated patterns and made the next call.
 
 ## "But we extrapolate the patterns ourselves"
 
