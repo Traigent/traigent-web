@@ -4,6 +4,7 @@ import { ArrowRight, TrendingDown, Clock, DollarSign } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { trackEvent } from "../lib/analytics";
+import { useSharedSetting } from "../lib/useSharedSetting";
 
 const BLUE = "#1A6BF5";
 
@@ -11,7 +12,9 @@ const BLUE = "#1A6BF5";
 // Tune in one place.
 const COST_SAVINGS = { conservative: 0.30, typical: 0.45, optimistic: 0.60 };
 const DEFAULT_HOURLY_RATE = 150;    // Senior ML engineer fully-loaded hourly cost (US mid-tier)
-const HOURS_RECLAIMED_PCT = 0.7;    // Fraction of tuning hours Traigent removes
+const DEFAULT_MANUAL_HOURS_PER_PASS = 72;  // matches TTM defaults (720 × 20% × 30 min)
+const TRAIGENT_HOURS_PER_PASS = 1;  // matches TTM: engineer involvement per optimization pass
+const DEFAULT_PASSES_PER_YEAR = 1;  // conservative: one optimization pass per year
 
 // Traigent pricing tiers — kept in sync with /pricing.
 const TIERS = {
@@ -31,7 +34,7 @@ function formatUSD(n) {
 function Card({ children, accent }) {
   return (
     <div
-      className="bg-slate-900/60 border rounded-2xl p-6 md:p-8"
+      className="bg-slate-900/60 border rounded-2xl p-6 md:p-8 h-full flex flex-col"
       style={{ borderColor: `${accent}66` }}
     >
       {children}
@@ -54,9 +57,26 @@ function Stat({ label, value, sublabel, icon: Icon, accent }) {
 
 export default function ROICalculator() {
   const [monthlySpend, setMonthlySpend] = useState(20000);
-  const [hoursTuningPerMonth, setHoursTuningPerMonth] = useState(20);
-  const [hourlyRate, setHourlyRate] = useState(DEFAULT_HOURLY_RATE);
+  // Engineering side is now derived from the TTM Calculator's per-pass figure
+  // multiplied by a user-set optimization cadence. Both are shared via localStorage.
+  const [hourlyRate, setHourlyRate] = useSharedSetting("traigent_hourly_rate", DEFAULT_HOURLY_RATE);
+  const [manualHoursPerPass] = useSharedSetting("traigent_manual_hours_per_pass", DEFAULT_MANUAL_HOURS_PER_PASS);
+  const [passesPerYear, setPassesPerYear] = useSharedSetting("traigent_passes_per_year", DEFAULT_PASSES_PER_YEAR);
   const [tier, setTier] = useState("pro");
+  // Which savings scenario drives the headline math. 'custom' lets the user
+  // dial in their own % rather than commit to one of the three published ranges.
+  const [savingsScenario, setSavingsScenario] = useState("conservative");
+  const [customSavingsPct, setCustomSavingsPct] = useState(45);
+
+  function resetToDefaults() {
+    setMonthlySpend(20000);
+    setHourlyRate(DEFAULT_HOURLY_RATE);
+    setPassesPerYear(DEFAULT_PASSES_PER_YEAR);
+    setTier("pro");
+    setSavingsScenario("conservative");
+    setCustomSavingsPct(45);
+    trackEvent("roi_reset_clicked");
+  }
 
   const results = useMemo(() => {
     const llm = {
@@ -64,14 +84,44 @@ export default function ROICalculator() {
       typical: monthlySpend * COST_SAVINGS.typical * 12,
       optimistic: monthlySpend * COST_SAVINGS.optimistic * 12,
     };
-    const engineering = hoursTuningPerMonth * HOURS_RECLAIMED_PCT * hourlyRate * 12;
-    const grossTypical = llm.typical + engineering;
+    // Pick the LLM savings rate based on the user's chosen scenario.
+    const chosenRate =
+      savingsScenario === "conservative" ? COST_SAVINGS.conservative :
+      savingsScenario === "optimistic"   ? COST_SAVINGS.optimistic :
+      savingsScenario === "custom"       ? customSavingsPct / 100 :
+      COST_SAVINGS.typical;
+    const chosenPctLabel = Math.round(chosenRate * 100);
+    const llmChosen = monthlySpend * chosenRate * 12;
+    // Engineering savings = (manual hours per pass − Traigent hours per pass)
+    //                      × passes per year × hourly rate.
+    // Per-pass figures come from the TTM Calculator (shared via localStorage).
+    const annualEngineerHoursSaved = Math.max(0, (manualHoursPerPass - TRAIGENT_HOURS_PER_PASS) * passesPerYear);
+    const engineering = annualEngineerHoursSaved * hourlyRate;
+    // Equivalent monthly hours (for display only).
+    const derivedMonthlyHours = (manualHoursPerPass * passesPerYear) / 12;
+    const grossChosen = llmChosen + engineering;
     const traigentAnnual = TIERS[tier].monthly * 12;
-    const netTypical = grossTypical - traigentAnnual;
+    const netChosen = grossChosen - traigentAnnual;
     // ROI = net return ÷ investment. For Free POC (cost=0) we display "Pure win".
-    const roiPct = traigentAnnual > 0 ? (netTypical / traigentAnnual) * 100 : null;
-    return { llm, engineering, grossTypical, traigentAnnual, netTypical, roiPct };
-  }, [monthlySpend, hoursTuningPerMonth, hourlyRate, tier]);
+    const roiPct = traigentAnnual > 0 ? (netChosen / traigentAnnual) * 100 : null;
+    return {
+      llm,
+      llmChosen,
+      chosenRate,
+      chosenPctLabel,
+      engineering,
+      annualEngineerHoursSaved,
+      derivedMonthlyHours,
+      grossChosen,
+      // Kept for the floor-vs-bonus block which still anchors on the typical 45%.
+      grossTypical: llm.typical + engineering,
+      traigentAnnual,
+      netChosen,
+      // Alias kept for any older reference; net under the chosen scenario.
+      netTypical: netChosen,
+      roiPct,
+    };
+  }, [monthlySpend, manualHoursPerPass, passesPerYear, hourlyRate, tier, savingsScenario, customSavingsPct]);
 
   return (
     <>
@@ -90,6 +140,19 @@ export default function ROICalculator() {
 
       <section className="bg-[#080808] text-white min-h-screen py-16 md:py-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Top action bar — reset button up here so users see they can wipe their inputs anytime */}
+          <div className="flex flex-wrap items-center justify-end gap-x-4 gap-y-2 mb-4">
+            <p className="text-xs text-slate-400">
+              Both <Link to="/ttm" className="text-[#4D8EF8] hover:text-white underline underline-offset-2">TTM</Link> and <Link to="/roi" className="text-[#4D8EF8] hover:text-white underline underline-offset-2">ROI</Link> calculators are always in sync per your inputs. Reset to default settings if you want to start over.
+            </p>
+            <button
+              onClick={resetToDefaults}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-700 bg-slate-900/60 text-xs font-mono text-slate-400 hover:text-[#4D8EF8] hover:border-[#4D8EF8]/50 transition-colors flex-shrink-0"
+            >
+              ↺ Reset all settings to defaults
+            </button>
+          </div>
+
           {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -119,14 +182,16 @@ export default function ROICalculator() {
             className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"
           >
             <Card accent={BLUE}>
-              <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-slate-500 mb-3">
-                <DollarSign className="w-3.5 h-3.5" />
-                Monthly LLM spend
+              <div className="flex items-start gap-2 text-xs font-mono uppercase tracking-wider text-slate-500 mb-3 min-h-[2.5rem]">
+                <DollarSign className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+                <span>Monthly LLM spend</span>
               </div>
-              <div className="flex items-baseline gap-2 mb-4">
+              <div className="flex items-baseline gap-2 mb-3 min-h-[3.5rem]">
                 <span className="text-4xl md:text-5xl font-bold text-white">{formatUSD(monthlySpend)}</span>
                 <span className="text-slate-500 text-sm">/ month</span>
               </div>
+              <div className="text-xs mb-4 leading-snug invisible" aria-hidden="true">spacer</div>
+              <div className="text-[10px] font-mono uppercase tracking-wider mb-2 invisible" aria-hidden="true">spacer</div>
               <input
                 type="range"
                 min="500"
@@ -140,39 +205,53 @@ export default function ROICalculator() {
                 <span>$500</span>
                 <span>$200k</span>
               </div>
+              <div className="mt-auto pt-3 border-t border-slate-800/80 text-[11px] text-slate-500 leading-snug min-h-[3.5rem]">
+                Your blended monthly inference + embeddings spend across providers.
+              </div>
             </Card>
             <Card accent={BLUE}>
-              <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-slate-500 mb-3">
-                <Clock className="w-3.5 h-3.5" />
-                Engineering hours / month tuning agents
+              <div className="flex items-start gap-2 text-xs font-mono uppercase tracking-wider text-slate-500 mb-3 min-h-[2.5rem]">
+                <Clock className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+                <span>Engineering hours / year tuning agents</span>
               </div>
-              <div className="flex items-baseline gap-2 mb-4">
-                <span className="text-4xl md:text-5xl font-bold text-white">{hoursTuningPerMonth}</span>
-                <span className="text-slate-500 text-sm">hours</span>
+              <div className="flex items-baseline gap-2 mb-3 min-h-[3.5rem]">
+                <span className="text-4xl md:text-5xl font-bold text-white">{Math.round(manualHoursPerPass * passesPerYear)}</span>
+                <span className="text-slate-500 text-sm">hrs / year</span>
+              </div>
+              <div className="text-xs text-slate-500 mb-4 leading-snug">
+                = <span className="text-slate-300">{Math.round(manualHoursPerPass)} hrs/pass</span> × <span className="text-slate-300">{passesPerYear}</span> {passesPerYear === 1 ? "pass" : "passes"} per year
+              </div>
+              <div className="text-[10px] font-mono uppercase tracking-wider text-slate-500 mb-2">
+                Optimization passes / year
               </div>
               <input
                 type="range"
-                min="0"
-                max="160"
-                step="5"
-                value={hoursTuningPerMonth}
-                onChange={(e) => setHoursTuningPerMonth(Number(e.target.value))}
+                min="1"
+                max="12"
+                step="1"
+                value={passesPerYear}
+                onChange={(e) => setPassesPerYear(Number(e.target.value))}
                 className="w-full accent-[#1A6BF5]"
               />
               <div className="flex justify-between text-xs text-slate-500 mt-2 font-mono">
-                <span>0</span>
-                <span>160 (1 FTE)</span>
+                <span>1 / yr</span>
+                <span>monthly</span>
+              </div>
+              <div className="mt-auto pt-3 border-t border-slate-800/80 text-[11px] text-slate-500 leading-snug min-h-[3.5rem]">
+                Per-pass hours come from your <Link to="/ttm" className="text-[#4D8EF8] hover:text-[#1A6BF5] underline underline-offset-2">TTM Calculator</Link> settings — adjust the search space there.
               </div>
             </Card>
             <Card accent={BLUE}>
-              <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-slate-500 mb-3">
-                <DollarSign className="w-3.5 h-3.5" />
-                Engineer hourly rate (fully-loaded)
+              <div className="flex items-start gap-2 text-xs font-mono uppercase tracking-wider text-slate-500 mb-3 min-h-[2.5rem]">
+                <DollarSign className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+                <span>Engineer hourly rate (fully-loaded)</span>
               </div>
-              <div className="flex items-baseline gap-2 mb-4">
+              <div className="flex items-baseline gap-2 mb-3 min-h-[3.5rem]">
                 <span className="text-4xl md:text-5xl font-bold text-white">${hourlyRate}</span>
                 <span className="text-slate-500 text-sm">/ hour</span>
               </div>
+              <div className="text-xs mb-4 leading-snug invisible" aria-hidden="true">spacer</div>
+              <div className="text-[10px] font-mono uppercase tracking-wider mb-2 invisible" aria-hidden="true">spacer</div>
               <input
                 type="range"
                 min="50"
@@ -185,6 +264,9 @@ export default function ROICalculator() {
               <div className="flex justify-between text-xs text-slate-500 mt-2 font-mono">
                 <span>$50</span>
                 <span>$400</span>
+              </div>
+              <div className="mt-auto pt-3 border-t border-slate-800/80 text-[11px] text-slate-500 leading-snug min-h-[3.5rem]">
+                Synced with the <Link to="/ttm" className="text-[#4D8EF8] hover:text-[#1A6BF5] underline underline-offset-2">TTM Calculator</Link>.
               </div>
             </Card>
           </motion.div>
@@ -224,6 +306,71 @@ export default function ROICalculator() {
             </div>
           </motion.div>
 
+          {/* LLM cost-savings scenario — drives the headline math */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.18 }}
+            className="mb-8"
+          >
+            <div className="flex items-center gap-3 text-xs font-mono uppercase tracking-wider text-slate-500 mb-3">
+              <span>LLM savings scenario</span>
+              <div className="flex-1 h-px bg-slate-800" />
+            </div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              {[
+                { key: "conservative", label: "Conservative", pct: 30, blurb: "First optimization pass" },
+                { key: "typical",      label: "Typical",      pct: 45, blurb: "What we typically target" },
+                { key: "optimistic",   label: "Optimistic",   pct: 60, blurb: "Continuous re-optimization" },
+                { key: "custom",       label: "Custom",       pct: customSavingsPct, blurb: "Set your own % below" },
+              ].map((opt) => (
+                <button
+                  key={opt.key}
+                  onClick={() => setSavingsScenario(opt.key)}
+                  className={`text-left rounded-xl p-4 border transition-all ${
+                    savingsScenario === opt.key
+                      ? "bg-[#1A6BF5]/15 border-[#1A6BF5]/60 shadow-[0_0_25px_rgba(26,107,245,0.12)]"
+                      : "bg-slate-900/40 border-slate-800 hover:border-slate-700"
+                  }`}
+                >
+                  <div className={`text-sm font-bold ${savingsScenario === opt.key ? "text-[#4D8EF8]" : "text-white"}`}>
+                    {opt.label}
+                  </div>
+                  <div className="text-lg font-extrabold text-white mt-1">
+                    {opt.pct}%
+                    <span className="text-xs text-slate-500 font-normal ml-1">savings</span>
+                  </div>
+                  <div className="text-xs text-slate-500 mt-1 leading-tight">{opt.blurb}</div>
+                </button>
+              ))}
+            </div>
+
+            {savingsScenario === "custom" && (
+              <div className="mt-4 bg-slate-900/40 border border-[#1A6BF5]/30 rounded-xl p-5">
+                <div className="flex items-baseline gap-2 mb-3">
+                  <span className="text-xs font-mono uppercase tracking-wider text-slate-500">Custom savings %</span>
+                </div>
+                <div className="flex items-baseline gap-2 mb-3">
+                  <span className="text-3xl md:text-4xl font-bold" style={{ color: BLUE }}>{customSavingsPct}%</span>
+                  <span className="text-slate-500 text-sm">of monthly LLM spend</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  step="1"
+                  value={customSavingsPct}
+                  onChange={(e) => setCustomSavingsPct(Number(e.target.value))}
+                  className="w-full accent-[#1A6BF5]"
+                />
+                <div className="flex justify-between text-xs text-slate-500 mt-2 font-mono">
+                  <span>0%</span>
+                  <span>100%</span>
+                </div>
+              </div>
+            )}
+          </motion.div>
+
           {/* Headline result — NET ROI after Traigent investment */}
           <motion.div
             initial={{ opacity: 0, scale: 0.97 }}
@@ -236,14 +383,16 @@ export default function ROICalculator() {
               Net 12-month savings <span className="text-slate-500 normal-case font-sans">(after Traigent cost)</span>
             </div>
             <div className="text-6xl md:text-7xl lg:text-8xl font-extrabold tracking-tight mb-3" style={{ color: BLUE }}>
-              {formatUSD(results.netTypical)}
+              {formatUSD(results.netChosen)}
             </div>
             <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto mb-4">
-              <span className="text-white font-semibold">{formatUSD(results.grossTypical)}</span> gross savings
+              <span className="text-white font-semibold">{formatUSD(results.grossChosen)}</span> gross savings
               <span className="text-slate-600"> − </span>
               <span className="text-white font-semibold">{formatUSD(results.traigentAnnual)}</span> Traigent annual cost
               <span className="text-slate-600"> = </span>
-              <span className="text-[#4D8EF8] font-bold">{formatUSD(results.netTypical)}</span>
+              <span className="text-[#4D8EF8] font-bold">{formatUSD(results.netChosen)}</span>
+              <span className="text-slate-600"> · at </span>
+              <span className="text-white font-semibold">{results.chosenPctLabel}%</span> LLM savings
             </p>
             {results.roiPct !== null ? (
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#1A6BF5]/15 border border-[#1A6BF5]/40">
@@ -261,7 +410,7 @@ export default function ROICalculator() {
               </div>
             )}
             <p className="text-xs text-slate-500 mt-4 max-w-2xl mx-auto">
-              Gross savings = LLM cost reduction <span className="text-slate-400">{formatUSD(results.llm.typical)}</span> + reclaimed engineer time <span className="text-slate-400">{formatUSD(results.engineering)}</span>.
+              Gross savings = LLM cost reduction <span className="text-slate-400">{formatUSD(results.llmChosen)}</span> + reclaimed engineer time <span className="text-slate-400">{formatUSD(results.engineering)}</span>.
             </p>
           </motion.div>
 
@@ -299,7 +448,7 @@ export default function ROICalculator() {
                       {" "}Covers the {TIERS[tier].label} tier{" "}
                       ({formatUSD(results.traigentAnnual)}/yr) when you save more than{" "}
                       <span className="text-white font-semibold">
-                        {Math.ceil(results.traigentAnnual / hourlyRate / 12)} hr/month
+                        {Math.ceil(results.traigentAnnual / hourlyRate)} hr/year
                       </span>{" "}
                       of tuning effort.
                     </>
@@ -313,10 +462,10 @@ export default function ROICalculator() {
                   The bonus — LLM cost reduction
                 </div>
                 <div className="text-3xl md:text-4xl font-extrabold text-[#4D8EF8] mb-2">
-                  {formatUSD(results.llm.typical)}
+                  {formatUSD(results.llmChosen)}
                 </div>
                 <div className="text-sm text-slate-400 leading-relaxed">
-                  Typical 45% savings on your <span className="text-white font-semibold">{formatUSD(monthlySpend)}/mo</span> LLM spend. Range <span className="text-white font-semibold">{formatUSD(results.llm.conservative)}–{formatUSD(results.llm.optimistic)}</span> depending on baseline.
+                  <span className="text-white font-semibold">{results.chosenPctLabel}%</span> savings on your <span className="text-white font-semibold">{formatUSD(monthlySpend)}/mo</span> LLM spend. Published range: <span className="text-white font-semibold">{formatUSD(results.llm.conservative)}–{formatUSD(results.llm.optimistic)}</span>.
                 </div>
               </div>
             </div>
@@ -366,15 +515,15 @@ export default function ROICalculator() {
             className="grid md:grid-cols-3 gap-4 mb-12"
           >
             <Stat
-              label="Engineer hours reclaimed"
-              value={`${Math.round(hoursTuningPerMonth * HOURS_RECLAIMED_PCT * 12)} hrs`}
-              sublabel={`${Math.round(HOURS_RECLAIMED_PCT * 100)}% of manual tuning, automated`}
+              label="Engineer hours reclaimed / year"
+              value={`${Math.round(results.annualEngineerHoursSaved)} hrs`}
+              sublabel={`(${Math.round(manualHoursPerPass)} − ${TRAIGENT_HOURS_PER_PASS}) hrs/pass × ${passesPerYear} passes`}
               icon={Clock}
               accent="#a78bfa"
             />
             <Stat
               label="Equivalent FTE saved"
-              value={`${(hoursTuningPerMonth * HOURS_RECLAIMED_PCT * 12 / 2000).toFixed(2)}`}
+              value={`${(results.annualEngineerHoursSaved / 2000).toFixed(2)}`}
               sublabel="full-time engineer equivalent"
               icon={Clock}
               accent="#a78bfa"
@@ -498,10 +647,13 @@ export default function ROICalculator() {
                 onClick={() => trackEvent("demo_booking_clicked", {
                   location: "roi_calculator",
                   monthly_spend: monthlySpend,
-                  hours_tuning: hoursTuningPerMonth,
-                  gross_savings: Math.round(results.grossTypical),
-                  net_savings: Math.round(results.netTypical),
+                  manual_hours_per_pass: Math.round(manualHoursPerPass),
+                  passes_per_year: passesPerYear,
+                  gross_savings: Math.round(results.grossChosen),
+                  net_savings: Math.round(results.netChosen),
                   tier,
+                  savings_scenario: savingsScenario,
+                  savings_pct: results.chosenPctLabel,
                 })}
                 className="inline-flex items-center bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white font-medium px-6 py-3 rounded-lg transition-colors"
               >

@@ -1,9 +1,10 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Clock, Zap, Layers, FileText, SlidersHorizontal } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { trackEvent } from "../lib/analytics";
+import { useSharedSetting } from "../lib/useSharedSetting";
 
 const BLUE = "#1A6BF5";
 const BLUE_LIGHT = "#4D8EF8";
@@ -42,14 +43,13 @@ function formatHours(h) {
 function formatWeeks(weeks) {
   if (weeks < 0.25) return "under a day";
   if (weeks < 1) return `${Math.round(weeks * 5)} days`;
-  if (weeks < 2) return `${weeks.toFixed(1)} week`;
   if (weeks < 12) return `${weeks.toFixed(1)} weeks`;
   return `${(weeks / 4.33).toFixed(1)} months`;
 }
 
 function Card({ children, accent = BLUE }) {
   return (
-    <div className="bg-slate-900/60 border rounded-2xl p-6 md:p-8" style={{ borderColor: `${accent}66` }}>
+    <div className="bg-slate-900/60 border rounded-2xl p-6 md:p-8 h-full flex flex-col" style={{ borderColor: `${accent}66` }}>
       {children}
     </div>
   );
@@ -58,11 +58,11 @@ function Card({ children, accent = BLUE }) {
 function SliderRow({ icon: Icon, label, value, valuePrefix = "", suffix, min, max, step, onChange, minLabel, maxLabel, examples, accent = BLUE }) {
   return (
     <Card accent={accent}>
-      <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-3" style={{ color: accent === BLUE ? "#94a3b8" : accent }}>
-        <Icon className="w-3.5 h-3.5" />
-        {label}
+      <div className="flex items-start gap-2 text-xs font-mono uppercase tracking-wider mb-3 min-h-[2.5rem]" style={{ color: accent === BLUE ? "#94a3b8" : accent }}>
+        <Icon className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+        <span>{label}</span>
       </div>
-      <div className="flex items-baseline gap-2 mb-4">
+      <div className="flex items-baseline gap-2 mb-4 min-h-[3.5rem]">
         <span className="text-4xl md:text-5xl font-bold text-white">{valuePrefix}{value}</span>
         {suffix && <span className="text-slate-500 text-sm">{suffix}</span>}
       </div>
@@ -82,7 +82,7 @@ function SliderRow({ icon: Icon, label, value, valuePrefix = "", suffix, min, ma
       </div>
       {examples && (
         <div
-          className="mt-3 pt-3 border-t border-slate-800/80 text-xs text-slate-400 font-mono leading-snug"
+          className="mt-auto pt-3 border-t border-slate-800/80 text-xs text-slate-400 font-mono leading-snug min-h-[4.5rem]"
           title={examples}
         >
           <span className="text-slate-500 uppercase tracking-wider text-[10px] mr-2">e.g.</span>
@@ -169,11 +169,29 @@ export default function TTMCalculator() {
   const [maxTokensVariants, setMaxTokensVariants] = useState(2);
   const [otherDims, setOtherDims] = useState(1);
   const [minPerConfig, setMinPerConfig] = useState(MIN_PER_CONFIG_DEFAULT);
-  const [hourlyRate, setHourlyRate] = useState(DEFAULT_HOURLY_RATE);
+  // Shared across TTM + ROI calculators via localStorage.
+  const [hourlyRate, setHourlyRate] = useSharedSetting("traigent_hourly_rate", DEFAULT_HOURLY_RATE);
+  // We publish TTM's computed per-pass manual engineer hours so the ROI
+  // calculator can derive its monthly engineering savings from the same math.
+  // eslint-disable-next-line no-unused-vars
+  const [_manualPerPass, setManualPerPass] = useSharedSetting("traigent_manual_hours_per_pass", 72);
   // Real teams don't exhaust the search space — they settle after testing a small
   // fraction. This slider lets the user reflect that reality and surfaces the
   // confidence they're sacrificing in return.
   const [manualCoveragePct, setManualCoveragePct] = useState(20);
+
+  function resetToDefaults() {
+    setModels(6);
+    setPrompts(3);
+    setTemperatures(5);
+    setRetrievalK(4);
+    setMaxTokensVariants(2);
+    setOtherDims(1);
+    setMinPerConfig(MIN_PER_CONFIG_DEFAULT);
+    setHourlyRate(DEFAULT_HOURLY_RATE);
+    setManualCoveragePct(20);
+    trackEvent("ttm_reset_clicked");
+  }
 
   const r = useMemo(() => {
     const totalConfigs = models * prompts * temperatures * retrievalK * maxTokensVariants * otherDims;
@@ -219,6 +237,12 @@ export default function TTMCalculator() {
     };
   }, [models, prompts, temperatures, retrievalK, maxTokensVariants, otherDims, minPerConfig, manualCoveragePct, hourlyRate]);
 
+  // Republish the per-pass manual hours whenever it changes — ROI Calculator
+  // listens on this key for its engineering-hours derivation.
+  useEffect(() => {
+    setManualPerPass(r.manualEngineerHours);
+  }, [r.manualEngineerHours, setManualPerPass]);
+
   return (
     <>
       <Helmet>
@@ -236,6 +260,19 @@ export default function TTMCalculator() {
 
       <section className="bg-[#080808] text-white min-h-screen py-16 md:py-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Top action bar — reset button up here so users see they can wipe their inputs anytime */}
+          <div className="flex flex-wrap items-center justify-end gap-x-4 gap-y-2 mb-4">
+            <p className="text-xs text-slate-400">
+              Both <Link to="/ttm" className="text-[#4D8EF8] hover:text-white underline underline-offset-2">TTM</Link> and <Link to="/roi" className="text-[#4D8EF8] hover:text-white underline underline-offset-2">ROI</Link> calculators are always in sync per your inputs. Reset to default settings if you want to start over.
+            </p>
+            <button
+              onClick={resetToDefaults}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-700 bg-slate-900/60 text-xs font-mono text-slate-400 hover:text-[#4D8EF8] hover:border-[#4D8EF8]/50 transition-colors flex-shrink-0"
+            >
+              ↺ Reset all settings to defaults
+            </button>
+          </div>
+
           {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -290,27 +327,29 @@ export default function TTMCalculator() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.08 }}
-            className="flex flex-wrap items-center justify-center gap-4 mb-3"
+            className="mb-3"
           >
-            <div className="inline-flex items-center gap-4 px-6 py-3 bg-slate-900/60 border border-slate-700 rounded-2xl">
-              <div className="text-xs font-mono uppercase tracking-widest text-slate-500 leading-tight text-right">
-                <div>Configurations</div>
-                <div>to explore</div>
+            <div className="flex flex-col items-center gap-4 px-8 md:px-10 py-10 md:py-12 bg-slate-900/60 border-2 border-slate-500 rounded-2xl">
+              <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
+                <div className="text-sm md:text-base font-mono font-bold uppercase tracking-widest text-slate-300 leading-tight text-right">
+                  <div>Configurations</div>
+                  <div>to explore</div>
+                </div>
+                <span className="text-5xl md:text-7xl lg:text-8xl font-extrabold text-white tracking-tight">{r.totalConfigs.toLocaleString()}</span>
+                <span className="text-sm md:text-base text-slate-300 font-mono font-semibold">= {models} × {prompts} × {temperatures} × {retrievalK} × {maxTokensVariants} × {otherDims}</span>
               </div>
-              <span className="text-2xl md:text-3xl font-extrabold text-white">{r.totalConfigs.toLocaleString()}</span>
-              <span className="text-xs text-slate-500 font-mono">= {models} × {prompts} × {temperatures} × {retrievalK} × {maxTokensVariants} × {otherDims}</span>
+              <a
+                href="#dimension-sliders"
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById("dimension-sliders")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                }}
+                className="inline-flex items-center gap-1.5 text-base md:text-lg font-medium text-slate-400 hover:text-[#4D8EF8] transition-colors"
+              >
+                See and set details below
+                <span aria-hidden="true">↓</span>
+              </a>
             </div>
-            <a
-              href="#dimension-sliders"
-              onClick={(e) => {
-                e.preventDefault();
-                document.getElementById("dimension-sliders")?.scrollIntoView({ behavior: "smooth", block: "start" });
-              }}
-              className="inline-flex items-center gap-1.5 text-xs md:text-sm font-medium text-slate-400 hover:text-[#4D8EF8] transition-colors"
-            >
-              See and set details below
-              <span aria-hidden="true">↓</span>
-            </a>
           </motion.div>
 
           {/* Headline result — moved up so it lives right under the configs total */}
@@ -341,9 +380,17 @@ export default function TTMCalculator() {
               <span className="text-[#4D8EF8] font-bold">{formatHours(r.fullSweepHoursSaved)}</span> / <span className="font-bold" style={{ color: AMBER }}>{formatUSD(r.fullSweepDollarsSaved)}</span> reclaimed
             </p>
             <div className="mt-8 pt-6 border-t border-slate-800/80 max-w-3xl mx-auto">
-              <p className="text-sm text-slate-400 leading-relaxed mb-3" style={{ textWrap: "balance" }}>
-                In reality, teams may stop at <span className="text-white font-semibold">{manualCoveragePct}% coverage</span> and ship <span className="text-red-300 font-semibold">without confidence</span> — sacrificing <span className="text-red-300 font-semibold">{r.confidenceSacrificedPct}%</span> of the search space. Even versus that, Traigent saves you{" "}
-                <span className="text-[#4D8EF8] font-bold text-base">{formatWeeks(r.weeksSaved)}</span> / <span className="font-bold text-base" style={{ color: AMBER }}>{formatUSD(r.dollarsSaved)}</span> ({formatHours(r.manualEngineerHours)} vs. ~{formatHours(r.traigentHours)}) <em>and</em> delivers <span className="text-[#4D8EF8] font-semibold">100% confidence</span>.
+              <p className="text-base md:text-lg text-slate-300 leading-relaxed mb-4" style={{ textWrap: "balance" }}>
+                In reality, teams may stop at <span className="text-white font-semibold">{manualCoveragePct}% coverage</span> and ship <span className="text-red-300 font-semibold">without confidence</span> — sacrificing <span className="text-red-300 font-semibold">{r.confidenceSacrificedPct}%</span> of the search space.
+              </p>
+              <p className="text-xl md:text-2xl font-bold leading-tight" style={{ textWrap: "balance" }}>
+                So, Traigent saves{" "}
+                <span className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight whitespace-nowrap" style={{ color: BLUE }}>{formatWeeks(r.weeksSaved)}</span>
+                {" "}
+                <span className="text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight whitespace-nowrap" style={{ color: AMBER }}>≈ {formatUSD(r.dollarsSaved)}</span>
+              </p>
+              <p className="text-xl md:text-2xl font-bold leading-tight mt-2" style={{ textWrap: "balance" }}>
+                But increases your confidence to <span style={{ color: BLUE }}>100%</span>
               </p>
             </div>
           </motion.div>
@@ -356,7 +403,7 @@ export default function TTMCalculator() {
             className="text-center mb-12"
           >
             <p className="text-xs md:text-sm text-slate-500 max-w-2xl mx-auto leading-relaxed">
-              The sliders below reflect <span className="text-slate-300">the most common choices</span>, but many other selection dimensions exist — to keep things simple, we've embodied them all in <span className="text-slate-300">"Other tunable dimensions"</span>.{" "}
+              The sliders below reflect <span className="text-slate-300">the most common choices</span>, but many other selection dimensions exist — to keep things simple, we've embodied them all in <span className="text-slate-300">"Other tunable options"</span>.{" "}
               <Link
                 to="/blog/the-business-case"
                 className="text-[#4D8EF8] hover:text-[#1A6BF5] underline underline-offset-2 transition-colors"
@@ -454,15 +501,15 @@ export default function TTMCalculator() {
             />
             <SliderRow
               icon={SlidersHorizontal}
-              label="Other tunable dimensions"
+              label="Other tunable options"
               value={otherDims}
-              suffix="dimensions ×"
+              suffix="options ×"
               min={1}
-              max={20}
+              max={100}
               step={1}
               onChange={setOtherDims}
               minLabel="1"
-              maxLabel="20"
+              maxLabel="100"
               examples={otherDimensionsExamples().join(", ")}
             />
           </motion.div>
@@ -499,6 +546,7 @@ export default function TTMCalculator() {
               onChange={setMinPerConfig}
               minLabel="15 min"
               maxLabel="2 hrs"
+              examples={`${minPerConfig} min × ${r.totalConfigs.toLocaleString()} configs ≈ ${Math.round((minPerConfig * r.totalConfigs) / 60).toLocaleString()} hrs to sweep the full space.`}
               accent={AMBER}
             />
             <SliderRow
@@ -527,7 +575,7 @@ export default function TTMCalculator() {
               onChange={setHourlyRate}
               minLabel="$50"
               maxLabel="$400"
-              examples={`Default $${DEFAULT_HOURLY_RATE} ≈ US mid-tier senior ML engineer (~$250k total comp).`}
+              examples={`Default $${DEFAULT_HOURLY_RATE} ≈ US mid-tier senior ML engineer (~$250k total comp). Synced with the ROI Calculator.`}
               accent={AMBER}
             />
           </motion.div>
