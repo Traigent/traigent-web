@@ -10,6 +10,10 @@ featured: true
 order: 1
 ---
 
+**See it on your numbers:** [ROI Calculator →](/roi) · [TTM Calculator →](/ttm)
+
+---
+
 *The decision to deploy an AI agent is made once. The decision to keep paying for it is made every month — usually without anyone realizing it.*
 
 Production AI agents are **recurring-cost products**. Once shipped, they run forever, on configurations chosen once under time pressure by humans guessing at the right answer. The cost of those configurations compounds with every API call, every customer query, every minute the agent is in production.
@@ -34,7 +38,7 @@ For ~3–5 dimensions, yes — slowly. The full configuration space has 10+ dime
 
 **Q: How much can teams typically save?**
 
-30–60% LLM cost reduction at the same accuracy. On a representative $20k/month agent, that's **$6–12k/month — $72k–$144k/year — recurring.** Plus reclaimed engineer time. → [See the math ↓](#the-math)
+30–60% LLM cost reduction at the same accuracy. On a representative $20k/month agent, that's **$6–12k/month — $72k–$144k/year — recurring.** Plus reclaimed engineer time. → [See the math ↓](#the-math) · Or plug your own numbers into the [ROI Calculator →](/roi)
 
 **Q: Does this make sense for a small team or low monthly spend?**
 
@@ -81,6 +85,8 @@ Add engineering time savings (senior ML engineer hours freed from tuning):
 
 **Total economic value on a single $20k/month agent: $100k–$175k per year.** For multi-agent teams, multiply by the agent count.
 
+→ **Plug your own numbers in**: the [ROI Calculator](/roi) lets you dial in your monthly spend, engineer hourly rate, and Traigent tier to see your projected 12-month savings (net of Traigent cost).
+
 ## The Status Quo Costs You
 
 Here's what most teams do, in practice:
@@ -96,6 +102,8 @@ This is **manual configuration**. It's how 95% of production agents got their cu
 The economics of that workflow are bad on two axes:
 
 **Axis 1: Engineer time.** Manual tuning eats 2–6 weeks per agent. A senior ML engineer fully loaded is $150–300k/year — so each tuning cycle costs **$10–35k in opportunity cost**, before any inference cost is paid. Multi-agent teams pay this every time they ship. Then they pay it again whenever they re-tune. Most teams don't re-tune because it's too expensive.
+
+→ **Quantify it on your own search space**: the [TTM Calculator](/ttm) shows the FTE weeks and dollars Traigent saves per optimization pass, given your dimensions and engineering parameters.
 
 **Axis 2: Inference cost.** Because manual tuning explores 5–20 configurations out of millions, the shipped configuration is almost certainly **30–60% more expensive than the optimum** for the same accuracy. That delta then runs in production forever — multiplied by every query, every customer, every month.
 
@@ -141,7 +149,7 @@ A modern agent has 10–15+ tunable dimensions: model, temperature, top-p, max t
 
 A senior engineer can hold 3–5 dimensions in working memory simultaneously. The other 7–10 dimensions get fixed at defaults and ignored.
 
-This is why manual *"tuning sprints"* produce small improvements (10–15%) instead of large ones (30–60%) — the engineer is searching one slice of the space, not the space.
+This is why manual *"tuning sprints"* produce small improvements (10–15%) instead of large ones (30–60%) — the engineer is searching one slice of the space, not the space. → [See the FTE-weeks math on your own space ↗](/ttm)
 
 And even if a semi-annual sprint catches some drift, **9–10 months out of every 12 are spent overpaying** for a configuration that was selected against an obsolete environment.
 
@@ -189,4 +197,9 @@ For any team running production agents with non-trivial inference spend, the que
 
 ---
 
-*Curious how much your specific agent is leaving on the table? Try the [ROI Calculator](/roi) — plug in your monthly spend, see your projected 12-month savings. Or [book a 15-minute walkthrough](https://meetings-eu1.hubspot.com/amir8).*
+*Curious how this maps to your numbers? Two calculators are live:*
+
+- *The **[ROI Calculator](/roi)** — plug in your monthly LLM spend, engineer hourly rate, and Traigent tier; see your net 12-month savings.*
+- *The **[TTM Calculator](/ttm)** — define your search space and engineering parameters; see the FTE weeks and dollars Traigent saves per optimization pass.*
+
+*Or [book a 15-minute walkthrough](https://meetings-eu1.hubspot.com/amir8) and we'll talk through both on your specific agent.*

@@ -209,55 +209,81 @@ export default function Homepage() {
               className="text-lg md:text-xl text-slate-300 mb-10 max-w-4xl mx-auto leading-relaxed"
               style={{ textWrap: "balance" }}
             >
-              Traigent finds your agent's <span className="text-[#1A6BF5] font-semibold">best cost-performance configuration</span> — in <span className="text-[#1A6BF5] font-semibold">a fraction of the search space</span> — and continuously re-optimizes as your models, costs, and usage drift.
+              Traigent <span className="text-[#1A6BF5] font-semibold">rapidly</span> finds your agent's <span className="text-[#1A6BF5] font-semibold">best cost-performance configuration</span> and <span className="text-[#1A6BF5] font-semibold">continuously re-optimizes</span> as models, costs, and usage patterns drift.
             </motion.p>
 
-            {/* Skeptic hook → routes to the Why Traigent section (blog index) */}
+            {/* Hero numbers hook — only the two calculator links remain */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.25 }}
               className="text-center mb-10 flex flex-col items-center gap-3"
             >
-              <Link
-                to="/blog/the-business-case"
-                onClick={() => trackEvent("hero_skeptic_hook_clicked", { destination: "the-business-case" })}
-                className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-base md:text-lg text-slate-200 group max-w-3xl"
-              >
-                <span className="italic">Want to see why this matters?</span>
-                <span
-                  className="underline underline-offset-4 decoration-[#1A6BF5]/50 group-hover:decoration-[#1A6BF5] font-semibold transition-colors"
+              <div className="inline-flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-base md:text-lg text-slate-200 max-w-3xl">
+                <span className="italic">See it on your numbers:</span>
+                <Link
+                  to="/roi"
+                  onClick={() => trackEvent("hero_roi_hook_clicked", { destination: "roi" })}
+                  className="group inline-flex items-center gap-1 transition-colors"
                   style={{ color: "#1A6BF5" }}
                 >
-                  Read the business case
-                </span>
-                <span
-                  className="inline-block transition-transform group-hover:translate-x-1 font-semibold"
+                  <span className="underline underline-offset-4 decoration-[#1A6BF5]/50 group-hover:decoration-[#1A6BF5] font-semibold">
+                    ROI Calculator
+                  </span>
+                  <span className="inline-block transition-transform group-hover:translate-x-1 font-semibold">→</span>
+                </Link>
+                <span className="text-slate-500">·</span>
+                <Link
+                  to="/ttm"
+                  onClick={() => trackEvent("hero_ttm_hook_clicked", { destination: "ttm" })}
+                  className="group inline-flex items-center gap-1 transition-colors"
                   style={{ color: "#1A6BF5" }}
                 >
-                  →
-                </span>
-              </Link>
+                  <span className="underline underline-offset-4 decoration-[#1A6BF5]/50 group-hover:decoration-[#1A6BF5] font-semibold">
+                    TTM Calculator
+                  </span>
+                  <span className="inline-block transition-transform group-hover:translate-x-1 font-semibold">→</span>
+                </Link>
+              </div>
 
-              <Link
-                to="/value-proposition"
-                onClick={() => trackEvent("hero_problem_hook_clicked", { destination: "value-proposition" })}
-                className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-base md:text-lg text-slate-200 group max-w-3xl"
-              >
-                <span className="italic">Or</span>
-                <span
-                  className="underline underline-offset-4 decoration-[#1A6BF5]/50 group-hover:decoration-[#1A6BF5] font-semibold transition-colors"
+              <div className="inline-flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-base md:text-lg text-slate-200 max-w-3xl">
+                <span className="italic">Read more:</span>
+                <Link
+                  to="/blog/the-business-case"
+                  onClick={() => trackEvent("hero_skeptic_hook_clicked", { destination: "the-business-case" })}
+                  className="group inline-flex items-center gap-1 transition-colors"
                   style={{ color: "#1A6BF5" }}
                 >
-                  let's dive into the problem we solve
-                </span>
-                <span
-                  className="inline-block transition-transform group-hover:translate-x-1 font-semibold"
+                  <span className="underline underline-offset-4 decoration-[#1A6BF5]/50 group-hover:decoration-[#1A6BF5] font-semibold">
+                    the business case
+                  </span>
+                  <span className="inline-block transition-transform group-hover:translate-x-1 font-semibold">→</span>
+                </Link>
+                <span className="text-slate-500">·</span>
+                <Link
+                  to="/value-proposition"
+                  onClick={() => trackEvent("hero_problem_hook_clicked", { destination: "value-proposition" })}
+                  className="group inline-flex items-center gap-1 transition-colors"
                   style={{ color: "#1A6BF5" }}
                 >
-                  →
-                </span>
-              </Link>
+                  <span className="underline underline-offset-4 decoration-[#1A6BF5]/50 group-hover:decoration-[#1A6BF5] font-semibold">
+                    the problem we solve
+                  </span>
+                  <span className="inline-block transition-transform group-hover:translate-x-1 font-semibold">→</span>
+                </Link>
+                <span className="text-slate-500">·</span>
+                <Link
+                  to="/blog"
+                  onClick={() => trackEvent("hero_blog_hook_clicked", { destination: "blog" })}
+                  className="group inline-flex items-center gap-1 transition-colors"
+                  style={{ color: "#1A6BF5" }}
+                >
+                  <span className="underline underline-offset-4 decoration-[#1A6BF5]/50 group-hover:decoration-[#1A6BF5] font-semibold">
+                    Why Traigent
+                  </span>
+                  <span className="inline-block transition-transform group-hover:translate-x-1 font-semibold">→</span>
+                </Link>
+              </div>
             </motion.div>
 
             {/* Design Partners & Early Adopters */}
