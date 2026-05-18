@@ -2,6 +2,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Home, Maximize2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 
 // ===================================================================
 // Brand tokens — single source of truth so all slides match the site.
@@ -288,10 +289,10 @@ export default function Pitch() {
 
   useEffect(() => {
     const handler = (e) => {
-      if (e.key === "ArrowRight" || e.key === " " || e.key === "PageDown") {
+      if (e.key === "ArrowRight" || e.key === "ArrowDown" || e.key === " " || e.key === "PageDown") {
         e.preventDefault();
         next();
-      } else if (e.key === "ArrowLeft" || e.key === "PageUp") {
+      } else if (e.key === "ArrowLeft" || e.key === "ArrowUp" || e.key === "PageUp") {
         e.preventDefault();
         prev();
       } else if (/^[1-9]$/.test(e.key)) {
@@ -312,6 +313,9 @@ export default function Pitch() {
 
   return (
     <div ref={containerRef} className="relative min-h-screen bg-[#080808] text-white overflow-hidden">
+      <Helmet>
+        <title>Traigent — Agent Optimization Platform</title>
+      </Helmet>
       {/* Top bar */}
       <div className="absolute top-0 left-0 right-0 z-20 flex justify-between items-center p-4 md:p-6">
         <Link to="/" className="text-slate-500 hover:text-white text-sm flex items-center gap-2 transition-colors">

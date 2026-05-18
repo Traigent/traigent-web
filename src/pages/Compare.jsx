@@ -14,48 +14,49 @@ const COMPETITORS = [
   { key: "arize", name: "Arize" },
   { key: "helicone", name: "Helicone" },
   { key: "braintrust", name: "Braintrust" },
+  { key: "langsmith", name: "LangSmith" },
 ];
 
 const ROWS = [
   {
     capability: "Automatic configuration optimization",
     detail: "Searches the full config space and converges to the best cost/performance combo",
-    by: { traigent: "yes", langfuse: "no", arize: "no", helicone: "no", braintrust: "no" },
+    by: { traigent: "yes", langfuse: "no", arize: "no", helicone: "no", braintrust: "no", langsmith: "no" },
   },
   {
     capability: "Multi-KPI weighted optimization",
     detail: "Optimize for any weighted blend of accuracy, cost, latency, safety, custom",
-    by: { traigent: "yes", langfuse: "no", arize: "no", helicone: "no", braintrust: "no" },
+    by: { traigent: "yes", langfuse: "no", arize: "no", helicone: "no", braintrust: "no", langsmith: "no" },
   },
   {
     capability: "Benchmark refinement",
     detail: "Flags easy / always-fail / redundant test cases as patterns emerge",
-    by: { traigent: "yes", langfuse: "no", arize: "no", helicone: "no", braintrust: "no" },
+    by: { traigent: "yes", langfuse: "no", arize: "no", helicone: "no", braintrust: "no", langsmith: "no" },
   },
   {
     capability: "Full observability & tracing",
     detail: "Span trees, tokens, costs, errors — captured per run",
-    by: { traigent: "yes", langfuse: "yes", arize: "yes", helicone: "yes", braintrust: "yes" },
+    by: { traigent: "yes", langfuse: "yes", arize: "yes", helicone: "yes", braintrust: "yes", langsmith: "yes" },
   },
   {
     capability: "Evaluation framework",
     detail: "Run agents against test sets, measure quality metrics",
-    by: { traigent: "yes", langfuse: "partial", arize: "yes", helicone: "no", braintrust: "yes" },
+    by: { traigent: "yes", langfuse: "partial", arize: "yes", helicone: "no", braintrust: "yes", langsmith: "yes" },
   },
   {
     capability: "Provider-agnostic",
     detail: "Works with OpenAI, Anthropic, Google, Bedrock, open-source",
-    by: { traigent: "yes", langfuse: "yes", arize: "yes", helicone: "yes", braintrust: "yes" },
+    by: { traigent: "yes", langfuse: "yes", arize: "yes", helicone: "yes", braintrust: "yes", langsmith: "partial" },
   },
   {
     capability: "Configurable optimization weights at runtime",
     detail: "Change KPI priorities and re-run without rebuilding",
-    by: { traigent: "yes", langfuse: "no", arize: "no", helicone: "no", braintrust: "no" },
+    by: { traigent: "yes", langfuse: "no", arize: "no", helicone: "no", braintrust: "no", langsmith: "no" },
   },
   {
     capability: "Continuous re-optimization across model releases",
     detail: "Re-converge when new models drop or pricing shifts",
-    by: { traigent: "yes", langfuse: "no", arize: "no", helicone: "no", braintrust: "no" },
+    by: { traigent: "yes", langfuse: "no", arize: "no", helicone: "no", braintrust: "no", langsmith: "no" },
   },
 ];
 
@@ -159,27 +160,36 @@ export default function Compare() {
           >
             <h2 className="text-2xl md:text-3xl font-bold text-white">Where each tool excels — and where the gap is</h2>
 
+            <p className="text-sm text-slate-400 max-w-3xl">
+              Several of these vendors have added prompt-version comparison, eval-driven prompt tuning, or single-axis experimentation. None of them automate the <span className="text-white font-semibold">full multi-variable search across model · prompt · retrieval · tools · constraints · drift</span> — that's Traigent's optimization loop.
+            </p>
+
             <div className="grid md:grid-cols-2 gap-6">
               {[
                 {
                   name: "Langfuse",
-                  excels: "Open-source LLM observability and tracing. Solid debugging tool for production deployments.",
-                  gap: "Doesn't optimize configurations — you still pick the model and prompt manually. Traigent's optimization engine sits on top of the kind of tracing Langfuse provides.",
+                  excels: "Open-source LLM observability and tracing. Solid debugging tool with prompt-version tracking and offline evals.",
+                  gap: "Tracks and evaluates configurations you propose. Doesn't search the configuration space across model/prompt/retrieval/tools/constraints — Traigent's optimization engine sits on top of the kind of tracing Langfuse provides.",
                 },
                 {
                   name: "Arize",
-                  excels: "Enterprise AI observability with strong eval support, including their Phoenix OSS project.",
-                  gap: "Measures and monitors, but doesn't search the configuration space or converge to an optimum. Traigent closes that loop.",
+                  excels: "Enterprise AI observability with strong eval support, including their Phoenix OSS project. Adds prompt-iteration workflows.",
+                  gap: "Measures and monitors, with manual prompt iteration. Doesn't automate the full multi-variable optimization loop across model/retrieval/tools/drift — Traigent closes that loop.",
                 },
                 {
                   name: "Helicone",
                   excels: "Lightweight LLM observability proxy. Easy drop-in for usage and cost monitoring.",
-                  gap: "Pure observability — no evaluation, no optimization. Useful as a complement; insufficient if your goal is cost-performance optimization.",
+                  gap: "Pure observability — no evaluation, no optimization. Useful as a complement; insufficient if your goal is automated cost-performance optimization.",
                 },
                 {
                   name: "Braintrust",
-                  excels: "End-to-end LLM evaluation with strong tooling for experiment tracking and human review.",
-                  gap: "Excellent for measurement, but configuration choices remain manual. Traigent takes the evaluations and uses them to converge to the best configuration.",
+                  excels: "End-to-end LLM evaluation with strong tooling for experiment tracking, human review, and prompt-version comparison.",
+                  gap: "Excellent for measurement and manual experimentation. Doesn't automate the multi-axis search; configuration choices remain engineer-driven. Traigent takes the evaluations and converges to the best configuration.",
+                },
+                {
+                  name: "LangSmith",
+                  excels: "LangChain's hosted observability + eval + prompt-management platform. Tight LangChain/LangGraph integration; useful prompt-version tracking.",
+                  gap: "Strong on tracing and evaluation. Doesn't run a continuous multi-variable optimization loop across model/prompt/retrieval/tools/constraints/drift — Traigent does that on top.",
                 },
               ].map((c) => (
                 <div key={c.name} className="bg-slate-900/60 border border-slate-700/50 rounded-2xl p-6">

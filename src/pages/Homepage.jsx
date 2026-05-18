@@ -38,84 +38,6 @@ const FadeInView = ({ children, className, delay = 0, direction = "y" }) => (
   </motion.div>
 );
 
-// Interactive Demo Player with pause on click
-const DemoPlayer = () => {
-  const [isPaused, setIsPaused] = useState(false);
-  const videoRef = useRef(null);
-
-  const togglePause = () => {
-    if (videoRef.current) {
-      if (isPaused) {
-        videoRef.current.play();
-      } else {
-        videoRef.current.pause();
-      }
-    }
-    setIsPaused(!isPaused);
-  };
-
-  return (
-    <div className="relative">
-      {/* Terminal Window Frame */}
-      <div className="bg-slate-800 rounded-xl overflow-hidden shadow-2xl border border-slate-700">
-        {/* Terminal Header */}
-        <div className="flex items-center gap-2 px-4 py-3 bg-slate-900 border-b border-slate-700">
-          <div className="w-3 h-3 rounded-full bg-red-500"></div>
-          <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-          <div className="w-3 h-3 rounded-full bg-green-500"></div>
-          <span className="ml-3 text-slate-400 text-sm font-mono">traigent optimize</span>
-          <div className="ml-auto flex items-center gap-2">
-            <button
-              onClick={togglePause}
-              className="flex items-center gap-2 px-3 py-1 rounded bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs transition-colors"
-            >
-              {isPaused ? (
-                <>
-                  <Play className="w-3 h-3" /> Play
-                </>
-              ) : (
-                <>
-                  <Pause className="w-3 h-3" /> Pause
-                </>
-              )}
-            </button>
-          </div>
-        </div>
-
-        {/* Demo Content */}
-        <div
-          className="relative cursor-pointer"
-          onClick={togglePause}
-          title={isPaused ? "Click to play" : "Click to pause"}
-        >
-          <video
-            ref={videoRef}
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="w-full"
-            style={{ minHeight: '400px' }}
-          >
-            <source src="/demos/see_it_in_action.webm" type="video/webm" />
-            <source src="/demos/see_it_in_action.mp4" type="video/mp4" />
-          </video>
-
-          {/* Pause Overlay */}
-          {isPaused && (
-            <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-              <div className="bg-slate-900/90 rounded-full p-4">
-                <Play className="w-12 h-12 text-white" />
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-    </div>
-  );
-};
-
 export default function Homepage() {
   const [showStartNow, setShowStartNow] = useState(false);
   const [benefitsOpen, setBenefitsOpen] = useState(false);
@@ -149,7 +71,7 @@ export default function Homepage() {
   return (
     <div className="bg-white">
       <Helmet>
-        <title>Traigent — The most advanced AI Agent Optimization Platform</title>
+        <title>Traigent — Agent Optimization Platform</title>
         <meta name="description" content="Traigent finds the optimum agent configuration in hours not weeks, automatically not manually. Optimization + Benchmark Evolution + Observability and Tracing — in one platform." />
         <meta property="og:title" content="Traigent — AI Agent Optimization Platform" />
         <meta property="og:description" content="Find the optimum agent configuration in hours, automatically. Optimization + Benchmark Evolution + Observability — in one platform." />
@@ -193,18 +115,18 @@ export default function Homepage() {
         <div className="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[900px] h-[600px] pointer-events-none" style={{
           background: 'radial-gradient(ellipse, rgba(26,107,245,0.18) 0%, transparent 70%)'
         }}></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 md:pt-32 pb-6 md:pb-8">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 md:pt-14 pb-6 md:pb-8">
           {/* Traigent Logo */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="mb-12 text-center"
+            className="mb-5 text-center"
           >
             <img
               src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/057ce2_TraigentLogoWhiteCropped.png"
               alt="Traigent Logo"
-              className="h-24 md:h-32 lg:h-40 w-auto mx-auto"
+              className="h-16 md:h-20 lg:h-24 w-auto mx-auto"
             />
           </motion.div>
 
@@ -225,7 +147,7 @@ export default function Homepage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="grid md:grid-cols-2 gap-5 md:gap-6 max-w-4xl mx-auto mb-10 text-left"
+              className="grid md:grid-cols-2 gap-5 md:gap-6 max-w-4xl mx-auto mb-6 text-left"
             >
               {/* Left — how Traigent finds the optimum */}
               <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 md:p-7">
@@ -786,33 +708,6 @@ export default function Homepage() {
         </div>
       </section>
 
-      {/* Optimization Table Demo */}
-      <section className="py-20 bg-[#080808] border-t border-slate-800/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Optimization in Action</h2>
-            <p className="text-slate-400 max-w-2xl mx-auto leading-relaxed">
-              Watch Traigent sweep hundreds of model and configuration combinations and converge to the optimum — accuracy, cost, latency, or any KPI you choose.
-            </p>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="max-w-5xl mx-auto rounded-xl overflow-hidden shadow-2xl border border-slate-700/50"
-          >
-            <OptimizationTable autoPlay={true} embedded={true} />
-          </motion.div>
-        </div>
-      </section>
-
       {/* How It Works */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -832,23 +727,23 @@ export default function Homepage() {
             {[
               {
                 step: "01",
-                title: "Specify",
-                description: "Define tunable decisions in TVL: models, prompts, tools, retrieval, and constraints."
+                title: "Wrap",
+                description: "Engineer wraps your agent with the SDK in ~1 hour. One-time. Your agent code doesn't change."
               },
               {
                 step: "02",
-                title: "Evaluate",
-                description: "Run your evaluation dataset. Measure accuracy, cost, latency, and safety—then gate changes in CI."
+                title: "Optimize",
+                description: "The engine sweeps the model and configuration space unattended. Needs only a fraction of combinations to converge."
               },
               {
                 step: "03",
-                title: "Optimize",
-                description: "Explore the configuration space and find the best tradeoffs for your KPIs."
+                title: "Converge",
+                description: "Returns the optimal model + config combo for your KPIs — cost, latency, accuracy — in hours, not weeks. With quantified confidence."
               },
               {
                 step: "04",
-                title: "Apply",
-                description: "Apply the winning config for future calls, and keep a history of runs."
+                title: "Re-optimize",
+                description: "Apply the winning config in production. Re-run automatically as models update, costs shift, or usage drifts."
               }
             ].map((item, index) => (
               <motion.div
@@ -873,34 +768,6 @@ export default function Homepage() {
               </motion.div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Interactive Demo Section */}
-      <section className="py-20 bg-slate-950 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto text-center mb-12">
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="text-3xl md:text-4xl font-bold mb-6"
-            >
-              See It In Action
-            </motion.h2>
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="max-w-5xl mx-auto"
-          >
-            <DemoPlayer />
-          </motion.div>
-
         </div>
       </section>
 
@@ -1000,86 +867,6 @@ def answer_question(question: str) -> str:
         </div>
       </section>
 
-      {/* TVL Section */}
-      <section className="py-16 bg-slate-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="min-w-0"
-            >
-              <div className="flex flex-wrap gap-2 mb-4">
-                <span className="inline-block px-3 py-1 bg-indigo-500/20 rounded-full text-indigo-300 text-sm font-medium">
-                  Open Source
-                </span>
-                <span className="inline-block px-3 py-1 bg-emerald-500/20 rounded-full text-emerald-300 text-sm font-medium">
-                  4 Patent Filings
-                </span>
-              </div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                TVL: The Tuned Variables Language
-              </h2>
-              <p className="text-slate-300 text-lg mb-6">
-                TVL is a machine-checkable spec format for agentic systems. It separates what you want from how it's achieved—capturing tunables, objectives, constraints, and budgets in a versioned file.
-              </p>
-              <div className="flex flex-wrap gap-4">
-                <Button
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg"
-                  onClick={() => window.open("https://www.tvl-lang.org/", "_blank")}
-                >
-                  Learn TVL
-                  <ExternalLink className="ml-2 h-4 w-4" />
-                </Button>
-              </div>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="min-w-0 overflow-hidden rounded-xl bg-slate-800 p-6 font-mono text-sm"
-            >
-              <div className="mb-4 flex items-center gap-2 overflow-x-auto pb-1 text-slate-400">
-                <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                <span className="ml-2">agent.tvl.yml</span>
-              </div>
-              <pre className="max-w-full overflow-x-auto text-slate-300">
-{`spec:
-  id: customer-support
-  version: 0.1.0
-
-configuration_space:
-  model:
-    type: categorical
-    values: ["gpt-4o-mini", "gpt-4o", "claude-3-haiku"]
-  temperature:
-    type: continuous
-    range:
-      min: 0.1
-      max: 0.8
-
-objectives:
-  - name: accuracy
-    direction: maximize
-  - name: cost
-    direction: minimize
-
-constraints:
-  - id: latency-budget
-    type: expression
-    rule: "params.response_latency_ms <= 1200"
-`}
-              </pre>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-br from-indigo-600 to-purple-700 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1094,23 +881,33 @@ constraints:
               Ready to Optimize Your AI Agents?
             </motion.h2>
             <p className="text-xl opacity-90 mb-10">
-              See how Traigent improves your KPIs in minutes, not months.
+              See how Traigent improves your KPIs in hours, not weeks.
             </p>
             <motion.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="flex flex-wrap justify-center gap-4"
+              className="flex flex-wrap justify-center gap-3"
             >
-              <Button
-                size="lg"
-                className="bg-white text-indigo-700 hover:bg-gray-100 px-8 py-6 text-lg rounded-lg"
-                onClick={() => window.open("https://meetings-eu1.hubspot.com/amir8", "_blank")}
+              <button
+                onClick={() => {
+                  trackEvent("start_now_clicked", { location: "cta_section" });
+                  setShowStartNow(true);
+                }}
+                className="border border-slate-600 hover:border-slate-400 text-slate-200 hover:text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
               >
-                Show me
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
+                Start Now
+              </button>
+              <a
+                href="https://meetings-eu1.hubspot.com/amir8"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackEvent("demo_booking_clicked", { location: "cta_section" })}
+                className="bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
+              >
+                Book a demo
+              </a>
             </motion.div>
           </div>
         </div>
@@ -1128,7 +925,7 @@ constraints:
             <div>
               <div className="text-xl font-bold mb-4">Traigent</div>
               <p className="text-slate-400 mb-6 max-w-xs">
-                The agent control layer. Specify. Evaluate. Optimize. Apply.
+                Agent Optimization Platform. Wrap. Optimize. Converge. Re-optimize.
               </p>
               <p className="text-xs text-slate-500">
                 Traigent Ltd, Hartglas 16, Tel-Aviv, Israel
@@ -1216,7 +1013,22 @@ constraints:
           </div>
 
           <div className="border-t border-slate-800 mt-12 pt-8 text-center text-slate-500">
-            <p>© {new Date().getFullYear()} Traigent Ltd. All rights reserved.</p>
+            <p>
+              © {new Date().getFullYear()} Traigent Ltd. All rights reserved.{" "}
+              {/* Hidden sales-deck shortcut: right-click the dot to open /pitch-full in a new tab.
+                  Looks decorative to visitors. No left-click handler. */}
+              <span
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                  window.open("#/pitch-full", "_blank", "noopener,noreferrer");
+                }}
+                aria-hidden="true"
+                title=""
+                className="text-slate-700 select-none ml-2"
+              >
+                ▸
+              </span>
+            </p>
             <p></p>
             <p className="mt-2 text-slate-950 selection:bg-white selection:text-slate-900">{versionInfo.version}</p>
           </div>

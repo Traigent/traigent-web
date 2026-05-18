@@ -63,7 +63,7 @@ const FAQS = [
   },
   {
     q: "How much does Traigent cost?",
-    a: "Visit our pricing page or book a 15-minute call — we'll size it to your team and usage. Typical customers see 30–60% LLM cost reduction in their first quarter, so the platform pays for itself well inside the first month.",
+    a: "Visit our pricing page or book a 15-minute call — we'll size it to your team and usage. Modeled estimates show 20–60% LLM cost reduction potential at equal or better quality; actual savings depend on baseline configuration and traffic volume, and are confirmed via a scoped pilot.",
   },
 ];
 

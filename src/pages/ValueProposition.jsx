@@ -98,7 +98,7 @@ const PROBLEMS = [
     problemHeadline: "\"Our AI bill keeps doubling and no one can explain why.\"",
     problemDetail:
       "Same agent. Same product. Different month, very different invoice. The CFO is asking questions Engineering can't answer. The instinct is to throttle features — which kills the value the agent was supposed to create.",
-    valueHeadline: "Find the configuration that's 30–60% cheaper at equal or better quality.",
+    valueHeadline: "Find the configuration that's 20–60% cheaper at equal or better quality.",
     valueDetail:
       "Traigent searches the full model × prompt × parameter space and converges on the most cost-efficient configuration for your actual benchmark. Then re-runs automatically when prices or models shift.",
     outcome: "Predictable, optimized spend — without sacrificing quality.",
@@ -410,7 +410,7 @@ export default function ValueProposition() {
               <div className="text-3xl md:text-4xl font-extrabold text-[#4D8EF8] mb-4 tracking-tight">Traigent Benefits</div>
               <ul className="space-y-3">
                 {[
-                  { phrase: "Saves you ", strong: "over 20% on LLM costs", rest: " over the lifecycle." },
+                  { phrase: "Saves ", strong: "20–60% on LLM costs", rest: " over the lifecycle (modeled estimate; pilot required)." },
                   { phrase: "Reduces ", strong: "engineering costs", rest: "." },
                   { phrase: "Shortens ", strong: "time to market", rest: "." },
                   { phrase: "Increases ", strong: "confidence significantly", rest: "." },

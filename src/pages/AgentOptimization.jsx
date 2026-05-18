@@ -68,7 +68,7 @@ const SYMPTOMS = [
 
 // Outcomes a team gets when they do it well. The 'after' state.
 const OUTCOMES = [
-  { value: "30–60%", label: "Inference cost reduction at equal or better quality." },
+  { value: "20–60%", label: "Modeled inference cost reduction at equal or better quality (pilot required)." },
   { value: "Hours", label: "Per optimization pass, not engineer-weeks." },
   { value: "100%", label: "Coverage of the chosen search space — no untested configs." },
   { value: "Day-0", label: "Ship new models the day they drop." },

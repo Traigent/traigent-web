@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
@@ -11,6 +12,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { trackEvent } from "../lib/analytics";
+import StartNowModal from "../components/StartNowModal";
 
 const BLUE = "#1A6BF5";
 const BLUE_LIGHT = "#4D8EF8";
@@ -81,9 +83,27 @@ function StackDiagram() {
             <h3 className="text-xl md:text-2xl font-bold text-white">Observability &amp; Tracing</h3>
           </div>
         </div>
-        <p className="text-sm md:text-base text-slate-400 leading-relaxed pl-13">
-          Full trace tree per run · spans · tokens · costs · errors. Eval framework included. <span className="text-slate-300 italic">Everything you'd buy from Langfuse, Arize, or Helicone.</span>
+        <p className="text-sm md:text-base text-slate-200 italic leading-relaxed pl-13 mb-3">
+          Everything you'd expect from <span className="not-italic font-semibold">Langfuse</span>, <span className="not-italic font-semibold">Arize</span>, or <span className="not-italic font-semibold">Helicone</span> is included in this baseline default layer.
         </p>
+        <ul className="space-y-2 text-sm md:text-base text-slate-300 leading-relaxed pl-13">
+          <li className="flex items-start gap-2">
+            <Check className="w-4 h-4 mt-1 flex-shrink-0 text-slate-400" />
+            <span><span className="text-white font-semibold">Full trace tree per run</span> &mdash; nested spans, parent/child links, durations.</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <Check className="w-4 h-4 mt-1 flex-shrink-0 text-slate-400" />
+            <span><span className="text-white font-semibold">Token, cost, and error capture</span> on every LLM call, tool call, and retrieval.</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <Check className="w-4 h-4 mt-1 flex-shrink-0 text-slate-400" />
+            <span><span className="text-white font-semibold">Eval framework</span> &mdash; run agents against datasets, score them, and version the results.</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <Check className="w-4 h-4 mt-1 flex-shrink-0 text-slate-400" />
+            <span><span className="text-white font-semibold">Per-environment retention</span>, project isolation, and dashboard exports.</span>
+          </li>
+        </ul>
       </div>
 
       {/* Side annotation — where other vendors stop */}
@@ -105,7 +125,7 @@ function FeatureList({ items, highlight }) {
   return (
     <ul className="space-y-2 mb-1">
       {items.map((f, i) => (
-        <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
+        <li key={i} className="flex items-start gap-2 text-sm text-slate-300 min-h-[3.25rem]">
           <Check className={`w-4 h-4 mt-0.5 flex-shrink-0 ${highlight ? "text-[#4D8EF8]" : "text-slate-500"}`} />
           <span dangerouslySetInnerHTML={{ __html: f }} />
         </li>
@@ -175,7 +195,15 @@ function PricingCard({ tier, price, priceSuffix, summary, observability, optimiz
             highlight={false}
           />
         )}
-        {features && <FeatureList items={features} highlight={highlight} />}
+        {features && (
+          <StackSection
+            label="Security & deployment"
+            icon={Zap}
+            color="#94a3b8"
+            items={features}
+            highlight={highlight}
+          />
+        )}
       </div>
     </div>
   );
@@ -212,6 +240,7 @@ function FeatureRow({ label, free, starter, pro, enterprise, section = false }) 
 // Page
 // ============================================================================
 export default function Pricing() {
+  const [showStartNow, setShowStartNow] = useState(false);
   return (
     <div className="bg-[#080808] text-white min-h-screen">
       <Helmet>
@@ -234,7 +263,17 @@ export default function Pricing() {
             <div className="text-center mb-12">
               <div className="text-xs font-mono uppercase tracking-widest text-slate-500 mb-3">The Traigent Stack</div>
               <h2 className="text-2xl md:text-3xl font-bold text-white mb-3" style={{ textWrap: "balance" }}>
-                Two layers. One platform. Priced as one.
+                Two layers. One platform. Priced as one.{" "}
+                <a
+                  href="#tiers"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document.getElementById("tiers")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }}
+                  className="text-[#4D8EF8] hover:text-white underline underline-offset-4 decoration-[#4D8EF8]/50 hover:decoration-white transition-colors"
+                >
+                  Pick your tier.
+                </a>
               </h2>
             </div>
           </FadeIn>
@@ -245,7 +284,7 @@ export default function Pricing() {
       </section>
 
       {/* ===== Pricing tiers ===== */}
-      <section className="border-b border-slate-900 py-16">
+      <section id="tiers" className="border-b border-slate-900 py-16 scroll-mt-20">
         <div className="max-w-6xl mx-auto px-6">
           <FadeIn>
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-3" style={{ textWrap: "balance" }}>
@@ -263,34 +302,34 @@ export default function Pricing() {
                 tier="Free"
                 price="$0"
                 priceSuffix="per month"
-                summary="Observability free as defined. Full optimization on a POC basis."
+                summary="Local / OSS SDK plus a scoped non-production POC of the full optimization suite."
                 observability={[
                   "Full trace tree · spans · tokens · costs",
                   "Eval framework",
                   "<strong>10K observations / month</strong>",
                   "7-day data retention",
-                  "1 project · 1 user",
+                  "1 project · 1 user · non-production",
                   "Community support",
                 ]}
                 optimization={[
-                  "<strong class=\"text-white\">POC — no other limitations</strong>",
-                  "Full optimization suite",
+                  "<strong class=\"text-white\">Scoped POC · 1 agent · 1 team</strong>",
+                  "Full optimization suite (time-boxed pilot)",
                   "Multi-KPI weighted optimization",
                   "Drift detection &amp; re-optimization",
                   "Benchmark insights",
-                  "Unlimited agents &amp; teams",
                 ]}
                 cta={
-                  <a
-                    href="https://github.com/Traigent/Traigent"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => trackEvent("pricing_cta_clicked", { tier: "free" })}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      trackEvent("pricing_cta_clicked", { tier: "free" });
+                      setShowStartNow(true);
+                    }}
                     className="inline-flex items-center justify-center gap-2 w-full h-12 bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white px-5 rounded-lg font-medium transition-colors"
                   >
                     <Github className="w-4 h-4" />
                     Start free on GitHub
-                  </a>
+                  </button>
                 }
               />
             </FadeIn>
@@ -310,9 +349,11 @@ export default function Pricing() {
                   "Email support",
                 ]}
                 optimization={[
-                  "<strong class=\"text-white\">Post POC · 1 agent · 1 team</strong>",
+                  "<strong class=\"text-white\">Ongoing · 1 agent · 1 team</strong> (post-POC, no time limit)",
+                  "Full optimization suite (unlimited runs)",
                   "Multi-KPI weighted optimization",
                   "Drift detection &amp; re-optimization",
+                  "Benchmark insights · saved run history",
                 ]}
                 cta={
                   <a
@@ -339,16 +380,18 @@ export default function Pricing() {
                 badge="Most popular"
                 highlight
                 observability={[
-                  "1M observations / user / month",
+                  "<strong>1M observations / month</strong> (org-wide; overages billed)",
                   "90-day retention",
                   "Unlimited projects · up to 10 users",
                   "Eval framework",
                   "Email + Slack support",
                 ]}
                 optimization={[
+                  "<strong class=\"text-white\">Up to 5 agents · 5 teams</strong>",
+                  "Full optimization suite + priority compute",
                   "Multi-KPI weighted optimization",
-                  "Drift detection &amp; re-optimization",
-                  "<strong class=\"text-[#4D8EF8]\">Benchmark insights</strong> (flag easy/fail/redundant)",
+                  "Drift detection &amp; re-optimization (continuous, automated)",
+                  "<strong class=\"text-[#4D8EF8]\">Premium benchmark insights</strong> (flag easy/fail/redundant)",
                 ]}
                 cta={
                   <a
@@ -370,15 +413,20 @@ export default function Pricing() {
               <PricingCard
                 tier="Enterprise"
                 price="Let's talk."
-                summary="For on-prem installation and anything beyond what Pro offers."
-                features={[
-                  "<strong class=\"text-[#4D8EF8]\">Unlimited optimization features</strong>",
-                  "Unlimited agents · Unlimited teams",
-                  "Unlimited users, observations, retention",
-                  "SSO · audit logs · SLA",
+                summary="For high-volume, regulated, or on-prem deployments. Custom terms."
+                observability={[
+                  "<strong>Custom observation volume</strong> (org-wide)",
+                  "Custom retention",
+                  "Custom projects · custom users",
+                  "Eval framework",
                   "Dedicated solutions engineer",
-                  "Custom deployment (VPC, private cloud, on-prem)",
-                  "Outcome-based pricing available",
+                ]}
+                optimization={[
+                  "<strong class=\"text-white\">Custom agents · custom teams</strong>",
+                  "Full optimization suite + priority compute",
+                  "Multi-KPI weighted optimization",
+                  "Drift detection &amp; re-optimization (continuous, automated)",
+                  "<strong class=\"text-[#4D8EF8]\">Premium benchmark insights</strong> (flag easy/fail/redundant)",
                 ]}
                 cta={
                   <a
@@ -417,9 +465,14 @@ export default function Pricing() {
             <h2 className="text-2xl md:text-3xl font-bold text-center mb-3" style={{ textWrap: "balance" }}>
               What's in each tier
             </h2>
-            <p className="text-slate-400 text-center mb-10">
+            <p className="text-slate-400 text-center mb-6">
               Observability rows are the Langfuse/Helicone baseline. Optimization rows are Traigent-only.
             </p>
+            {/* Observation unit definition — pinned just above the table */}
+            <div className="max-w-3xl mx-auto mb-10 bg-slate-900/40 border border-slate-800 rounded-xl p-4 text-sm text-slate-300">
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[#4D8EF8] block mb-1">Observation</span>
+              An <span className="text-white font-semibold">observation</span> is one captured span in a trace &mdash; a single LLM call, tool call, retrieval, or eval score logged by the SDK. A typical agent turn produces 3&ndash;10 observations. Limits are measured org-wide and reset monthly; overages on Pro are billed at $0.10 per 1K. Enterprise plans negotiate custom volume.
+            </div>
           </FadeIn>
 
           <FadeIn delay={0.1}>
@@ -438,14 +491,14 @@ export default function Pricing() {
                   <FeatureRow label="Observability foundation" section />
                   <FeatureRow label="Full trace tree (spans, tokens, costs)" free starter pro enterprise />
                   <FeatureRow label="Eval framework" free starter pro enterprise />
-                  <FeatureRow label="Observations / month" free="10K" starter="100K" pro="1M / user" enterprise="Unlimited" />
+                  <FeatureRow label="Observations / month" free="10K" starter="100K" pro="1M (org)" enterprise="Custom" />
                   <FeatureRow label="Data retention" free="7 days" starter="30 days" pro="90 days" enterprise="Custom" />
-                  <FeatureRow label="Projects" free="1" starter="3" pro="Unlimited" enterprise="Unlimited" />
+                  <FeatureRow label="Projects" free="1" starter="3" pro="Unlimited" enterprise="Custom" />
 
                   <FeatureRow label="Optimization layer (Traigent-only)" section />
-                  <FeatureRow label="Access" free="POC" starter="Ongoing" pro="Ongoing" enterprise="Ongoing" />
-                  <FeatureRow label="Agents" free="Unlimited" starter="1" pro="Up to 5" enterprise="Unlimited" />
-                  <FeatureRow label="Teams" free="Unlimited" starter="1" pro="Up to 5" enterprise="Unlimited" />
+                  <FeatureRow label="Access" free="Scoped POC" starter="Ongoing" pro="Ongoing" enterprise="Ongoing" />
+                  <FeatureRow label="Agents" free="1" starter="1" pro="Up to 5" enterprise="Custom" />
+                  <FeatureRow label="Teams" free="1" starter="1" pro="Up to 5" enterprise="Custom" />
                   <FeatureRow label="Single-KPI optimization" free={true} starter={true} pro={true} enterprise={true} />
                   <FeatureRow label="Multi-KPI weighted optimization" free={true} starter={true} pro={true} enterprise={true} />
                   <FeatureRow label="Drift detection &amp; re-optimization" free={true} starter={true} pro={true} enterprise={true} />
@@ -453,7 +506,7 @@ export default function Pricing() {
                   <FeatureRow label="TVL — Tuned Variables Language" free={true} starter={true} pro={true} enterprise={true} />
 
                   <FeatureRow label="Team &amp; security" section />
-                  <FeatureRow label="Users" free="1" starter="Up to 3" pro="Up to 10" enterprise="Unlimited" />
+                  <FeatureRow label="Users" free="1" starter="Up to 3" pro="Up to 10" enterprise="Custom" />
                   <FeatureRow label="SSO" free="—" starter="—" pro="—" enterprise={true} />
                   <FeatureRow label="Audit logs" free="—" starter="—" pro="—" enterprise={true} />
                   <FeatureRow label="SLA" free="—" starter="—" pro="—" enterprise={true} />
@@ -478,8 +531,8 @@ export default function Pricing() {
           <div className="space-y-6">
             {[
               {
-                q: "How is this different from Langfuse, Arize, or Helicone?",
-                a: "Those tools cover the observability layer at the bottom of the stack. We cover that <em>plus</em> the optimization layer on top — automatically finding the best configuration, not just instrumenting the one you guessed. The Pro tier is what you'd pay them, applied to a platform that also does the optimization.",
+                q: "How is this different from Langfuse, Arize, Helicone, LangSmith, or Braintrust?",
+                a: "Those tools cover the observability and eval layer. Some now include prompt-version comparison or single-axis tuning. <em>None</em> of them automate the full multi-variable cost-quality search across <strong>model · prompt · retrieval · tools · constraints · drift</strong> — that's Traigent's optimization loop. The Pro tier roughly matches what you'd pay them for observability alone, applied to a platform that also runs the optimization on top.",
               },
               {
                 q: "How are optimization runs metered?",
@@ -547,6 +600,7 @@ export default function Pricing() {
           </FadeIn>
         </div>
       </section>
+      {showStartNow && <StartNowModal onClose={() => setShowStartNow(false)} />}
     </div>
   );
 }

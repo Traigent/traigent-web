@@ -11,6 +11,8 @@ import BlogPost from './pages/BlogPost'
 import ROICalculator from './pages/ROICalculator'
 import TTMCalculator from './pages/TTMCalculator'
 import AgentOptimization from './pages/AgentOptimization'
+import SeeItInAction from './pages/SeeItInAction'
+import OptimizationInAction from './pages/OptimizationInAction'
 import FAQ from './pages/FAQ'
 import Compare from './pages/Compare'
 import About from './pages/About'
@@ -36,6 +38,8 @@ export default function App() {
         <Route path="roi" element={<ROICalculator />} />
         <Route path="ttm" element={<TTMCalculator />} />
         <Route path="agent-optimization" element={<AgentOptimization />} />
+        <Route path="see-it-in-action" element={<SeeItInAction />} />
+        <Route path="optimization-in-action" element={<OptimizationInAction />} />
         <Route path="faq" element={<FAQ />} />
         <Route path="compare" element={<Compare />} />
         <Route path="about" element={<About />} />

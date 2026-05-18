@@ -1,16 +1,17 @@
 ﻿import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, TrendingDown, Clock, DollarSign } from "lucide-react";
+import { ArrowRight, TrendingDown, Clock, DollarSign, Github } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { trackEvent } from "../lib/analytics";
 import { useSharedSetting } from "../lib/useSharedSetting";
+import StartNowModal from "../components/StartNowModal";
 
 const BLUE = "#1A6BF5";
 
 // Savings assumptions. These are the published ranges we stand behind.
 // Tune in one place.
-const COST_SAVINGS = { conservative: 0.30, typical: 0.45, optimistic: 0.60 };
+const COST_SAVINGS = { conservative: 0.20, typical: 0.40, optimistic: 0.60 };
 const DEFAULT_HOURLY_RATE = 100;   // $200k fully-loaded engineer ÷ 2,000 work hours/year
 const DEFAULT_MANUAL_HOURS_PER_PASS = 72;  // matches TTM defaults (720 × 20% × 30 min)
 const TRAIGENT_HOURS_PER_PASS = 1;  // matches TTM: engineer involvement per optimization pass
@@ -77,6 +78,7 @@ function Stat({ label, value, sublabel, icon: Icon, accent }) {
 }
 
 export default function ROICalculator() {
+  const [showStartNow, setShowStartNow] = useState(false);
   const [monthlySpend, setMonthlySpend] = useState(DEFAULT_MONTHLY_SPEND);
   // Engineering side is now derived from the TTM Calculator's per-pass figure
   // multiplied by a user-set optimization cadence. Both are shared via localStorage.
@@ -355,6 +357,19 @@ export default function ROICalculator() {
                 </button>
               ))}
             </div>
+            <p className="text-xs text-slate-500 mt-3 leading-relaxed">
+              <span className="text-slate-300 font-semibold">Enterprise ROI is custom-modeled.</span>{" "}
+              For high-volume, regulated, or on-prem deployments, the calculator above is illustrative only —{" "}
+              <a
+                href="https://meetings-eu1.hubspot.com/amir8"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#4D8EF8] hover:text-white underline underline-offset-2"
+              >
+                book 15 min with sales
+              </a>{" "}
+              and we'll size it to your actual usage, contract terms, and SLA.
+            </p>
           </motion.div>
 
           {/* LLM cost-savings scenario — drives the headline math */}
@@ -370,30 +385,42 @@ export default function ROICalculator() {
             </div>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
               {[
-                { key: "conservative", label: "Conservative", pct: 30, blurb: "First optimization pass" },
-                { key: "typical",      label: "Typical",      pct: 45, blurb: "What we typically target" },
+                { key: "conservative", label: "Conservative", pct: 20, blurb: "First optimization pass" },
+                { key: "typical",      label: "Typical",      pct: 40, blurb: "What we typically target" },
                 { key: "optimistic",   label: "Optimistic",   pct: 60, blurb: "Continuous re-optimization" },
-                { key: "custom",       label: "Custom",       pct: customSavingsPct, blurb: "Set your own % below" },
-              ].map((opt) => (
-                <button
-                  key={opt.key}
-                  onClick={() => setSavingsScenario(opt.key)}
-                  className={`text-left rounded-xl p-4 border transition-all ${
-                    savingsScenario === opt.key
-                      ? "bg-[#1A6BF5]/15 border-[#1A6BF5]/60 shadow-[0_0_25px_rgba(26,107,245,0.12)]"
-                      : "bg-slate-900/40 border-slate-800 hover:border-slate-700"
-                  }`}
-                >
-                  <div className={`text-sm font-bold ${savingsScenario === opt.key ? "text-[#4D8EF8]" : "text-white"}`}>
-                    {opt.label}
-                  </div>
-                  <div className="text-lg font-extrabold text-white mt-1">
-                    {opt.pct}%
-                    <span className="text-xs text-slate-500 font-normal ml-1">savings</span>
-                  </div>
-                  <div className="text-xs text-slate-500 mt-1 leading-tight">{opt.blurb}</div>
-                </button>
-              ))}
+                { key: "custom",       label: "Custom",       pct: null, blurb: "Set your own % below" },
+              ].map((opt) => {
+                const isActive = savingsScenario === opt.key;
+                const isCustom = opt.key === "custom";
+                // Custom card: show "XX%" placeholder when inactive; show the live customSavingsPct when active.
+                const displayPct = isCustom
+                  ? (isActive ? `${customSavingsPct}%` : "XX%")
+                  : `${opt.pct}%`;
+                return (
+                  <button
+                    key={opt.key}
+                    onClick={() => {
+                      setSavingsScenario(opt.key);
+                      // When Custom is clicked, always reset to 15% so it opens at a clean default.
+                      if (isCustom) setCustomSavingsPct(15);
+                    }}
+                    className={`text-left rounded-xl p-4 border transition-all ${
+                      isActive
+                        ? "bg-[#1A6BF5]/15 border-[#1A6BF5]/60 shadow-[0_0_25px_rgba(26,107,245,0.12)]"
+                        : "bg-slate-900/40 border-slate-800 hover:border-slate-700"
+                    }`}
+                  >
+                    <div className={`text-sm font-bold ${isActive ? "text-[#4D8EF8]" : "text-white"}`}>
+                      {opt.label}
+                    </div>
+                    <div className="text-lg font-extrabold text-white mt-1">
+                      {displayPct}
+                      <span className="text-xs text-slate-500 font-normal ml-1">savings</span>
+                    </div>
+                    <div className="text-xs text-slate-500 mt-1 leading-tight">{opt.blurb}</div>
+                  </button>
+                );
+              })}
             </div>
 
             {savingsScenario === "custom" && (
@@ -711,16 +738,17 @@ export default function ROICalculator() {
                 Book a 15-min call
                 <ArrowRight className="ml-2 h-4 w-4" />
               </a>
-              <a
-                href="https://github.com/Traigent/Traigent"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => trackEvent("github_clicked", { location: "roi_calculator" })}
+              <button
+                type="button"
+                onClick={() => {
+                  trackEvent("start_now_clicked", { location: "roi_calculator" });
+                  setShowStartNow(true);
+                }}
                 className="inline-flex items-center border border-slate-600 hover:border-slate-400 text-slate-200 hover:text-white font-medium px-6 py-3 rounded-lg transition-colors"
               >
-                View the SDK on GitHub
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </a>
+                <Github className="mr-2 h-4 w-4" />
+                Start Now — Free
+              </button>
               <Link
                 to="/ttm"
                 className="inline-flex items-center border border-slate-600 hover:border-slate-400 text-slate-200 hover:text-white font-medium px-6 py-3 rounded-lg transition-colors"
@@ -735,6 +763,7 @@ export default function ROICalculator() {
           </motion.div>
         </div>
       </section>
+      {showStartNow && <StartNowModal onClose={() => setShowStartNow(false)} />}
     </>
   );
 }

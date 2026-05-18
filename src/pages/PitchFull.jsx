@@ -1,7 +1,8 @@
 ﻿import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Home, Maximize2, Sparkles, Eye, Check } from "lucide-react";
+import { ChevronLeft, ChevronRight, Home, Maximize2, Sparkles, Eye, Check, ArrowRight, Clock, DollarSign } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 
 // ===================================================================
 // Brand tokens
@@ -9,6 +10,8 @@ import { Link } from "react-router-dom";
 const BLUE = "#1A6BF5";
 const AMBER = "#f59e0b";
 const VIOLET = "#a78bfa";
+const TRAIGENT_LOGO_URL =
+  "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/057ce2_TraigentLogoWhiteCropped.png";
 
 // ===================================================================
 // Reusable mini-components used across multiple slides
@@ -132,6 +135,84 @@ function TraceTree() {
 }
 
 // ===================================================================
+// 00 — Hero (mirrors website hero section exactly)
+// ===================================================================
+function SlideHero() {
+  const methodBullets = [
+    <>Finds <span className="text-white font-semibold"><span className="underline underline-offset-4">the</span> optimal model and configuration combo</span> in <span className="text-white font-semibold">hours, not weeks</span>.</>,
+    <><span className="text-white font-semibold">Automatically</span>, not manually.</>,
+    <>Requires only a <span className="text-white font-semibold">fraction of the search space.</span></>,
+    <>With <span className="text-white font-semibold">confidence</span>, not guesswork.</>,
+  ];
+  const benefitBullets = [
+    { content: <><span className="text-white font-semibold">Reduces engineering costs.</span></> },
+    { content: <><span className="text-white font-semibold">Saves LLM costs</span> over the lifecycle.</> },
+    { content: <><span className="text-white font-semibold">Shortens time to market.</span></> },
+    { content: <><span className="text-white font-semibold">Increases confidence</span> significantly.</> },
+  ];
+  return (
+    <div className="text-center max-w-5xl mx-auto">
+      <img
+        src={TRAIGENT_LOGO_URL}
+        alt="Traigent"
+        className="h-16 md:h-20 lg:h-24 w-auto mx-auto mb-6"
+      />
+      <h1
+        className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-[1.05] tracking-tight mb-8"
+        style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.03em' }}
+      >
+        <span className="whitespace-nowrap">
+          AI Agent <span style={{ color: BLUE }}>Cost-Performance</span>
+        </span>
+        <br />
+        Optimized. <span style={{ color: BLUE }}>Automatically.</span>
+      </h1>
+
+      <div className="grid md:grid-cols-2 gap-5 max-w-4xl mx-auto text-left">
+        {/* Left — unique capability */}
+        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5 md:p-6">
+          <div
+            className="inline-block px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-[10px] md:text-[11px] font-mono tracking-widest mb-4"
+            style={{ color: "#4D8EF8" }}
+          >
+            AGENT OPTIMIZATION PLATFORM
+          </div>
+          <ul className="space-y-2.5">
+            {methodBullets.map((item, i) => (
+              <li key={i} className="flex items-start gap-2.5 text-sm md:text-base text-slate-300 leading-snug">
+                <Check className="w-4 h-4 md:w-5 md:h-5 mt-0.5 flex-shrink-0 text-[#4D8EF8]" strokeWidth={3} />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Right — Traigent benefits */}
+        <div
+          className="bg-gradient-to-br from-blue-500/10 to-slate-900/0 border-2 rounded-2xl p-5 md:p-6"
+          style={{ borderColor: BLUE }}
+        >
+          <span
+            className="inline-block px-3 py-1 rounded-full bg-blue-500/15 border border-blue-500/40 text-[10px] md:text-[11px] font-mono tracking-widest mb-4"
+            style={{ color: "#4D8EF8" }}
+          >
+            TRAIGENT BENEFITS
+          </span>
+          <ul className="space-y-2.5">
+            {benefitBullets.map((b, i) => (
+              <li key={i} className="flex items-start gap-2.5 text-sm md:text-base text-slate-300 leading-snug">
+                <Check className="w-4 h-4 md:w-5 md:h-5 mt-0.5 flex-shrink-0 text-[#4D8EF8]" strokeWidth={3} />
+                <span>{b.content}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ===================================================================
 // 01 — Title
 // ===================================================================
 function Slide01Title() {
@@ -139,7 +220,7 @@ function Slide01Title() {
     <div className="text-center max-w-5xl mx-auto">
       <h1 className="text-6xl md:text-7xl lg:text-8xl font-extrabold text-white mb-8 tracking-tight">Traigent</h1>
       <p className="text-2xl md:text-3xl text-slate-200 mb-10 font-medium leading-tight" style={{ textWrap: "balance" }}>
-        The most advanced <span style={{ color: BLUE }} className="font-bold">AI Agent Optimization Platform</span> on the market
+        Rapid <span style={{ color: BLUE }} className="font-bold">Cost-Performance</span> Agent Optimization
       </p>
       <p className="text-xl md:text-2xl text-slate-400 mb-12">
         Stop guessing your agent's configuration. <span style={{ color: BLUE }} className="font-semibold">Start converging.</span>
@@ -175,26 +256,100 @@ function Slide03Explosion() {
     <div className="max-w-6xl mx-auto">
       <h2 className="text-5xl md:text-6xl font-bold text-white mb-8 text-center">The Configuration Explosion</h2>
       <p className="text-xl text-slate-300 mb-12 text-center max-w-3xl mx-auto leading-relaxed">
-        Every agent has dozens of tunable variables. The total number of valid configurations grows fast.
+        Every agent has <span className="text-white font-semibold">hundreds (if not thousands)</span> of tunable variables.
       </p>
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 max-w-5xl mx-auto mb-12">
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-3 max-w-6xl mx-auto mb-12">
         {[
-          { label: "Model", n: "6" },
-          { label: "Temperature", n: "10" },
-          { label: "Max tokens", n: "3" },
-          { label: "Prompt template", n: "2" },
-          { label: "Instructions", n: "2" },
+          {
+            label: "Model",
+            n: "6",
+            options: ["gpt-4o", "gpt-4o-mini", "claude-sonnet-4.6", "claude-haiku-4.5", "gemini-2.0-flash", "llama-3.3-70b"],
+            wide: false,
+          },
+          {
+            label: "Temperature",
+            n: "10",
+            options: ["0.0", "0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9"],
+            wide: false,
+          },
+          {
+            label: "Max tokens",
+            n: "3",
+            options: ["256", "512", "1024"],
+            wide: false,
+          },
+          {
+            label: "Prompt template",
+            n: "2",
+            options: ["system-v1 (terse)", "system-v2 (verbose)"],
+            wide: false,
+          },
+          {
+            label: "Instructions",
+            n: "2",
+            options: ["default", "with few-shot examples"],
+            wide: false,
+          },
+          {
+            label: "other dimensions",
+            n: "20+",
+            options: [
+              "chunk size", "chunk overlap", "embedding model",
+              "reranker choice", "query-rewrite strategy", "hybrid-search weights",
+              "few-shot count", "output format (JSON/text)",
+              "tool-selection strategy", "max tool-call iterations",
+              "frequency penalty", "presence penalty", "top_p", "stop sequences",
+              "retry policy", "timeout", "fallback model", "cache policy",
+              "streaming behavior", "validation/repair logic",
+            ],
+            wide: true,
+          },
         ].map((v) => (
-          <div key={v.label} className="bg-slate-900/60 border border-slate-700/50 rounded-xl p-5 text-center">
+          <div
+            key={v.label}
+            className="group relative bg-slate-900/60 border border-slate-700/50 hover:border-[#4D8EF8]/70 rounded-xl p-4 text-center cursor-help transition-colors"
+          >
             <div className="text-3xl font-bold text-white mb-1">{v.n}</div>
             <p className="text-slate-400 text-sm">{v.label}</p>
+            {/* Hover tooltip — lists the actual options */}
+            <div
+              className={`invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity absolute left-1/2 -translate-x-1/2 top-full mt-2 z-30 bg-slate-950 border border-slate-700 rounded-lg p-3 text-left shadow-2xl pointer-events-none ${
+                v.wide ? "w-80" : "w-56"
+              }`}
+            >
+              <div className="text-[10px] font-mono uppercase tracking-widest text-slate-500 mb-2">
+                {v.wide ? "All other tunable dimensions" : "Example values"}
+              </div>
+              <ul
+                className={`text-xs text-slate-300 font-mono ${
+                  v.wide ? "grid grid-cols-2 gap-x-3 gap-y-1" : "space-y-1 text-sm"
+                }`}
+              >
+                {v.options.map((opt, i) => (
+                  <li key={i} className="truncate">{opt}</li>
+                ))}
+              </ul>
+            </div>
           </div>
         ))}
       </div>
       <div className="text-center">
-        <p className="text-2xl md:text-3xl text-slate-300 mb-2">6 × 10 × 3 × 2 × 2 =</p>
-        <p className="text-6xl md:text-7xl font-extrabold" style={{ color: "#f87171" }}>720 configurations</p>
+        <p className="text-2xl md:text-3xl text-slate-300 mb-2">
+          6 × 10 × 3 × 2 × 2 <span className="text-slate-500">(× other)</span> =
+        </p>
+        <p className="text-6xl md:text-7xl font-extrabold" style={{ color: "#f87171" }}>
+          720 configurations <span className="text-slate-500 text-3xl md:text-4xl font-bold">(× other)</span>
+        </p>
         <p className="text-lg text-slate-400 mt-4">…each yielding different accuracy, cost, and latency.</p>
+        <a
+          href="/#/ttm"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 mt-6 text-base md:text-lg font-medium underline underline-offset-4 decoration-[#4D8EF8]/50 hover:decoration-[#4D8EF8] transition-colors"
+          style={{ color: "#4D8EF8" }}
+        >
+          See what this costs in engineer-weeks — TTM Calculator <ArrowRight className="w-4 h-4" />
+        </a>
       </div>
     </div>
   );
@@ -209,9 +364,9 @@ function Slide04Manual() {
       <h2 className="text-5xl md:text-6xl font-bold text-white mb-10 text-center">What Manual Tuning Actually Looks Like</h2>
       <div className="space-y-4 text-xl text-slate-300 max-w-3xl mx-auto">
         {[
-          "An engineer picks a model and a prompt",
-          "Runs it on a few test cases",
-          "Adjusts. Re-runs. Adjusts again.",
+          "An engineer picks a model and several configuration parameters out of hundreds of possible combinations",
+          "Manually configures it and runs it on the benchmark. Looks at KPIs.",
+          "Guesses a new combination. Configures manually. Re-runs. Guesses again.",
           "Stops when time runs out",
           "Ships it. Hopes for the best.",
         ].map((line, i) => (
@@ -270,7 +425,7 @@ function Slide06KillerStat() {
   return (
     <div className="max-w-6xl mx-auto">
       <h2 className="text-4xl md:text-5xl font-bold text-white mb-3 text-center" style={{ textWrap: "balance" }}>
-        Find the Best Configuration in <span style={{ color: BLUE }}>Hours, Not Weeks</span>
+        Finds the Best Configuration in <span style={{ color: BLUE }}>Hours, Not Weeks</span>
       </h2>
       <p className="text-lg md:text-xl text-slate-400 mb-8 text-center">
         The optimization engine converges in <span className="text-white font-semibold">under 10%</span> of the experiments.
@@ -639,10 +794,10 @@ function Slide17Customers() {
 // ===================================================================
 function Slide18FourSteps() {
   const steps = [
-    { n: "01", title: "Specify", desc: "Define tunable decisions in TVL: models, prompts, tools, retrieval, constraints." },
-    { n: "02", title: "Evaluate", desc: "Run your evaluation dataset. Measure accuracy, cost, latency, safety." },
-    { n: "03", title: "Optimize", desc: "Explore the configuration space. Find the best tradeoffs for your KPIs." },
-    { n: "04", title: "Apply", desc: "Apply the winning config for future calls. Keep a history of runs." },
+    { n: "01", title: "Wrap", desc: "Engineer wraps your agent with the SDK in ~1 hour. One-time. Your agent code doesn't change." },
+    { n: "02", title: "Optimize", desc: "The engine sweeps the model and configuration space unattended. Needs only a fraction of combinations to converge." },
+    { n: "03", title: "Converge", desc: "Returns the optimal model + config combo for your KPIs — cost, latency, accuracy — in hours, not weeks. With quantified confidence." },
+    { n: "04", title: "Re-optimize", desc: "Apply the winning config in production. Re-run automatically as models update, costs shift, or usage drifts." },
   ];
   return (
     <div className="max-w-6xl mx-auto">
@@ -747,12 +902,12 @@ function Slide21Closing() {
   return (
     <div className="text-center max-w-5xl mx-auto">
       <h1 className="text-6xl md:text-7xl lg:text-8xl font-extrabold text-white mb-12 tracking-tight leading-tight">
-        Better Agents.<br />
+        Better Agents. <span style={{ color: BLUE }}>Faster.</span><br />
         Lower Spend.<br />
         <span style={{ color: BLUE }}>Higher Confidence.</span>
       </h1>
       <p className="text-2xl md:text-3xl text-slate-300 font-medium mb-16 max-w-3xl mx-auto" style={{ textWrap: "balance" }}>
-        <span style={{ color: BLUE }} className="font-bold">Traigent</span> — the most advanced AI Agent Optimization Platform on the market.
+        <span style={{ color: BLUE }} className="font-bold">Traigent</span> — AI Agent <span style={{ color: BLUE }} className="font-semibold">Cost-Performance</span>. Optimized. <span style={{ color: BLUE }} className="font-semibold">Automatically.</span>
       </p>
       <p className="text-lg text-slate-500 font-mono">amir@traigent.ai · traigent.ai</p>
     </div>
@@ -762,29 +917,159 @@ function Slide21Closing() {
 // ===================================================================
 // Slide registry
 // ===================================================================
+// ===================================================================
+// TTM-calc preview slide — mirrors /ttm calculator's headline result
+// ===================================================================
+function SlideTTMPreview() {
+  return (
+    <div className="max-w-6xl mx-auto">
+      <div
+        className="inline-block px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-xs font-mono tracking-widest mb-5"
+        style={{ color: "#4D8EF8" }}
+      >
+        TIME-TO-MARKET CALCULATOR
+      </div>
+      <h2 className="text-4xl md:text-6xl font-bold text-white mb-3 tracking-tight">
+        Engineer-weeks <span style={{ color: BLUE }}>recovered</span> per pass.
+      </h2>
+      <p className="text-lg md:text-xl text-slate-400 mb-10 max-w-3xl">
+        Manual tuning takes ~720 configurations × 30 min each. Traigent's optimizer needs ~1 hour of engineer setup. The rest runs unattended.
+      </p>
+
+      <div className="grid md:grid-cols-3 gap-5 mb-10">
+        <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-6 text-center">
+          <div className="text-xs font-mono uppercase tracking-widest text-slate-500 mb-2">Manual full sweep</div>
+          <div className="text-5xl md:text-6xl font-extrabold text-white mb-1">9</div>
+          <div className="text-slate-400">engineer-weeks</div>
+        </div>
+        <div className="bg-gradient-to-br from-blue-500/15 to-slate-900/0 border-2 rounded-2xl p-6 text-center" style={{ borderColor: BLUE }}>
+          <div className="text-xs font-mono uppercase tracking-widest mb-2" style={{ color: "#4D8EF8" }}>With Traigent</div>
+          <div className="text-5xl md:text-6xl font-extrabold mb-1" style={{ color: BLUE }}>1 hr</div>
+          <div className="text-slate-400">of engineer setup time</div>
+        </div>
+        <div className="bg-slate-900/40 border-2 rounded-2xl p-6 text-center" style={{ borderColor: AMBER }}>
+          <div className="text-xs font-mono uppercase tracking-widest mb-2" style={{ color: AMBER }}>Saved per pass</div>
+          <div className="text-5xl md:text-6xl font-extrabold mb-1" style={{ color: AMBER }}>~9 weeks</div>
+          <div className="text-slate-400">≈ $54k at $150/hr</div>
+        </div>
+      </div>
+
+      <p className="text-center text-slate-300 text-base md:text-lg">
+        <span className="text-white font-semibold">Plus 100% search-space coverage</span> — versus the ~20% you can realistically test manually.
+        <a
+          href="/#/ttm"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="ml-3 inline-flex items-center gap-1 underline underline-offset-4 decoration-[#4D8EF8]/50 hover:decoration-[#4D8EF8] font-medium"
+          style={{ color: "#4D8EF8" }}
+        >
+          Run your own numbers <ArrowRight className="w-4 h-4" />
+        </a>
+      </p>
+    </div>
+  );
+}
+
+// ===================================================================
+// ROI-calc preview slide — mirrors /roi calculator's headline result
+// ===================================================================
+function SlideROIPreview() {
+  return (
+    <div className="max-w-6xl mx-auto">
+      <div
+        className="inline-block px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-xs font-mono tracking-widest mb-5"
+        style={{ color: "#4D8EF8" }}
+      >
+        ROI CALCULATOR
+      </div>
+      <h2 className="text-4xl md:text-6xl font-bold text-white mb-3 tracking-tight">
+        <span style={{ color: BLUE }}>20–60%</span> savings on LLM costs.
+      </h2>
+      <p className="text-lg md:text-xl text-slate-400 mb-10 max-w-3xl">
+        Auto-optimizing the cost-performance configuration saves a real range of LLM spend over the lifecycle — without sacrificing quality.
+      </p>
+
+      <div className="grid md:grid-cols-3 gap-5 mb-10">
+        <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-6">
+          <div className="text-xs font-mono uppercase tracking-widest text-slate-500 mb-2">Conservative</div>
+          <div className="text-4xl md:text-5xl font-extrabold mb-1" style={{ color: BLUE }}>20%</div>
+          <div className="text-slate-400 text-sm mb-3">on LLM spend</div>
+          <div className="text-xs text-slate-500">$5k/mo spend → <span className="text-white">$12k/yr saved</span></div>
+        </div>
+        <div className="bg-gradient-to-br from-blue-500/15 to-slate-900/0 border-2 rounded-2xl p-6" style={{ borderColor: BLUE }}>
+          <div className="text-xs font-mono uppercase tracking-widest mb-2" style={{ color: "#4D8EF8" }}>Typical</div>
+          <div className="text-4xl md:text-5xl font-extrabold mb-1" style={{ color: BLUE }}>40%</div>
+          <div className="text-slate-400 text-sm mb-3">on LLM spend</div>
+          <div className="text-xs text-slate-500">$5k/mo spend → <span className="text-white">$24k/yr saved</span></div>
+        </div>
+        <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-6">
+          <div className="text-xs font-mono uppercase tracking-widest text-slate-500 mb-2">Optimistic</div>
+          <div className="text-4xl md:text-5xl font-extrabold mb-1" style={{ color: BLUE }}>60%</div>
+          <div className="text-slate-400 text-sm mb-3">on LLM spend</div>
+          <div className="text-xs text-slate-500">$5k/mo spend → <span className="text-white">$36k/yr saved</span></div>
+        </div>
+      </div>
+
+      <p className="text-center text-slate-300 text-base md:text-lg">
+        <span className="text-white font-semibold">Plus engineering recovery</span> — Traigent runs in ~1 hr/pass instead of 72 hrs of manual tuning.
+        <a
+          href="/#/roi"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="ml-3 inline-flex items-center gap-1 underline underline-offset-4 decoration-[#4D8EF8]/50 hover:decoration-[#4D8EF8] font-medium"
+          style={{ color: "#4D8EF8" }}
+        >
+          Calculate yours <ArrowRight className="w-4 h-4" />
+        </a>
+      </p>
+    </div>
+  );
+}
+
+// ===================================================================
+// Slide registry — each slide tagged with section for the tab bar
+// Order is now grouped by section (Hero -> Problem -> Solution -> TTM -> ROI -> Proof -> CTA)
+// ===================================================================
 const slides = [
-  { title: "Title", component: Slide01Title },
-  { title: "Optimize Agent ROI. Fast.", component: Slide02ROI },
-  { title: "The Configuration Explosion", component: Slide03Explosion },
-  { title: "What Manual Tuning Looks Like", component: Slide04Manual },
-  { title: "Traigent Platform", component: Slide05Solution },
-  { title: "Hours, Not Weeks", component: Slide06KillerStat },
-  { title: "Two Components, One Loop", component: Slide07FeedbackLoop },
-  { title: "Inside the Optimization Engine", component: Slide08OptEngine },
-  { title: "Inside the Agent Wrapper", component: Slide09Wrapper },
-  { title: "You Pick the Tradeoff", component: Slide10Tradeoff },
-  { title: "Confidence to Ship", component: Slide11Confidence },
-  { title: "Beyond Optimization", component: Slide12BeyondIntro },
-  { title: "Self-Improving Benchmark", component: Slide13Benchmark },
-  { title: "Full Observability & Tracing", component: Slide14Tracing },
-  { title: "Across the Lifecycle", component: Slide15Lifecycle },
-  { title: "Three Products In One", component: Slide16ThreeInOne },
-  { title: "Customers (Early Adopters)", component: Slide17Customers },
-  { title: "How It Works", component: Slide18FourSteps },
-  { title: "Engineer-First Integration", component: Slide19EngineerFirst },
-  { title: "Get Started", component: Slide20GetStarted },
-  { title: "Better Agents. Lower Spend. Higher Confidence.", component: Slide21Closing },
+  // ----- HERO -----
+  { title: "Hero (website mirror)", section: "Hero", component: SlideHero },
+  // ----- PROBLEM -----
+  { title: "The Configuration Explosion", section: "Problem", component: Slide03Explosion },
+  { title: "What Manual Tuning Looks Like", section: "Problem", component: Slide04Manual },
+  // ----- SOLUTION -----
+  { title: "Hours, Not Weeks (opener)", section: "Solution", component: Slide06KillerStat },
+  { title: "Two Components, One Loop", section: "Solution", component: Slide07FeedbackLoop },
+  { title: "Inside the Optimization Engine", section: "Solution", component: Slide08OptEngine },
+  { title: "Inside the Agent Wrapper", section: "Solution", component: Slide09Wrapper },
+  { title: "You Pick the Tradeoff", section: "Solution", component: Slide10Tradeoff },
+  { title: "Confidence to Ship", section: "Solution", component: Slide11Confidence },
+  { title: "Beyond Optimization", section: "Solution", component: Slide12BeyondIntro },
+  { title: "Self-Improving Benchmark", section: "Solution", component: Slide13Benchmark },
+  { title: "Full Observability & Tracing", section: "Solution", component: Slide14Tracing },
+  { title: "Across the Lifecycle", section: "Solution", component: Slide15Lifecycle },
+  { title: "Three Products In One", section: "Solution", component: Slide16ThreeInOne },
+  { title: "How It Works", section: "Solution", component: Slide18FourSteps },
+  { title: "Engineer-First Integration", section: "Solution", component: Slide19EngineerFirst },
+  // ----- TTM -----
+  { title: "Hours, Not Weeks", section: "TTM", component: Slide06KillerStat },
+  { title: "Engineer-weeks recovered (TTM Calc)", section: "TTM", component: SlideTTMPreview },
+  // ----- ROI -----
+  { title: "20–60% LLM Cost Savings (ROI Calc)", section: "ROI", component: SlideROIPreview },
+  // ----- PROOF -----
+  { title: "Customers (Early Adopters)", section: "Proof", component: Slide17Customers },
+  // ----- CTA -----
+  { title: "Get Started", section: "CTA", component: Slide20GetStarted },
+  { title: "Better Agents. Faster. Lower Spend. Higher Confidence.", section: "CTA", component: Slide21Closing },
 ];
+
+// Section order for the tab bar (drives the layout left-to-right)
+const SECTION_ORDER = ["Hero", "Problem", "Solution", "TTM", "ROI", "Proof", "CTA"];
+
+// First-slide index per section (so a tab click jumps to the right place)
+const sectionStartIndex = SECTION_ORDER.reduce((acc, sec) => {
+  acc[sec] = slides.findIndex((s) => s.section === sec);
+  return acc;
+}, {});
 
 // ===================================================================
 // Deck shell (identical to /pitch — arrow keys, fullscreen, transitions)
@@ -813,10 +1098,10 @@ export default function PitchFull() {
 
   useEffect(() => {
     const handler = (e) => {
-      if (e.key === "ArrowRight" || e.key === " " || e.key === "PageDown") {
+      if (e.key === "ArrowRight" || e.key === "ArrowDown" || e.key === " " || e.key === "PageDown") {
         e.preventDefault();
         next();
-      } else if (e.key === "ArrowLeft" || e.key === "PageUp") {
+      } else if (e.key === "ArrowLeft" || e.key === "ArrowUp" || e.key === "PageUp") {
         e.preventDefault();
         prev();
       } else if (e.key === "f" || e.key === "F") {
@@ -835,11 +1120,22 @@ export default function PitchFull() {
 
   return (
     <div ref={containerRef} className="relative min-h-screen bg-[#080808] text-white overflow-hidden">
-      {/* Top bar */}
+      <Helmet>
+        <title>Traigent — Agent Optimization Platform</title>
+      </Helmet>
+      {/* Top bar — persistent Traigent logo (links home) + slide counter + fullscreen */}
       <div className="absolute top-0 left-0 right-0 z-20 flex justify-between items-center p-4 md:p-6">
-        <Link to="/" className="text-slate-500 hover:text-white text-sm flex items-center gap-2 transition-colors">
-          <Home className="w-4 h-4" />
-          <span className="hidden md:inline">Home</span>
+        <Link
+          to="/"
+          className="opacity-80 hover:opacity-100 transition-opacity"
+          aria-label="Traigent home"
+          title="Home"
+        >
+          <img
+            src={TRAIGENT_LOGO_URL}
+            alt="Traigent"
+            className="h-7 md:h-8 w-auto"
+          />
         </Link>
         <span className="text-slate-500 text-sm font-mono">
           {current + 1} / {total} · {slides[current].title}
@@ -871,43 +1167,71 @@ export default function PitchFull() {
         </AnimatePresence>
       </div>
 
-      {/* Bottom nav */}
-      <div className="absolute bottom-0 left-0 right-0 z-20 flex justify-between items-center p-4 md:p-6">
-        <button
-          onClick={prev}
-          disabled={current === 0}
-          className="text-slate-500 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center gap-1 text-sm"
-        >
-          <ChevronLeft className="w-5 h-5" />
-          <span className="hidden md:inline">Prev</span>
-        </button>
-
-        <div className="flex items-center gap-1.5 max-w-[60%] overflow-x-auto">
-          {slides.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => goTo(i)}
-              aria-label={`Slide ${i + 1}`}
-              className={`h-2 rounded-full transition-all flex-shrink-0 ${
-                i === current ? "w-6 bg-[#1A6BF5]" : "w-2 bg-slate-700 hover:bg-slate-500"
-              }`}
-            />
-          ))}
+      {/* Bottom nav — section tabs on top, slide dots + prev/next below */}
+      <div className="absolute bottom-0 left-0 right-0 z-20 px-4 md:px-6 pb-4 md:pb-6 pt-3 flex flex-col gap-3">
+        {/* Section tabs */}
+        <div className="flex justify-center">
+          <div className="inline-flex items-center gap-1 bg-slate-900/60 border border-slate-800 rounded-full px-1 py-1 backdrop-blur-sm">
+            {SECTION_ORDER.map((sec) => {
+              const startIdx = sectionStartIndex[sec];
+              if (startIdx < 0) return null;
+              const currentSection = slides[current]?.section;
+              const isActive = currentSection === sec;
+              return (
+                <button
+                  key={sec}
+                  onClick={() => goTo(startIdx)}
+                  className={`px-3 md:px-4 py-1.5 rounded-full text-xs md:text-sm font-medium font-mono uppercase tracking-wider transition-colors ${
+                    isActive
+                      ? "bg-[#1A6BF5] text-white"
+                      : "text-slate-400 hover:text-white hover:bg-slate-800"
+                  }`}
+                >
+                  {sec}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        <button
-          onClick={next}
-          disabled={current === total - 1}
-          className="text-slate-500 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center gap-1 text-sm"
-        >
-          <span className="hidden md:inline">Next</span>
-          <ChevronRight className="w-5 h-5" />
-        </button>
+        {/* Prev / dots / Next row */}
+        <div className="flex justify-between items-center">
+          <button
+            onClick={prev}
+            disabled={current === 0}
+            className="text-slate-500 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center gap-1 text-sm"
+          >
+            <ChevronLeft className="w-5 h-5" />
+            <span className="hidden md:inline">Prev</span>
+          </button>
+
+          <div className="flex items-center gap-1.5 max-w-[60%] overflow-x-auto">
+            {slides.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => goTo(i)}
+                aria-label={`Slide ${i + 1}`}
+                className={`h-2 rounded-full transition-all flex-shrink-0 ${
+                  i === current ? "w-6 bg-[#1A6BF5]" : "w-2 bg-slate-700 hover:bg-slate-500"
+                }`}
+              />
+            ))}
+          </div>
+
+          <button
+            onClick={next}
+            disabled={current === total - 1}
+            className="text-slate-500 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center gap-1 text-sm"
+          >
+            <span className="hidden md:inline">Next</span>
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
       {/* Keyboard hint */}
-      <div className="hidden md:block absolute bottom-16 right-6 text-slate-700 text-xs font-mono z-10">
-        ← → space · F fullscreen · Home/End
+      <div className="hidden md:block absolute bottom-28 right-6 text-slate-700 text-xs font-mono z-10">
+        ← → ↑ ↓ space · F fullscreen · Home/End
       </div>
     </div>
   );

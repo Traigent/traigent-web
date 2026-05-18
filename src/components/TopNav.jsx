@@ -9,7 +9,7 @@ const productItems = [
   { label: "Agent Wrapper", scrollId: "product", desc: "Automated execution + KPI capture" },
   { label: "Observability & Tracing", scrollId: "observability", desc: "Full trace tree · spans · tokens · cost" },
   { label: "Benchmark Insights", scrollId: "benchmark", desc: "Flags easy / always-fail / redundant questions" },
-  { label: "TVL", href: "https://www.tvl-lang.org/", external: true, desc: "Tuned Variables Language" },
+  { label: "TVL", href: "https://www.tvl-lang.org/", external: true, desc: "Tuned Variables Language — machine-checkable spec format" },
 ];
 
 const resourcesItems = [
@@ -20,8 +20,9 @@ const resourcesItems = [
   { label: "Docs", href: "https://github.com/Traigent/Traigent", external: true, desc: "SDK on GitHub" },
   { label: "About", href: "/about", desc: "Team, mission, values" },
   { label: "Get Started", href: "/get-started" },
-  { label: "One Pager", href: "/one-pager" },
   { label: "Value Proposition", href: "/value-proposition" },
+  { label: "See It In Action", href: "/see-it-in-action", desc: "Watch Traigent converge live" },
+  { label: "Optimization in Action", href: "/optimization-in-action", desc: "Live optimization-table demo · sweep & converge" },
 ];
 
 function MenuItem({ item, onScroll }) {
@@ -112,8 +113,14 @@ export default function TopNav() {
                   window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
                 }
               }}
-              className="flex items-center text-xl font-bold text-white"
+              className="flex items-center text-xl font-bold text-white leading-none"
             >
+              <img
+                src="/images/traigent-logo-icon.png"
+                alt=""
+                aria-hidden="true"
+                className="h-5 w-auto mr-2"
+              />
               Traigent
             </Link>
 
