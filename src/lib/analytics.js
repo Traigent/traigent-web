@@ -62,7 +62,7 @@ export function initAnalytics() {
     s.async = true;
     s.defer = true;
     s.id = "hs-script-loader";
-    s.src = `//${host}/${HUBSPOT_PORTAL_ID}.js`;
+    s.src = `https://${host}/${HUBSPOT_PORTAL_ID}.js`;
     document.head.appendChild(s);
   }
 
@@ -78,9 +78,18 @@ export function initAnalytics() {
       // so we send manually from trackPageView() on every route change.
       capture_pageview: false,
       persistence: "localStorage+cookie",
+      // Tag the surface so cross-property funnels (web vs portal) work
+      // without manual tagging on every event.
+      loaded: (ph) => { ph.register({ surface: "marketing" }); },
     });
     /* eslint-enable */
   }
+
+  // ---- First-touch UTM attribution ----
+  // PostHog/HubSpot auto-capture utm_* on the landing event, but lose them
+  // once the user navigates away. Persist the first set we see for 90 days
+  // and re-attach to every PostHog event + the next HubSpot form submit.
+  captureFirstTouchUtms();
 }
 
 /** Fire on every route change. Call this from a router listener. */
@@ -160,5 +169,84 @@ export function identify(userId, traits = {}) {
   if (import.meta.env.DEV) {
     // eslint-disable-next-line no-console
     console.debug("[identify]", userId || traits.email, traits);
+  }
+}
+
+// ===================================================================
+// First-touch UTM helper (used by initAnalytics)
+// ===================================================================
+
+const UTM_PARAMS = [
+  "utm_source",
+  "utm_medium",
+  "utm_campaign",
+  "utm_term",
+  "utm_content",
+  "gclid",  // Google Ads click ID
+  "fbclid", // Facebook click ID
+  "li_fat_id", // LinkedIn click ID
+];
+const UTM_TTL_MS = 90 * 24 * 60 * 60 * 1000; // 90 days
+const UTM_STORAGE_KEY = "traigent_utms";
+
+function captureFirstTouchUtms() {
+  if (typeof window === "undefined") return;
+
+  // Pull anything UTM-shaped out of the current URL.
+  let fresh = {};
+  try {
+    const params = new URL(window.location.href).searchParams;
+    for (const p of UTM_PARAMS) {
+      const v = params.get(p);
+      if (v) fresh[p] = v;
+    }
+  } catch { /* malformed URL — skip */ }
+
+  // Fresh UTMs overwrite stored ones (last campaign wins for re-attribution).
+  // No UTMs in URL → hydrate from storage if still within TTL.
+  let active = null;
+  if (Object.keys(fresh).length > 0) {
+    active = fresh;
+    try {
+      window.localStorage.setItem(
+        UTM_STORAGE_KEY,
+        JSON.stringify({ ...fresh, ts: Date.now() })
+      );
+    } catch { /* private mode / quota — silently degrade */ }
+  } else {
+    try {
+      const raw = window.localStorage.getItem(UTM_STORAGE_KEY);
+      if (raw) {
+        const stored = JSON.parse(raw);
+        if (stored && typeof stored.ts === "number" && Date.now() - stored.ts < UTM_TTL_MS) {
+          // eslint-disable-next-line no-unused-vars
+          const { ts, ...rest } = stored;
+          if (Object.keys(rest).length > 0) active = rest;
+        }
+      }
+    } catch { /* corrupted entry — ignore */ }
+  }
+
+  if (!active) return;
+
+  // PostHog: register as super-properties so every future event carries them.
+  // Stub's register() queues the call until the real lib loads — safe to call early.
+  if (POSTHOG_KEY && window.posthog && window.posthog.register) {
+    const superProps = {};
+    for (const [k, v] of Object.entries(active)) {
+      superProps[`first_${k}`] = v;
+    }
+    window.posthog.register(superProps);
+  }
+
+  // HubSpot: attach to the visitor session so the next form submit / meeting
+  // booking carries them onto the contact record. _hsq is a queue, safe pre-load.
+  if (HUBSPOT_PORTAL_ID && window._hsq) {
+    window._hsq.push(["identify", active]);
+  }
+
+  if (import.meta.env.DEV) {
+    // eslint-disable-next-line no-console
+    console.debug("[utm] first-touch", active);
   }
 }
