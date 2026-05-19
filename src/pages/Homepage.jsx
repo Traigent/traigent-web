@@ -150,7 +150,7 @@ export default function Homepage() {
               className="grid md:grid-cols-2 gap-5 md:gap-6 max-w-4xl mx-auto mb-6 text-left"
             >
               {/* Left — how Traigent finds the optimum */}
-              <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 md:p-7">
+              <div className="bg-slate-900/50 border-2 rounded-2xl p-6 md:p-7" style={{ borderColor: "rgba(26, 107, 245, 0.35)" }}>
                 <a
                   href="#product"
                   onClick={(e) => {
@@ -165,7 +165,7 @@ export default function Homepage() {
                 </a>
                 <ul className="space-y-3">
                   {[
-                    <>Finds <span className="text-white font-semibold"><span className="underline underline-offset-4">the</span> optimal model and configuration combo</span> in <span className="text-white font-semibold">hours, not weeks</span>.</>,
+                    <><span className="text-white font-semibold underline underline-offset-4 decoration-2 decoration-[#4D8EF8]/70">Finds the optimal model and configuration combo</span> in <span className="text-white font-semibold">hours, not weeks</span>.</>,
                     <><span className="text-white font-semibold">Automatically</span>, not manually.</>,
                     <>Requires only a <span className="text-white font-semibold">fraction of the search space.</span></>,
                     <>With <span className="text-white font-semibold">confidence</span>, not guesswork.</>,
@@ -337,7 +337,7 @@ export default function Homepage() {
               transition={{ duration: 0.5, delay: 0.3 }}
               className="mb-12 scroll-mt-20"
             >
-              <p className="text-center text-xs text-slate-500 uppercase tracking-widest font-medium mb-6">Design partners & early adopters</p>
+              <p className="text-center text-xs text-slate-500 uppercase tracking-widest font-medium mb-6">Customers</p>
               <div className="relative overflow-hidden">
                 <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#080808] to-transparent z-10"></div>
                 <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#080808] to-transparent z-10"></div>

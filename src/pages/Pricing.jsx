@@ -290,9 +290,19 @@ export default function Pricing() {
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-3" style={{ textWrap: "balance" }}>
               Pick your tier.
             </h2>
-            <p className="text-slate-400 text-center mb-12 max-w-2xl mx-auto">
+            <p className="text-slate-400 text-center mb-6 max-w-2xl mx-auto">
               Optimization and Observability in every plan.
             </p>
+            {/* Pricing-anchor callout — the key positioning claim: matches competitor pricing, but you get the optimization layer free */}
+            <div className="max-w-3xl mx-auto mb-12 bg-gradient-to-br from-blue-500/10 to-slate-900/0 border-2 rounded-2xl p-5 md:p-6 text-center" style={{ borderColor: `${BLUE}66` }}>
+              <p className="text-base md:text-lg leading-relaxed font-semibold" style={{ color: "#4D8EF8", textWrap: "balance" }}>
+                The Agent Optimization layer is included in every tier.
+              </p>
+              <p className="text-base md:text-lg text-slate-200 mt-3 leading-relaxed" style={{ textWrap: "balance" }}>
+                But, prices are comparable to observability / eval products that{" "}
+                <span className="text-white font-semibold">do not have optimization</span>.
+              </p>
+            </div>
           </FadeIn>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto">

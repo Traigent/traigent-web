@@ -409,7 +409,7 @@ export default function Investors() {
 
         {/* LOGOS */}
         <section className="logos">
-          <div className="c"><p className="ll">Design partners &amp; early adopters</p></div>
+          <div className="c"><p className="ll">Customers</p></div>
           <div className="lw">
             <div className="lt2">
               <div className="lb"><svg className="li" viewBox="0 0 20 20" fill="currentColor"><path d="M3 4h14v2H3V4zm0 4h14v2H3V8zm0 4h10v2H3v-2z"/></svg>Bazak</div>

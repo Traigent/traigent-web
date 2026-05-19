@@ -16,7 +16,7 @@ const DEFAULT_HOURLY_RATE = 100;   // $200k fully-loaded engineer ÷ 2,000 work 
 const DEFAULT_MANUAL_HOURS_PER_PASS = 72;  // matches TTM defaults (720 × 20% × 30 min)
 const TRAIGENT_HOURS_PER_PASS = 1;  // matches TTM: engineer involvement per optimization pass
 const DEFAULT_PASSES_PER_YEAR = 1;  // conservative: one optimization pass per year
-const DEFAULT_MONTHLY_SPEND = 5000;  // realistic early-adopter LLM bill — small team running an agent in prod
+const DEFAULT_MONTHLY_SPEND = 3000;  // matches the '$3k Early prod' preset on the spend slider
 
 // Logarithmic mapping for the LLM-spend slider. Linear would push 95% of the
 // real-world range into the bottom 5% of the slider. We use 1000 'positions'
@@ -85,7 +85,7 @@ export default function ROICalculator() {
   const [hourlyRate, setHourlyRate] = useSharedSetting("traigent_hourly_rate", DEFAULT_HOURLY_RATE);
   const [manualHoursPerPass] = useSharedSetting("traigent_manual_hours_per_pass", DEFAULT_MANUAL_HOURS_PER_PASS);
   const [passesPerYear, setPassesPerYear] = useSharedSetting("traigent_passes_per_year", DEFAULT_PASSES_PER_YEAR);
-  const [tier, setTier] = useState("pro");
+  const [tier, setTier] = useState("starter");
   // Which savings scenario drives the headline math. 'custom' lets the user
   // dial in their own % rather than commit to one of the three published ranges.
   const [savingsScenario, setSavingsScenario] = useState("conservative");
@@ -95,7 +95,7 @@ export default function ROICalculator() {
     setMonthlySpend(DEFAULT_MONTHLY_SPEND);
     setHourlyRate(DEFAULT_HOURLY_RATE);
     setPassesPerYear(DEFAULT_PASSES_PER_YEAR);
-    setTier("pro");
+    setTier("starter");
     setSavingsScenario("conservative");
     setCustomSavingsPct(15);
     trackEvent("roi_reset_clicked");

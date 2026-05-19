@@ -138,10 +138,10 @@ function SlideCustomers() {
   return (
     <div className="text-center max-w-5xl mx-auto">
       <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-        Customers <span className="text-slate-400 font-medium">(Early Adopters)</span>
+        Customers
       </h2>
       <p className="text-lg md:text-xl text-slate-400 mb-16">
-        Design partners and early adopters across telecom, retail, cloud, and AI services
+        Customers across telecom, retail, cloud, and AI services
       </p>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-y-12 gap-x-8">
         {customers.map((c) => (
@@ -256,7 +256,7 @@ const slides = [
   { title: "Hook", component: SlideHook },
   { title: "The 60-Second Problem", component: SlideProblem },
   { title: "Hours, Not Weeks", component: SlideStat },
-  { title: "Customers (Early Adopters)", component: SlideCustomers },
+  { title: "Customers", component: SlideCustomers },
   { title: "Three Products In One", component: SlideThreeProducts },
   { title: "Two Ways to See It", component: SlideCTA },
 ];

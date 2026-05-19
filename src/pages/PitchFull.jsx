@@ -256,7 +256,7 @@ function Slide03Explosion() {
     <div className="max-w-6xl mx-auto">
       <h2 className="text-5xl md:text-6xl font-bold text-white mb-8 text-center">The Configuration Explosion</h2>
       <p className="text-xl text-slate-300 mb-12 text-center max-w-3xl mx-auto leading-relaxed">
-        Every agent has <span className="text-white font-semibold">hundreds (if not thousands)</span> of tunable variables.
+        Every agent has <span className="text-white font-semibold">hundreds (if not thousands)</span> of tunable variable combinations.
       </p>
       <div className="grid grid-cols-2 md:grid-cols-6 gap-3 max-w-6xl mx-auto mb-12">
         {[
@@ -364,11 +364,11 @@ function Slide04Manual() {
       <h2 className="text-5xl md:text-6xl font-bold text-white mb-10 text-center">What Manual Tuning Actually Looks Like</h2>
       <div className="space-y-4 text-xl text-slate-300 max-w-3xl mx-auto">
         {[
-          "An engineer picks a model and several configuration parameters out of hundreds of possible combinations",
-          "Manually configures it and runs it on the benchmark. Looks at KPIs.",
-          "Guesses a new combination. Configures manually. Re-runs. Guesses again.",
-          "Stops when time runs out",
-          "Ships it. Hopes for the best.",
+          "Engineers pick a model and several configuration parameters out of hundreds of possible combinations",
+          "Manually configure it and run it on the benchmark. Look at KPIs.",
+          "Guess a new combination. Configure manually. Re-run. Guess again.",
+          "Stop when time runs out",
+          "Ship it. Hope for the best.",
         ].map((line, i) => (
           <div key={i} className="flex items-start gap-4">
             <span className="text-slate-600 font-mono text-base flex-shrink-0 mt-1">{String(i + 1).padStart(2, "0")}</span>
@@ -775,10 +775,10 @@ function Slide17Customers() {
   return (
     <div className="text-center max-w-5xl mx-auto">
       <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-        Customers <span className="text-slate-400 font-medium">(Early Adopters)</span>
+        Customers
       </h2>
       <p className="text-lg md:text-xl text-slate-400 mb-16">
-        Design partners across telecom, retail, cloud, and AI services — optimizing real production agents today.
+        Customers across telecom, retail, cloud, and AI services — optimizing real production agents today.
       </p>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-y-12 gap-x-8">
         {customers.map((c) => (
@@ -1032,7 +1032,7 @@ function SlideROIPreview() {
 // ===================================================================
 const slides = [
   // ----- HERO -----
-  { title: "Hero (website mirror)", section: "Hero", component: SlideHero },
+  { title: "Hero (website mirror)", section: "Traigent intro", component: SlideHero },
   // ----- PROBLEM -----
   { title: "The Configuration Explosion", section: "Problem", component: Slide03Explosion },
   { title: "What Manual Tuning Looks Like", section: "Problem", component: Slide04Manual },
@@ -1056,14 +1056,14 @@ const slides = [
   // ----- ROI -----
   { title: "20–60% LLM Cost Savings (ROI Calc)", section: "ROI", component: SlideROIPreview },
   // ----- PROOF -----
-  { title: "Customers (Early Adopters)", section: "Proof", component: Slide17Customers },
+  { title: "Customers", section: "Proof", component: Slide17Customers },
   // ----- CTA -----
   { title: "Get Started", section: "CTA", component: Slide20GetStarted },
   { title: "Better Agents. Faster. Lower Spend. Higher Confidence.", section: "CTA", component: Slide21Closing },
 ];
 
 // Section order for the tab bar (drives the layout left-to-right)
-const SECTION_ORDER = ["Hero", "Problem", "Solution", "TTM", "ROI", "Proof", "CTA"];
+const SECTION_ORDER = ["Traigent intro", "Problem", "Solution", "TTM", "ROI", "Proof", "CTA"];
 
 // First-slide index per section (so a tab click jumps to the right place)
 const sectionStartIndex = SECTION_ORDER.reduce((acc, sec) => {
