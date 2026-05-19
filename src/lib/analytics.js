@@ -1,18 +1,24 @@
 // ===================================================================
 // Analytics helpers — single integration point for GA4 + Microsoft
-// Clarity + any other tracking we add later.
+// Clarity + HubSpot + PostHog.
 //
-// To activate: drop your IDs into the two env vars below.
-//   VITE_GA4_ID         e.g. "G-XXXXXXXXXX"
-//   VITE_CLARITY_ID     e.g. "abcdefghij"
+// To activate, fill these into .env.local:
+//   VITE_GA4_ID            e.g. "G-XXXXXXXXXX"
+//   VITE_CLARITY_ID        e.g. "abcdefghij"
+//   VITE_HUBSPOT_PORTAL_ID e.g. "148486827"
+//   VITE_HUBSPOT_REGION    "eu1" for EU accounts, blank for US (default: blank)
+//   VITE_POSTHOG_KEY       starts with "phc_..."
+//   VITE_POSTHOG_HOST      "https://eu.posthog.com" or "https://us.posthog.com"
 //
-// These are read from .env / .env.local at build time (Vite). When
-// they're unset, all calls become no-ops — safe to leave in production
-// until the IDs are ready.
+// Any var left unset turns its corresponding integration into a no-op.
 // ===================================================================
 
 const GA4_ID = import.meta.env.VITE_GA4_ID;
 const CLARITY_ID = import.meta.env.VITE_CLARITY_ID;
+const HUBSPOT_PORTAL_ID = import.meta.env.VITE_HUBSPOT_PORTAL_ID;
+const HUBSPOT_REGION = import.meta.env.VITE_HUBSPOT_REGION || "";
+const POSTHOG_KEY = import.meta.env.VITE_POSTHOG_KEY;
+const POSTHOG_HOST = import.meta.env.VITE_POSTHOG_HOST || "https://us.posthog.com";
 
 let initialized = false;
 
@@ -44,6 +50,36 @@ export function initAnalytics() {
       y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
     })(window, document, "clarity", "script", CLARITY_ID);
   }
+
+  // ---- HubSpot tracking ----
+  // _hsq is a stub queue that the HubSpot script drains on load, so calls
+  // made before the script arrives still get processed in order.
+  if (HUBSPOT_PORTAL_ID) {
+    window._hsq = window._hsq || [];
+    const host = HUBSPOT_REGION ? `js-${HUBSPOT_REGION}.hs-scripts.com` : "js.hs-scripts.com";
+    const s = document.createElement("script");
+    s.async = true;
+    s.defer = true;
+    s.id = "hs-script-loader";
+    s.src = `//${host}/${HUBSPOT_PORTAL_ID}.js`;
+    document.head.appendChild(s);
+  }
+
+  // ---- PostHog ----
+  // Standard PostHog snippet: stubs the API surface, async-loads the real lib.
+  // Calls made before the lib arrives are queued.
+  if (POSTHOG_KEY) {
+    /* eslint-disable */
+    !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveysLoaded onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+    window.posthog.init(POSTHOG_KEY, {
+      api_host: POSTHOG_HOST,
+      // HashRouter routes don't trigger PostHog's auto-pageview reliably,
+      // so we send manually from trackPageView() on every route change.
+      capture_pageview: false,
+      persistence: "localStorage+cookie",
+    });
+    /* eslint-enable */
+  }
 }
 
 /** Fire on every route change. Call this from a router listener. */
@@ -54,6 +90,13 @@ export function trackPageView(path) {
       page_path: path,
       page_location: window.location.href,
     });
+  }
+  if (HUBSPOT_PORTAL_ID && window._hsq) {
+    window._hsq.push(["setPath", path]);
+    window._hsq.push(["trackPageView"]);
+  }
+  if (POSTHOG_KEY && window.posthog && window.posthog.capture) {
+    window.posthog.capture("$pageview", { $current_url: window.location.href });
   }
 }
 
@@ -67,13 +110,54 @@ export function trackEvent(name, params = {}) {
   if (GA4_ID && window.gtag) {
     window.gtag("event", name, params);
   }
-  // Clarity custom events
   if (CLARITY_ID && window.clarity) {
     try { window.clarity("event", name); } catch { /* noop */ }
   }
-  // Dev-time visibility — comment out for production noise reduction.
+  if (POSTHOG_KEY && window.posthog && window.posthog.capture) {
+    window.posthog.capture(name, params);
+  }
+  // HubSpot custom behavioral events require Enterprise tier — skip here.
+  // Form submissions, meetings, and chat are still captured by HubSpot automatically.
   if (import.meta.env.DEV) {
     // eslint-disable-next-line no-console
     console.debug("[track]", name, params);
+  }
+}
+
+/**
+ * Bind the current anonymous visitor to a known identity. Call this:
+ *   - On portal login (with userId + email)
+ *   - After any form submission that captures email (HubSpot's own forms auto-stitch)
+ *   - After chat email capture (HubSpot's chat auto-stitches too)
+ *
+ * Same userId + traits go to HubSpot AND PostHog so the two views of the
+ * same person stay aligned. HubSpot back-fills prior anonymous activity onto
+ * the contact timeline automatically once email is known.
+ *
+ *   identify("user_42", { email: "amir@example.com", name: "Amir" })
+ */
+export function identify(userId, traits = {}) {
+  if (typeof window === "undefined") return;
+  if (!userId && !traits.email) {
+    if (import.meta.env.DEV) {
+      // eslint-disable-next-line no-console
+      console.warn("[identify] needs at least userId or traits.email");
+    }
+    return;
+  }
+  if (HUBSPOT_PORTAL_ID) {
+    window._hsq = window._hsq || [];
+    const hubspotTraits = { ...traits };
+    if (userId) hubspotTraits.id = userId; // HubSpot's external-id property
+    window._hsq.push(["identify", hubspotTraits]);
+    window._hsq.push(["trackPageView"]); // flush so the identify takes effect immediately
+  }
+  if (POSTHOG_KEY && window.posthog && window.posthog.identify) {
+    const distinctId = userId || traits.email;
+    window.posthog.identify(distinctId, traits);
+  }
+  if (import.meta.env.DEV) {
+    // eslint-disable-next-line no-console
+    console.debug("[identify]", userId || traits.email, traits);
   }
 }
