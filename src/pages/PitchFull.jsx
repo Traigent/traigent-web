@@ -139,7 +139,7 @@ function TraceTree() {
 // ===================================================================
 function SlideHero() {
   const methodBullets = [
-    <>Finds <span className="text-white font-semibold"><span className="underline underline-offset-4">the</span> optimal model and configuration combo</span> in <span className="text-white font-semibold">hours, not weeks</span>.</>,
+    <><span className="text-white font-semibold underline underline-offset-4 decoration-2 decoration-[#4D8EF8]/70">Finds the optimal model and configuration combo</span> in <span className="text-white font-semibold">hours, not weeks</span>.</>,
     <><span className="text-white font-semibold">Automatically</span>, not manually.</>,
     <>Requires only a <span className="text-white font-semibold">fraction of the search space.</span></>,
     <>With <span className="text-white font-semibold">confidence</span>, not guesswork.</>,
@@ -170,7 +170,7 @@ function SlideHero() {
 
       <div className="grid md:grid-cols-2 gap-5 max-w-4xl mx-auto text-left">
         {/* Left — unique capability */}
-        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5 md:p-6">
+        <div className="bg-slate-900/50 border-2 rounded-2xl p-5 md:p-6" style={{ borderColor: "rgba(26, 107, 245, 0.35)" }}>
           <div
             className="inline-block px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-[10px] md:text-[11px] font-mono tracking-widest mb-4"
             style={{ color: "#4D8EF8" }}
