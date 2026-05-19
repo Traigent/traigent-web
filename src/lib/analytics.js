@@ -8,7 +8,8 @@
 //   VITE_HUBSPOT_PORTAL_ID e.g. "148486827"
 //   VITE_HUBSPOT_REGION    "eu1" for EU accounts, blank for US (default: blank)
 //   VITE_POSTHOG_KEY       starts with "phc_..."
-//   VITE_POSTHOG_HOST      "https://eu.posthog.com" or "https://us.posthog.com"
+//   VITE_POSTHOG_HOST      "https://eu.i.posthog.com" or "https://us.i.posthog.com"
+//                          (ingestion host, not the dashboard URL)
 //
 // Any var left unset turns its corresponding integration into a no-op.
 // ===================================================================
@@ -18,7 +19,7 @@ const CLARITY_ID = import.meta.env.VITE_CLARITY_ID;
 const HUBSPOT_PORTAL_ID = import.meta.env.VITE_HUBSPOT_PORTAL_ID;
 const HUBSPOT_REGION = import.meta.env.VITE_HUBSPOT_REGION || "";
 const POSTHOG_KEY = import.meta.env.VITE_POSTHOG_KEY;
-const POSTHOG_HOST = import.meta.env.VITE_POSTHOG_HOST || "https://us.posthog.com";
+const POSTHOG_HOST = import.meta.env.VITE_POSTHOG_HOST || "https://us.i.posthog.com";
 
 let initialized = false;
 
