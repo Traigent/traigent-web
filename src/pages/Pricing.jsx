@@ -373,8 +373,8 @@ export default function Pricing() {
                     onClick={() => trackEvent("pricing_cta_clicked", { tier: "starter" })}
                     className="inline-flex items-center justify-center gap-2 w-full h-12 bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white px-5 rounded-lg font-medium transition-colors"
                   >
-                    Get Starter
-                    <ArrowRight className="w-4 h-4" />
+                    <MessageSquare className="w-4 h-4" />
+                    Talk to sales
                   </a>
                 }
               />
@@ -411,8 +411,8 @@ export default function Pricing() {
                     onClick={() => trackEvent("pricing_cta_clicked", { tier: "pro" })}
                     className="inline-flex items-center justify-center gap-2 w-full h-12 bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white px-5 rounded-lg font-medium transition-colors"
                   >
-                    Get Pro
-                    <ArrowRight className="w-4 h-4" />
+                    <MessageSquare className="w-4 h-4" />
+                    Talk to sales
                   </a>
                 }
               />
