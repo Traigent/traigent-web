@@ -4,6 +4,8 @@ import { ChevronDown, Github } from "lucide-react";
 import StartNowModal from "./StartNowModal";
 import { trackEvent } from "../lib/analytics";
 
+const PORTAL_URL = "https://portal.traigent.ai";
+
 const productItems = [
   { label: "Optimization Engine", scrollId: "optimization", desc: "Picks next best config from run history" },
   { label: "Agent Wrapper", scrollId: "product", desc: "Automated execution + KPI capture" },
@@ -101,8 +103,8 @@ export default function TopNav() {
 
   return (
     <>
-      <nav className="sticky top-0 z-50 bg-[#080808]/95 backdrop-blur-md border-b border-slate-800/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <nav className="sticky top-0 z-50 bg-[#080808]/95 backdrop-blur-md border-b border-slate-800/50 overflow-x-clip">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style={{ width: "100vw" }}>
           <div className="flex items-center justify-between h-16">
             {/* Logo — click always returns to the top of the homepage. When already
                 on `/`, React Router skips the navigation, so we scroll manually. */}
@@ -123,6 +125,15 @@ export default function TopNav() {
               />
               Traigent
             </Link>
+            <a
+              href={PORTAL_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackEvent("portal_opened", { location: "topnav_mobile" })}
+              className="sm:hidden ml-5 text-sm text-slate-300 hover:text-white transition-colors whitespace-nowrap"
+            >
+              Portal
+            </a>
 
             {/* Tabs */}
             <div className="hidden lg:flex items-center gap-7 text-sm">
@@ -167,7 +178,7 @@ export default function TopNav() {
             </div>
 
             {/* CTAs */}
-            <div className="flex items-center gap-3 sm:gap-4">
+            <div className="hidden sm:flex items-center gap-3 sm:gap-4">
               <a
                 href="https://github.com/Traigent/Traigent"
                 target="_blank"
@@ -180,20 +191,21 @@ export default function TopNav() {
                 <Github className="w-5 h-5" />
               </a>
               <a
-                href="https://portal.traigent.ai"
+                href={PORTAL_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={() => trackEvent("sign_in_clicked", { location: "topnav" })}
-                className="text-sm text-slate-300 hover:text-white transition-colors hidden sm:inline"
+                onClick={() => trackEvent("portal_opened", { location: "topnav" })}
+                className="text-sm text-slate-300 hover:text-white transition-colors whitespace-nowrap"
               >
-                Sign in
+                <span className="sm:hidden">Portal</span>
+                <span className="hidden sm:inline">Open portal</span>
               </a>
               <button
                 onClick={() => {
                   trackEvent("start_now_clicked", { location: "topnav" });
                   setShowStartNow(true);
                 }}
-                className="border border-slate-600 hover:border-slate-400 text-slate-200 hover:text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
+                className="hidden sm:inline-flex border border-slate-600 hover:border-slate-400 text-slate-200 hover:text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
               >
                 Start Now
               </button>
@@ -202,7 +214,7 @@ export default function TopNav() {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => trackEvent("demo_booking_clicked", { location: "topnav" })}
-                className="bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
+                className="hidden sm:inline-flex bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
               >
                 Book a demo
               </a>

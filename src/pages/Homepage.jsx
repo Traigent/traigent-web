@@ -24,6 +24,7 @@ const Button = ({ children, className, onClick, size }) => (
 
 // Placeholder for the createPageUrl function
 const createPageUrl = (path) => path;
+const PORTAL_URL = "https://portal.traigent.ai";
 
 // Reusable animated wrapper to reduce duplication
 const FadeInView = ({ children, className, delay = 0, direction = "y" }) => (
@@ -327,6 +328,32 @@ export default function Homepage() {
                   )}
                 </div>
               </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.28 }}
+              className="mb-12 flex flex-wrap justify-center gap-3"
+            >
+              <Link
+                to={createPageUrl("/get-started")}
+                onClick={() => trackEvent("hero_get_started_clicked", { destination: "get-started" })}
+                className="inline-flex items-center justify-center bg-white text-slate-950 hover:bg-slate-100 px-5 py-3 rounded-lg text-sm font-semibold transition-colors whitespace-nowrap"
+              >
+                Get started
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+              <a
+                href={PORTAL_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackEvent("portal_opened", { location: "hero" })}
+                className="inline-flex items-center justify-center border border-blue-400/70 text-white hover:bg-blue-500/15 px-5 py-3 rounded-lg text-sm font-semibold transition-colors whitespace-nowrap"
+              >
+                Open portal
+                <ExternalLink className="ml-2 h-4 w-4" />
+              </a>
             </motion.div>
 
             {/* Design Partners & Early Adopters */}
@@ -972,10 +999,15 @@ def answer_question(question: str) -> str:
                 </li>
                 <li>
                   <a
-                    href="https://portal.traigent.ai/pricing"
+                    href={`${PORTAL_URL}/pricing`}
                     className="text-slate-400 hover:text-white transition-colors"
                   >
                     Pricing
+                  </a>
+                </li>
+                <li>
+                  <a href={PORTAL_URL} className="text-slate-400 hover:text-white transition-colors">
+                    Open portal
                   </a>
                 </li>
               </ul>
@@ -986,7 +1018,7 @@ def answer_question(question: str) -> str:
               <ul className="space-y-2">
                 <li>
                   <a
-                    href="https://portal.traigent.ai/privacy"
+                    href={`${PORTAL_URL}/privacy`}
                     className="text-slate-400 hover:text-white transition-colors"
                   >
                     Privacy Policy
@@ -994,7 +1026,7 @@ def answer_question(question: str) -> str:
                 </li>
                 <li>
                   <a
-                    href="https://portal.traigent.ai/terms"
+                    href={`${PORTAL_URL}/terms`}
                     className="text-slate-400 hover:text-white transition-colors"
                   >
                     Terms of Service
@@ -1002,7 +1034,7 @@ def answer_question(question: str) -> str:
                 </li>
                 <li>
                   <a
-                    href="https://portal.traigent.ai/refund"
+                    href={`${PORTAL_URL}/refund`}
                     className="text-slate-400 hover:text-white transition-colors"
                   >
                     Refund Policy
