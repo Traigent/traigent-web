@@ -13,6 +13,7 @@ const productItems = [
 ];
 
 const resourcesItems = [
+  { label: "Academy", href: "/academy", desc: "Short courses for teams shipping AI agents" },
   { label: "ROI Calculator", href: "/roi", desc: "Estimate your 12-month savings" },
   { label: "TTM Calculator", href: "/ttm", desc: "Engineer-weeks saved per optimization pass" },
   { label: "Compare", href: "/compare", desc: "vs. Langfuse · Arize · Helicone · Braintrust" },
