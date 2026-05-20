@@ -1,6 +1,7 @@
-import React from "react";
+﻿import React from "react";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import InstallCommand from "../components/InstallCommand";
 
 const createPageUrl = (path) => path;
@@ -8,6 +9,13 @@ const createPageUrl = (path) => path;
 export default function GetStarted() {
   return (
     <div className="min-h-screen bg-slate-950 text-white">
+      <Helmet>
+        <title>Get Started · Traigent</title>
+        <meta name="description" content="Start with the SDK or with TVL. Two onramps for optimizing your AI agent with Traigent — specify the tunable decisions, evaluate, optimize, apply." />
+        <meta property="og:title" content="Get Started with Traigent" />
+        <meta property="og:description" content="Start optimizing your AI agent in minutes. SDK + TVL onramps." />
+        <meta property="og:type" content="website" />
+      </Helmet>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <Link
           to={createPageUrl("/")}
@@ -82,7 +90,7 @@ export default function GetStarted() {
             Git hooks and GitHub Actions are included in the SDK. Want managed CI/CD dashboards, team analytics, and audit trails? Let's talk about enterprise options.
           </p>
           <a
-            href="https://calendar.app.google/VLcx8bnYahw37jva9"
+            href="https://meetings-eu1.hubspot.com/amir8"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center font-medium bg-white text-slate-900 hover:bg-gray-100 px-6 py-3 rounded-lg"

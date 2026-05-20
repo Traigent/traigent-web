@@ -30,6 +30,19 @@ jobs:
         run: npm ci
 
       - name: Build
+        env:
+          # Vite reads VITE_* at build time and bakes the values into the
+          # bundle (they end up in the public JS, visible to any visitor).
+          # All of these are client-side write-keys / public IDs, so we use
+          # GitHub Actions Variables (vars.*) rather than Secrets — matches
+          # the convention TraigentFrontend uses for VITE_API_URL etc.
+          # Each var is optional: analytics.js no-ops when empty.
+          VITE_HUBSPOT_PORTAL_ID: ${{ vars.VITE_HUBSPOT_PORTAL_ID }}
+          VITE_HUBSPOT_REGION: ${{ vars.VITE_HUBSPOT_REGION }}
+          VITE_POSTHOG_KEY: ${{ vars.VITE_POSTHOG_KEY }}
+          VITE_POSTHOG_HOST: ${{ vars.VITE_POSTHOG_HOST }}
+          VITE_GA4_ID: ${{ vars.VITE_GA4_ID }}
+          VITE_CLARITY_ID: ${{ vars.VITE_CLARITY_ID }}
         run: npm run build
 
       - name: Deploy

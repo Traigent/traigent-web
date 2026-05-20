@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 import ProblemSolutionSection from "../components/ProblemSolutionSection";
 
 const SectionHeader = ({ children }) => (
@@ -10,6 +11,13 @@ const SectionHeader = ({ children }) => (
 export default function OnePager() {
   return (
     <div className="bg-slate-950 min-h-screen">
+      <Helmet>
+        <title>One Pager · Traigent</title>
+        <meta name="description" content="Traigent at a glance — the AI Agent Optimization Platform that finds the best cost-performance configuration in hours, automatically." />
+        <meta property="og:title" content="Traigent — One Pager" />
+        <meta property="og:description" content="Traigent at a glance: AI Agent Optimization Platform. Hours not weeks. Automatically not manually." />
+        <meta property="og:type" content="website" />
+      </Helmet>
       <div className="max-w-6xl mx-auto px-6 py-12">
         {/* Logo */}
         <div className="mb-10">
@@ -206,7 +214,7 @@ export default function OnePager() {
         {/* CTA */}
         <div className="text-center mt-12">
           <a
-            href="https://calendar.app.google/2aSEhm5bxo6xoPYm8"
+            href="https://meetings-eu1.hubspot.com/amir8"
             target="_blank"
             rel="noopener noreferrer"
             className="group relative inline-flex items-center bg-blue-500 text-white px-10 py-4 rounded-xl font-bold text-lg transition-all duration-300 hover:bg-blue-600 hover:scale-105 shadow-[0_0_20px_rgba(59,130,246,0.5)] hover:shadow-[0_0_40px_rgba(59,130,246,0.8)] overflow-hidden"

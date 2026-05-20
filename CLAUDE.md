@@ -4,25 +4,32 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Traigent-web is a React-based web application. The project uses Vite for bundling (based on the hashed output file naming convention).
-
-## Current State
-
-- Production bundle: `index-cf790de1.js` (minified React production build)
-- Single source component: `layout.jsx` - basic React layout wrapper
-- Deployed to GitHub Pages via `gh-pages` branch
+Traigent-web is the public marketing site at https://www.traigent.ai. React + Vite + Tailwind + Framer Motion + React Router (HashRouter). Deployed via GitHub Actions to the `gh-pages` branch on push to `main`.
 
 ## Architecture
 
-Simple React SPA structure:
-- `layout.jsx` - Root layout component wrapping children
-- Bundle includes React, React DOM, and JSX runtime
+Standard Vite React SPA:
+- `index.html` — entry HTML (carries the baseline CSP meta tag)
+- `src/main.jsx` — bootstraps the app, calls `initAnalytics()`, mounts `<App />`
+- `src/App.jsx` — React Router routes (HashRouter)
+- `src/layout.jsx` — page chrome (TopNav + outlet + footer)
+- `src/pages/*.jsx` — top-level routes
+- `src/components/*.jsx` — shared UI
+- `src/lib/analytics.js` — HubSpot + PostHog + GA4 + Clarity loaders
+- `src/content/blog/*.md` — markdown blog posts, bundled via `import.meta.glob`
+
+## Deploy
+
+`.github/workflows/deploy-gh-pages.yml` runs on push to `main`:
+1. `npm ci`
+2. `npm run build` — reads `VITE_*` env vars from repo Actions Variables (see `.env.example`)
+3. Publishes `dist/` to the `gh-pages` branch via `peaceiris/actions-gh-pages`
+
+GitHub Pages serves `gh-pages` at the apex domain (`CNAME = traigent.ai`).
 
 ## Codacy Integration
 
-This project is configured for Codacy MCP Server integration (see `.github/instructions/codacy.instructions.md`):
-- Provider: `gh`
-- Organization: `gilrose4`
-- Repository: `traigent-web`
+Configured for Codacy MCP Server (see `.github/instructions/codacy.instructions.md`):
+- Provider: `gh` · Organization: `gilrose4` · Repository: `traigent-web`
 
-When editing files, run `codacy_cli_analyze` tool after changes if Codacy MCP is available.
+When editing files, run `codacy_cli_analyze` after changes if Codacy MCP is available.

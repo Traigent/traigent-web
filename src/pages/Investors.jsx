@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Helmet } from 'react-helmet-async'
 
 const styles = `
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -349,6 +350,14 @@ export default function Investors() {
 
   return (
     <>
+      <Helmet>
+        <title>For Investors · Traigent</title>
+        <meta name="description" content="Traigent — investor information about the AI Agent Optimization Platform. Market opportunity, traction, team." />
+        <meta property="og:title" content="Traigent — For Investors" />
+        <meta property="og:description" content="Investor information about Traigent, the AI Agent Optimization Platform." />
+        <meta property="og:type" content="website" />
+        <meta name="robots" content="noindex" />
+      </Helmet>
       <style>{styles}</style>
       <div className="inv-page">
         {/* BANNER */}
@@ -400,7 +409,7 @@ export default function Investors() {
 
         {/* LOGOS */}
         <section className="logos">
-          <div className="c"><p className="ll">Design partners &amp; early adopters</p></div>
+          <div className="c"><p className="ll">Customers</p></div>
           <div className="lw">
             <div className="lt2">
               <div className="lb"><svg className="li" viewBox="0 0 20 20" fill="currentColor"><path d="M3 4h14v2H3V4zm0 4h14v2H3V8zm0 4h10v2H3v-2z"/></svg>Bazak</div>
