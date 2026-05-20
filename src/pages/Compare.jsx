@@ -17,48 +17,61 @@ const COMPETITORS = [
   { key: "langsmith", name: "LangSmith" },
 ];
 
-const ROWS = [
+// Default support map: only Traigent supports the capability; every competitor is "no".
+// Rows that match this pattern can omit `by` entirely. Rows that differ specify
+// only the deviations in `by` — the materializer below merges them over DEFAULT_BY.
+const DEFAULT_BY = {
+  traigent: "yes",
+  langfuse: "no",
+  arize: "no",
+  helicone: "no",
+  braintrust: "no",
+  langsmith: "no",
+};
+
+const RAW_ROWS = [
   {
     capability: "Automatic configuration optimization",
     detail: "Searches the full config space and converges to the best cost/performance combo",
-    by: { traigent: "yes", langfuse: "no", arize: "no", helicone: "no", braintrust: "no", langsmith: "no" },
   },
   {
     capability: "Multi-KPI weighted optimization",
     detail: "Optimize for any weighted blend of accuracy, cost, latency, safety, custom",
-    by: { traigent: "yes", langfuse: "no", arize: "no", helicone: "no", braintrust: "no", langsmith: "no" },
   },
   {
     capability: "Benchmark refinement",
     detail: "Flags easy / always-fail / redundant test cases as patterns emerge",
-    by: { traigent: "yes", langfuse: "no", arize: "no", helicone: "no", braintrust: "no", langsmith: "no" },
   },
   {
     capability: "Full observability & tracing",
     detail: "Span trees, tokens, costs, errors — captured per run",
-    by: { traigent: "yes", langfuse: "yes", arize: "yes", helicone: "yes", braintrust: "yes", langsmith: "yes" },
+    by: { langfuse: "yes", arize: "yes", helicone: "yes", braintrust: "yes", langsmith: "yes" },
   },
   {
     capability: "Evaluation framework",
     detail: "Run agents against test sets, measure quality metrics",
-    by: { traigent: "yes", langfuse: "partial", arize: "yes", helicone: "no", braintrust: "yes", langsmith: "yes" },
+    by: { langfuse: "partial", arize: "yes", braintrust: "yes", langsmith: "yes" },
   },
   {
     capability: "Provider-agnostic",
     detail: "Works with OpenAI, Anthropic, Google, Bedrock, open-source",
-    by: { traigent: "yes", langfuse: "yes", arize: "yes", helicone: "yes", braintrust: "yes", langsmith: "partial" },
+    by: { langfuse: "yes", arize: "yes", helicone: "yes", braintrust: "yes", langsmith: "partial" },
   },
   {
     capability: "Configurable optimization weights at runtime",
     detail: "Change KPI priorities and re-run without rebuilding",
-    by: { traigent: "yes", langfuse: "no", arize: "no", helicone: "no", braintrust: "no", langsmith: "no" },
   },
   {
     capability: "Continuous re-optimization across model releases",
     detail: "Re-converge when new models drop or pricing shifts",
-    by: { traigent: "yes", langfuse: "no", arize: "no", helicone: "no", braintrust: "no", langsmith: "no" },
   },
 ];
+
+const ROWS = RAW_ROWS.map((r) => ({
+  capability: r.capability,
+  detail: r.detail,
+  by: { ...DEFAULT_BY, ...(r.by || {}) },
+}));
 
 function CellIcon({ status }) {
   if (status === "yes")

@@ -1,10 +1,11 @@
 ﻿import { Link, useParams, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Calendar, Clock } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { getPostBySlug } from "../lib/blog";
+import PostMetadata from "../components/blog/PostMetadata";
 
 // Slugify heading text so in-post anchor links work (e.g. [Read more](#the-math)).
 function slugify(children) {
@@ -127,29 +128,7 @@ export default function BlogPost() {
             transition={{ duration: 0.5 }}
             className="mb-12"
           >
-            <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 mb-4 font-mono">
-              {post.date && (
-                <span className="inline-flex items-center gap-1.5">
-                  <Calendar className="w-3 h-3" />
-                  {post.date}
-                </span>
-              )}
-              {post.readingTime && (
-                <span className="inline-flex items-center gap-1.5">
-                  <Clock className="w-3 h-3" />
-                  {post.readingTime}
-                </span>
-              )}
-              {post.tags && post.tags.length > 0 && (
-                <span className="inline-flex flex-wrap gap-1.5">
-                  {post.tags.map((t) => (
-                    <span key={t} className="px-2 py-0.5 rounded-md bg-slate-800 text-slate-400">
-                      {t}
-                    </span>
-                  ))}
-                </span>
-              )}
-            </div>
+            <PostMetadata post={post} className="mb-4" />
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight leading-tight">
               {post.title}
             </h1>
