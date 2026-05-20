@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { trackEvent } from "../lib/analytics";
 import { useSharedSetting } from "../lib/useSharedSetting";
 import StartNowModal from "../components/StartNowModal";
+import CalculatorTopBar from "../components/CalculatorTopBar";
 
 const BLUE = "#1A6BF5";
 
@@ -163,18 +164,7 @@ export default function ROICalculator() {
 
       <section className="bg-[#080808] text-white min-h-screen py-16 md:py-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Top action bar — reset button up here so users see they can wipe their inputs anytime */}
-          <div className="flex flex-wrap items-center justify-end gap-x-4 gap-y-2 mb-4">
-            <p className="text-xs text-slate-400">
-              Both <Link to="/ttm" className="text-[#4D8EF8] hover:text-white underline underline-offset-2">TTM</Link> and <Link to="/roi" className="text-[#4D8EF8] hover:text-white underline underline-offset-2">ROI</Link> calculators are always in sync per your inputs. Reset to default settings if you want to start over.
-            </p>
-            <button
-              onClick={resetToDefaults}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-700 bg-slate-900/60 text-xs font-mono text-slate-400 hover:text-[#4D8EF8] hover:border-[#4D8EF8]/50 transition-colors flex-shrink-0"
-            >
-              ↺ Reset all settings to defaults
-            </button>
-          </div>
+          <CalculatorTopBar onReset={resetToDefaults} />
 
           {/* Header */}
           <motion.div
