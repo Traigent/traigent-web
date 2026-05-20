@@ -1193,6 +1193,18 @@ export default function PitchFull() {
     return () => window.removeEventListener("keydown", handler);
   }, [current]);
 
+  // Hide the HubSpot chat widget (and cookie banner) while the deck is open —
+  // they cover the bottom-right Next control. CSS-hide is bulletproof against
+  // HubSpot's own DOM re-injection; restored when this slide unmounts.
+  useEffect(() => {
+    const style = document.createElement("style");
+    style.setAttribute("data-pitch-hide-hubspot", "");
+    style.textContent =
+      "#hubspot-messages-iframe-container, .hs-banner-iframe, #hs-eu-cookie-confirmation { display: none !important; }";
+    document.head.appendChild(style);
+    return () => style.remove();
+  }, []);
+
   const Current = slides[current].component;
 
   return (
