@@ -1,6 +1,6 @@
 ﻿import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Home, Maximize2, Sparkles, Eye, Check, ArrowRight, Clock, DollarSign } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown, Home, Maximize2, Sparkles, Eye, Check, ArrowRight, Clock, DollarSign } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 
@@ -138,6 +138,20 @@ function TraceTree() {
 // 00 — Hero (mirrors website hero section exactly)
 // ===================================================================
 function SlideHero() {
+  // Benefits-explained dropdown state — mirrors the homepage hero behavior.
+  const [benefitsOpen, setBenefitsOpen] = useState(false);
+  const benefitsRef = useRef(null);
+  useEffect(() => {
+    if (!benefitsOpen) return;
+    const onDocClick = (e) => {
+      if (benefitsRef.current && !benefitsRef.current.contains(e.target)) {
+        setBenefitsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onDocClick);
+    return () => document.removeEventListener("mousedown", onDocClick);
+  }, [benefitsOpen]);
+
   const methodBullets = [
     <><span className="text-white font-semibold underline underline-offset-4 decoration-2 decoration-[#4D8EF8]/70">Finds the optimal model and configuration combo</span> in <span className="text-white font-semibold">hours, not weeks</span>.</>,
     <><span className="text-white font-semibold">Automatically</span>, not manually.</>,
@@ -145,8 +159,8 @@ function SlideHero() {
     <>With <span className="text-white font-semibold">confidence</span>, not guesswork.</>,
   ];
   const benefitBullets = [
-    { content: <><span className="text-white font-semibold">Reduces engineering costs.</span></> },
-    { content: <><span className="text-white font-semibold">Saves LLM costs</span> over the lifecycle.</> },
+    { content: <><span className="text-white font-semibold">Reduces engineering costs.</span></>, to: "/ttm", linkLabel: "TTM calc" },
+    { content: <><span className="text-white font-semibold">Saves LLM costs</span> over the lifecycle.</>, to: "/roi", linkLabel: "ROI calc" },
     { content: <><span className="text-white font-semibold">Shortens time to market.</span></> },
     { content: <><span className="text-white font-semibold">Increases confidence</span> significantly.</> },
   ];
@@ -202,10 +216,73 @@ function SlideHero() {
             {benefitBullets.map((b, i) => (
               <li key={i} className="flex items-start gap-2.5 text-sm md:text-base text-slate-300 leading-snug">
                 <Check className="w-4 h-4 md:w-5 md:h-5 mt-0.5 flex-shrink-0 text-[#4D8EF8]" strokeWidth={3} />
-                <span>{b.content}</span>
+                <span className="flex-1">
+                  {b.content}
+                  {b.to && (
+                    <>
+                      {" "}
+                      <Link
+                        to={b.to}
+                        className="inline-flex items-center gap-0.5 text-[#4D8EF8] hover:text-white underline underline-offset-2 decoration-[#4D8EF8]/50 hover:decoration-white font-medium whitespace-nowrap"
+                      >
+                        {b.linkLabel} →
+                      </Link>
+                    </>
+                  )}
+                </span>
               </li>
             ))}
           </ul>
+
+          {/* Benefits explained dropdown — same content as the homepage hero. */}
+          <div ref={benefitsRef} className="relative mt-5 pt-4 border-t border-blue-500/30 text-center">
+            <button
+              type="button"
+              onClick={() => setBenefitsOpen((v) => !v)}
+              aria-haspopup="menu"
+              aria-expanded={benefitsOpen}
+              className="group inline-flex items-center gap-1.5 text-base md:text-lg transition-colors"
+              style={{ color: "#4D8EF8" }}
+            >
+              <span className="underline underline-offset-4 decoration-[#4D8EF8]/50 group-hover:decoration-[#4D8EF8] font-semibold">
+                Benefits explained
+              </span>
+              <ChevronDown className={`w-4 h-4 transition-transform ${benefitsOpen ? "rotate-180" : ""}`} aria-hidden="true" />
+            </button>
+            {benefitsOpen && (
+              <div
+                role="menu"
+                className="absolute left-1/2 -translate-x-1/2 mt-2 w-[min(92vw,640px)] z-30 bg-slate-950 border border-slate-700 rounded-xl shadow-2xl overflow-hidden text-left grid grid-cols-1 md:grid-cols-2 md:divide-x md:divide-slate-800"
+              >
+                <div>
+                  <div className="px-4 pt-3 pb-1 text-[10px] font-mono uppercase tracking-widest text-slate-500">See it on your numbers</div>
+                  <Link to="/roi" role="menuitem" onClick={() => setBenefitsOpen(false)} className="block px-4 py-3 text-sm text-slate-200 hover:bg-slate-900 hover:text-white border-b border-slate-800 transition-colors">
+                    <div className="font-semibold text-[#4D8EF8]">ROI Calculator</div>
+                    <div className="text-xs text-slate-400 mt-0.5">12-month savings</div>
+                  </Link>
+                  <Link to="/ttm" role="menuitem" onClick={() => setBenefitsOpen(false)} className="block px-4 py-3 text-sm text-slate-200 hover:bg-slate-900 hover:text-white transition-colors">
+                    <div className="font-semibold text-[#4D8EF8]">TTM Calculator</div>
+                    <div className="text-xs text-slate-400 mt-0.5">Engineering time saved</div>
+                  </Link>
+                </div>
+                <div className="border-t border-slate-800 md:border-t-0">
+                  <div className="px-4 pt-3 pb-1 text-[10px] font-mono uppercase tracking-widest text-slate-500">Read more</div>
+                  <Link to="/blog/the-business-case" role="menuitem" onClick={() => setBenefitsOpen(false)} className="block px-4 py-3 text-sm text-slate-200 hover:bg-slate-900 hover:text-white border-b border-slate-800 transition-colors">
+                    <div className="font-semibold text-[#4D8EF8]">The business case</div>
+                    <div className="text-xs text-slate-400 mt-0.5">Quantified savings, the math behind ROI.</div>
+                  </Link>
+                  <Link to="/value-proposition" role="menuitem" onClick={() => setBenefitsOpen(false)} className="block px-4 py-3 text-sm text-slate-200 hover:bg-slate-900 hover:text-white border-b border-slate-800 transition-colors">
+                    <div className="font-semibold text-[#4D8EF8]">The problem we solve</div>
+                    <div className="text-xs text-slate-400 mt-0.5">The 6-truth chain that leads to Traigent.</div>
+                  </Link>
+                  <Link to="/blog" role="menuitem" onClick={() => setBenefitsOpen(false)} className="block px-4 py-3 text-sm text-slate-200 hover:bg-slate-900 hover:text-white transition-colors">
+                    <div className="font-semibold text-[#4D8EF8]">Why Traigent</div>
+                    <div className="text-xs text-slate-400 mt-0.5">Deeper reading: model myth, eval trap, more.</div>
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
