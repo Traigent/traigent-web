@@ -70,7 +70,10 @@ export function initAnalytics() {
   // Standard PostHog snippet: stubs the API surface, async-loads the real lib.
   // Calls made before the lib arrives are queued.
   if (POSTHOG_KEY) {
-    /* eslint-disable */
+    // PostHog's official tracker snippet, kept verbatim from
+    // https://posthog.com/docs/libraries/js. Lint is disabled only for the
+    // snippet line itself; the init() call below follows project style.
+    // eslint-disable-next-line
     !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveysLoaded onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
     window.posthog.init(POSTHOG_KEY, {
       api_host: POSTHOG_HOST,
@@ -82,7 +85,6 @@ export function initAnalytics() {
       // without manual tagging on every event.
       loaded: (ph) => { ph.register({ surface: "marketing" }); },
     });
-    /* eslint-enable */
   }
 
   // ---- First-touch UTM attribution ----
@@ -102,8 +104,7 @@ export function trackPageView(path) {
     });
   }
   if (HUBSPOT_PORTAL_ID && window._hsq) {
-    window._hsq.push(["setPath", path]);
-    window._hsq.push(["trackPageView"]);
+    window._hsq.push(["setPath", path], ["trackPageView"]);
   }
   if (POSTHOG_KEY && window.posthog && window.posthog.capture) {
     window.posthog.capture("$pageview", { $current_url: window.location.href });
@@ -159,8 +160,8 @@ export function identify(userId, traits = {}) {
     window._hsq = window._hsq || [];
     const hubspotTraits = { ...traits };
     if (userId) hubspotTraits.id = userId; // HubSpot's external-id property
-    window._hsq.push(["identify", hubspotTraits]);
-    window._hsq.push(["trackPageView"]); // flush so the identify takes effect immediately
+    // identify + trackPageView so the identify takes effect immediately.
+    window._hsq.push(["identify", hubspotTraits], ["trackPageView"]);
   }
   if (POSTHOG_KEY && window.posthog && window.posthog.identify) {
     const distinctId = userId || traits.email;

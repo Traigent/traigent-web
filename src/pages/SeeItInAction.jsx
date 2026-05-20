@@ -47,10 +47,20 @@ function DemoPlayer() {
           </div>
         </div>
 
-        {/* Demo Content */}
+        {/* Demo Content — clickable container; can't be a real <button> because
+            it wraps a <video>, so we add the ARIA button affordances by hand. */}
         <div
-          className="relative cursor-pointer"
+          className="relative cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#4D8EF8]"
+          role="button"
+          tabIndex={0}
           onClick={togglePause}
+          onKeyDown={(e) => {
+            if (e.key === " " || e.key === "Enter") {
+              e.preventDefault();
+              togglePause();
+            }
+          }}
+          aria-label={isPaused ? "Play demo video" : "Pause demo video"}
           title={isPaused ? "Click to play" : "Click to pause"}
         >
           <video

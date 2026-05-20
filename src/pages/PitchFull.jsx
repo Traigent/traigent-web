@@ -159,9 +159,9 @@ function SlideHero() {
     <>With <span className="text-white font-semibold">confidence</span>, not guesswork.</>,
   ];
   const benefitBullets = [
-    { content: <><span className="text-white font-semibold">Reduces engineering costs.</span></>, to: "/ttm", linkLabel: "TTM calc" },
+    { content: <span className="text-white font-semibold">Reduces engineering costs.</span>, to: "/ttm", linkLabel: "TTM calc" },
     { content: <><span className="text-white font-semibold">Saves LLM costs</span> over the lifecycle.</>, to: "/roi", linkLabel: "ROI calc" },
-    { content: <><span className="text-white font-semibold">Shortens time to market.</span></> },
+    { content: <span className="text-white font-semibold">Shortens time to market.</span> },
     { content: <><span className="text-white font-semibold">Increases confidence</span> significantly.</> },
   ];
   return (
@@ -1198,7 +1198,7 @@ export default function PitchFull() {
   // HubSpot's own DOM re-injection; restored when this slide unmounts.
   useEffect(() => {
     const style = document.createElement("style");
-    style.setAttribute("data-pitch-hide-hubspot", "");
+    style.dataset.pitchHideHubspot = "";
     style.textContent =
       "#hubspot-messages-iframe-container, .hs-banner-iframe, #hs-eu-cookie-confirmation { display: none !important; }";
     document.head.appendChild(style);
