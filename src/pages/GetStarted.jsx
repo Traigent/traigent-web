@@ -5,6 +5,17 @@ import { Helmet } from "react-helmet-async";
 import InstallCommand from "../components/InstallCommand";
 
 const createPageUrl = (path) => path;
+const SDK_SKILL_INSTALL_COMMAND = [
+  "npx skills add Traigent/agents-skills",
+  "--skill traigent",
+  "--skill traigent-quickstart",
+  "--skill traigent-configuration-space",
+  "--skill traigent-decorator-setup",
+  "--skill traigent-run-optimization",
+  "--skill traigent-analyze-results",
+  "--skill traigent-debugging",
+  "--skill traigent-integrations",
+].join(" ");
 
 export default function GetStarted() {
   return (
@@ -79,8 +90,8 @@ export default function GetStarted() {
             Claude Code, Cursor, Codex, Gemini CLI and 30+ other agents pick up the Traigent skill bundle automatically. They&apos;ll guide you through dry-run-first setup, generate the eval dataset, and apply the best config — without you leaving your editor.
           </p>
           <InstallCommand
-            command="npx skills add Traigent/agents-skills"
-            secondary="Pick the traigent-* skills from the interactive list. The bundle includes a dry-run-first orchestrator that validates the full pipeline at zero cost before any real spend."
+            command={SDK_SKILL_INSTALL_COMMAND}
+            secondary="Installs only the user-facing Traigent SDK skills. Internal review, PR, and security tools stay out of the bundle."
           />
         </div>
 
