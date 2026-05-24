@@ -57,9 +57,13 @@ function MenuItem({ item, onScroll }) {
   }
   if (item.scrollId) {
     return (
-      <a href="#" onClick={onScroll(item.scrollId)} className={className}>
+      <button
+        type="button"
+        onClick={onScroll(item.scrollId)}
+        className={`${className} w-full text-left`}
+      >
         {content}
-      </a>
+      </button>
     );
   }
   return <Link to={item.href} className={className}>{content}</Link>;
@@ -92,9 +96,9 @@ function Dropdown({ label, items, isOpen, onOpen, onClose, onScroll }) {
   );
 }
 
-// Mobile-drawer link row. Same handling as MenuItem (external / scrollId /
-// in-app Link) but tap-friendly sized and self-closes the drawer.
-function MobileMenuItem({ item, onClose, onScroll }) {
+// Mobile-drawer link row. Same handling as MenuItem but tap-friendly sized
+// and self-closes the drawer.
+function renderMobileMenuItem(item, onClose, onScroll) {
   const inner = (
     <>
       <div className="text-base text-white font-medium">{item.label}</div>
@@ -102,10 +106,12 @@ function MobileMenuItem({ item, onClose, onScroll }) {
     </>
   );
   const className = "block px-3 py-3 -mx-3 rounded-lg hover:bg-slate-800 active:bg-slate-800 transition-colors";
+  const buttonClassName = `${className} w-[calc(100%+1.5rem)] text-left`;
 
   if (item.external) {
     return (
       <a
+        key={item.label}
         href={item.href}
         target="_blank"
         rel="noopener noreferrer"
@@ -118,26 +124,27 @@ function MobileMenuItem({ item, onClose, onScroll }) {
   }
   if (item.scrollId) {
     return (
-      <a
-        href="#"
+      <button
+        key={item.label}
+        type="button"
         onClick={(e) => { onClose(); onScroll(item.scrollId)(e); }}
-        className={className}
+        className={buttonClassName}
       >
         {inner}
-      </a>
+      </button>
     );
   }
   return (
-    <Link to={item.href} onClick={onClose} className={className}>
+    <Link key={item.label} to={item.href} onClick={onClose} className={className}>
       {inner}
     </Link>
   );
 }
 
-function MobileSectionLabel({ children }) {
+function renderMobileSectionLabel(label) {
   return (
     <div className="text-[10px] font-mono uppercase tracking-widest text-slate-500 mb-2 mt-6 first:mt-0">
-      {children}
+      {label}
     </div>
   );
 }
@@ -210,7 +217,7 @@ export default function TopNav() {
                 aria-hidden="true"
                 className="h-5 w-auto mr-2"
               />
-              Traigent
+              <span>Traigent</span>
             </Link>
 
             {/* Desktop tabs */}
@@ -240,13 +247,13 @@ export default function TopNav() {
                 onClose={() => setOpenMenu(null)}
                 onScroll={scrollOrNavigate}
               />
-              <a
-                href="#"
+              <button
+                type="button"
                 onClick={scrollOrNavigate("contact")}
                 className="text-slate-300 hover:text-white transition-colors cursor-pointer"
               >
                 Contact Us
-              </a>
+              </button>
             </div>
 
             {/* Desktop CTAs */}
@@ -308,16 +315,18 @@ export default function TopNav() {
 
       {/* Mobile drawer */}
       {mobileOpen && (
-        <div
+        <dialog
           id="mobile-nav-drawer"
-          role="dialog"
+          open
           aria-modal="true"
           aria-label="Navigation menu"
-          className="lg:hidden fixed inset-0 z-[60]"
+          className="lg:hidden fixed inset-0 z-[60] m-0 h-screen max-h-none w-screen max-w-none border-0 bg-transparent p-0"
         >
           {/* Backdrop */}
-          <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+          <button
+            type="button"
+            aria-label="Close navigation menu"
+            className="absolute inset-0 h-full w-full bg-black/60 backdrop-blur-sm"
             onClick={closeMobile}
           />
           {/* Panel */}
@@ -335,7 +344,7 @@ export default function TopNav() {
                   aria-hidden="true"
                   className="h-5 w-auto mr-2"
                 />
-                Traigent
+                <span>Traigent</span>
               </Link>
               <button
                 type="button"
@@ -349,12 +358,10 @@ export default function TopNav() {
 
             {/* Scrollable nav body */}
             <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-6">
-              <MobileSectionLabel>Product</MobileSectionLabel>
-              {productItems.map((item) => (
-                <MobileMenuItem key={item.label} item={item} onClose={closeMobile} onScroll={scrollOrNavigate} />
-              ))}
+              {renderMobileSectionLabel("Product")}
+              {productItems.map((item) => renderMobileMenuItem(item, closeMobile, scrollOrNavigate))}
 
-              <MobileSectionLabel>Main</MobileSectionLabel>
+              {renderMobileSectionLabel("Main")}
               {mainTabs.map((t) => (
                 <Link
                   key={t.label}
@@ -365,18 +372,16 @@ export default function TopNav() {
                   {t.label}
                 </Link>
               ))}
-              <a
-                href="#"
+              <button
+                type="button"
                 onClick={scrollOrNavigate("contact")}
-                className="block px-3 py-3 -mx-3 rounded-lg hover:bg-slate-800 active:bg-slate-800 transition-colors text-base text-white font-medium cursor-pointer"
+                className="block w-[calc(100%+1.5rem)] px-3 py-3 -mx-3 rounded-lg hover:bg-slate-800 active:bg-slate-800 transition-colors text-left text-base text-white font-medium cursor-pointer"
               >
                 Contact Us
-              </a>
+              </button>
 
-              <MobileSectionLabel>Resources</MobileSectionLabel>
-              {resourcesItems.map((item) => (
-                <MobileMenuItem key={item.label} item={item} onClose={closeMobile} onScroll={scrollOrNavigate} />
-              ))}
+              {renderMobileSectionLabel("Resources")}
+              {resourcesItems.map((item) => renderMobileMenuItem(item, closeMobile, scrollOrNavigate))}
             </div>
 
             {/* CTAs pinned to the bottom */}
@@ -422,7 +427,7 @@ export default function TopNav() {
               </a>
             </div>
           </div>
-        </div>
+        </dialog>
       )}
 
       {showStartNow && <StartNowModal onClose={() => setShowStartNow(false)} />}
