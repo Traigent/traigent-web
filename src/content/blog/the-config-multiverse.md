@@ -10,7 +10,7 @@ tags: "optimization,configuration,models,benchmarks,reasoning"
 order: 7
 ---
 
-**See it on your numbers:** [ROI Calculator →](/roi) · [TTM Calculator →](/ttm)
+**See it on your numbers:** [ROI Calculator →](/#/roi) · [TTM Calculator →](/#/ttm)
 
 ---
 
@@ -59,7 +59,7 @@ Take a *modest* production agent: GPT-4o (chat-completion, no reasoning model), 
 - System prompt template ∈ {v1, v2, v3, v4}
 - Few-shot count ∈ {0, 2, 4, 8}
 - RAG top_k ∈ {3, 5, 10, 20}
-- Embedding model ∈ {ada-3-small, ada-3-large, voyage-3, cohere-v3}
+- Embedding model ∈ {text-embedding-3-small, text-embedding-3-large, voyage-3, cohere-v3}
 - Reranker ∈ {none, cross-encoder, LLM}
 
 4 × 4 × 4 × 4 × 3 = **768** combinations.
@@ -229,6 +229,6 @@ Open-source servers expose a much larger surface than the closed providers — n
 
 ---
 
-**See what your math looks like:** [ROI Calculator →](/roi) · [TTM Calculator →](/ttm)
+**See what your math looks like:** [ROI Calculator →](/#/roi) · [TTM Calculator →](/#/ttm)
 
-**Or read more on the same theme:** [The Model Myth →](/blog/the-model-myth) · [The Eval Trap →](/blog/the-eval-trap) · [The Business Case →](/blog/the-business-case)
+**Or read more on the same theme:** [The Model Myth →](/#/blog/the-model-myth) · [The Eval Trap →](/#/blog/the-eval-trap) · [The Business Case →](/#/blog/the-business-case)
