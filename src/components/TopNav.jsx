@@ -1,10 +1,12 @@
-﻿import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { ChevronDown, Github } from "lucide-react";
+import { ChevronDown, Github, Menu, X } from "lucide-react";
 import StartNowModal from "./StartNowModal";
 import { trackEvent } from "../lib/analytics";
 
 const PORTAL_URL = "https://portal.traigent.ai";
+const DEMO_URL = "https://meetings-eu1.hubspot.com/amir8";
+const GITHUB_URL = "https://github.com/Traigent/Traigent";
 
 const productItems = [
   { label: "Optimization Engine", scrollId: "optimization", desc: "Picks next best config from run history" },
@@ -26,6 +28,15 @@ const resourcesItems = [
   { label: "Value Proposition", href: "/value-proposition" },
   { label: "See It In Action", href: "/see-it-in-action", desc: "Watch Traigent converge live" },
   { label: "Optimization in Action", href: "/optimization-in-action", desc: "Live optimization-table demo · sweep & converge" },
+];
+
+// Main top-level tabs (between the Product and Resources dropdowns on desktop;
+// shown as a flat list in the mobile drawer). Centralized so the desktop nav
+// and mobile drawer stay in sync.
+const mainTabs = [
+  { label: "The Problem", href: "/value-proposition" },
+  { label: "Why Traigent", href: "/blog" },
+  { label: "Pricing", href: "/pricing" },
 ];
 
 function MenuItem({ item, onScroll }) {
@@ -81,9 +92,60 @@ function Dropdown({ label, items, isOpen, onOpen, onClose, onScroll }) {
   );
 }
 
+// Mobile-drawer link row. Same handling as MenuItem (external / scrollId /
+// in-app Link) but tap-friendly sized and self-closes the drawer.
+function MobileMenuItem({ item, onClose, onScroll }) {
+  const inner = (
+    <>
+      <div className="text-base text-white font-medium">{item.label}</div>
+      {item.desc && <div className="text-xs text-slate-400 mt-0.5">{item.desc}</div>}
+    </>
+  );
+  const className = "block px-3 py-3 -mx-3 rounded-lg hover:bg-slate-800 active:bg-slate-800 transition-colors";
+
+  if (item.external) {
+    return (
+      <a
+        href={item.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={onClose}
+        className={className}
+      >
+        {inner}
+      </a>
+    );
+  }
+  if (item.scrollId) {
+    return (
+      <a
+        href="#"
+        onClick={(e) => { onClose(); onScroll(item.scrollId)(e); }}
+        className={className}
+      >
+        {inner}
+      </a>
+    );
+  }
+  return (
+    <Link to={item.href} onClick={onClose} className={className}>
+      {inner}
+    </Link>
+  );
+}
+
+function MobileSectionLabel({ children }) {
+  return (
+    <div className="text-[10px] font-mono uppercase tracking-widest text-slate-500 mb-2 mt-6 first:mt-0">
+      {children}
+    </div>
+  );
+}
+
 export default function TopNav() {
   const [openMenu, setOpenMenu] = useState(null);
   const [showStartNow, setShowStartNow] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -94,6 +156,7 @@ export default function TopNav() {
   const scrollOrNavigate = (id) => (e) => {
     e.preventDefault();
     setOpenMenu(null);
+    setMobileOpen(false);
     if (location.pathname === "/") {
       document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
     } else {
@@ -101,6 +164,29 @@ export default function TopNav() {
       navigate("/");
     }
   };
+
+  // Lock background scroll while the mobile drawer is open, and close on
+  // Escape so it follows standard modal a11y conventions.
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e) => { if (e.key === "Escape") setMobileOpen(false); };
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [mobileOpen]);
+
+  // Close the drawer whenever the route changes (e.g. a Link inside the
+  // drawer fires; the drawer's own onClick already toggles it but this
+  // is a safety net for any indirect navigations).
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [location.pathname]);
+
+  const closeMobile = () => setMobileOpen(false);
 
   return (
     <>
@@ -126,17 +212,8 @@ export default function TopNav() {
               />
               Traigent
             </Link>
-            <a
-              href={PORTAL_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => trackEvent("portal_opened", { location: "topnav_mobile" })}
-              className="sm:hidden ml-5 text-sm text-slate-300 hover:text-white transition-colors whitespace-nowrap"
-            >
-              Portal
-            </a>
 
-            {/* Tabs */}
+            {/* Desktop tabs */}
             <div className="hidden lg:flex items-center gap-7 text-sm">
               <Dropdown
                 label="Product"
@@ -146,21 +223,15 @@ export default function TopNav() {
                 onClose={() => setOpenMenu(null)}
                 onScroll={scrollOrNavigate}
               />
-              <Link to="/value-proposition" className="text-slate-300 hover:text-white transition-colors">
-                The Problem
-              </Link>
-              <Link
-                to="/blog"
-                className="text-slate-300 hover:text-white transition-colors"
-              >
-                Why Traigent
-              </Link>
-              <Link
-                to="/pricing"
-                className="text-slate-300 hover:text-white transition-colors"
-              >
-                Pricing
-              </Link>
+              {mainTabs.map((t) => (
+                <Link
+                  key={t.label}
+                  to={t.href}
+                  className="text-slate-300 hover:text-white transition-colors"
+                >
+                  {t.label}
+                </Link>
+              ))}
               <Dropdown
                 label="Resources"
                 items={resourcesItems}
@@ -178,14 +249,14 @@ export default function TopNav() {
               </a>
             </div>
 
-            {/* CTAs */}
-            <div className="hidden sm:flex items-center gap-3 sm:gap-4">
+            {/* Desktop CTAs */}
+            <div className="hidden lg:flex items-center gap-3 sm:gap-4">
               <a
-                href="https://github.com/Traigent/Traigent"
+                href={GITHUB_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => trackEvent("github_clicked", { location: "topnav" })}
-                className="text-slate-400 hover:text-white transition-colors hidden sm:flex"
+                className="text-slate-400 hover:text-white transition-colors"
                 title="GitHub"
                 aria-label="GitHub"
               >
@@ -198,31 +269,162 @@ export default function TopNav() {
                 onClick={() => trackEvent("portal_opened", { location: "topnav" })}
                 className="text-sm text-slate-300 hover:text-white transition-colors whitespace-nowrap"
               >
-                <span className="sm:hidden">Portal</span>
-                <span className="hidden sm:inline">Open portal</span>
+                Open portal
               </a>
               <button
                 onClick={() => {
                   trackEvent("start_now_clicked", { location: "topnav" });
                   setShowStartNow(true);
                 }}
-                className="hidden sm:inline-flex border border-slate-600 hover:border-slate-400 text-slate-200 hover:text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
+                className="border border-slate-600 hover:border-slate-400 text-slate-200 hover:text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
               >
                 Start Now
               </button>
               <a
-                href="https://meetings-eu1.hubspot.com/amir8"
+                href={DEMO_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => trackEvent("demo_booking_clicked", { location: "topnav" })}
-                className="hidden sm:inline-flex bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
+                className="bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
               >
                 Book a demo
               </a>
             </div>
+
+            {/* Mobile: hamburger only. Drawer below carries all the nav. */}
+            <button
+              type="button"
+              onClick={() => setMobileOpen(true)}
+              aria-label="Open navigation menu"
+              aria-expanded={mobileOpen}
+              aria-controls="mobile-nav-drawer"
+              className="lg:hidden inline-flex items-center justify-center p-2 -mr-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
           </div>
         </div>
       </nav>
+
+      {/* Mobile drawer */}
+      {mobileOpen && (
+        <div
+          id="mobile-nav-drawer"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Navigation menu"
+          className="lg:hidden fixed inset-0 z-[60]"
+        >
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={closeMobile}
+          />
+          {/* Panel */}
+          <div className="absolute inset-y-0 right-0 w-full max-w-sm bg-[#080808] border-l border-slate-800 shadow-2xl flex flex-col">
+            {/* Header */}
+            <div className="flex items-center justify-between h-16 px-4 sm:px-6 border-b border-slate-800 flex-shrink-0">
+              <Link
+                to="/"
+                onClick={closeMobile}
+                className="flex items-center text-lg font-bold text-white leading-none"
+              >
+                <img
+                  src="/images/traigent-logo-icon.png"
+                  alt=""
+                  aria-hidden="true"
+                  className="h-5 w-auto mr-2"
+                />
+                Traigent
+              </Link>
+              <button
+                type="button"
+                onClick={closeMobile}
+                aria-label="Close navigation menu"
+                className="p-2 -mr-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            {/* Scrollable nav body */}
+            <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-6">
+              <MobileSectionLabel>Product</MobileSectionLabel>
+              {productItems.map((item) => (
+                <MobileMenuItem key={item.label} item={item} onClose={closeMobile} onScroll={scrollOrNavigate} />
+              ))}
+
+              <MobileSectionLabel>Main</MobileSectionLabel>
+              {mainTabs.map((t) => (
+                <Link
+                  key={t.label}
+                  to={t.href}
+                  onClick={closeMobile}
+                  className="block px-3 py-3 -mx-3 rounded-lg hover:bg-slate-800 active:bg-slate-800 transition-colors text-base text-white font-medium"
+                >
+                  {t.label}
+                </Link>
+              ))}
+              <a
+                href="#"
+                onClick={scrollOrNavigate("contact")}
+                className="block px-3 py-3 -mx-3 rounded-lg hover:bg-slate-800 active:bg-slate-800 transition-colors text-base text-white font-medium cursor-pointer"
+              >
+                Contact Us
+              </a>
+
+              <MobileSectionLabel>Resources</MobileSectionLabel>
+              {resourcesItems.map((item) => (
+                <MobileMenuItem key={item.label} item={item} onClose={closeMobile} onScroll={scrollOrNavigate} />
+              ))}
+            </div>
+
+            {/* CTAs pinned to the bottom */}
+            <div className="border-t border-slate-800 px-4 sm:px-6 py-4 flex flex-col gap-2 flex-shrink-0">
+              <a
+                href={PORTAL_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => { trackEvent("portal_opened", { location: "topnav_mobile" }); closeMobile(); }}
+                className="text-center text-sm text-slate-300 hover:text-white py-2 transition-colors"
+              >
+                Open portal
+              </a>
+              <button
+                type="button"
+                onClick={() => {
+                  trackEvent("start_now_clicked", { location: "topnav_mobile" });
+                  setShowStartNow(true);
+                  closeMobile();
+                }}
+                className="border border-slate-600 hover:border-slate-400 text-slate-200 hover:text-white py-3 rounded-lg text-sm font-medium transition-colors"
+              >
+                Start Now
+              </button>
+              <a
+                href={DEMO_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => { trackEvent("demo_booking_clicked", { location: "topnav_mobile" }); closeMobile(); }}
+                className="bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white py-3 rounded-lg text-sm font-medium text-center transition-colors"
+              >
+                Book a demo
+              </a>
+              <a
+                href={GITHUB_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => { trackEvent("github_clicked", { location: "topnav_mobile" }); closeMobile(); }}
+                className="inline-flex items-center justify-center gap-2 text-xs text-slate-500 hover:text-white pt-2 transition-colors"
+              >
+                <Github className="w-4 h-4" />
+                <span>View on GitHub</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showStartNow && <StartNowModal onClose={() => setShowStartNow(false)} />}
     </>
   );
