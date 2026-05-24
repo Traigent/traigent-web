@@ -132,6 +132,11 @@ export default function BlogPost() {
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight leading-tight">
               {post.title}
             </h1>
+            {post.subtitle && (
+              <p className="mt-3 text-lg md:text-xl text-slate-300 italic leading-relaxed">
+                {post.subtitle}
+              </p>
+            )}
             {post.author && (
               <p className="mt-6 text-slate-500 text-sm">By {post.author}</p>
             )}

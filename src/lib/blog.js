@@ -29,6 +29,7 @@ const posts = Object.entries(modules).map(([path, raw]) => {
   return {
     slug: meta.slug || filename,
     title: meta.title || filename,
+    subtitle: meta.subtitle || "",
     date: meta.date || "",
     summary: meta.summary || "",
     author: meta.author || "",
