@@ -1,5 +1,5 @@
 ---
-title: "The Configuration Multiverse: A Directory of Every Knob in Every Major Model — and Why Skeptics Are Still Wrong"
+title: "The Magnitude of the AI Agent Optimization Problem"
 slug: "the-config-multiverse"
 date: "2026-05-24"
 summary: "Every AI agent in production is the product of ~25 configuration decisions across two layers — agent-level decisions you designed yourself, and model-level knobs your provider exposes. Each has a handful of reasonable values. Multiplied out, the space is in the millions per model per workload. This post explains the math, then catalogs every knob in seven sorted tables."
@@ -8,6 +8,8 @@ readingTime: "13 min read"
 tags: "optimization,configuration,models,benchmarks,reasoning"
 order: 7
 ---
+
+*The Configuration Multiverse explained in detail.*
 
 **See it on your numbers:** [ROI Calculator →](/roi) · [TTM Calculator →](/ttm)
 
