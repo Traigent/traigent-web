@@ -119,7 +119,7 @@ export default function OnePager2() {
 
           {/* 2 solution stats — audience-grouped under their headers */}
           <div className="grid grid-cols-2 gap-4 mb-4">
-            <SolutionStat value="up to 80%" label="LLM cost reduction with similar accuracy" color={AMBER} />
+            <SolutionStat value="up to 80%" label="LLM cost reduction with optimal accuracy" color={AMBER} />
             <SolutionStat value="up to 8 wks" label="Engineering time reclaimed per pass" color={BLUE_LIGHT} />
           </div>
 
