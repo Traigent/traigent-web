@@ -96,7 +96,15 @@ export default function OnePager2() {
               <span style={{ color: BLUE_LIGHT }}>Fully Automated</span>
             </h2>
             <p className="text-[36px] text-slate-300 leading-snug mt-5">
-              <span className="font-bold" style={{ color: AMBER }}>Cost Optimization</span> on top of <span className="font-bold" style={{ color: BLUE_LIGHT }}>Accuracy Optimization</span>
+              <span className="font-bold text-white">Rapidly</span> finds <span className="font-bold" style={{ color: AMBER }}>Low Cost</span> and <span className="font-bold" style={{ color: BLUE_LIGHT }}>High Accuracy</span> configurations among{" "}
+              <a
+                href={`${SITE}/#/blog/the-config-multiverse`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-bold text-white underline underline-offset-4 decoration-white/40 hover:decoration-white transition-colors"
+              >
+                thousands possible
+              </a>
             </p>
           </div>
 
@@ -119,8 +127,8 @@ export default function OnePager2() {
 
           {/* 2 solution stats — audience-grouped under their headers */}
           <div className="grid grid-cols-2 gap-4 mb-4">
-            <SolutionStat value="up to 80%" label="LLM cost reduction with optimal accuracy" color={AMBER} />
-            <SolutionStat value="up to 8 wks" label="Engineering time reclaimed per pass" color={BLUE_LIGHT} />
+            <SolutionStat value="up to 80%" label="LLM cost reduction" color={AMBER} />
+            <SolutionStat value="up to 8 wks" label="Engineering time reclaimed" color={BLUE_LIGHT} />
           </div>
 
           {/* 2 audience benefits boxes — FinOps on left to match the swap above */}
