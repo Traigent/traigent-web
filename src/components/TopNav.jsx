@@ -315,8 +315,11 @@ export default function TopNav() {
           aria-label="Navigation menu"
           className="lg:hidden fixed inset-0 z-[60]"
         >
-          {/* Backdrop */}
-          <div
+          {/* Backdrop — button so keyboard users can dismiss via Enter/Space
+              in addition to the Escape-to-close handler on the dialog */}
+          <button
+            type="button"
+            aria-label="Close navigation menu"
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             onClick={closeMobile}
           />
