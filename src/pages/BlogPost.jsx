@@ -46,9 +46,32 @@ const mdComponents = {
       {...props}
     />
   ),
-  a: ({ node, ...props }) => (
-    <a className="text-[#1A6BF5] hover:text-[#4D8EF8] underline underline-offset-4 transition-colors" {...props} />
-  ),
+  a: ({ node, href, children, ...props }) => {
+    const linkClass = "text-[#1A6BF5] hover:text-[#4D8EF8] underline underline-offset-4 transition-colors";
+    // External: open in new tab.
+    if (href && /^https?:\/\//i.test(href)) {
+      return (
+        <a href={href} target="_blank" rel="noopener noreferrer" className={linkClass} {...props}>
+          {children}
+        </a>
+      );
+    }
+    // Internal app route — must go through React Router Link so HashRouter
+    // prepends the `#`, otherwise the browser does a hard nav to /roi and 404s.
+    if (href && href.startsWith("/")) {
+      return (
+        <Link to={href} className={linkClass} {...props}>
+          {children}
+        </Link>
+      );
+    }
+    // In-page anchor (#section) or other — leave as a plain anchor.
+    return (
+      <a href={href} className={linkClass} {...props}>
+        {children}
+      </a>
+    );
+  },
   code: ({ node, inline, className, children, ...props }) =>
     inline ? (
       <code className="px-1.5 py-0.5 rounded bg-slate-800 text-[#93c5fd] text-[0.9em] font-mono" {...props}>

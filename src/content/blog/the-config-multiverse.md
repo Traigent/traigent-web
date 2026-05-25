@@ -7,16 +7,19 @@ summary: "Every AI agent in production is the product of ~25 configuration decis
 author: "Amir Barnea"
 readingTime: "13 min read"
 tags: "optimization,configuration,models,benchmarks,reasoning"
-order: 7
+featured: true
+order: 1
 ---
 
 **See it on your numbers:** [ROI Calculator →](/roi) · [TTM Calculator →](/ttm)
 
 ---
 
-## The problem in one paragraph
+## The magnitude of the problem
 
-Every AI agent in production is the product of roughly twenty-five configuration decisions — about fifteen at the agent layer you designed yourself, about ten at the model layer your provider exposes. Each decision has a small handful of reasonable values. Multiplied out, this gives a configuration space in the millions, per model, per workload. Most teams pick one point in that space by gut and ship; many of them ship the wrong one and never find out.
+Every AI agent in production is the product of roughly twenty-five configuration decisions in addition to the model selection itself — about fifteen at the agent layer you designed yourself, about ten at the model layer your provider exposes. Each decision has a small handful of reasonable values. Multiplied out, this gives a configuration space in the millions, per model, per workload. Most teams pick one point in that space by gut and ship; many of them ship the wrong one and never find out.
+
+Your model and configuration choices have significant impact on Accuracy (**A**), Cost (**C**), and Latency (**L**). The following discussion maps all the options and their potential impact on **A**, **C**, and **L** — and therefore on the ROI of the agent or its cost-effectiveness. Since it's impossible (or at best impractical) to manually evaluate millions of configurations, you need an automated agent optimizer such as Traigent.
 
 The rest of this post does three things. **First**, it shows the math of *why* the configuration space is that big — the two-tier structure, the multiplication, the way small effects compound. **Second**, it provides a directory — seven tables, sorted by impact — covering the agent-layer knobs you build on top plus every model-layer knob the major providers expose. **Third**, it explains what to do about all this without spending a quarter on grid search.
 

@@ -7,7 +7,7 @@ author: "Amir Barnea"
 readingTime: "9 min read"
 tags: "business-case,roi,optimization,cost"
 featured: true
-order: 1
+order: 2
 ---
 
 **See it on your numbers:** [ROI Calculator →](/roi) · [TTM Calculator →](/ttm)

@@ -7,7 +7,7 @@ author: "Amir Barnea"
 readingTime: "5 min read"
 tags: "optimization,lifecycle,cost"
 featured: true
-order: 3
+order: 4
 ---
 
 *The most common reason teams under-invest in optimization:*

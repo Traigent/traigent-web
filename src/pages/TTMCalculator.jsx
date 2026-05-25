@@ -56,7 +56,7 @@ function Card({ children, accent = BLUE }) {
   );
 }
 
-function SliderRow({ icon: Icon, label, value, valuePrefix = "", suffix, min, max, step, onChange, minLabel, maxLabel, examples, accent = BLUE }) {
+function SliderRow({ icon: Icon, label, value, valuePrefix = "", suffix, min, max, step, onChange, minLabel, maxLabel, examples, link, accent = BLUE }) {
   return (
     <Card accent={accent}>
       <div className="flex items-start gap-2 text-xs font-mono uppercase tracking-wider mb-3 min-h-[2.5rem]" style={{ color: accent === BLUE ? "#94a3b8" : accent }}>
@@ -81,13 +81,18 @@ function SliderRow({ icon: Icon, label, value, valuePrefix = "", suffix, min, ma
         <span>{minLabel}</span>
         <span>{maxLabel}</span>
       </div>
-      {examples && (
+      {(examples || link) && (
         <div
           className="mt-auto pt-3 border-t border-slate-800/80 text-xs text-slate-400 font-mono leading-snug min-h-[4.5rem]"
           title={examples}
         >
-          <span className="text-slate-500 uppercase tracking-wider text-[10px] mr-2">e.g.</span>
-          {examples}
+          {examples && (
+            <>
+              <span className="text-slate-500 uppercase tracking-wider text-[10px] mr-2">e.g.</span>
+              {examples}
+            </>
+          )}
+          {link && <div className="mt-2">{link}</div>}
         </div>
       )}
     </Card>
@@ -95,21 +100,18 @@ function SliderRow({ icon: Icon, label, value, valuePrefix = "", suffix, min, ma
 }
 
 // ----- Example value generators per dimension --------------------------------
-// These produce illustrative values so the prospect sees what "5 temperatures"
-// or "4 top_p variants" actually looks like in practice.
+// These produce illustrative values so the prospect sees what "4 few-shot counts"
+// or "3 self-consistency n" actually looks like in practice.
 
-function temperatureExamples(n) {
-  if (n <= 1) return ["0.7"];
-  const out = [];
-  for (let i = 0; i < n; i++) {
-    out.push((i / (n - 1)).toFixed(2));
-  }
-  return out;
+function fewShotExamples(n) {
+  // Standard few-shot ladder — 0-shot to many-shot.
+  const ladder = [0, 2, 5, 10, 15, 20, 30];
+  return ladder.slice(0, n).map(String);
 }
 
-function retrievalKExamples(n) {
-  // Typical retrieval-k values tested in RAG pipelines.
-  const ladder = [1, 3, 5, 8, 10, 15, 20, 30];
+function selfConsistencyExamples(n) {
+  // Typical n-of-vote sample counts (Wang et al., self-consistency).
+  const ladder = [1, 3, 5, 10, 20, 40];
   return ladder.slice(0, n).map(String);
 }
 
@@ -147,11 +149,13 @@ function promptExamples(n) {
 // catch-all slider so the user can multiply the search space by however
 // much extra knob-space their setup actually has.
 const OTHER_DIMENSIONS = [
-  "chunk size", "chunk overlap", "embedding model",
+  "temperature", "top_p", "top_k",
+  "reasoning effort (if reasoning model)",
+  "tool-call budget (if agentic)",
+  "retrieval k", "chunk size", "chunk overlap", "embedding model",
   "reranker choice", "query-rewrite strategy", "hybrid-search weights",
-  "few-shot example count", "output format (JSON / text / structured)",
-  "tool-selection strategy", "max tool-call iterations",
-  "frequency penalty", "presence penalty", "top_p", "stop sequences",
+  "output format (JSON / text / structured)", "tool-selection strategy",
+  "frequency penalty", "presence penalty", "stop sequences",
   "retry policy", "timeout", "fallback model", "cache policy",
   "streaming behavior", "validation / repair logic",
 ];
@@ -165,9 +169,9 @@ function otherDimensionsExamples() {
 export default function TTMCalculator() {
   const [models, setModels] = useState(6);
   const [prompts, setPrompts] = useState(3);
-  const [temperatures, setTemperatures] = useState(5);
-  const [retrievalK, setRetrievalK] = useState(4);
-  const [maxTokensVariants, setMaxTokensVariants] = useState(2);
+  const [maxTokensVariants, setMaxTokensVariants] = useState(3);
+  const [fewShots, setFewShots] = useState(4);
+  const [selfConsistency, setSelfConsistency] = useState(3);
   const [otherDims, setOtherDims] = useState(1);
   const [minPerConfig, setMinPerConfig] = useState(MIN_PER_CONFIG_DEFAULT);
   // Shared across TTM + ROI calculators via localStorage.
@@ -184,9 +188,9 @@ export default function TTMCalculator() {
   function resetToDefaults() {
     setModels(6);
     setPrompts(3);
-    setTemperatures(5);
-    setRetrievalK(4);
-    setMaxTokensVariants(2);
+    setMaxTokensVariants(3);
+    setFewShots(4);
+    setSelfConsistency(3);
     setOtherDims(1);
     setMinPerConfig(MIN_PER_CONFIG_DEFAULT);
     setHourlyRate(DEFAULT_HOURLY_RATE);
@@ -195,7 +199,7 @@ export default function TTMCalculator() {
   }
 
   const r = useMemo(() => {
-    const totalConfigs = models * prompts * temperatures * retrievalK * maxTokensVariants * otherDims;
+    const totalConfigs = models * prompts * maxTokensVariants * fewShots * selfConsistency * otherDims;
     const manualConfigsTested = Math.max(1, Math.round(totalConfigs * manualCoveragePct / 100));
     const manualEngineerHours = (manualConfigsTested * minPerConfig) / 60;
     const manualFteWeeks = manualEngineerHours / FTE_HOURS_PER_WEEK;
@@ -236,7 +240,7 @@ export default function TTMCalculator() {
       dollarsSaved,
       fullSweepDollarsSaved,
     };
-  }, [models, prompts, temperatures, retrievalK, maxTokensVariants, otherDims, minPerConfig, manualCoveragePct, hourlyRate]);
+  }, [models, prompts, maxTokensVariants, fewShots, selfConsistency, otherDims, minPerConfig, manualCoveragePct, hourlyRate]);
 
   // Republish the per-pass manual hours whenever it changes — ROI Calculator
   // listens on this key for its engineering-hours derivation.
@@ -326,7 +330,7 @@ export default function TTMCalculator() {
                   <div>to explore</div>
                 </div>
                 <span className="text-5xl md:text-7xl lg:text-8xl font-extrabold text-white tracking-tight">{r.totalConfigs.toLocaleString()}</span>
-                <span className="text-sm md:text-base text-slate-300 font-mono font-semibold">= {models} × {prompts} × {temperatures} × {retrievalK} × {maxTokensVariants} × {otherDims}</span>
+                <span className="text-sm md:text-base text-slate-300 font-mono font-semibold">= {models} × {prompts} × {maxTokensVariants} × {fewShots} × {selfConsistency} × {otherDims}</span>
               </div>
               <a
                 href="#dimension-sliders"
@@ -393,12 +397,12 @@ export default function TTMCalculator() {
             className="text-center mb-12"
           >
             <p className="text-xs md:text-sm text-slate-500 max-w-2xl mx-auto leading-relaxed">
-              The sliders below reflect <span className="text-slate-300">the most common choices</span>, but many other selection dimensions exist — to keep things simple, we've embodied them all in <span className="text-slate-300">"Other tunable options"</span>.{" "}
+              The sliders below reflect <span className="text-slate-300">the most impactful, universal choices</span> — knobs that apply to every agent and hit Accuracy <em>and</em> Cost. Many other dimensions exist (temperature, top_p, retrieval k, chunk size, reranker, reasoning effort, tool-call budget, …) and are folded into <span className="text-slate-300">"Other tunable options"</span>.{" "}
               <Link
-                to="/blog/the-business-case"
+                to="/blog/the-config-multiverse"
                 className="text-[#4D8EF8] hover:text-[#1A6BF5] underline underline-offset-2 transition-colors"
               >
-                See the full inventory and cost ratios →
+                See the full inventory and their A/C/L impacts →
               </Link>
             </p>
           </motion.div>
@@ -452,32 +456,6 @@ export default function TTMCalculator() {
             />
             <SliderRow
               icon={SlidersHorizontal}
-              label="Temperature values"
-              value={temperatures}
-              suffix="settings"
-              min={1}
-              max={10}
-              step={1}
-              onChange={setTemperatures}
-              minLabel="1"
-              maxLabel="10"
-              examples={temperatureExamples(temperatures).join(", ")}
-            />
-            <SliderRow
-              icon={SlidersHorizontal}
-              label="Retrieval k values"
-              value={retrievalK}
-              suffix="settings"
-              min={1}
-              max={8}
-              step={1}
-              onChange={setRetrievalK}
-              minLabel="1"
-              maxLabel="8"
-              examples={retrievalKExamples(retrievalK).join(", ")}
-            />
-            <SliderRow
-              icon={SlidersHorizontal}
               label="max_tokens values"
               value={maxTokensVariants}
               suffix="settings"
@@ -491,6 +469,32 @@ export default function TTMCalculator() {
             />
             <SliderRow
               icon={SlidersHorizontal}
+              label="Few-shot example count"
+              value={fewShots}
+              suffix="settings"
+              min={1}
+              max={7}
+              step={1}
+              onChange={setFewShots}
+              minLabel="1"
+              maxLabel="7"
+              examples={fewShotExamples(fewShots).join(", ")}
+            />
+            <SliderRow
+              icon={SlidersHorizontal}
+              label="Self-consistency n"
+              value={selfConsistency}
+              suffix="settings"
+              min={1}
+              max={6}
+              step={1}
+              onChange={setSelfConsistency}
+              minLabel="1"
+              maxLabel="6"
+              examples={selfConsistencyExamples(selfConsistency).join(", ")}
+            />
+            <SliderRow
+              icon={SlidersHorizontal}
               label="Other tunable options"
               value={otherDims}
               suffix="options ×"
@@ -501,6 +505,14 @@ export default function TTMCalculator() {
               minLabel="1"
               maxLabel="100"
               examples={otherDimensionsExamples().join(", ")}
+              link={
+                <Link
+                  to="/blog/the-config-multiverse"
+                  className="text-[#4D8EF8] hover:text-[#1A6BF5] underline underline-offset-2"
+                >
+                  See full inventory & A/C/L impacts →
+                </Link>
+              }
             />
           </motion.div>
 
