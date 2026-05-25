@@ -13,49 +13,18 @@ import {
   TrendingDown,
   ShieldCheck,
 } from "lucide-react";
-
-const BLUE = "#1A6BF5";
-const BLUE_LIGHT = "#4D8EF8";
-const AMBER = "#f59e0b";
-const RED = "#f87171";
-const SITE = "https://www.traigent.ai";
-
-const LOGO_SRC =
-  "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/057ce2_TraigentLogoWhiteCropped.png";
-
-// ---------- Small building blocks ----------
-function ATag() {
-  return (
-    <span
-      className="inline-block text-[10px] font-mono font-bold px-1.5 py-0.5 rounded align-middle"
-      style={{ color: BLUE_LIGHT, backgroundColor: `${BLUE}22`, border: `1px solid ${BLUE}55` }}
-      title="Affects Accuracy"
-    >
-      A
-    </span>
-  );
-}
-
-function CTag() {
-  return (
-    <span
-      className="inline-block text-[10px] font-mono font-bold px-1.5 py-0.5 rounded align-middle"
-      style={{ color: AMBER, backgroundColor: `${AMBER}22`, border: `1px solid ${AMBER}55` }}
-      title="Affects Cost"
-    >
-      C
-    </span>
-  );
-}
-
-function ACTag() {
-  return (
-    <span className="inline-flex items-center gap-1.5">
-      <ATag />
-      <CTag />
-    </span>
-  );
-}
+import {
+  BLUE,
+  BLUE_LIGHT,
+  AMBER,
+  RED,
+  SITE,
+  LOGO_SRC,
+  ATag,
+  CTag,
+  ACTag,
+  ONEPAGER_STYLE,
+} from "../components/OnePagerAtoms";
 
 function ProblemPanel({ icon: Icon, title, number, numberColor, line, extra, linkHref, linkLabel }) {
   return (
@@ -383,21 +352,8 @@ export default function OnePager() {
         <meta property="og:title" content="Traigent — One-Pager" />
         <meta property="og:description" content="Two-slide outreach one-pager. Problem + solution. For Devs and FinOps." />
       </Helmet>
-      {/* Print CSS: A4 landscape, no page margins, hide scroll container chrome.
-          Also hides the HubSpot chat widget on this route — slides are an outreach
-          artifact (often PDF-exported); a floating chat bubble doesn't belong. */}
-      <style>{`
-        /* Suppress the HubSpot chat / cookie banner on the one-pager (screen + print) */
-        #hubspot-messages-iframe-container,
-        .hs-messages-mobile,
-        .hs-banner-iframe,
-        #hs-eu-cookie-confirmation,
-        #hs-eu-cookie-confirmation-inner { display: none !important; visibility: hidden !important; }
-        @media print {
-          @page { size: A4 landscape; margin: 0; }
-          html, body { background: #080808; margin: 0; padding: 0; }
-        }
-      `}</style>
+      {/* Print CSS + HubSpot chat suppression — shared across both one-pager routes */}
+      <style>{ONEPAGER_STYLE}</style>
       <div className="bg-slate-950 min-h-screen flex flex-col items-center gap-8 py-8 print:gap-0 print:py-0 overflow-x-auto">
         <SlideProblem />
         <SlideSolution />

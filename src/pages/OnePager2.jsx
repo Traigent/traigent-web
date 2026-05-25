@@ -3,75 +3,15 @@
 // compressed into one A4 landscape sheet. Prose paragraphs dropped; numbers and
 // links survive. Lives outside the Layout wrapper (no nav), like /one-pager.
 import { Helmet } from "react-helmet-async";
+import { ArrowRight, Zap, TrendingDown, ShieldCheck } from "lucide-react";
 import {
-  AlertTriangle,
-  Clock,
-  Layers,
-  Target,
-  ArrowRight,
-  Zap,
-  TrendingDown,
-  ShieldCheck,
-} from "lucide-react";
-
-const BLUE = "#1A6BF5";
-const BLUE_LIGHT = "#4D8EF8";
-const AMBER = "#f59e0b";
-const RED = "#f87171";
-const SITE = "https://www.traigent.ai";
-
-const LOGO_SRC =
-  "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/057ce2_TraigentLogoWhiteCropped.png";
-
-// ---------- Badges ----------
-function ATag() {
-  return (
-    <span
-      className="inline-block text-[10px] font-mono font-bold px-1.5 py-0.5 rounded align-middle"
-      style={{ color: BLUE_LIGHT, backgroundColor: `${BLUE}22`, border: `1px solid ${BLUE}55` }}
-      title="Affects Accuracy"
-    >
-      A
-    </span>
-  );
-}
-function CTag() {
-  return (
-    <span
-      className="inline-block text-[10px] font-mono font-bold px-1.5 py-0.5 rounded align-middle"
-      style={{ color: AMBER, backgroundColor: `${AMBER}22`, border: `1px solid ${AMBER}55` }}
-      title="Affects Cost"
-    >
-      C
-    </span>
-  );
-}
-function ACTag() {
-  return (
-    <span className="inline-flex items-center gap-1.5">
-      <ATag />
-      <CTag />
-    </span>
-  );
-}
-
-// ---------- Compact problem tile (no prose; just icon + title + number + AC) ----------
-function ProblemTile({ icon: Icon, title, number }) {
-  return (
-    <div className="bg-slate-900/70 border border-slate-700/60 rounded-lg p-3 flex flex-col gap-1.5">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1.5">
-          <Icon className="w-4 h-4" style={{ color: BLUE_LIGHT }} />
-          <span className="text-[11px] font-bold text-white tracking-tight leading-tight">{title}</span>
-        </div>
-        <ACTag />
-      </div>
-      <div className="text-xl font-extrabold tracking-tight leading-none" style={{ color: RED }}>
-        {number}
-      </div>
-    </div>
-  );
-}
+  BLUE,
+  BLUE_LIGHT,
+  AMBER,
+  SITE,
+  LOGO_SRC,
+  ONEPAGER_STYLE,
+} from "../components/OnePagerAtoms";
 
 // ---------- Solution stat (full-size for one-pager-2) ----------
 function SolutionStat({ value, label, color }) {
@@ -128,18 +68,7 @@ export default function OnePager2() {
         />
         <meta property="og:title" content="Traigent — One-Pager #2" />
       </Helmet>
-      <style>{`
-        /* Suppress HubSpot chat / cookie banner on this route — outreach artifact, no chat needed. */
-        #hubspot-messages-iframe-container,
-        .hs-messages-mobile,
-        .hs-banner-iframe,
-        #hs-eu-cookie-confirmation,
-        #hs-eu-cookie-confirmation-inner { display: none !important; visibility: hidden !important; }
-        @media print {
-          @page { size: A4 landscape; margin: 0; }
-          html, body { background: #080808; margin: 0; padding: 0; }
-        }
-      `}</style>
+      <style>{ONEPAGER_STYLE}</style>
       <div className="bg-slate-950 min-h-screen flex flex-col items-center py-8 print:py-0 overflow-x-auto">
         <section className="relative w-[1123px] h-[794px] bg-[#080808] text-white overflow-hidden flex flex-col px-10 py-6">
           {/* Header band */}
