@@ -13,45 +13,26 @@ import {
   TrendingDown,
   ShieldCheck,
 } from "lucide-react";
+import {
+  BLUE,
+  BLUE_LIGHT,
+  AMBER,
+  RED,
+  SITE,
+  LOGO_SRC,
+  ATag,
+  CTag,
+  ACTag,
+  ONEPAGER_STYLE,
+} from "../components/OnePagerAtoms";
 
-const BLUE = "#1A6BF5";
-const BLUE_LIGHT = "#4D8EF8";
-const AMBER = "#f59e0b";
-const RED = "#f87171";
-const SITE = "https://www.traigent.ai";
-
-const LOGO_SRC =
-  "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/057ce2_TraigentLogoWhiteCropped.png";
-
-// ---------- Small building blocks ----------
-function ACTag() {
-  return (
-    <div className="flex items-center gap-1.5">
-      <span
-        className="inline-block text-[10px] font-mono font-bold px-1.5 py-0.5 rounded"
-        style={{ color: BLUE_LIGHT, backgroundColor: `${BLUE}22`, border: `1px solid ${BLUE}55` }}
-        title="Affects Accuracy"
-      >
-        A
-      </span>
-      <span
-        className="inline-block text-[10px] font-mono font-bold px-1.5 py-0.5 rounded"
-        style={{ color: AMBER, backgroundColor: `${AMBER}22`, border: `1px solid ${AMBER}55` }}
-        title="Affects Cost"
-      >
-        C
-      </span>
-    </div>
-  );
-}
-
-function ProblemPanel({ icon: Icon, title, number, numberColor, line }) {
+function ProblemPanel({ icon: Icon, title, number, numberColor, line, extra, linkHref, linkLabel }) {
   return (
     <div className="bg-slate-900/70 border border-slate-700/60 rounded-xl p-5 flex flex-col gap-2">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 text-slate-400">
-          <Icon className="w-4 h-4" />
-          <span className="text-[11px] font-mono uppercase tracking-wider">{title}</span>
+        <div className="flex items-center gap-2">
+          <Icon className="w-5 h-5" style={{ color: BLUE_LIGHT }} />
+          <span className="text-base font-bold tracking-tight text-white">{title}</span>
         </div>
         <ACTag />
       </div>
@@ -59,6 +40,21 @@ function ProblemPanel({ icon: Icon, title, number, numberColor, line }) {
         {number}
       </div>
       <p className="text-[13px] text-slate-300 leading-snug">{line}</p>
+      {extra}
+      {linkHref && (
+        <div className="mt-auto pt-1">
+          <a
+            href={linkHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-[12px] font-medium underline underline-offset-4 decoration-[#4D8EF8]/40 hover:decoration-[#4D8EF8] transition-colors"
+            style={{ color: BLUE_LIGHT }}
+          >
+            {linkLabel}
+            <ArrowRight className="w-3 h-3" />
+          </a>
+        </div>
+      )}
     </div>
   );
 }
@@ -106,7 +102,15 @@ function SlideShell({ slideNo, children }) {
     >
       {/* Header band */}
       <div className="flex items-center justify-between mb-6">
-        <img src={LOGO_SRC} alt="Traigent" className="h-9" />
+        <a
+          href={`${SITE}/`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block hover:opacity-80 transition-opacity"
+          aria-label="Traigent — visit homepage"
+        >
+          <img src={LOGO_SRC} alt="Traigent" className="h-9" />
+        </a>
         <div className="flex items-center gap-4 text-[11px] font-mono uppercase tracking-widest text-slate-500">
           <span>AI Agent Optimization</span>
           <span className="text-slate-700">·</span>
@@ -129,20 +133,35 @@ function SlideProblem() {
             AI Agent Optimization Is <span style={{ color: RED }}>Brutal</span> — and Manual
           </h1>
           <p className="text-[15px] text-slate-300 leading-relaxed mt-3 max-w-4xl">
-            Every production agent sits in a multi-thousand-configuration search space. The configuration you ship determines{" "}
-            <span className="text-white font-semibold">accuracy for users</span> and the{" "}
-            <span className="text-white font-semibold">monthly LLM bill for finance</span> — for as long as the agent runs.
+            Hundreds if not thousands of configuration options to consider. The configuration you ship determines{" "}
+            <span className="font-bold" style={{ color: BLUE_LIGHT }}>accuracy</span> <ATag /> for users and the{" "}
+            <span className="font-bold" style={{ color: AMBER }}>monthly LLM bill</span> <CTag /> for finance — for as long as the agent runs.
           </p>
         </div>
 
-        {/* 2x2 problem grid */}
-        <div className="grid grid-cols-2 gap-4 flex-1">
+        {/* 2x2 problem grid — equal-sized rows so panels don't auto-size to content */}
+        <div className="grid grid-cols-2 grid-rows-2 gap-4 flex-1">
           <ProblemPanel
             icon={Layers}
-            title="1. Configuration multiverse"
+            title="1. Massive configuration multiverse"
             number="~648 → 30,000+"
             numberColor={RED}
-            line="Universal knobs alone yield hundreds of configurations. Add reasoning models, tool use, or RAG and you're past 10,000 per agent per workload."
+            line="Universal knobs alone yield hundreds of configuration options. Add reasoning models, tool use, or RAG and you're past 30,000 per agent per workload."
+            extra={
+              <p className="text-[12px] text-slate-300 leading-snug">
+                <span className="font-mono">
+                  (models) × (15+ agent options) × (10+ LLM options) ={" "}
+                  <span className="text-white font-bold">millions of options</span>.
+                </span>{" "}
+                Each may impact{" "}
+                <span style={{ color: BLUE_LIGHT }} className="font-semibold">Accuracy</span>{" "}
+                and{" "}
+                <span style={{ color: AMBER }} className="font-semibold">Cost</span>{" "}
+                significantly.
+              </p>
+            }
+            linkHref={`${SITE}/#/blog/the-config-multiverse`}
+            linkLabel="See the full multiverse"
           />
           <ProblemPanel
             icon={Clock}
@@ -150,6 +169,13 @@ function SlideProblem() {
             number="~324 hrs · 8 FTE-weeks"
             numberColor={RED}
             line="At 30 minutes per config test, a full manual sweep eats months of senior engineering time. Per pass. Per agent. Per re-tune."
+            extra={
+              <p className="text-[13px] text-slate-300 leading-snug">
+                And you may be missing many important knob options.
+              </p>
+            }
+            linkHref={`${SITE}/#/ttm`}
+            linkLabel="Compute your TTM"
           />
           <ProblemPanel
             icon={Target}
@@ -174,14 +200,11 @@ function SlideProblem() {
             <span style={{ color: AMBER }}>C</span> Cost — every problem hits both
           </div>
           <div className="flex items-center gap-5">
-            <FooterLink href={`${SITE}/#/blog/the-config-multiverse`} external>
-              See the full multiverse
-            </FooterLink>
-            <FooterLink href={`${SITE}/#/ttm`} external>
-              Compute your TTM
-            </FooterLink>
             <FooterLink href={`${SITE}/#/roi`} external>
               Compute your ROI
+            </FooterLink>
+            <FooterLink href="https://meetings-eu1.hubspot.com/amir8" external>
+              Book a 15-min call
             </FooterLink>
           </div>
         </div>
@@ -201,35 +224,49 @@ function SlideSolution() {
             Traigent — <span style={{ color: BLUE_LIGHT }}>Automated</span> AI Agent Optimization
           </h1>
           <p className="text-[15px] text-slate-300 leading-relaxed mt-3 max-w-4xl">
-            One hour of engineer setup. The optimizer runs unattended. You ship the converged
-            optimum — not the best of what you happened to test.
+            One-time 1 hr setup. Optimizer runs unattended for a few hours. You ship the
+            optimum — with confidence — Fast.
           </p>
         </div>
 
         {/* 3 headline stats */}
         <div className="grid grid-cols-3 gap-4">
-          <SolutionStat value="~1 hr" label="Engineer time per optimization pass" color={BLUE_LIGHT} />
-          <SolutionStat value="30–60%" label="LLM cost reduction at same accuracy" color={AMBER} />
-          <SolutionStat value="8 FTE-wks" label="Engineering time reclaimed per pass" color={BLUE_LIGHT} />
+          <SolutionStat value="1 hr" label="One-time setup effort" color={BLUE_LIGHT} />
+          <SolutionStat value="up to 8 wks" label="Engineering time reclaimed per pass" color={BLUE_LIGHT} />
+          <SolutionStat value="20%+" label="LLM cost reduction at same accuracy" color={AMBER} />
         </div>
 
         {/* Two audience columns */}
         <div className="grid grid-cols-2 gap-4 flex-1">
-          <div className="bg-slate-900/70 border border-slate-700/60 rounded-xl p-5">
+          <div className="bg-slate-900/70 border border-slate-700/60 rounded-xl p-5 flex flex-col">
             <div className="flex items-center gap-2 mb-3">
               <ShieldCheck className="w-4 h-4" style={{ color: BLUE_LIGHT }} />
               <h3 className="text-sm font-bold uppercase tracking-wider" style={{ color: BLUE_LIGHT }}>
                 For Developers / Eng Leads
               </h3>
             </div>
-            <ul className="space-y-2.5">
-              <BenefitItem>Search the <span className="text-white font-semibold">full</span> configuration space — not a 20% slice</BenefitItem>
-              <BenefitItem>Reclaim <span className="text-white font-semibold">8+ FTE-weeks</span> per optimization pass</BenefitItem>
+            <ul className="space-y-2">
+              <BenefitItem>Utilize the <span className="text-white font-semibold">full</span> configuration space — not a 20% slice you guess</BenefitItem>
+              <BenefitItem>Reclaim up to <span className="text-white font-semibold">8+ FTE-weeks</span> per optimization pass</BenefitItem>
               <BenefitItem>Ship with <span className="text-white font-semibold">100% confidence</span> in your optimum</BenefitItem>
-              <BenefitItem>Re-optimize on every model release in <span className="text-white font-semibold">hours, not weeks</span></BenefitItem>
+              <BenefitItem>Re-optimize on every new release in <span className="text-white font-semibold">hours, not weeks</span></BenefitItem>
+              <BenefitItem>Helps you improve your <span className="text-white font-semibold">benchmark test bed</span></BenefitItem>
+              <BenefitItem>Includes <span className="text-white font-semibold">Evaluation and Observability</span> for free</BenefitItem>
             </ul>
+            <div className="mt-auto pt-3">
+              <a
+                href={`${SITE}/#/ttm`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-[12px] font-medium underline underline-offset-4 decoration-[#4D8EF8]/40 hover:decoration-[#4D8EF8] transition-colors"
+                style={{ color: BLUE_LIGHT }}
+              >
+                Compute your TTM
+                <ArrowRight className="w-3 h-3" />
+              </a>
+            </div>
           </div>
-          <div className="bg-slate-900/70 border rounded-xl p-5" style={{ borderColor: `${AMBER}55` }}>
+          <div className="bg-slate-900/70 border rounded-xl p-5 flex flex-col" style={{ borderColor: `${AMBER}55` }}>
             <div className="flex items-center gap-2 mb-3">
               <TrendingDown className="w-4 h-4" style={{ color: AMBER }} />
               <h3 className="text-sm font-bold uppercase tracking-wider" style={{ color: AMBER }}>
@@ -237,11 +274,23 @@ function SlideSolution() {
               </h3>
             </div>
             <ul className="space-y-2.5">
-              <BenefitItem><span className="text-white font-semibold">30–60% LLM cost reduction</span> at the same accuracy</BenefitItem>
-              <BenefitItem>Payback typically <span className="text-white font-semibold">&lt; 1 month</span> at $10K+ monthly spend</BenefitItem>
+              <BenefitItem><span className="text-white font-semibold">20%+ LLM cost reduction</span> at the same accuracy</BenefitItem>
+              <BenefitItem><span className="text-white font-semibold">ROI is almost immediate</span></BenefitItem>
               <BenefitItem>Recurring savings <span className="text-white font-semibold">for the agent's lifetime</span></BenefitItem>
               <BenefitItem>Tier-based pricing <span className="text-white font-semibold">scales with agent volume</span></BenefitItem>
             </ul>
+            <div className="mt-auto pt-3">
+              <a
+                href={`${SITE}/#/roi`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-[12px] font-medium underline underline-offset-4 decoration-[#f59e0b]/40 hover:decoration-[#f59e0b] transition-colors"
+                style={{ color: AMBER }}
+              >
+                Compute your ROI
+                <ArrowRight className="w-3 h-3" />
+              </a>
+            </div>
           </div>
         </div>
 
@@ -251,17 +300,17 @@ function SlideSolution() {
           <div className="flex items-center gap-3 text-[13px]">
             <span className="flex items-center gap-2">
               <span className="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold" style={{ backgroundColor: `${BLUE}33`, color: BLUE_LIGHT }}>1</span>
-              <span className="text-slate-200"><span className="text-white font-semibold">Define</span> — wrap your agent, declare KPIs</span>
+              <span className="text-slate-200"><span className="text-white font-semibold">Setup</span> — define KPIs, wrap agent</span>
             </span>
             <ArrowRight className="w-3.5 h-3.5 text-slate-600" />
             <span className="flex items-center gap-2">
               <span className="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold" style={{ backgroundColor: `${BLUE}33`, color: BLUE_LIGHT }}>2</span>
-              <span className="text-slate-200"><span className="text-white font-semibold">Optimize</span> — searches the space overnight</span>
+              <span className="text-slate-200"><span className="text-white font-semibold">Optimize</span> — automatically in hours not weeks</span>
             </span>
             <ArrowRight className="w-3.5 h-3.5 text-slate-600" />
             <span className="flex items-center gap-2">
               <span className="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold" style={{ backgroundColor: `${BLUE}33`, color: BLUE_LIGHT }}>3</span>
-              <span className="text-slate-200"><span className="text-white font-semibold">Ship</span> — promote with full evidence</span>
+              <span className="text-slate-200"><span className="text-white font-semibold">Ship</span> — fast with confidence</span>
             </span>
           </div>
         </div>
@@ -271,7 +320,7 @@ function SlideSolution() {
           <div className="flex items-center gap-2">
             <Zap className="w-4 h-4" style={{ color: AMBER }} />
             <span className="text-[12px] text-slate-300">
-              <span className="text-white font-semibold">Free POC</span> — zero investment, one agent, overnight optimum
+              <span className="text-white font-semibold">Free POC</span> — that includes optimization, evaluation and observability
             </span>
           </div>
           <div className="flex items-center gap-5">
@@ -283,9 +332,6 @@ function SlideSolution() {
             </FooterLink>
             <FooterLink href={`${SITE}/#/blog/the-business-case`} external>
               Business case
-            </FooterLink>
-            <FooterLink href={`${SITE}/#/roi`} external>
-              ROI on your numbers
             </FooterLink>
           </div>
         </div>
@@ -306,13 +352,8 @@ export default function OnePager() {
         <meta property="og:title" content="Traigent — One-Pager" />
         <meta property="og:description" content="Two-slide outreach one-pager. Problem + solution. For Devs and FinOps." />
       </Helmet>
-      {/* Print CSS: A4 landscape, no page margins, hide scroll container chrome */}
-      <style>{`
-        @media print {
-          @page { size: A4 landscape; margin: 0; }
-          html, body { background: #080808; margin: 0; padding: 0; }
-        }
-      `}</style>
+      {/* Print CSS + HubSpot chat suppression — shared across both one-pager routes */}
+      <style>{ONEPAGER_STYLE}</style>
       <div className="bg-slate-950 min-h-screen flex flex-col items-center gap-8 py-8 print:gap-0 print:py-0 overflow-x-auto">
         <SlideProblem />
         <SlideSolution />

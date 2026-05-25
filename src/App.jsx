@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import Homepage from './pages/Homepage'
 import GetStarted from './pages/GetStarted'
 import OnePager from './pages/OnePager'
+import OnePager2 from './pages/OnePager2'
 import ValueProposition from './pages/ValueProposition'
 import TableDemo from './pages/TableDemo'
 import Pitch from './pages/Pitch'
@@ -30,6 +31,7 @@ export default function App() {
       <Route path="pitch" element={<Pitch />} />
       <Route path="pitch-full" element={<PitchFull />} />
       <Route path="one-pager" element={<OnePager />} />
+      <Route path="one-pager-2" element={<OnePager2 />} />
 
       <Route path="/" element={<Layout />}>
         <Route index element={<Homepage />} />
