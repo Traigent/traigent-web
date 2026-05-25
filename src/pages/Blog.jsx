@@ -54,9 +54,14 @@ export default function Blog() {
                 >
                   <Link to={`/blog/${post.slug}`} className="block group">
                     <PostMetadata post={post} className="mb-3" />
-                    <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 group-hover:text-[#4D8EF8] transition-colors leading-tight">
+                    <h2 className="text-2xl md:text-3xl font-bold text-white mb-2 group-hover:text-[#4D8EF8] transition-colors leading-tight">
                       {post.title}
                     </h2>
+                    {post.subtitle && (
+                      <p className="text-base md:text-lg text-slate-300 italic leading-relaxed mb-3">
+                        {post.subtitle}
+                      </p>
+                    )}
                     <p className="text-slate-400 leading-relaxed mb-4">{post.summary}</p>
                     <div className="inline-flex items-center gap-1.5 text-sm font-medium text-[#1A6BF5] group-hover:text-[#4D8EF8] transition-colors">
                       Read →

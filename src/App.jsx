@@ -26,14 +26,14 @@ export default function App() {
   return (
     <Routes>
       <Route path="table-demo" element={<TableDemo />} />
-      {/* Pitch decks — no layout/nav, full-bleed slides */}
+      {/* Pitch decks & outreach one-pager — no layout/nav, full-bleed slides */}
       <Route path="pitch" element={<Pitch />} />
       <Route path="pitch-full" element={<PitchFull />} />
+      <Route path="one-pager" element={<OnePager />} />
 
       <Route path="/" element={<Layout />}>
         <Route index element={<Homepage />} />
         <Route path="get-started" element={<GetStarted />} />
-        <Route path="one-pager" element={<OnePager />} />
         <Route path="value-proposition" element={<ValueProposition />} />
         <Route path="blog" element={<Blog />} />
         <Route path="blog/:slug" element={<BlogPost />} />
