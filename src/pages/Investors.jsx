@@ -312,7 +312,7 @@ export default function Investors() {
     document.head.appendChild(link)
 
     return () => {
-      document.title = 'Traigent - Trust Your AI Agents at Scale'
+      document.title = 'Traigent — Agent Optimization Platform'
     }
   }, [])
 
