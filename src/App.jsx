@@ -8,6 +8,7 @@ import TableDemo from './pages/TableDemo'
 import Pitch from './pages/Pitch'
 import PitchFull from './pages/PitchFull'
 import PitchShort from './pages/PitchShort'
+import PitchShort2 from './pages/PitchShort2'
 import Blog from './pages/Blog'
 import BlogPost from './pages/BlogPost'
 import ROICalculator from './pages/ROICalculator'
@@ -32,6 +33,7 @@ export default function App() {
       <Route path="pitch" element={<Pitch />} />
       <Route path="pitch-full" element={<PitchFull />} />
       <Route path="pitch-short" element={<PitchShort />} />
+      <Route path="pitch-short-2" element={<PitchShort2 />} />
       <Route path="one-pager" element={<OnePager />} />
       <Route path="one-pager-2" element={<OnePager2 />} />
 
