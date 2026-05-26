@@ -49,9 +49,12 @@ export function ACTag() {
 // Print/chat CSS injected on /one-pager and /one-pager-2. Suppresses the
 // HubSpot chat widget (outreach artifact — no chat needed) and forces A4
 // landscape with zero margins for clean PDF export.
+// NOTE: do NOT include `.hs-messages-mobile` in this selector list — it
+// matches a class that ends up on the React root in some dev/preview builds
+// and blanks the entire page on iOS WebKit (and puppeteer mobile profiles).
+// The remaining selectors target HubSpot chat/cookie chrome safely.
 export const ONEPAGER_STYLE = `
   #hubspot-messages-iframe-container,
-  .hs-messages-mobile,
   .hs-banner-iframe,
   #hs-eu-cookie-confirmation,
   #hs-eu-cookie-confirmation-inner { display: none !important; visibility: hidden !important; }
