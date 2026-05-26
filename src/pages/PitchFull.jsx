@@ -1120,22 +1120,24 @@ export function SlideROIPreview({ subtitle, footer } = {}) {
 // nav. Result: slide content sits high in the viewport and fits without
 // scrolling on 768px+ heights.
 // ===================================================================
+// Compute scale lazily during the initial render so we never briefly draw
+// the 1280-wide slide on a 390-wide phone — that flash was probably what
+// crashed iOS WebKit on the earlier attempts.
+function getOnePagerScale() {
+  if (typeof window === "undefined") return 1;
+  return Math.min(1, window.innerWidth / 1280);
+}
+
 export function SlideOnePagerSummary() {
-  // The slide is fixed at 1280x720 to match the standalone /one-pager-2 page
-  // and the PPT 16:9 PDF output. On viewports narrower than 1280 (iPhone
-  // Safari, narrow tablets), the deck's `overflow-hidden` would otherwise
-  // clip the right side. We compute the scale in JS (the previous attempt
-  // using CSS min() inside transform + aspect-ratio crashed on older iOS
-  // Safari) so the slide shrinks to fit any viewport.
-  const [scale, setScale] = useState(1);
+  // Section is fixed at 1280x720 (matches the standalone /one-pager-2 and
+  // the PPT 16:9 PDF). On phones the deck's `overflow-hidden` would clip
+  // the right side; earlier CSS-based scaling (min() in transform,
+  // aspect-ratio) crashed older iOS WebKit. Plain JS scale only.
+  const [scale, setScale] = useState(getOnePagerScale);
   useEffect(() => {
-    const compute = () => {
-      const w = typeof window !== "undefined" ? window.innerWidth : 1280;
-      setScale(Math.min(1, w / 1280));
-    };
-    compute();
-    window.addEventListener("resize", compute);
-    return () => window.removeEventListener("resize", compute);
+    const onResize = () => setScale(getOnePagerScale());
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
   }, []);
   return (
     <div className="-my-24 pt-14 pb-16 w-full flex items-center justify-center overflow-hidden">
