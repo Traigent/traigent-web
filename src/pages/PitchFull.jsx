@@ -1124,13 +1124,24 @@ export function SlideOnePagerSummary() {
   // The slide is fixed at 1280x720 to match the standalone /one-pager-2 page
   // and the PPT 16:9 PDF output. On viewports narrower than 1280 (iPhone
   // Safari, narrow tablets), the deck's `overflow-hidden` would otherwise
-  // clip the right side. Wrap the slide so it scales down to fit available
-  // width while preserving its 16:9 aspect ratio.
+  // clip the right side. We compute the scale in JS (the previous attempt
+  // using CSS min() inside transform + aspect-ratio crashed on older iOS
+  // Safari) so the slide shrinks to fit any viewport.
+  const [scale, setScale] = useState(1);
+  useEffect(() => {
+    const compute = () => {
+      const w = typeof window !== "undefined" ? window.innerWidth : 1280;
+      setScale(Math.min(1, w / 1280));
+    };
+    compute();
+    window.addEventListener("resize", compute);
+    return () => window.removeEventListener("resize", compute);
+  }, []);
   return (
     <div className="-my-24 pt-14 pb-16 w-full flex items-center justify-center overflow-hidden">
       <div
         className="relative"
-        style={{ width: "min(1280px, 100vw)", aspectRatio: "1280 / 720" }}
+        style={{ width: 1280 * scale, height: 720 * scale }}
       >
         <div
           style={{
@@ -1140,7 +1151,7 @@ export function SlideOnePagerSummary() {
             width: 1280,
             height: 720,
             transformOrigin: "top left",
-            transform: "scale(min(1, calc(100vw / 1280)))",
+            transform: `scale(${scale})`,
           }}
         >
           <OnePager2Slide showHeader={false} showFooter={false} />
