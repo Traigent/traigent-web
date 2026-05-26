@@ -1260,9 +1260,11 @@ export function PitchDeck({ slides }) {
   useEffect(() => {
     const style = document.createElement("style");
     style.dataset.pitchHideHubspot = "";
+    // NOTE: do NOT include `.hs-messages-mobile` — that selector matches a
+    // class on the React root in some builds and blanks the entire deck on
+    // iOS WebKit. The remaining selectors safely target HubSpot chrome.
     style.textContent = `
       #hubspot-messages-iframe-container,
-      .hs-messages-mobile,
       .hs-banner-iframe,
       #hs-eu-cookie-confirmation,
       #hs-eu-cookie-confirmation-inner { display: none !important; visibility: hidden !important; }
