@@ -107,7 +107,7 @@ function TraceTree() {
 // ===================================================================
 // 00 — Hero (mirrors website hero section exactly)
 // ===================================================================
-function SlideHero() {
+export function SlideHero() {
   // Benefits-explained dropdown state — mirrors the homepage hero behavior.
   const [benefitsOpen, setBenefitsOpen] = useState(false);
   const benefitsRef = useRef(null);
@@ -262,7 +262,7 @@ function SlideHero() {
 // ===================================================================
 // 01 — Title
 // ===================================================================
-function Slide01Title() {
+export function Slide01Title() {
   return (
     <div className="text-center max-w-5xl mx-auto">
       <h1 className="text-6xl md:text-7xl lg:text-8xl font-extrabold text-white mb-8 tracking-tight">Traigent</h1>
@@ -281,7 +281,7 @@ function Slide01Title() {
 // ===================================================================
 // 02 — Optimize Agent ROI. Fast.
 // ===================================================================
-function Slide02ROI() {
+export function Slide02ROI() {
   return (
     <div className="max-w-5xl mx-auto text-center">
       <h2 className="text-6xl md:text-7xl font-bold text-white mb-10 tracking-tight">Optimize Agent ROI. Fast.</h2>
@@ -298,7 +298,7 @@ function Slide02ROI() {
 // ===================================================================
 // 03 — The Configuration Explosion
 // ===================================================================
-function Slide03Explosion() {
+export function Slide03Explosion() {
   return (
     <div className="max-w-6xl mx-auto">
       <h2 className="text-5xl md:text-6xl font-bold text-white mb-8 text-center">The Configuration Explosion</h2>
@@ -418,7 +418,7 @@ function Slide03Explosion() {
 // ===================================================================
 // 03b — The Configuration Option Explosion (millions, abstract formula)
 // ===================================================================
-function SlideExplosionMillions() {
+export function SlideExplosionMillions() {
   return (
     <div className="max-w-6xl mx-auto">
       <h2 className="text-5xl md:text-6xl font-bold text-white mb-12 text-center">The Configuration Option Explosion</h2>
@@ -464,7 +464,7 @@ function SlideExplosionMillions() {
 // ===================================================================
 // 04 — What Manual Tuning Actually Looks Like
 // ===================================================================
-function Slide04Manual() {
+export function Slide04Manual() {
   return (
     <div className="max-w-5xl mx-auto">
       <h2 className="text-5xl md:text-6xl font-bold text-white mb-10 text-center">What Manual Tuning Actually Looks Like</h2>
@@ -493,7 +493,7 @@ function Slide04Manual() {
 // ===================================================================
 // 05 — Traigent Platform (the solution)
 // ===================================================================
-function Slide05Solution() {
+export function Slide05Solution() {
   return (
     <div className="text-center max-w-5xl mx-auto">
       <h2 className="text-5xl md:text-6xl font-bold text-white mb-4">
@@ -527,7 +527,7 @@ function Slide05Solution() {
 // ===================================================================
 // 06 — The Killer Stat
 // ===================================================================
-function Slide06KillerStat() {
+export function Slide06KillerStat() {
   return (
     <div className="max-w-6xl mx-auto">
       <h2 className="text-4xl md:text-5xl font-bold text-white mb-3 text-center" style={{ textWrap: "balance" }}>
@@ -545,7 +545,7 @@ function Slide06KillerStat() {
 // ===================================================================
 // 07 — How It Works: Feedback Loop
 // ===================================================================
-function Slide07FeedbackLoop() {
+export function Slide07FeedbackLoop() {
   return (
     <div className="max-w-6xl mx-auto">
       <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 text-center">Two Components, One Feedback Loop</h2>
@@ -560,7 +560,7 @@ function Slide07FeedbackLoop() {
 // ===================================================================
 // 08 — Inside the Optimization Engine
 // ===================================================================
-function Slide08OptEngine() {
+export function Slide08OptEngine() {
   return (
     <div className="max-w-5xl mx-auto">
       <h2 className="text-5xl md:text-6xl font-bold text-white mb-4 text-center">
@@ -593,7 +593,7 @@ function Slide08OptEngine() {
 // ===================================================================
 // 09 — Inside the Agent Wrapper
 // ===================================================================
-function Slide09Wrapper() {
+export function Slide09Wrapper() {
   return (
     <div className="max-w-5xl mx-auto">
       <h2 className="text-5xl md:text-6xl font-bold text-white mb-4 text-center">
@@ -640,7 +640,7 @@ function Slide09Wrapper() {
 // ===================================================================
 // 10 — You Pick the Tradeoff (KPI weighting)
 // ===================================================================
-function Slide10Tradeoff() {
+export function Slide10Tradeoff() {
   return (
     <div className="max-w-5xl mx-auto">
       <h2 className="text-5xl md:text-6xl font-bold text-white mb-4 text-center">You Pick the Tradeoff</h2>
@@ -669,7 +669,7 @@ function Slide10Tradeoff() {
 // ===================================================================
 // 11 — Confidence to Ship
 // ===================================================================
-function Slide11Confidence() {
+export function Slide11Confidence() {
   return (
     <div className="max-w-5xl mx-auto text-center">
       <h2 className="text-5xl md:text-6xl font-bold text-white mb-12">Confidence to Ship</h2>
@@ -698,7 +698,7 @@ function Slide11Confidence() {
 // ===================================================================
 // 12 — Beyond Optimization (intro)
 // ===================================================================
-function Slide12BeyondIntro() {
+export function Slide12BeyondIntro() {
   return (
     <div className="max-w-5xl mx-auto text-center">
       <h2 className="text-6xl md:text-7xl font-bold mb-8" style={{ color: AMBER }}>Beyond Optimization</h2>
@@ -728,7 +728,7 @@ function Slide12BeyondIntro() {
 // ===================================================================
 // 13 — Self-Improving Benchmark
 // ===================================================================
-function Slide13Benchmark() {
+export function Slide13Benchmark() {
   return (
     <div className="max-w-5xl mx-auto">
       <h2 className="text-5xl md:text-6xl font-bold text-white mb-4 text-center">
@@ -761,7 +761,7 @@ function Slide13Benchmark() {
 // ===================================================================
 // 14 — Full Observability & Tracing
 // ===================================================================
-function Slide14Tracing() {
+export function Slide14Tracing() {
   return (
     <div className="max-w-5xl mx-auto">
       <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 text-center">
@@ -781,7 +781,7 @@ function Slide14Tracing() {
 // ===================================================================
 // 15 — Re-Optimization Across the Lifecycle
 // ===================================================================
-function Slide15Lifecycle() {
+export function Slide15Lifecycle() {
   return (
     <div className="max-w-5xl mx-auto">
       <h2 className="text-5xl md:text-6xl font-bold text-white mb-4 text-center">Across the Full Lifecycle</h2>
@@ -817,7 +817,7 @@ function Slide15Lifecycle() {
 // ===================================================================
 // 16 — Three Products In One
 // ===================================================================
-function Slide16ThreeInOne() {
+export function Slide16ThreeInOne() {
   return (
     <div className="max-w-6xl mx-auto">
       <h2 className="text-5xl md:text-6xl font-bold text-white mb-4 text-center">Three Products In One</h2>
@@ -835,7 +835,7 @@ function Slide16ThreeInOne() {
 // ===================================================================
 // 17 — Customers (Early Adopters)
 // ===================================================================
-function Slide17Customers() {
+export function Slide17Customers() {
   const customers = ["Bazak", "iForAI", "Cloudzone", "Profisea", "Yotpo"];
   return (
     <div className="text-center max-w-5xl mx-auto">
@@ -857,7 +857,7 @@ function Slide17Customers() {
 // ===================================================================
 // 18 — How It Works in 4 Steps
 // ===================================================================
-function Slide18FourSteps() {
+export function Slide18FourSteps() {
   const steps = [
     { n: "01", title: "Wrap", desc: "Engineer wraps your agent with the SDK in ~1 hour. One-time. Your agent code doesn't change." },
     { n: "02", title: "Optimize", desc: "The engine sweeps the model and configuration space unattended. Needs only a fraction of combinations to converge." },
@@ -885,7 +885,7 @@ function Slide18FourSteps() {
 // ===================================================================
 // 19 — Engineer-First Integration (TVL + SDK)
 // ===================================================================
-function Slide19EngineerFirst() {
+export function Slide19EngineerFirst() {
   return (
     <div className="max-w-5xl mx-auto">
       <h2 className="text-5xl md:text-6xl font-bold text-white mb-4 text-center">Engineer-First Integration</h2>
@@ -926,7 +926,7 @@ function Slide19EngineerFirst() {
 // ===================================================================
 // 20 — Get Started
 // ===================================================================
-function Slide20GetStarted() {
+export function Slide20GetStarted() {
   return (
     <div className="text-center max-w-5xl mx-auto">
       <h2 className="text-5xl md:text-6xl font-bold text-white mb-4">Get Started</h2>
@@ -963,7 +963,7 @@ function Slide20GetStarted() {
 // ===================================================================
 // 21 — Closing
 // ===================================================================
-function Slide21Closing() {
+export function Slide21Closing() {
   return (
     <div className="text-center max-w-5xl mx-auto">
       <h1 className="text-6xl md:text-7xl lg:text-8xl font-extrabold text-white mb-12 tracking-tight leading-tight">
@@ -985,7 +985,7 @@ function Slide21Closing() {
 // ===================================================================
 // TTM-calc preview slide — mirrors /ttm calculator's headline result
 // ===================================================================
-function SlideTTMPreview() {
+export function SlideTTMPreview() {
   return (
     <div className="max-w-6xl mx-auto">
       <div
@@ -1041,7 +1041,7 @@ function SlideTTMPreview() {
 // ===================================================================
 // ROI-calc preview slide — mirrors /roi calculator's headline result
 // ===================================================================
-function SlideROIPreview() {
+export function SlideROIPreview() {
   return (
     <div className="max-w-6xl mx-auto">
       <div
@@ -1111,7 +1111,7 @@ function SlideROIPreview() {
 // nav. Result: slide content sits high in the viewport and fits without
 // scrolling on 768px+ heights.
 // ===================================================================
-function SlideOnePagerSummary() {
+export function SlideOnePagerSummary() {
   return (
     <div className="-my-24 flex items-center justify-center pt-14 pb-16">
       <OnePager2Slide showHeader={false} showFooter={false} />
@@ -1119,7 +1119,7 @@ function SlideOnePagerSummary() {
   );
 }
 
-const slides = [
+export const FULL_SLIDES = [
   // ----- HERO -----
   { title: "Hero (website mirror)", section: "Traigent intro", component: SlideHero },
   // ----- ONE-PAGER SUMMARY (2nd slide — quick outreach pitch in one slide) -----
@@ -1155,18 +1155,19 @@ const slides = [
 ];
 
 // Section order for the tab bar (drives the layout left-to-right)
-const SECTION_ORDER = ["Traigent intro", "Problem", "Solution", "TTM", "ROI", "Proof", "CTA"];
-
-// First-slide index per section (so a tab click jumps to the right place)
-const sectionStartIndex = SECTION_ORDER.reduce((acc, sec) => {
-  acc[sec] = slides.findIndex((s) => s.section === sec);
-  return acc;
-}, {});
+export const SECTION_ORDER = ["Traigent intro", "Problem", "Solution", "TTM", "ROI", "Proof", "CTA"];
 
 // ===================================================================
-// Deck shell (identical to /pitch — arrow keys, fullscreen, transitions)
+// Reusable deck shell — arrow keys, fullscreen, top bar, bottom nav.
+// Takes a `slides` prop so multiple decks (/pitch-full, /pitch-short, ...)
+// can share the same chrome without duplicating the entire 200-line shell.
 // ===================================================================
-export default function PitchFull() {
+export function PitchDeck({ slides }) {
+  // First-slide index per section (so a tab click jumps to the right place)
+  const sectionStartIndex = SECTION_ORDER.reduce((acc, sec) => {
+    acc[sec] = slides.findIndex((s) => s.section === sec);
+    return acc;
+  }, {});
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
   const containerRef = useRef(null);
@@ -1345,4 +1346,12 @@ export default function PitchFull() {
       </div>
     </div>
   );
+}
+
+// ===================================================================
+// Default export: full deck with all slides. Other deck variants
+// (e.g. /pitch-short) compose PitchDeck with their own slides arrays.
+// ===================================================================
+export default function PitchFull() {
+  return <PitchDeck slides={FULL_SLIDES} />;
 }
