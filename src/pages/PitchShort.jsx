@@ -7,8 +7,8 @@
 import { ArrowRight } from "lucide-react";
 import {
   PitchDeck,
+  SlideHero,
   Slide03Explosion,
-  SlideOnePagerSummary,
   Slide06KillerStat,
   Slide07FeedbackLoop,
   Slide10Tradeoff,
@@ -64,8 +64,12 @@ function SlideROIPreviewShort() {
 }
 
 const SHORT_SLIDES = [
-  // ----- ONE-PAGER SUMMARY (opener) -----
-  { title: "One-Pager Summary", section: "Traigent intro", component: SlideOnePagerSummary },
+  // ----- HERO (opener) -----
+  // Was using the embedded one-pager slide here, but the fixed 1280x720
+  // layout crashes iOS WebKit (Safari + Chrome). The standalone
+  // /one-pager-2 page + its PDF are still the outreach artifacts; the deck
+  // opens with the regular hero now.
+  { title: "Hero", section: "Traigent intro", component: SlideHero },
   // ----- PROBLEM -----
   { title: "The Configuration Explosion", section: "Problem", component: Slide03ExplosionShort },
   // ----- SOLUTION -----
