@@ -298,12 +298,17 @@ export function Slide02ROI() {
 // ===================================================================
 // 03 — The Configuration Explosion
 // ===================================================================
-export function Slide03Explosion() {
+export function Slide03Explosion({ subtitle } = {}) {
+  const defaultSubtitle = (
+    <>
+      Every agent has <span className="text-white font-semibold">hundreds (if not thousands)</span> of tunable variable combinations.
+    </>
+  );
   return (
     <div className="max-w-6xl mx-auto">
       <h2 className="text-5xl md:text-6xl font-bold text-white mb-8 text-center">The Configuration Explosion</h2>
       <p className="text-xl text-slate-300 mb-12 text-center max-w-3xl mx-auto leading-relaxed">
-        Every agent has <span className="text-white font-semibold">hundreds (if not thousands)</span> of tunable variable combinations.
+        {subtitle ?? defaultSubtitle}
       </p>
       <div className="grid grid-cols-2 md:grid-cols-6 gap-3 max-w-6xl mx-auto mb-12">
         {[
@@ -1041,7 +1046,22 @@ export function SlideTTMPreview() {
 // ===================================================================
 // ROI-calc preview slide — mirrors /roi calculator's headline result
 // ===================================================================
-export function SlideROIPreview() {
+export function SlideROIPreview({ subtitle, footer } = {}) {
+  const defaultSubtitle = "Auto-optimizing the cost-performance configuration saves a real range of LLM spend over the lifecycle — without sacrificing quality.";
+  const defaultFooter = (
+    <p className="text-center text-slate-300 text-base md:text-lg">
+      <span className="text-white font-semibold">Plus engineering recovery</span>
+      <a
+        href="/#/roi"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="ml-3 inline-flex items-center gap-1 underline underline-offset-4 decoration-[#4D8EF8]/50 hover:decoration-[#4D8EF8] font-medium"
+        style={{ color: "#4D8EF8" }}
+      >
+        Calculate yours <ArrowRight className="w-4 h-4" />
+      </a>
+    </p>
+  );
   return (
     <div className="max-w-6xl mx-auto">
       <div
@@ -1054,7 +1074,7 @@ export function SlideROIPreview() {
         <span style={{ color: BLUE }}>Up to 60%</span> savings on LLM costs
       </h2>
       <p className="text-lg md:text-xl text-slate-400 mb-10 max-w-3xl">
-        Auto-optimizing the cost-performance configuration saves a real range of LLM spend over the lifecycle — without sacrificing quality.
+        {subtitle ?? defaultSubtitle}
       </p>
 
       <div className="grid md:grid-cols-3 gap-5 mb-10">
@@ -1078,18 +1098,7 @@ export function SlideROIPreview() {
         </div>
       </div>
 
-      <p className="text-center text-slate-300 text-base md:text-lg">
-        <span className="text-white font-semibold">Plus engineering recovery</span>
-        <a
-          href="/#/roi"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="ml-3 inline-flex items-center gap-1 underline underline-offset-4 decoration-[#4D8EF8]/50 hover:decoration-[#4D8EF8] font-medium"
-          style={{ color: "#4D8EF8" }}
-        >
-          Calculate yours <ArrowRight className="w-4 h-4" />
-        </a>
-      </p>
+      {footer ?? defaultFooter}
     </div>
   );
 }
