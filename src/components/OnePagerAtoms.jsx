@@ -56,7 +56,7 @@ export const ONEPAGER_STYLE = `
   #hs-eu-cookie-confirmation,
   #hs-eu-cookie-confirmation-inner { display: none !important; visibility: hidden !important; }
   @media print {
-    @page { size: A4 landscape; margin: 0; }
+    @page { size: 13.333in 7.5in; margin: 0; }
     html, body { background: #080808; margin: 0; padding: 0; }
   }
 `;
