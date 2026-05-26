@@ -68,7 +68,7 @@ export function OnePager2Slide({ showHeader = true, showFooter = true, costStatV
   const useFixedHeight = showHeader && showFooter;
   return (
     <section
-      className={`relative w-[1280px] ${useFixedHeight ? "h-[720px]" : ""} bg-[#080808] text-white overflow-hidden flex flex-col px-10 pt-6 pb-8`}
+      className={`relative w-[1280px] ${useFixedHeight ? "h-[720px]" : ""} bg-[#080808] text-white overflow-hidden flex flex-col px-10 pt-4 pb-4`}
     >
       {showHeader && (
         <div className="flex items-center justify-between mb-3">
@@ -90,15 +90,15 @@ export function OnePager2Slide({ showHeader = true, showFooter = true, costStatV
       )}
 
       {/* Solution hero */}
-          <div className="mb-6">
-            <h2 className="text-[68px] font-bold tracking-tight leading-[1.05]">
+          <div className="mb-3">
+            <h2 className="text-[56px] font-bold tracking-tight leading-[1.05]">
               AI Agent Optimization —<br />
               <span style={{ color: BLUE_LIGHT }}>Fully Automated</span>
             </h2>
-            <p className="text-[36px] text-slate-300 leading-snug mt-5">
+            <p className="text-[28px] text-slate-300 leading-snug mt-3">
               <span className="font-bold text-white">Rapidly</span> finds <span className="font-bold" style={{ color: AMBER }}>Low Cost</span> and <span className="font-bold" style={{ color: BLUE_LIGHT }}>High Accuracy</span> options
             </p>
-            <p className="text-[36px] text-slate-300 leading-snug mt-2">
+            <p className="text-[28px] text-slate-300 leading-snug mt-1">
               among{" "}
               <a
                 href={`${SITE}/#/blog/the-config-multiverse`}

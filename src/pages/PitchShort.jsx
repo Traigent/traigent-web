@@ -63,7 +63,7 @@ function SlideROIPreviewShort() {
   );
 }
 
-const SHORT_SLIDES = [
+export const SHORT_SLIDES = [
   // ----- ONE-PAGER SUMMARY (opener) -----
   { title: "One-Pager Summary", section: "Traigent intro", component: SlideOnePagerSummary },
   // ----- PROBLEM -----
