@@ -303,7 +303,7 @@ function Slide03Explosion() {
     <div className="max-w-6xl mx-auto">
       <h2 className="text-5xl md:text-6xl font-bold text-white mb-8 text-center">The Configuration Explosion</h2>
       <p className="text-xl text-slate-300 mb-12 text-center max-w-3xl mx-auto leading-relaxed">
-        Every agent has <span className="text-white font-semibold">hundreds (if not thousands)</span> of tunable variable combinations.
+        Every agent has <span className="text-white font-semibold">hundreds (if not thousands)</span> of tunable variable combinations. See example below — <span className="text-slate-400">hover over boxes to see details</span>
       </p>
       <div className="grid grid-cols-2 md:grid-cols-6 gap-3 max-w-6xl mx-auto mb-12">
         {[
@@ -1054,7 +1054,7 @@ function SlideROIPreview() {
         <span style={{ color: BLUE }}>Up to 60%</span> savings on LLM costs
       </h2>
       <p className="text-lg md:text-xl text-slate-400 mb-10 max-w-3xl">
-        Auto-optimizing the cost-performance configuration saves a real range of LLM spend over the lifecycle — without sacrificing quality.
+        Auto-optimizing the cost-performance saves LLM spend.
       </p>
 
       <div className="grid md:grid-cols-3 gap-5 mb-10">
@@ -1079,15 +1079,14 @@ function SlideROIPreview() {
       </div>
 
       <p className="text-center text-slate-300 text-base md:text-lg">
-        <span className="text-white font-semibold">Plus engineering recovery</span>
         <a
           href="/#/roi"
           target="_blank"
           rel="noopener noreferrer"
-          className="ml-3 inline-flex items-center gap-1 underline underline-offset-4 decoration-[#4D8EF8]/50 hover:decoration-[#4D8EF8] font-medium"
+          className="inline-flex items-center gap-1 underline underline-offset-4 decoration-[#4D8EF8]/50 hover:decoration-[#4D8EF8] font-medium"
           style={{ color: "#4D8EF8" }}
         >
-          Calculate yours <ArrowRight className="w-4 h-4" />
+          Calculate your ROI <ArrowRight className="w-4 h-4" />
         </a>
       </p>
     </div>
@@ -1120,19 +1119,13 @@ function SlideOnePagerSummary() {
 }
 
 const slides = [
-  // ----- HERO -----
-  { title: "Hero (website mirror)", section: "Traigent intro", component: SlideHero },
-  // ----- ONE-PAGER SUMMARY (2nd slide — quick outreach pitch in one slide) -----
+  // ----- ONE-PAGER SUMMARY (opener — quick outreach pitch in one slide) -----
   { title: "One-Pager Summary", section: "Traigent intro", component: SlideOnePagerSummary },
   // ----- PROBLEM -----
   { title: "The Configuration Explosion", section: "Problem", component: Slide03Explosion },
-  { title: "The Configuration Option Explosion (millions)", section: "Problem", component: SlideExplosionMillions },
-  { title: "What Manual Tuning Looks Like", section: "Problem", component: Slide04Manual },
   // ----- SOLUTION -----
   { title: "Hours, Not Weeks (opener)", section: "Solution", component: Slide06KillerStat },
   { title: "Two Components, One Loop", section: "Solution", component: Slide07FeedbackLoop },
-  { title: "Inside the Optimization Engine", section: "Solution", component: Slide08OptEngine },
-  { title: "Inside the Agent Wrapper", section: "Solution", component: Slide09Wrapper },
   { title: "You Pick the Tradeoff", section: "Solution", component: Slide10Tradeoff },
   { title: "Confidence to Ship", section: "Solution", component: Slide11Confidence },
   { title: "Beyond Optimization", section: "Solution", component: Slide12BeyondIntro },
@@ -1140,7 +1133,6 @@ const slides = [
   { title: "Full Observability & Tracing", section: "Solution", component: Slide14Tracing },
   { title: "Across the Lifecycle", section: "Solution", component: Slide15Lifecycle },
   { title: "Three Products In One", section: "Solution", component: Slide16ThreeInOne },
-  { title: "How It Works", section: "Solution", component: Slide18FourSteps },
   { title: "Engineer-First Integration", section: "Solution", component: Slide19EngineerFirst },
   // ----- TTM -----
   { title: "Hours, Not Weeks", section: "TTM", component: Slide06KillerStat },
@@ -1166,7 +1158,7 @@ const sectionStartIndex = SECTION_ORDER.reduce((acc, sec) => {
 // ===================================================================
 // Deck shell (identical to /pitch — arrow keys, fullscreen, transitions)
 // ===================================================================
-export default function PitchFull() {
+export default function PitchShort() {
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
   const containerRef = useRef(null);
@@ -1231,7 +1223,7 @@ export default function PitchFull() {
   return (
     <div ref={containerRef} className="relative min-h-screen bg-[#080808] text-white overflow-hidden">
       <Helmet>
-        <title>Traigent — Agent Optimization Platform</title>
+        <title>Traigent — Pitch (Short)</title>
       </Helmet>
       {/* Top bar — persistent Traigent logo (links home) + slide counter + fullscreen */}
       <div className="absolute top-0 left-0 right-0 z-20 flex justify-between items-center p-4 md:p-6">

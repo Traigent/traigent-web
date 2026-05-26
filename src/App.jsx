@@ -7,6 +7,7 @@ import ValueProposition from './pages/ValueProposition'
 import TableDemo from './pages/TableDemo'
 import Pitch from './pages/Pitch'
 import PitchFull from './pages/PitchFull'
+import PitchShort from './pages/PitchShort'
 import Blog from './pages/Blog'
 import BlogPost from './pages/BlogPost'
 import ROICalculator from './pages/ROICalculator'
@@ -30,6 +31,7 @@ export default function App() {
       {/* Pitch decks & outreach one-pager — no layout/nav, full-bleed slides */}
       <Route path="pitch" element={<Pitch />} />
       <Route path="pitch-full" element={<PitchFull />} />
+      <Route path="pitch-short" element={<PitchShort />} />
       <Route path="one-pager" element={<OnePager />} />
       <Route path="one-pager-2" element={<OnePager2 />} />
 

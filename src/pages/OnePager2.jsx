@@ -57,46 +57,46 @@ function FooterLink({ href, children, color = BLUE_LIGHT }) {
   );
 }
 
-export default function OnePager2() {
+// The slide content as a standalone reusable component — used by:
+//   - <OnePager2 /> (the /one-pager-2 page route, full A4 landscape for PDF export)
+//   - PitchFull deck (second slide, header + footer hidden so the content
+//     fits in the deck slide stage without scrolling)
+// When both `showHeader` and `showFooter` are true, the section keeps its
+// fixed A4 landscape dimensions so puppeteer captures a clean 794px-tall PDF.
+// Otherwise the height collapses to content, which is what we want in the deck.
+export function OnePager2Slide({ showHeader = true, showFooter = true, costStatValue = "up to 60%" }) {
+  const useFixedHeight = showHeader && showFooter;
   return (
-    <>
-      <Helmet>
-        <title>Traigent — One-Pager #2</title>
-        <meta
-          name="description"
-          content="Single-page Traigent outreach one-pager (variant 2). Problem + solution + dual-audience benefits, condensed to one A4 landscape sheet."
-        />
-        <meta property="og:title" content="Traigent — One-Pager #2" />
-      </Helmet>
-      <style>{ONEPAGER_STYLE}</style>
-      <div className="bg-slate-950 min-h-screen flex flex-col items-center py-8 print:py-0 overflow-x-auto">
-        <section className="relative w-[1123px] h-[794px] bg-[#080808] text-white overflow-hidden flex flex-col px-10 py-6">
-          {/* Header band */}
-          <div className="flex items-center justify-between mb-3">
-            <a
-              href={`${SITE}/`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block hover:opacity-80 transition-opacity"
-              aria-label="Traigent — visit homepage"
-            >
-              <img src={LOGO_SRC} alt="Traigent" className="h-8" />
-            </a>
-            <div className="flex items-center gap-3 text-[11px] font-mono uppercase tracking-widest text-slate-500">
-              <span>AI Agent Optimization</span>
-              <span className="text-slate-700">·</span>
-              <span style={{ color: BLUE_LIGHT }}>One-Pager #2 · 1/1</span>
-            </div>
+    <section
+      className={`relative w-[1123px] ${useFixedHeight ? "h-[794px]" : ""} bg-[#080808] text-white overflow-hidden flex flex-col px-10 py-6`}
+    >
+      {showHeader && (
+        <div className="flex items-center justify-between mb-3">
+          <a
+            href={`${SITE}/`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block hover:opacity-80 transition-opacity"
+            aria-label="Traigent — visit homepage"
+          >
+            <img src={LOGO_SRC} alt="Traigent" className="h-8" />
+          </a>
+          <div className="flex items-center gap-3 text-[11px] font-mono uppercase tracking-widest text-slate-500">
+            <span>AI Agent Optimization</span>
+            <span className="text-slate-700">·</span>
+            <span style={{ color: BLUE_LIGHT }}>One-Pager #2 · 1/1</span>
           </div>
+        </div>
+      )}
 
-          {/* Solution hero */}
+      {/* Solution hero */}
           <div className="mb-14">
             <h2 className="text-[68px] font-bold tracking-tight leading-[1.05]">
               AI Agent Optimization —<br />
               <span style={{ color: BLUE_LIGHT }}>Fully Automated</span>
             </h2>
             <p className="text-[36px] text-slate-300 leading-snug mt-5">
-              <span className="font-bold text-white">Rapidly</span> finds <span className="font-bold" style={{ color: AMBER }}>Low Cost</span> and <span className="font-bold" style={{ color: BLUE_LIGHT }}>High Accuracy</span> configurations among{" "}
+              <span className="font-bold text-white">Rapidly</span> finds <span className="font-bold" style={{ color: AMBER }}>Low Cost</span> and <span className="font-bold" style={{ color: BLUE_LIGHT }}>High Accuracy</span> options among{" "}
               <a
                 href={`${SITE}/#/blog/the-config-multiverse`}
                 target="_blank"
@@ -127,7 +127,7 @@ export default function OnePager2() {
 
           {/* 2 solution stats — audience-grouped under their headers */}
           <div className="grid grid-cols-2 gap-4 mb-4">
-            <SolutionStat value="up to 80%" label="LLM cost reduction" color={AMBER} />
+            <SolutionStat value={costStatValue} label="LLM cost reduction" color={AMBER} />
             <SolutionStat value="up to 8 wks" label="Engineering time reclaimed" color={BLUE_LIGHT} />
           </div>
 
@@ -135,10 +135,9 @@ export default function OnePager2() {
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div className="bg-slate-900/70 border rounded-xl p-5" style={{ borderColor: `${AMBER}55` }}>
               <ul className="space-y-2">
-                <BenefitItem><span className="text-white font-semibold">Rapidly converges</span> to <span className="text-white font-semibold">best cost-performance</span></BenefitItem>
+                <BenefitItem><span className="text-white font-semibold">Rapidly Converges</span> to <span className="text-white font-semibold">Best Cost-Performance</span></BenefitItem>
                 <BenefitItem><span className="text-white font-semibold">Slashes costs</span> while maintaining high quality</BenefitItem>
-                <BenefitItem><span className="text-white font-semibold">ROI is immediate</span></BenefitItem>
-                <BenefitItem>Recurring savings <span className="text-white font-semibold">for the agent's lifetime</span></BenefitItem>
+                <BenefitItem>Recurring savings <span className="text-white font-semibold">through agent's lifetime</span></BenefitItem>
                 <BenefitItem><span className="text-white font-semibold">Control costs</span> with confidence</BenefitItem>
               </ul>
               <div className="pt-3">
@@ -148,9 +147,8 @@ export default function OnePager2() {
             <div className="bg-slate-900/70 border rounded-xl p-5" style={{ borderColor: `${BLUE}55` }}>
               <ul className="space-y-2">
                 <BenefitItem><span className="text-white font-semibold">Rapidly Converges</span> to <span className="text-white font-semibold">Best Accuracy</span></BenefitItem>
-                <BenefitItem>Explores the entire configuration space</BenefitItem>
                 <BenefitItem>Ship with <span className="text-white font-semibold">100% confidence</span> — <span className="text-white font-semibold">eliminate guesswork</span></BenefitItem>
-                <BenefitItem>Re-optimize on every new release <span className="text-white font-semibold">automatically</span></BenefitItem>
+                <BenefitItem>Re-optimize on every new release</BenefitItem>
                 <BenefitItem>Includes <span className="text-white font-semibold">benchmark optimization and observability</span> for free</BenefitItem>
               </ul>
               <div className="pt-3">
@@ -159,20 +157,38 @@ export default function OnePager2() {
             </div>
           </div>
 
-          {/* Bottom band: Free POC badge + CTAs — pushed to bottom of slide */}
-          <div className="flex items-center justify-between pt-3 border-t border-slate-800 gap-4 mt-auto">
-            <span className="flex items-center gap-1.5 text-[13px] text-slate-300">
-              <Zap className="w-4 h-4" style={{ color: AMBER }} />
-              <span className="text-white font-semibold">Free POC</span>
-            </span>
-            <div className="flex items-center gap-4">
-              <FooterLink href={`${SITE}/#/blog/the-config-multiverse`}>Multiverse</FooterLink>
-              <FooterLink href={`${SITE}/#/blog/the-business-case`}>Business case</FooterLink>
-              <FooterLink href="https://portal.traigent.ai">Start POC</FooterLink>
-              <FooterLink href="https://meetings-eu1.hubspot.com/amir8">Book a call</FooterLink>
-            </div>
+      {showFooter && (
+        <div className="flex items-center justify-between pt-3 border-t border-slate-800 gap-4 mt-auto">
+          <span className="flex items-center gap-1.5 text-[13px] text-slate-300">
+            <Zap className="w-4 h-4" style={{ color: AMBER }} />
+            <span className="text-white font-semibold">Free POC</span>
+          </span>
+          <div className="flex items-center gap-4">
+            <FooterLink href={`${SITE}/#/blog/the-config-multiverse`}>Multiverse</FooterLink>
+            <FooterLink href={`${SITE}/#/blog/the-business-case`}>Business case</FooterLink>
+            <FooterLink href="https://portal.traigent.ai">Start POC</FooterLink>
+            <FooterLink href="https://meetings-eu1.hubspot.com/amir8">Book a call</FooterLink>
           </div>
-        </section>
+        </div>
+      )}
+    </section>
+  );
+}
+
+export default function OnePager2() {
+  return (
+    <>
+      <Helmet>
+        <title>Traigent — One-Pager #2</title>
+        <meta
+          name="description"
+          content="Single-page Traigent outreach one-pager (variant 2). Problem + solution + dual-audience benefits, condensed to one A4 landscape sheet."
+        />
+        <meta property="og:title" content="Traigent — One-Pager #2" />
+      </Helmet>
+      <style>{ONEPAGER_STYLE}</style>
+      <div className="bg-slate-950 min-h-screen flex flex-col items-center py-8 print:py-0 overflow-x-auto">
+        <OnePager2Slide showHeader={true} />
       </div>
     </>
   );
