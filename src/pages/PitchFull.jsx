@@ -1121,9 +1121,31 @@ export function SlideROIPreview({ subtitle, footer } = {}) {
 // scrolling on 768px+ heights.
 // ===================================================================
 export function SlideOnePagerSummary() {
+  // The slide is fixed at 1280x720 to match the standalone /one-pager-2 page
+  // and the PPT 16:9 PDF output. On viewports narrower than 1280 (iPhone
+  // Safari, narrow tablets), the deck's `overflow-hidden` would otherwise
+  // clip the right side. Wrap the slide so it scales down to fit available
+  // width while preserving its 16:9 aspect ratio.
   return (
-    <div className="-my-24 flex items-center justify-center pt-14 pb-16">
-      <OnePager2Slide showHeader={false} showFooter={false} />
+    <div className="-my-24 pt-14 pb-16 w-full flex items-center justify-center overflow-hidden">
+      <div
+        className="relative"
+        style={{ width: "min(1280px, 100vw)", aspectRatio: "1280 / 720" }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: 1280,
+            height: 720,
+            transformOrigin: "top left",
+            transform: "scale(min(1, calc(100vw / 1280)))",
+          }}
+        >
+          <OnePager2Slide showHeader={false} showFooter={false} />
+        </div>
+      </div>
     </div>
   );
 }
