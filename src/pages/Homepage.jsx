@@ -1047,12 +1047,12 @@ def answer_question(question: str) -> str:
           <div className="border-t border-slate-800 mt-12 pt-8 text-center text-slate-500">
             <p>
               © {new Date().getFullYear()} Traigent Ltd. All rights reserved.{" "}
-              {/* Hidden sales-deck shortcut: right-click the dot to open /pitch-full in a new tab.
+              {/* Hidden sales-deck shortcut: right-click the dot to open /pitch-short in a new tab.
                   Looks decorative to visitors. No left-click handler. */}
               <span
                 onContextMenu={(e) => {
                   e.preventDefault();
-                  window.open("#/pitch-full", "_blank", "noopener,noreferrer");
+                  window.open("#/pitch-short", "_blank", "noopener,noreferrer");
                 }}
                 aria-hidden="true"
                 title=""
