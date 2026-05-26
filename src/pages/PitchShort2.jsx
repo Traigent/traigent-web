@@ -40,7 +40,7 @@ export default function PitchShort2() {
               key={`${i}-${slide.title}`}
               className="min-h-screen flex items-center justify-center bg-[#080808] border-b border-slate-900/60 last:border-b-0 px-4 md:px-12 py-12"
             >
-              <div className="relative w-full max-w-[1280px] mx-auto border border-slate-600 rounded-lg pt-16 pb-12 px-4 md:px-10 min-h-[500px] md:min-h-[700px]">
+              <div className="relative w-full max-w-[1280px] mx-auto border border-slate-600 rounded-lg pt-16 pb-12 px-4 md:px-10 aspect-[16/9] overflow-hidden">
                 <a
                   href="https://www.traigent.ai/"
                   target="_blank"
