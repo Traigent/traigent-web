@@ -1,15 +1,61 @@
-// /pitch-short-2 — same slides as /pitch-short, but rendered as a vertical
-// scrollable page (one slide per viewport-height section). No top bar, no
-// bottom nav, no keyboard handlers, no animated transitions. Designed for
-// recipients who prefer scrolling over slide-by-slide presentation chrome.
+// /pitch-short-2 - same slides as /pitch-short, but rendered as a vertical
+// scrollable page. Each slide is a fixed 1280x720 canvas scaled down to fit
+// the viewport, which keeps it readable on iPhone landscape without clipping.
+import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { SHORT_SLIDES } from "./PitchShort";
 import { OnePager2Slide } from "./OnePager2";
 import BrandMark from "../components/BrandMark";
 
-// Slide 1 in /pitch-short uses SlideOnePagerSummary which wraps OnePager2Slide
-// with deck-specific negative margins. In scroll mode there's no deck padding
-// to cancel, so render OnePager2Slide directly here.
+const SLIDE_W = 1280;
+const SLIDE_H = 720;
+const VIEWPORT_MARGIN = 16;
+
+function getScale() {
+  if (typeof window === "undefined") return 1;
+  const availableW = Math.max(320, window.innerWidth - VIEWPORT_MARGIN);
+  const availableH = Math.max(240, window.innerHeight - VIEWPORT_MARGIN);
+  return Math.min(1, availableW / SLIDE_W, availableH / SLIDE_H);
+}
+
+function useViewportScale() {
+  const [scale, setScale] = useState(getScale);
+
+  useEffect(() => {
+    const update = () => setScale(getScale());
+    window.addEventListener("resize", update);
+    window.addEventListener("orientationchange", update);
+    return () => {
+      window.removeEventListener("resize", update);
+      window.removeEventListener("orientationchange", update);
+    };
+  }, []);
+
+  return scale;
+}
+
+function useRemoveChatWidget() {
+  useEffect(() => {
+    const removeChat = () => {
+      window.HubSpotConversations?.widget?.remove?.();
+      document.querySelectorAll(
+        [
+          "#hubspot-messages-iframe-container",
+          "#hubspot-conversations-iframe",
+          ".hs-shadow-container",
+          "iframe[src*='conversations-visitor']",
+        ].join(",")
+      ).forEach((node) => node.remove());
+    };
+
+    removeChat();
+    const observer = new MutationObserver(removeChat);
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    return () => observer.disconnect();
+  }, []);
+}
+
 function ScrollOnePagerOpener() {
   return <OnePager2Slide showHeader={false} showFooter={false} />;
 }
@@ -18,49 +64,93 @@ const SCROLL_SLIDES = SHORT_SLIDES.map((s, i) =>
   i === 0 ? { ...s, component: ScrollOnePagerOpener } : s
 );
 
+function SlideCanvas({ slide, index, total, scale }) {
+  const Slide = slide.component;
+
+  return (
+    <section
+      className="min-h-[100svh] flex items-center justify-center bg-[#080808] border-b border-slate-900/70 last:border-b-0"
+      style={{ padding: `${VIEWPORT_MARGIN / 2}px` }}
+    >
+      <div
+        className="relative shrink-0"
+        style={{
+          width: SLIDE_W * scale,
+          height: SLIDE_H * scale,
+        }}
+      >
+        <div
+          className="pitch-short-2-slide relative bg-[#080808] text-white overflow-hidden border border-slate-600"
+          style={{
+            width: SLIDE_W,
+            height: SLIDE_H,
+            transform: `scale(${scale})`,
+            transformOrigin: "top left",
+          }}
+        >
+          <a
+            href="https://www.traigent.ai/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="absolute top-4 left-4 z-10 hover:opacity-80 transition-opacity"
+            aria-label="Traigent.ai"
+          >
+            <BrandMark size="md" />
+          </a>
+
+          <div
+            className={`h-full w-full flex items-center justify-center ${
+              index === 0 ? "" : "px-10 pt-16 pb-12"
+            }`}
+          >
+            <Slide />
+          </div>
+
+          <span className="absolute bottom-3 right-4 text-slate-500 text-sm font-mono">
+            {index + 1} / {total}
+          </span>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function PitchShort2() {
+  const scale = useViewportScale();
+  useRemoveChatWidget();
+
   return (
     <>
       <Helmet>
-        <title>Traigent — Pitch (Scroll)</title>
+        <title>Traigent - Pitch (Scroll)</title>
       </Helmet>
-      {/* Suppress HubSpot chat widget + cookie banner. NOTE: do NOT include
-          `.hs-messages-mobile` — that selector matches React's own root in
-          some dev builds and blanks the entire page on mobile. */}
       <style>{`
         #hubspot-messages-iframe-container,
+        #hubspot-conversations-iframe,
+        .hs-shadow-container,
+        iframe[src*="conversations-visitor"],
         .hs-banner-iframe,
         #hs-eu-cookie-confirmation,
         #hs-eu-cookie-confirmation-inner { display: none !important; }
+        @supports (height: 100svh) {
+          html, body, #root { min-height: 100svh; }
+        }
+        .pitch-short-2-slide div[class*="lg:grid-cols"] {
+          display: grid !important;
+          grid-template-columns: minmax(0, 1fr) 180px minmax(0, 1fr) !important;
+          gap: 1.5rem !important;
+        }
       `}</style>
       <div className="bg-[#080808] text-white">
-        {SCROLL_SLIDES.map((slide, i) => {
-          const Slide = slide.component;
-          return (
-            <section
-              key={`${i}-${slide.title}`}
-              className="min-h-screen flex items-center justify-center bg-[#080808] border-b border-slate-900/60 last:border-b-0 px-4 md:px-12 py-12"
-            >
-              <div className="relative w-full max-w-[1280px] mx-auto border border-slate-600 rounded-lg pt-16 pb-12 px-4 md:px-10 min-h-[500px] md:min-h-[700px]">
-                <a
-                  href="https://www.traigent.ai/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="absolute top-4 left-4 z-10 hover:opacity-80 transition-opacity"
-                  aria-label="Traigent.ai"
-                >
-                  <BrandMark size="md" />
-                </a>
-                <div className="flex items-center justify-center">
-                  <Slide />
-                </div>
-                <span className="absolute bottom-3 right-4 text-slate-500 text-xs md:text-sm font-mono">
-                  {i + 1} / {SCROLL_SLIDES.length}
-                </span>
-              </div>
-            </section>
-          );
-        })}
+        {SCROLL_SLIDES.map((slide, i) => (
+          <SlideCanvas
+            key={`${i}-${slide.title}`}
+            slide={slide}
+            index={i}
+            total={SCROLL_SLIDES.length}
+            scale={scale}
+          />
+        ))}
       </div>
     </>
   );
