@@ -931,7 +931,7 @@ export function Slide19EngineerFirst() {
 // ===================================================================
 // 20 — Get Started
 // ===================================================================
-export function Slide20GetStarted() {
+export function Slide20GetStarted({ bookingHref = "https://meetings-eu1.hubspot.com/amir8" } = {}) {
   return (
     <div className="text-center max-w-5xl mx-auto">
       <h2 className="text-5xl md:text-6xl font-bold text-white mb-4">Get Started</h2>
@@ -950,7 +950,7 @@ export function Slide20GetStarted() {
           <h3 className="text-2xl font-bold text-white mb-3">Book a pilot</h3>
           <p className="text-slate-400 mb-5 text-sm">Pick one production agent. 2–4 week engagement. Measurable outcome.</p>
           <a
-            href="https://meetings-eu1.hubspot.com/amir8"
+            href={bookingHref}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block text-white px-6 py-3 rounded-lg font-medium text-base hover:opacity-90 transition-opacity"

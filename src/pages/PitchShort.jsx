@@ -6,6 +6,13 @@
 // JSX is duplicated from PitchFull.
 import { ArrowRight } from "lucide-react";
 import {
+  OptimizationEngineBody,
+  FeedbackLoopConnector,
+  AgentWrapperBody,
+  BenchmarkCardBody,
+  ObservabilityCardBody,
+} from "../components/PlatformShowcase";
+import {
   PitchDeck,
   SlideOnePagerSummary,
   Slide03Explosion,
@@ -42,6 +49,13 @@ function Slide03ExplosionShort() {
 
 // Slide 15: same body as the full deck, with a single centered "Calculate
 // your ROI" link in place of the "Plus engineering recovery" callout.
+// Slide 20: same body as the full deck, but the "Book a pilot" CTA points to
+// traigent.ai's /get-started page instead of the HubSpot meeting scheduler.
+// The /pitch-short-2 deck is shared externally and must keep links on-domain.
+function Slide20GetStartedShort() {
+  return <Slide20GetStarted bookingHref="https://www.traigent.ai/#/get-started" />;
+}
+
 function SlideROIPreviewShort() {
   return (
     <SlideROIPreview
@@ -60,6 +74,47 @@ function SlideROIPreviewShort() {
         </p>
       }
     />
+  );
+}
+
+// Slide: Agent Optimization Platform — two-box layout pasted as-is from the
+// homepage product section (shared bodies in components/PlatformShowcase).
+function SlidePlatformBoxes() {
+  return (
+    <div className="w-full">
+      <div className="text-center mb-6">
+        <h2 className="text-3xl md:text-4xl font-bold text-white">Agent Optimization Platform</h2>
+      </div>
+      <div className="flex flex-col gap-6 items-stretch lg:grid lg:grid-cols-[1fr_180px_1fr] lg:gap-6">
+        <div className="flex-1 bg-slate-900/60 border border-slate-700/50 rounded-2xl p-8">
+          <OptimizationEngineBody />
+        </div>
+        <FeedbackLoopConnector />
+        <div className="flex-1 bg-slate-900/60 border border-slate-700/50 rounded-2xl p-8">
+          <AgentWrapperBody />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Slide: Beyond Optimization — two-card layout pasted as-is from the homepage
+// (shared bodies in components/PlatformShowcase).
+function SlideBeyondBoxes() {
+  return (
+    <div className="w-full">
+      <div className="text-center mb-6">
+        <h2 className="text-3xl md:text-4xl font-bold text-white">Beyond Optimization</h2>
+      </div>
+      <div className="grid md:grid-cols-2 gap-6 items-stretch">
+        <div className="bg-slate-900/60 border border-amber-500/30 rounded-2xl p-8">
+          <BenchmarkCardBody />
+        </div>
+        <div className="bg-slate-900/60 border border-amber-500/30 rounded-2xl p-8">
+          <ObservabilityCardBody />
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -87,8 +142,11 @@ export const SHORT_SLIDES = [
   // ----- PROOF -----
   { title: "Customers", section: "Proof", component: Slide17Customers },
   // ----- CTA -----
-  { title: "Get Started", section: "CTA", component: Slide20GetStarted },
+  { title: "Get Started", section: "CTA", component: Slide20GetStartedShort },
   { title: "Better Agents. Faster. Lower Spend. Higher Confidence.", section: "CTA", component: Slide21Closing },
+  // ----- APPENDIX: homepage-style detail slides -----
+  { title: "Agent Optimization Platform — Components", section: "Appendix", component: SlidePlatformBoxes },
+  { title: "Beyond Optimization — Capabilities", section: "Appendix", component: SlideBeyondBoxes },
 ];
 
 export default function PitchShort() {
