@@ -117,32 +117,40 @@ export default function Homepage() {
           background: 'radial-gradient(ellipse, rgba(26,107,245,0.18) 0%, transparent 70%)'
         }}></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 md:pt-14 pb-6 md:pb-8">
-          {/* Traigent Logo */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="mb-5 text-center"
-          >
-            <img
-              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/057ce2_TraigentLogoWhiteCropped.png"
-              alt="Traigent Logo"
-              className="h-16 md:h-20 lg:h-24 w-auto mx-auto"
-            />
-          </motion.div>
-
           {/* Centered hero content */}
           <div className="text-center max-w-4xl mx-auto">
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.05] tracking-tight mb-6"
+              className="text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.55] tracking-tight mb-6"
               style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.03em' }}
             >
-              <span className="whitespace-nowrap">AI Agent <span className="text-[#1A6BF5]">Cost-Performance</span></span><br/>
-              Optimized. <span className="text-[#1A6BF5]">Automatically.</span>
+              AI Agent Optimization —<br />
+              <span className="text-[#4D8EF8]">Fully Automated</span>
             </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.15 }}
+              className="text-2xl md:text-3xl lg:text-[2rem] text-slate-300 leading-snug mb-3"
+            >
+              <span className="font-bold text-white">Rapidly</span> finds <span className="font-bold text-[#f59e0b]">Low Cost</span> and <span className="font-bold text-[#4D8EF8]">High Accuracy</span> options
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.18 }}
+              className="text-2xl md:text-3xl lg:text-[2rem] text-slate-300 leading-snug mb-10"
+            >
+              among{" "}
+              <Link
+                to="/blog/the-config-multiverse"
+                className="font-bold text-white underline underline-offset-4 decoration-white/40 hover:decoration-white transition-colors"
+              >
+                thousands possible
+              </Link>
+            </motion.p>
             {/* Two-column value summary: HOW (method) + BENEFITS (outcomes) */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -225,136 +233,9 @@ export default function Homepage() {
                     </li>
                   ))}
                 </ul>
-                {/* Benefits dropdown — at bottom of Benefits card */}
-                <div ref={benefitsRef} className="relative mt-5 pt-4 border-t border-blue-500/30 text-center">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setBenefitsOpen((v) => !v);
-                      trackEvent("hero_benefits_dropdown_toggled", { open: !benefitsOpen });
-                    }}
-                    aria-haspopup="menu"
-                    aria-expanded={benefitsOpen}
-                    className="group inline-flex items-center gap-1.5 text-base md:text-lg transition-colors"
-                    style={{ color: "#4D8EF8" }}
-                  >
-                    <span className="underline underline-offset-4 decoration-[#4D8EF8]/50 group-hover:decoration-[#4D8EF8] font-semibold">
-                      Benefits explained
-                    </span>
-                    <ChevronDown
-                      className={`w-4 h-4 transition-transform ${benefitsOpen ? "rotate-180" : ""}`}
-                      aria-hidden="true"
-                    />
-                  </button>
-                  {benefitsOpen && (
-                    <div
-                      role="menu"
-                      className="absolute left-1/2 -translate-x-1/2 mt-2 w-[min(92vw,640px)] z-30 bg-slate-950 border border-slate-700 rounded-xl shadow-2xl overflow-hidden text-left grid grid-cols-1 md:grid-cols-2 md:divide-x md:divide-slate-800"
-                    >
-                    {/* Left column — calculators */}
-                    <div>
-                      <div className="px-4 pt-3 pb-1 text-[10px] font-mono uppercase tracking-widest text-slate-500">
-                        See it on your numbers
-                      </div>
-                      <Link
-                        to="/roi"
-                        role="menuitem"
-                        onClick={() => {
-                          setBenefitsOpen(false);
-                          trackEvent("hero_roi_hook_clicked", { destination: "roi" });
-                        }}
-                        className="block px-4 py-3 text-sm text-slate-200 hover:bg-slate-900 hover:text-white border-b border-slate-800 transition-colors"
-                      >
-                        <div className="font-semibold text-[#4D8EF8]">ROI Calculator</div>
-                        <div className="text-xs text-slate-400 mt-0.5">12-month savings</div>
-                      </Link>
-                      <Link
-                        to="/ttm"
-                        role="menuitem"
-                        onClick={() => {
-                          setBenefitsOpen(false);
-                          trackEvent("hero_ttm_hook_clicked", { destination: "ttm" });
-                        }}
-                        className="block px-4 py-3 text-sm text-slate-200 hover:bg-slate-900 hover:text-white transition-colors"
-                      >
-                        <div className="font-semibold text-[#4D8EF8]">TTM Calculator</div>
-                        <div className="text-xs text-slate-400 mt-0.5">Engineering time saved</div>
-                      </Link>
-                    </div>
-
-                    {/* Right column — reading */}
-                    <div className="border-t border-slate-800 md:border-t-0">
-                      <div className="px-4 pt-3 pb-1 text-[10px] font-mono uppercase tracking-widest text-slate-500">
-                        Read more
-                      </div>
-                      <Link
-                        to="/blog/the-business-case"
-                        role="menuitem"
-                        onClick={() => {
-                          setBenefitsOpen(false);
-                          trackEvent("hero_skeptic_hook_clicked", { destination: "the-business-case" });
-                        }}
-                        className="block px-4 py-3 text-sm text-slate-200 hover:bg-slate-900 hover:text-white border-b border-slate-800 transition-colors"
-                      >
-                        <div className="font-semibold text-[#4D8EF8]">The business case</div>
-                        <div className="text-xs text-slate-400 mt-0.5">Quantified savings, the math behind ROI.</div>
-                      </Link>
-                      <Link
-                        to="/value-proposition"
-                        role="menuitem"
-                        onClick={() => {
-                          setBenefitsOpen(false);
-                          trackEvent("hero_problem_hook_clicked", { destination: "value-proposition" });
-                        }}
-                        className="block px-4 py-3 text-sm text-slate-200 hover:bg-slate-900 hover:text-white border-b border-slate-800 transition-colors"
-                      >
-                        <div className="font-semibold text-[#4D8EF8]">The problem we solve</div>
-                        <div className="text-xs text-slate-400 mt-0.5">The 6-truth chain that leads to Traigent.</div>
-                      </Link>
-                      <Link
-                        to="/blog"
-                        role="menuitem"
-                        onClick={() => {
-                          setBenefitsOpen(false);
-                          trackEvent("hero_blog_hook_clicked", { destination: "blog" });
-                        }}
-                        className="block px-4 py-3 text-sm text-slate-200 hover:bg-slate-900 hover:text-white transition-colors"
-                      >
-                        <div className="font-semibold text-[#4D8EF8]">Why Traigent</div>
-                        <div className="text-xs text-slate-400 mt-0.5">Deeper reading: model myth, eval trap, more.</div>
-                      </Link>
-                    </div>
-                  </div>
-                  )}
-                </div>
               </div>
             </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.28 }}
-              className="mb-12 flex flex-wrap justify-center gap-3"
-            >
-              <Link
-                to={createPageUrl("/get-started")}
-                onClick={() => trackEvent("hero_get_started_clicked", { destination: "get-started" })}
-                className="inline-flex items-center justify-center bg-white text-slate-950 hover:bg-slate-100 px-5 py-3 rounded-lg text-sm font-semibold transition-colors whitespace-nowrap"
-              >
-                Get started
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-              <a
-                href={PORTAL_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => trackEvent("portal_opened", { location: "hero" })}
-                className="inline-flex items-center justify-center border border-blue-400/70 text-white hover:bg-blue-500/15 px-5 py-3 rounded-lg text-sm font-semibold transition-colors whitespace-nowrap"
-              >
-                Open portal
-                <ExternalLink className="ml-2 h-4 w-4" />
-              </a>
-            </motion.div>
 
             {/* Design Partners & Early Adopters */}
             <motion.div
@@ -362,24 +243,24 @@ export default function Homepage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="mb-12 scroll-mt-20"
+              className="mt-6 md:mt-8 mb-20 md:mb-28 scroll-mt-20"
             >
-              <p className="text-center text-xs text-slate-500 uppercase tracking-widest font-medium mb-6">Customers</p>
+              <p className="text-center text-sm md:text-base text-slate-300 uppercase tracking-widest font-bold mb-8">Customers</p>
               <div className="relative overflow-hidden">
                 <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#080808] to-transparent z-10"></div>
                 <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#080808] to-transparent z-10"></div>
-                <div className="flex gap-12 items-center animate-scroll" style={{ width: 'max-content', animation: 'scroll 40s linear infinite' }}>
+                <div className="flex gap-16 items-center animate-scroll" style={{ width: 'max-content', animation: 'scroll 40s linear infinite' }}>
                   {/* 8 copies of the 5-logo set so total content is always wide
                       enough to keep the right half filled on large viewports.
                       The animation translates -50% (= 4 copies), which lands
                       on the visually-identical 5th copy → seamless loop. */}
                   {[...Array(8)].map((_, setIndex) => (
                     <React.Fragment key={setIndex}>
-                      <div className="text-slate-500 text-sm font-semibold whitespace-nowrap">Bazak</div>
-                      <div className="text-slate-500 text-sm font-semibold whitespace-nowrap">iForAI</div>
-                      <div className="text-slate-500 text-sm font-semibold whitespace-nowrap">Cloudzone</div>
-                      <div className="text-slate-500 text-sm font-semibold whitespace-nowrap">Profisea</div>
-                      <div className="text-slate-500 text-sm font-semibold whitespace-nowrap">Yotpo</div>
+                      <div className="text-slate-300 text-xl md:text-2xl font-bold whitespace-nowrap">Bazak</div>
+                      <div className="text-slate-300 text-xl md:text-2xl font-bold whitespace-nowrap">iForAI</div>
+                      <div className="text-slate-300 text-xl md:text-2xl font-bold whitespace-nowrap">Cloudzone</div>
+                      <div className="text-slate-300 text-xl md:text-2xl font-bold whitespace-nowrap">Profisea</div>
+                      <div className="text-slate-300 text-xl md:text-2xl font-bold whitespace-nowrap">Yotpo</div>
                     </React.Fragment>
                   ))}
                 </div>
@@ -1047,12 +928,12 @@ def answer_question(question: str) -> str:
           <div className="border-t border-slate-800 mt-12 pt-8 text-center text-slate-500">
             <p>
               © {new Date().getFullYear()} Traigent Ltd. All rights reserved.{" "}
-              {/* Hidden sales-deck shortcut: right-click the dot to open /pitch-short in a new tab.
+              {/* Hidden sales-deck shortcut: right-click the dot to open /pitch-short-2 in a new tab.
                   Looks decorative to visitors. No left-click handler. */}
               <span
                 onContextMenu={(e) => {
                   e.preventDefault();
-                  window.open("#/pitch-short", "_blank", "noopener,noreferrer");
+                  window.open("#/pitch-short-2", "_blank", "noopener,noreferrer");
                 }}
                 aria-hidden="true"
                 title=""
