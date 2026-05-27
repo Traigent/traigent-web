@@ -206,20 +206,20 @@ export default function Homepage() {
                 <ul className="space-y-3">
                   {[
                     {
-                      content: <><span className="text-white font-semibold">Reduces engineering costs.</span></>,
+                      content: <><span className="text-white font-semibold">Reduce engineering costs.</span></>,
                       to: "/ttm",
                       linkLabel: "TTM calc",
                     },
                     {
-                      content: <><span className="text-white font-semibold">Saves LLM costs</span> over the lifecycle.</>,
+                      content: <><span className="text-white font-semibold">Save LLM costs</span> over the lifecycle.</>,
                       to: "/roi",
                       linkLabel: "ROI calc",
                     },
                     {
-                      content: <><span className="text-white font-semibold">Shortens time to market.</span></>,
+                      content: <><span className="text-white font-semibold">Shorten time to market.</span></>,
                     },
                     {
-                      content: <><span className="text-white font-semibold">Increases confidence</span> significantly.</>,
+                      content: <>Ship with <span className="text-white font-semibold">100% confidence</span>.</>,
                     },
                   ].map((b, i) => (
                     <li key={i} className="flex items-start gap-2.5 text-slate-300 leading-snug">
