@@ -977,7 +977,7 @@ export function Slide21Closing() {
         <span style={{ color: BLUE }}>Higher Confidence.</span>
       </h1>
       <p className="text-2xl md:text-3xl text-slate-300 font-medium mb-16 max-w-3xl mx-auto" style={{ textWrap: "balance" }}>
-        <span style={{ color: BLUE }} className="font-bold">Traigent</span> — AI Agent <span style={{ color: BLUE }} className="font-semibold">Cost-Performance</span>. Optimized. <span style={{ color: BLUE }} className="font-semibold">Automatically.</span>
+        <span className="whitespace-nowrap"><span style={{ color: BLUE }} className="font-bold">Traigent</span> — AI Agent <span style={{ color: BLUE }} className="font-semibold">Cost-Performance</span>.</span> Optimized. <span style={{ color: BLUE }} className="font-semibold">Automatically.</span>
       </p>
       <p className="text-lg text-slate-500 font-mono">amir@traigent.ai · traigent.ai</p>
     </div>
