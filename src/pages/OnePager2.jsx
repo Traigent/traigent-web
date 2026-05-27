@@ -16,11 +16,11 @@ import {
 // ---------- Solution stat (full-size for one-pager-2) ----------
 function SolutionStat({ value, label, color }) {
   return (
-    <div className="bg-slate-900/70 border-2 rounded-xl p-5 text-center" style={{ borderColor: `${color}66` }}>
-      <div className="text-4xl font-extrabold tracking-tight leading-none mb-2" style={{ color }}>
+    <div className="bg-slate-900/70 border-2 rounded-xl px-5 py-3 text-center" style={{ borderColor: `${color}66` }}>
+      <div className="text-4xl font-extrabold tracking-tight leading-none mb-1" style={{ color }}>
         {value}
       </div>
-      <div className="text-[16px] font-mono uppercase tracking-wider text-slate-300 leading-snug">{label}</div>
+      <div className="text-[15px] font-mono uppercase tracking-wider text-slate-300 leading-snug">{label}</div>
     </div>
   );
 }
@@ -68,7 +68,7 @@ export function OnePager2Slide({ showHeader = true, showFooter = true, costStatV
   const useFixedHeight = showHeader && showFooter;
   return (
     <section
-      className={`relative w-[1280px] ${useFixedHeight ? "h-[720px]" : ""} bg-[#080808] text-white overflow-hidden flex flex-col px-10 pt-4 pb-4`}
+      className={`relative w-[1280px] ${useFixedHeight ? "h-[720px]" : ""} bg-[#080808] text-white overflow-hidden flex flex-col px-10 ${showHeader ? "pt-4" : "pt-1"} pb-4`}
     >
       {showHeader && (
         <div className="flex items-center justify-between mb-3">
@@ -90,7 +90,7 @@ export function OnePager2Slide({ showHeader = true, showFooter = true, costStatV
       )}
 
       {/* Solution hero */}
-          <div className="mb-3">
+          <div className="mb-12 text-center">
             <h2 className="text-[56px] font-bold tracking-tight leading-[1.05]">
               AI Agent Optimization —<br />
               <span style={{ color: BLUE_LIGHT }}>Fully Automated</span>
@@ -138,10 +138,10 @@ export function OnePager2Slide({ showHeader = true, showFooter = true, costStatV
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div className="bg-slate-900/70 border rounded-xl p-5" style={{ borderColor: `${AMBER}55` }}>
               <ul className="space-y-2">
-                <BenefitItem><span className="text-white font-semibold">Rapidly Converges</span> to <span className="text-white font-semibold">Best Cost-Performance</span></BenefitItem>
-                <BenefitItem><span className="text-white font-semibold">Slashes costs</span> while maintaining high quality</BenefitItem>
+                <BenefitItem><span className="text-white font-semibold">Rapidly Converge</span> to <span className="font-semibold">Best </span><span className="font-semibold" style={{ color: AMBER }}>Cost</span><span className="font-semibold">-</span><span className="font-semibold" style={{ color: BLUE_LIGHT }}>Performance</span></BenefitItem>
+                <BenefitItem><span className="text-white font-semibold">Slash costs</span> while maintaining high quality</BenefitItem>
                 <BenefitItem>Recurring savings <span className="text-white font-semibold">through agent's lifetime</span></BenefitItem>
-                <BenefitItem><span className="text-white font-semibold">Control costs</span> with confidence</BenefitItem>
+                <BenefitItem><span className="text-white font-semibold">Faster TTM</span>, <span className="text-white font-semibold">More productivity</span></BenefitItem>
               </ul>
               <div className="pt-3">
                 <FooterLink href={`${SITE}/#/roi`} color={AMBER}>Compute your ROI</FooterLink>
@@ -149,10 +149,10 @@ export function OnePager2Slide({ showHeader = true, showFooter = true, costStatV
             </div>
             <div className="bg-slate-900/70 border rounded-xl p-5" style={{ borderColor: `${BLUE}55` }}>
               <ul className="space-y-2">
-                <BenefitItem><span className="text-white font-semibold">Rapidly Converges</span> to <span className="text-white font-semibold">Best Accuracy</span></BenefitItem>
-                <BenefitItem>Ship with <span className="text-white font-semibold">100% confidence</span> — <span className="text-white font-semibold">eliminate guesswork</span></BenefitItem>
+                <BenefitItem><span className="text-white font-semibold">Rapidly Converge</span> to <span className="font-semibold" style={{ color: BLUE_LIGHT }}>Best Accuracy</span></BenefitItem>
+                <BenefitItem>Ship <span className="text-white font-semibold">fast</span> with <span className="text-white font-semibold">100% confidence</span> — <span className="text-white font-semibold">no guesswork</span></BenefitItem>
                 <BenefitItem>Re-optimize on every new release</BenefitItem>
-                <BenefitItem>Includes <span className="text-white font-semibold">benchmark optimization and observability</span> for free</BenefitItem>
+                <BenefitItem><span className="text-white font-semibold">Observability and benchmark optimization</span> included</BenefitItem>
               </ul>
               <div className="pt-3">
                 <FooterLink href={`${SITE}/#/ttm`} color={BLUE_LIGHT}>Compute your TTM</FooterLink>

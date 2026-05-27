@@ -73,14 +73,14 @@ export default function Homepage() {
     <div className="bg-white">
       <Helmet>
         <title>Traigent — Agent Optimization Platform</title>
-        <meta name="description" content="Traigent finds the optimum agent configuration in hours not weeks, automatically not manually. Optimization + Benchmark Evolution + Observability and Tracing — in one platform." />
+        <meta name="description" content="Rapidly finds Low Cost and High Accuracy options among thousands possible." />
         <meta property="og:title" content="Traigent — AI Agent Optimization Platform" />
-        <meta property="og:description" content="Find the optimum agent configuration in hours, automatically. Optimization + Benchmark Evolution + Observability — in one platform." />
+        <meta property="og:description" content="Rapidly finds Low Cost and High Accuracy options among thousands possible." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://traigent.ai" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Traigent — AI Agent Optimization Platform" />
-        <meta name="twitter:description" content="Find the optimum agent configuration in hours, automatically." />
+        <meta name="twitter:description" content="Rapidly finds Low Cost and High Accuracy options among thousands possible." />
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
