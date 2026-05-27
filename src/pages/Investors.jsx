@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
+import BrandMark from '../components/BrandMark'
 
 const styles = `
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -325,7 +326,7 @@ export default function Investors() {
           <div className="pw-gate">
             <div className="pw-box">
               <a href="/" className="logo">
-                <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/057ce2_TraigentLogoWhiteCropped.png" alt="Traigent" height="22" style={{ display: 'block', height: '22px', width: 'auto' }} />
+                <BrandMark size="sm" />
               </a>
               <h2>Investor Access</h2>
               <p>This page contains confidential investor information. Please enter the password to continue.</p>
@@ -369,7 +370,7 @@ export default function Investors() {
         <nav>
           <div className="ni">
             <a href="/" className="logo">
-              <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/057ce2_TraigentLogoWhiteCropped.png" alt="Traigent" height="22" style={{ display: 'block', height: '22px', width: 'auto' }} />
+              <BrandMark size="sm" />
             </a>
             <div className="nl">
               <a href="#market" onClick={(e) => { e.preventDefault(); document.getElementById('market')?.scrollIntoView({ behavior: 'smooth' }) }}>Market</a>
@@ -649,7 +650,7 @@ export default function Investors() {
             <div className="ft">
               <div className="fb">
                 <a href="/" className="logo">
-                  <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/057ce2_TraigentLogoWhiteCropped.png" alt="Traigent" height="20" style={{ display: 'block', height: '20px', width: 'auto' }} />
+                  <BrandMark size="sm" />
                 </a>
                 <p>The continuous optimization infrastructure for enterprise GenAI. Trust your AI agent at scale.</p>
               </div>

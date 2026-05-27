@@ -19,7 +19,7 @@ function SlideHook() {
   return (
     <div className="text-center max-w-5xl mx-auto">
       <h1 className="text-6xl md:text-7xl lg:text-8xl font-extrabold text-white mb-8 tracking-tight">
-        Traigent
+        Traigent.ai
       </h1>
       <p className="text-2xl md:text-3xl text-slate-200 mb-10 font-medium leading-tight" style={{ textWrap: "balance" }}>
         The most advanced <span style={{ color: BLUE }} className="font-bold">AI Agent Optimization Platform</span> on the market

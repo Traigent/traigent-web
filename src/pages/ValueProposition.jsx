@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import BrandMark from "../components/BrandMark";
 
 // ============================================================================
 // V2's 6 truths — logical chain that leads to the Traigent Solution.
@@ -473,11 +474,7 @@ export default function ValueProposition() {
       <header className="bg-gradient-to-br from-slate-950 to-indigo-950 py-12 border-b border-slate-800">
         <div className="max-w-5xl mx-auto px-6">
           <FadeInView>
-            <img
-              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/057ce2_TraigentLogoWhiteCropped.png"
-              alt="Traigent Logo"
-              className="h-14 mb-6"
-            />
+            <BrandMark size="lg" className="mb-6" />
             <h2 className="text-3xl md:text-4xl font-bold mb-3">
               The First <span className="text-indigo-400">AI Agents Continuous Optimization</span> Infrastructure
             </h2>

@@ -9,9 +9,9 @@ import {
   BLUE_LIGHT,
   AMBER,
   SITE,
-  LOGO_SRC,
   ONEPAGER_STYLE,
 } from "../components/OnePagerAtoms";
+import BrandMark from "../components/BrandMark";
 
 // ---------- Solution stat (full-size for one-pager-2) ----------
 function SolutionStat({ value, label, color }) {
@@ -79,7 +79,7 @@ export function OnePager2Slide({ showHeader = true, showFooter = true, costStatV
             className="inline-block hover:opacity-80 transition-opacity"
             aria-label="Traigent — visit homepage"
           >
-            <img src={LOGO_SRC} alt="Traigent" className="h-8" />
+            <BrandMark size="md" />
           </a>
           <div className="flex items-center gap-3 text-[11px] font-mono uppercase tracking-widest text-slate-500">
             <span>AI Agent Optimization</span>

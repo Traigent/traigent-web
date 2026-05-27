@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { ChevronDown, Github, Menu, X } from "lucide-react";
 import StartNowModal from "./StartNowModal";
+import BrandMark from "./BrandMark";
 import { trackEvent } from "../lib/analytics";
 
 const PORTAL_URL = "https://portal.traigent.ai";
@@ -202,15 +203,10 @@ export default function TopNav() {
                   window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
                 }
               }}
-              className="flex items-center text-xl font-bold text-white leading-none"
+              className="flex items-center leading-none"
+              aria-label="Traigent.ai"
             >
-              <img
-                src="/images/traigent-logo-icon.png"
-                alt=""
-                aria-hidden="true"
-                className="h-5 w-auto mr-2"
-              />
-              Traigent
+              <BrandMark size="sm" />
             </Link>
 
             {/* Desktop tabs */}
@@ -330,15 +326,10 @@ export default function TopNav() {
               <Link
                 to="/"
                 onClick={closeMobile}
-                className="flex items-center text-lg font-bold text-white leading-none"
+                className="flex items-center leading-none"
+                aria-label="Traigent.ai"
               >
-                <img
-                  src="/images/traigent-logo-icon.png"
-                  alt=""
-                  aria-hidden="true"
-                  className="h-5 w-auto mr-2"
-                />
-                Traigent
+                <BrandMark size="sm" />
               </Link>
               <button
                 type="button"

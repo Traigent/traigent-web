@@ -5,6 +5,7 @@
 import { Helmet } from "react-helmet-async";
 import { SHORT_SLIDES } from "./PitchShort";
 import { OnePager2Slide } from "./OnePager2";
+import BrandMark from "../components/BrandMark";
 
 // Slide 1 in /pitch-short uses SlideOnePagerSummary which wraps OnePager2Slide
 // with deck-specific negative margins. In scroll mode there's no deck padding
@@ -45,11 +46,10 @@ export default function PitchShort2() {
                   href="https://www.traigent.ai/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="absolute top-4 left-4 z-10 flex items-center gap-2 hover:opacity-80 transition-opacity"
+                  className="absolute top-4 left-4 z-10 hover:opacity-80 transition-opacity"
                   aria-label="Traigent.ai"
                 >
-                  <img src="/images/traigent-logo-icon.png" alt="" aria-hidden="true" className="h-6 w-auto" />
-                  <span className="text-white text-base md:text-lg font-bold tracking-tight">Traigent.ai</span>
+                  <BrandMark size="md" />
                 </a>
                 <div className="flex items-center justify-center">
                   <Slide />
