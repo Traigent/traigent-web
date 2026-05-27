@@ -8,9 +8,6 @@ export const AMBER = "#f59e0b";
 export const RED = "#f87171";
 export const SITE = "https://www.traigent.ai";
 
-export const LOGO_SRC =
-  "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/057ce2_TraigentLogoWhiteCropped.png";
-
 // A/C badges — used inline in prose and in panel headers. Same visual language
 // throughout the one-pager artifacts.
 export function ATag() {

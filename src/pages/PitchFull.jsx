@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { ConvergenceDiagram, KillerStatsGrid, ThreeProductsGrid } from "./pitch/shared";
 import { OnePager2Slide } from "./OnePager2";
+import BrandMark from "../components/BrandMark";
 
 // ===================================================================
 // Brand tokens
@@ -12,8 +13,6 @@ import { OnePager2Slide } from "./OnePager2";
 const BLUE = "#1A6BF5";
 const AMBER = "#f59e0b";
 const VIOLET = "#a78bfa";
-const TRAIGENT_LOGO_URL =
-  "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/057ce2_TraigentLogoWhiteCropped.png";
 
 // ===================================================================
 // Reusable mini-components used across multiple slides
@@ -136,11 +135,7 @@ export function SlideHero() {
   ];
   return (
     <div className="text-center max-w-5xl mx-auto">
-      <img
-        src={TRAIGENT_LOGO_URL}
-        alt="Traigent"
-        className="h-16 md:h-20 lg:h-24 w-auto mx-auto mb-6"
-      />
+      <BrandMark size="hero" className="justify-center mb-6" />
       <h1
         className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-[1.05] tracking-tight mb-8"
         style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.03em' }}
@@ -1288,11 +1283,7 @@ export function PitchDeck({ slides }) {
           aria-label="Traigent home"
           title="Home"
         >
-          <img
-            src={TRAIGENT_LOGO_URL}
-            alt="Traigent"
-            className="h-7 md:h-8 w-auto"
-          />
+          <BrandMark size="md" />
         </Link>
         <span className="text-slate-500 text-sm font-mono">
           {current + 1} / {total} · {slides[current].title}

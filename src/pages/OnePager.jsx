@@ -19,12 +19,12 @@ import {
   AMBER,
   RED,
   SITE,
-  LOGO_SRC,
   ATag,
   CTag,
   ACTag,
   ONEPAGER_STYLE,
 } from "../components/OnePagerAtoms";
+import BrandMark from "../components/BrandMark";
 
 function ProblemPanel({ icon: Icon, title, number, numberColor, line, extra, linkHref, linkLabel }) {
   return (
@@ -109,7 +109,7 @@ function SlideShell({ slideNo, children }) {
           className="inline-block hover:opacity-80 transition-opacity"
           aria-label="Traigent — visit homepage"
         >
-          <img src={LOGO_SRC} alt="Traigent" className="h-9" />
+          <BrandMark size="lg" />
         </a>
         <div className="flex items-center gap-4 text-[11px] font-mono uppercase tracking-widest text-slate-500">
           <span>AI Agent Optimization</span>
