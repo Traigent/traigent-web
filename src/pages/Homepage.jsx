@@ -8,6 +8,7 @@ import {
   BenchmarkCardBody,
   ObservabilityCardBody,
 } from "../components/PlatformShowcase";
+import { SlideParetoFrontier } from "./PitchShort";
 import { Link } from "react-router-dom";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -250,7 +251,7 @@ export default function Homepage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="mt-6 md:mt-8 mb-20 md:mb-28 scroll-mt-20"
+              className="mt-6 md:mt-8 mb-6 md:mb-8 scroll-mt-20"
             >
               <p className="text-center text-sm md:text-base text-slate-300 uppercase tracking-widest font-bold mb-8">Customers</p>
               <div className="relative overflow-hidden">
@@ -281,6 +282,15 @@ export default function Homepage() {
             </motion.div>
           </div>
 
+        </div>
+      </section>
+
+      {/* How It Works — three-panel BEFORE / TRAIGENT / AFTER story.
+          Component is shared with /pitch-short(-2) slide 21 so the visual
+          stays identical between the homepage and the deck. */}
+      <section className="pt-2 md:pt-4 pb-16 md:pb-20 bg-[#080808]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <SlideParetoFrontier />
         </div>
       </section>
 
