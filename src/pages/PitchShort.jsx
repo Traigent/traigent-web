@@ -5,6 +5,37 @@
 // subtitle / footer; everything else is imported directly. No structural
 // JSX is duplicated from PitchFull.
 import { ArrowRight, ArrowDown, ArrowUp, ChevronsDown, DollarSign, Check, Clock, ShieldCheck, TrendingDown, TrendingUp } from "lucide-react";
+
+// Shared optimizer ring — clockwise Learn → Deduce → Test → Repeat loop.
+// Used by slide 1, slide 2 (BEFORE/TRAIGENT/AFTER middle panel), and slide 24
+// (Market Opportunity THE PLAY). Gradient id is parameterized so multiple
+// instances on the same page don't collide.
+function OptimizerRing({ size = 190, gradientId = "ringGrad" }) {
+  return (
+    <svg viewBox="0 0 240 240" className="flex-shrink-0" style={{ width: size, height: size }} xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#4D8EF8"/>
+          <stop offset="100%" stopColor="#1A6BF5"/>
+        </linearGradient>
+      </defs>
+      <circle cx="120" cy="120" r="82" fill="none" stroke="#1e293b" strokeWidth="14"/>
+      <path
+        d="M 120 38 A 82 82 0 1 1 38 120"
+        fill="none"
+        stroke={`url(#${gradientId})`}
+        strokeWidth="14"
+        strokeLinecap="round"
+      />
+      <polygon points="38,96 22,128 54,128" fill="#1A6BF5"/>
+      <circle cx="120" cy="120" r="58" fill="#020617" stroke="#334155" strokeWidth="1"/>
+      <text x="120" y="101" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">LEARN</text>
+      <text x="120" y="119" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">DEDUCE</text>
+      <text x="120" y="137" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">TEST</text>
+      <text x="120" y="155" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">REPEAT</text>
+    </svg>
+  );
+}
 import {
   OptimizationEngineBody,
   FeedbackLoopConnector,
@@ -421,28 +452,7 @@ function SlideMarketOpportunity() {
 
           {/* Optimizer ring */}
           <div className="flex justify-center mb-2 flex-1 items-center">
-            <svg viewBox="0 0 240 240" className="w-[170px] h-[170px]" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <linearGradient id="ringGradMarket" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#4D8EF8"/>
-                  <stop offset="100%" stopColor="#1A6BF5"/>
-                </linearGradient>
-              </defs>
-              <circle cx="120" cy="120" r="82" fill="none" stroke="#1e293b" strokeWidth="14"/>
-              <path
-                d="M 120 38 A 82 82 0 1 1 38 120"
-                fill="none"
-                stroke="url(#ringGradMarket)"
-                strokeWidth="14"
-                strokeLinecap="round"
-              />
-              <polygon points="38,96 22,128 54,128" fill="#1A6BF5"/>
-              <circle cx="120" cy="120" r="58" fill="#020617" stroke="#334155" strokeWidth="1"/>
-              <text x="120" y="101" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">LEARN</text>
-              <text x="120" y="119" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">DEDUCE</text>
-              <text x="120" y="137" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">TEST</text>
-              <text x="120" y="155" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">REPEAT</text>
-            </svg>
+            <OptimizerRing size={170} gradientId="ringGradMarket" />
           </div>
 
           {/* 3 stacked benefit boxes (matches slide 1, with arrows) */}
@@ -561,28 +571,7 @@ function SlideOnePagerTextTestV2() {
 
       {/* Product card — moved BELOW the audience-outcome tiles */}
       <div className="mt-1 bg-slate-900/70 border-2 rounded-xl py-0 px-3 flex items-center gap-6 self-center w-full max-w-4xl" style={{ borderColor: "#1A6BF5" }}>
-        <svg viewBox="0 0 240 240" className="w-[190px] h-[190px] flex-shrink-0" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="ringGradMiniV2" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#4D8EF8"/>
-              <stop offset="100%" stopColor="#1A6BF5"/>
-            </linearGradient>
-          </defs>
-          <circle cx="120" cy="120" r="82" fill="none" stroke="#1e293b" strokeWidth="14"/>
-          <path
-            d="M 120 38 A 82 82 0 1 1 38 120"
-            fill="none"
-            stroke="url(#ringGradMiniV2)"
-            strokeWidth="14"
-            strokeLinecap="round"
-          />
-          <polygon points="38,96 22,128 54,128" fill="#1A6BF5"/>
-          <circle cx="120" cy="120" r="58" fill="#020617" stroke="#334155" strokeWidth="1"/>
-          <text x="120" y="101" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">LEARN</text>
-          <text x="120" y="119" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">DEDUCE</text>
-          <text x="120" y="137" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">TEST</text>
-          <text x="120" y="155" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">REPEAT</text>
-        </svg>
+        <OptimizerRing size={190} gradientId="ringGradMiniV2" />
 
         <div className="flex-1 min-w-0 text-center">
           <h3 className="text-[34px] font-bold leading-tight mb-2 flex items-baseline justify-center gap-3">
