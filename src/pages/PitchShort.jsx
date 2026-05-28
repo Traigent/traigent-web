@@ -4,7 +4,7 @@
 // rendered through PitchFull's originals with override props for the
 // subtitle / footer; everything else is imported directly. No structural
 // JSX is duplicated from PitchFull.
-import { ArrowRight, DollarSign, Check, Clock, ShieldCheck } from "lucide-react";
+import { ArrowRight, ArrowDown, ChevronsDown, DollarSign, Check, Clock, ShieldCheck, TrendingDown } from "lucide-react";
 import {
   OptimizationEngineBody,
   FeedbackLoopConnector,
@@ -63,7 +63,7 @@ function SlideROIPreviewShort() {
       footer={
         <p className="text-center text-slate-300 text-base md:text-lg">
           <a
-            href="/#/roi"
+            href="https://www.traigent.ai/#/roi"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1 underline underline-offset-4 decoration-[#4D8EF8]/50 hover:decoration-[#4D8EF8] font-medium"
@@ -245,7 +245,7 @@ export function SlideParetoFrontier() {
           <div className="text-[10px] font-mono uppercase tracking-widest mb-1" style={{ color: '#4D8EF8' }}>Traigent</div>
           <h3 className="text-[20px] font-bold text-white leading-tight mb-1">Automatic Optimization</h3>
           <p className="text-[12px] text-slate-400 leading-snug mb-2">
-            Contemplates 1,000s of options. Converges on <span className="text-white font-semibold">THE</span> optimum. Re-runs every time conditions change.
+            Contemplates 1,000s of options. Converges to <span className="text-white font-semibold">THE</span> optimum. Re-runs every time conditions change.
           </p>
 
           {/* Loop SVG */}
@@ -340,9 +340,135 @@ export function SlideParetoFrontier() {
   );
 }
 
+// Slide: text-only one-pager test — problem stanza + solution stanza.
+// Two big headlines, two punchy sub-lines, no graphic. For A/B-testing
+// a more verbal opening against the SlideParetoFrontier visual.
+function SlideOnePagerTextTest() {
+  // Three text lines in the upper portion, the "Automatic Optimization" card
+  // (smaller horizontal form factor borrowed from slide 2's middle panel)
+  // pinned at the bottom. self-stretch overrides the parent SlideCanvas's
+  // items-center so this fills the full canvas height.
+  const LINE = "text-4xl md:text-5xl leading-tight tracking-tight text-slate-300";
+  return (
+    <div className="w-full max-w-[1100px] mx-auto self-stretch flex flex-col text-center min-h-[600px]">
+      {/* Top: lines 1+2 grouped at top; line 3 pushed to the bottom of this
+          flex region so it sits closer to the product card. */}
+      <div className="flex-1 flex flex-col justify-between">
+        <div className="flex flex-col gap-6">
+          <h2 className={LINE}>
+            AI Agent optimization is a <span className="font-bold text-[#4D8EF8]">multi-dimensional</span> configuration selection problem
+          </h2>
+          <p className="text-2xl md:text-3xl leading-tight tracking-tight text-slate-300">
+            Optimizing <span className="font-bold text-[#4D8EF8]">Quality</span> and <span className="font-bold text-[#f59e0b]">Cost</span> via <span className="font-bold text-white">trial and error</span> <span className="font-bold text-red-400">can be brutal</span>
+          </p>
+          {/* Problem → solution arrow — two parallel verticals capped by a single triangle arrowhead */}
+          <div className="flex justify-center" aria-hidden="true">
+            <svg viewBox="0 0 40 50" className="w-8 h-10" xmlns="http://www.w3.org/2000/svg">
+              {/* Two parallel verticals — extended ~1/4 of the way down into the V */}
+              <line x1="14" y1="2" x2="14" y2="30" stroke="#4D8EF8" strokeWidth="3" strokeLinecap="round" />
+              <line x1="26" y1="2" x2="26" y2="30" stroke="#4D8EF8" strokeWidth="3" strokeLinecap="round" />
+              {/* 90° V arrowhead — two strokes meeting at a right angle at the tip (20,46) */}
+              <line x1="6"  y1="32" x2="20" y2="46" stroke="#4D8EF8" strokeWidth="3" strokeLinecap="round" />
+              <line x1="34" y1="32" x2="20" y2="46" stroke="#4D8EF8" strokeWidth="3" strokeLinecap="round" />
+            </svg>
+          </div>
+        </div>
+        <h2 className="text-3xl md:text-4xl leading-tight tracking-tight text-slate-300">
+          Traigent <span className="font-bold text-white">rapidly</span> finds <span className="font-bold text-[#f59e0b]">Low Cost</span> and <span className="font-bold text-[#4D8EF8]">High Quality</span> options<br />
+          among{" "}
+          <a
+            href="https://www.traigent.ai/#/blog/the-config-multiverse"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-bold text-white underline underline-offset-4 decoration-white/40 hover:decoration-white transition-colors"
+          >
+            thousands possible
+          </a>
+        </h2>
+      </div>
+
+      {/* Bottom: compact horizontal "Automatic Optimization" card */}
+      <div className="mt-6 bg-slate-900/70 border-2 rounded-xl py-0 px-3 flex items-center gap-6 self-center w-full max-w-4xl" style={{ borderColor: "#1A6BF5" }}>
+        {/* Loop ring */}
+        <svg viewBox="0 0 240 240" className="w-[190px] h-[190px] flex-shrink-0" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="ringGradMini" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#4D8EF8"/>
+              <stop offset="100%" stopColor="#1A6BF5"/>
+            </linearGradient>
+          </defs>
+          <circle cx="120" cy="120" r="82" fill="none" stroke="#1e293b" strokeWidth="14"/>
+          <path
+            d="M 120 38 A 82 82 0 1 1 38 120"
+            fill="none"
+            stroke="url(#ringGradMini)"
+            strokeWidth="14"
+            strokeLinecap="round"
+          />
+          <polygon points="38,96 22,128 54,128" fill="#1A6BF5"/>
+          <circle cx="120" cy="120" r="58" fill="#020617" stroke="#334155" strokeWidth="1"/>
+          <text x="120" y="101" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">LEARN</text>
+          <text x="120" y="119" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">DEDUCE</text>
+          <text x="120" y="137" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">TEST</text>
+          <text x="120" y="155" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">REPEAT</text>
+        </svg>
+
+        {/* Right: eyebrow + title + description + step pills */}
+        <div className="flex-1 min-w-0 text-center">
+          <h3 className="text-[34px] font-bold leading-tight mb-2 flex items-baseline justify-center gap-3">
+            <span style={{ color: "#4D8EF8" }}>Traigent.ai</span>
+            <span className="text-white">Automatic Optimization</span>
+          </h3>
+          <p className="text-[22px] text-slate-400 leading-snug mb-3">
+            Contemplates 1,000s of options. Converges to <span className="text-white font-semibold">THE</span> optimum.
+          </p>
+          <div className="grid grid-cols-4 gap-2">
+            {["Learn", "Deduce", "Test", "Repeat"].map((label) => (
+              <div
+                key={label}
+                className="text-[16px] font-mono text-center py-2 rounded border border-slate-700 text-slate-300"
+              >
+                {label}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Audience-outcome tiles — borrowed from slide 1 (OnePager2Slide top). */}
+      <div className="grid grid-cols-3 gap-3 self-center w-full max-w-4xl mt-1">
+        <a
+          href="https://www.traigent.ai/#/roi"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-slate-900/70 border-2 rounded-xl px-3 py-3 text-center hover:bg-slate-900 transition-colors block"
+          style={{ borderColor: "#f59e0b66" }}
+        >
+          <div className="text-3xl font-extrabold tracking-tight leading-none" style={{ color: "#f59e0b" }}>up to 60%</div>
+          <div className="text-[11px] font-mono uppercase tracking-wider text-slate-300 mt-1">LLM cost reduction</div>
+        </a>
+        <a
+          href="https://www.traigent.ai/#/ttm"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-slate-900/70 border-2 rounded-xl px-3 py-3 text-center hover:bg-slate-900 transition-colors block"
+          style={{ borderColor: "#4D8EF866" }}
+        >
+          <div className="text-3xl font-extrabold tracking-tight leading-none" style={{ color: "#4D8EF8" }}>up to 8 wks</div>
+          <div className="text-[11px] font-mono uppercase tracking-wider text-slate-300 mt-1">Engineering time reclaimed</div>
+        </a>
+        <div className="bg-slate-900/70 border-2 rounded-xl px-3 py-3 text-center" style={{ borderColor: "#a78bfa66" }}>
+          <div className="text-3xl font-extrabold tracking-tight leading-none" style={{ color: "#a78bfa" }}>100%</div>
+          <div className="text-[11px] font-mono uppercase tracking-wider text-slate-300 mt-1">shipment confidence</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export const SHORT_SLIDES = [
-  // ----- ONE-PAGER SUMMARY (opener) -----
-  { title: "One-Pager Summary", section: "Traigent intro", component: SlideOnePagerSummary },
+  // ----- TEXT-ONLY ONE-PAGER (opener — swapped in from slot 22) -----
+  { title: "One-Pager Test — Text Only", section: "Traigent intro", component: SlideOnePagerTextTest },
   // ----- BEFORE / TRAIGENT / AFTER — promoted to slide 2 as the visual hook -----
   { title: "25+ Knob Problem — Before / Traigent / After", section: "Traigent intro", component: SlideParetoFrontier },
   // ----- PROBLEM -----
@@ -371,6 +497,8 @@ export const SHORT_SLIDES = [
   // ----- APPENDIX: homepage-style detail slides -----
   { title: "Agent Optimization Platform — Components", section: "Appendix", component: SlidePlatformBoxes },
   { title: "Beyond Optimization — Capabilities", section: "Appendix", component: SlideBeyondBoxes },
+  // ----- ORIGINAL ONE-PAGER SUMMARY (moved to the end via the slot-22 ↔ slot-1 swap) -----
+  { title: "One-Pager Summary", section: "Appendix", component: SlideOnePagerSummary },
 ];
 
 export default function PitchShort() {
