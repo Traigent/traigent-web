@@ -392,7 +392,7 @@ export function Slide03Explosion({ subtitle } = {}) {
         <p className="text-lg text-slate-400 mt-4">…each yielding different accuracy, cost, and latency.</p>
         <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-6">
           <a
-            href="/#/blog/the-config-multiverse"
+            href="https://www.traigent.ai/#/blog/the-config-multiverse"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 text-base md:text-lg font-medium underline underline-offset-4 decoration-[#4D8EF8]/50 hover:decoration-[#4D8EF8] transition-colors"
@@ -401,7 +401,7 @@ export function Slide03Explosion({ subtitle } = {}) {
             See the full inventory & A/C/L impacts <ArrowRight className="w-4 h-4" />
           </a>
           <a
-            href="/#/ttm"
+            href="https://www.traigent.ai/#/ttm"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 text-base md:text-lg font-medium underline underline-offset-4 decoration-[#4D8EF8]/50 hover:decoration-[#4D8EF8] transition-colors"
@@ -448,7 +448,7 @@ export function SlideExplosionMillions() {
           Manually exhausting the search space is impossible. Even sampling a fraction is a months-long, low-confidence engineering project.
         </p>
         <a
-          href="/#/blog/the-config-multiverse"
+          href="https://www.traigent.ai/#/blog/the-config-multiverse"
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-1.5 mt-6 text-base md:text-lg font-medium underline underline-offset-4 decoration-[#4D8EF8]/50 hover:decoration-[#4D8EF8] transition-colors"
@@ -1025,7 +1025,7 @@ export function SlideTTMPreview() {
       <p className="text-center text-slate-300 text-base md:text-lg">
         <span className="text-white font-semibold">Plus 100% search-space coverage</span> — versus the ~20% you can realistically test manually.
         <a
-          href="/#/ttm"
+          href="https://www.traigent.ai/#/ttm"
           target="_blank"
           rel="noopener noreferrer"
           className="ml-3 inline-flex items-center gap-1 underline underline-offset-4 decoration-[#4D8EF8]/50 hover:decoration-[#4D8EF8] font-medium"
@@ -1047,7 +1047,7 @@ export function SlideROIPreview({ subtitle, footer } = {}) {
     <p className="text-center text-slate-300 text-base md:text-lg">
       <span className="text-white font-semibold">Plus engineering recovery</span>
       <a
-        href="/#/roi"
+        href="https://www.traigent.ai/#/roi"
         target="_blank"
         rel="noopener noreferrer"
         className="ml-3 inline-flex items-center gap-1 underline underline-offset-4 decoration-[#4D8EF8]/50 hover:decoration-[#4D8EF8] font-medium"

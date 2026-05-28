@@ -56,12 +56,18 @@ function useRemoveChatWidget() {
   }, []);
 }
 
-function ScrollOnePagerOpener() {
+// The OnePager2Slide is designed to render full-bleed inside the slide canvas
+// (it has its own internal padding). For the scroll-mode deck we swap in a
+// version with header + footer hidden and skip the standard canvas padding.
+// Matched by title so reordering SHORT_SLIDES doesn't break it.
+const ONE_PAGER_TITLE = "One-Pager Summary";
+
+function ScrollOnePagerSlide() {
   return <OnePager2Slide showHeader={false} showFooter={false} />;
 }
 
-const SCROLL_SLIDES = SHORT_SLIDES.map((s, i) =>
-  i === 0 ? { ...s, component: ScrollOnePagerOpener } : s
+const SCROLL_SLIDES = SHORT_SLIDES.map((s) =>
+  s.title === ONE_PAGER_TITLE ? { ...s, component: ScrollOnePagerSlide } : s
 );
 
 function SlideCanvas({ slide, index, total, scale }) {
@@ -100,7 +106,7 @@ function SlideCanvas({ slide, index, total, scale }) {
 
           <div
             className={`h-full w-full flex items-center justify-center ${
-              index === 0 ? "" : "px-10 pt-16 pb-12"
+              slide.title === ONE_PAGER_TITLE ? "" : "px-10 pt-16 pb-12"
             }`}
           >
             <Slide />
