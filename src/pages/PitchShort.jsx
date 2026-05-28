@@ -4,7 +4,7 @@
 // rendered through PitchFull's originals with override props for the
 // subtitle / footer; everything else is imported directly. No structural
 // JSX is duplicated from PitchFull.
-import { ArrowRight, ArrowDown, ChevronsDown, DollarSign, Check, Clock, ShieldCheck, TrendingDown } from "lucide-react";
+import { ArrowRight, ArrowDown, ArrowUp, ChevronsDown, DollarSign, Check, Clock, ShieldCheck, TrendingDown, TrendingUp } from "lucide-react";
 import {
   OptimizationEngineBody,
   FeedbackLoopConnector,
@@ -12,6 +12,7 @@ import {
   BenchmarkCardBody,
   ObservabilityCardBody,
 } from "../components/PlatformShowcase";
+import { ConvergenceDiagram, KillerStatsGrid } from "./pitch/shared";
 import {
   PitchDeck,
   SlideOnePagerSummary,
@@ -340,59 +341,229 @@ export function SlideParetoFrontier() {
   );
 }
 
-// Slide: text-only one-pager test — problem stanza + solution stanza.
-// Two big headlines, two punchy sub-lines, no graphic. For A/B-testing
-// a more verbal opening against the SlideParetoFrontier visual.
-function SlideOnePagerTextTest() {
-  // Three text lines in the upper portion, the "Automatic Optimization" card
-  // (smaller horizontal form factor borrowed from slide 2's middle panel)
-  // pinned at the bottom. self-stretch overrides the parent SlideCanvas's
-  // items-center so this fills the full canvas height.
+
+// Slide: The Market Opportunity — for channel partners + investors.
+// Narrative: the wave (few in production, exponential explosion coming) →
+// the pain (sticker shock + 25+ knob re-tune every release) → the play
+// (Traigent as essential infra for the agent economy).
+function SlideMarketOpportunity() {
+  return (
+    <div className="w-full max-w-[1180px] mx-auto text-center self-stretch flex flex-col min-h-[600px]">
+      {/* Title */}
+      <div className="mb-4">
+        <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight tracking-tight mb-2">
+          A Market <span className="text-[#4D8EF8]">About to Explode</span>
+        </h2>
+        <p className="text-xl md:text-2xl text-slate-300 leading-snug">
+          AI agents are in <span className="font-bold text-white">infancy</span>. The cost crisis is just <span className="font-bold text-white">starting</span>.
+        </p>
+      </div>
+
+      {/* Three columns: THE WAVE / THE PAIN / THE PLAY */}
+      <div className="grid grid-cols-3 gap-4 flex-1">
+        {/* COL 1 — THE WAVE (hockey-stick) */}
+        <div className="bg-slate-900/70 border-2 rounded-xl p-5 text-left flex flex-col" style={{ borderColor: "#4D8EF866" }}>
+          <div className="text-2xl font-mono font-bold uppercase tracking-widest mb-3 text-center" style={{ color: "#4D8EF8" }}>The Wave</div>
+          <h3 className="text-2xl font-bold text-white leading-tight mb-3">Exponential adoption ahead</h3>
+
+          {/* Hockey-stick chart */}
+          <svg viewBox="0 0 280 130" className="w-full mb-4 flex-1" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+            <line x1="30" y1="110" x2="270" y2="110" stroke="#475569" strokeWidth="1"/>
+            <line x1="30" y1="20"  x2="30"  y2="110" stroke="#475569" strokeWidth="1"/>
+            <text x="4" y="16" fill="#94a3b8" fontSize="11" fontFamily="ui-sans-serif, system-ui" fontWeight="600">Agent $</text>
+            <text x="50"  y="122" textAnchor="middle" fill="#64748b" fontSize="10" fontFamily="ui-sans-serif, system-ui">2024</text>
+            <text x="110" y="122" textAnchor="middle" fill="#64748b" fontSize="10" fontFamily="ui-sans-serif, system-ui">2025</text>
+            <text x="170" y="122" textAnchor="middle" fill="#64748b" fontSize="10" fontFamily="ui-sans-serif, system-ui">2026</text>
+            <text x="230" y="122" textAnchor="middle" fill="#64748b" fontSize="10" fontFamily="ui-sans-serif, system-ui">2028</text>
+            <line x1="135" y1="20" x2="135" y2="110" stroke="#f59e0b" strokeWidth="1" strokeDasharray="3,2" strokeOpacity="0.7"/>
+            <text x="135" y="34" textAnchor="middle" fill="#f59e0b" fontSize="11" fontFamily="ui-sans-serif, system-ui" fontWeight="700">TODAY</text>
+            <path d="M 30 105 C 70 102, 110 100, 135 95 S 180 75, 210 50 S 255 25, 270 22" stroke="#4D8EF8" strokeWidth="2.5" fill="none"/>
+            <circle cx="50"  cy="104" r="2.5" fill="#475569"/>
+            <circle cx="80"  cy="103" r="2.5" fill="#475569"/>
+            <circle cx="110" cy="101" r="2.5" fill="#475569"/>
+            <circle cx="135" cy="95"  r="4"   fill="#f59e0b"/>
+            <circle cx="180" cy="73"  r="3.5" fill="#4D8EF8"/>
+            <circle cx="230" cy="40"  r="4"   fill="#4D8EF8"/>
+            <circle cx="265" cy="24"  r="4.5" fill="#4D8EF8"/>
+          </svg>
+
+          <p className="text-lg text-slate-300 leading-snug mt-auto">
+            Few in production today.<br /><span className="font-bold text-white">Massive rollouts 2026–2028.</span>
+          </p>
+        </div>
+
+        {/* COL 2 — THE PAIN */}
+        <div className="bg-slate-900/70 border-2 rounded-xl p-5 text-left flex flex-col" style={{ borderColor: "#f59e0b66" }}>
+          <div className="text-2xl font-mono font-bold uppercase tracking-widest mb-3 text-center" style={{ color: "#f59e0b" }}>The Pain</div>
+          <h3 className="text-2xl font-bold text-white leading-tight mb-4">Sticker shock.<br />Brutal re-tuning cycles.</h3>
+          <ul className="text-lg text-slate-300 leading-snug space-y-4 flex-1 flex flex-col justify-center">
+            <li>
+              <span className="font-bold text-amber-400">Compounding LLM bills</span>
+            </li>
+            <li>
+              <span className="font-bold text-amber-400">Ongoing dev costs</span> every release
+            </li>
+            <li>
+              <span className="font-bold text-[#4D8EF8]">Quality bar keeps rising</span>
+            </li>
+            <li>
+              25+ knob manual re-tune = <span className="font-bold text-red-400">BRUTAL</span>
+            </li>
+          </ul>
+        </div>
+
+        {/* COL 3 — THE PLAY (Traigent) */}
+        <div className="bg-slate-950 border-2 rounded-xl p-5 text-center flex flex-col" style={{ borderColor: "#4D8EF8" }}>
+          <div className="text-2xl font-mono font-bold uppercase tracking-widest mb-2 text-center" style={{ color: "#4D8EF8" }}>The Play</div>
+          <h3 className="text-2xl font-bold leading-tight mb-2">
+            <span style={{ color: "#4D8EF8" }}>Traigent.ai</span>
+          </h3>
+
+          {/* Optimizer ring */}
+          <div className="flex justify-center mb-2 flex-1 items-center">
+            <svg viewBox="0 0 240 240" className="w-[170px] h-[170px]" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="ringGradMarket" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#4D8EF8"/>
+                  <stop offset="100%" stopColor="#1A6BF5"/>
+                </linearGradient>
+              </defs>
+              <circle cx="120" cy="120" r="82" fill="none" stroke="#1e293b" strokeWidth="14"/>
+              <path
+                d="M 120 38 A 82 82 0 1 1 38 120"
+                fill="none"
+                stroke="url(#ringGradMarket)"
+                strokeWidth="14"
+                strokeLinecap="round"
+              />
+              <polygon points="38,96 22,128 54,128" fill="#1A6BF5"/>
+              <circle cx="120" cy="120" r="58" fill="#020617" stroke="#334155" strokeWidth="1"/>
+              <text x="120" y="101" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">LEARN</text>
+              <text x="120" y="119" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">DEDUCE</text>
+              <text x="120" y="137" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">TEST</text>
+              <text x="120" y="155" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">REPEAT</text>
+            </svg>
+          </div>
+
+          {/* 3 stacked benefit boxes (matches slide 1, with arrows) */}
+          <div className="grid grid-cols-1 gap-2 mt-auto">
+            <div className="bg-slate-900/70 border-2 rounded-lg px-3 py-2 text-center" style={{ borderColor: "#f59e0b66" }}>
+              <div className="flex items-center justify-center gap-2" style={{ color: "#f59e0b" }}>
+                <ArrowDown className="w-6 h-6" strokeWidth={3} />
+                <span className="text-2xl font-extrabold tracking-tight leading-none">up to 60%</span>
+              </div>
+              <div className="text-xs font-mono uppercase tracking-wider text-slate-300 mt-1">LLM cost reduction</div>
+            </div>
+            <div className="bg-slate-900/70 border-2 rounded-lg px-3 py-2 text-center" style={{ borderColor: "#4D8EF866" }}>
+              <div className="flex items-center justify-center gap-2" style={{ color: "#4D8EF8" }}>
+                <ArrowDown className="w-6 h-6" strokeWidth={3} />
+                <span className="text-2xl font-extrabold tracking-tight leading-none">up to 8 wks</span>
+              </div>
+              <div className="text-xs font-mono uppercase tracking-wider text-slate-300 mt-1">Engineering time reclaimed</div>
+            </div>
+            <div className="bg-slate-900/70 border-2 rounded-lg px-3 py-2 text-center" style={{ borderColor: "#a78bfa66" }}>
+              <div className="flex items-center justify-center gap-2" style={{ color: "#a78bfa" }}>
+                <ArrowUp className="w-6 h-6" strokeWidth={3} />
+                <span className="text-2xl font-extrabold tracking-tight leading-none">100%</span>
+              </div>
+              <div className="text-xs font-mono uppercase tracking-wider text-slate-300 mt-1">shipment confidence</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Slide: variation of SlideOnePagerTextTest (slide 1) for A/B-testing —
+// starts as an identical copy of slide 1 so we can diverge it without
+// touching the live opener. Uses a unique SVG gradient id so both slides
+// can coexist on the same page in /pitch-short-2.
+function SlideOnePagerTextTestV2() {
   const LINE = "text-4xl md:text-5xl leading-tight tracking-tight text-slate-300";
   return (
     <div className="w-full max-w-[1100px] mx-auto self-stretch flex flex-col text-center min-h-[600px]">
-      {/* Top: lines 1+2 grouped at top; line 3 pushed to the bottom of this
-          flex region so it sits closer to the product card. */}
       <div className="flex-1 flex flex-col justify-between">
         <div className="flex flex-col gap-6">
           <h2 className={LINE}>
-            AI Agent optimization is a <span className="font-bold text-[#4D8EF8]">multi-dimensional</span> configuration selection problem
+            Optimizing <span className="font-bold text-white">AI Agent</span> <span className="font-bold text-[#4D8EF8]">Quality</span> and <span className="font-bold text-[#f59e0b]">Cost</span><br />
+            via <span className="font-bold text-white">trial and error</span> <span className="font-bold text-red-400">can be brutal</span>
           </h2>
           <p className="text-2xl md:text-3xl leading-tight tracking-tight text-slate-300">
-            Optimizing <span className="font-bold text-[#4D8EF8]">Quality</span> and <span className="font-bold text-[#f59e0b]">Cost</span> via <span className="font-bold text-white">trial and error</span> <span className="font-bold text-red-400">can be brutal</span>
+            <span className="font-bold text-[#4D8EF8]">25+ knobs.</span> <span className="font-bold text-amber-400">Millions of options.</span>
           </p>
-          {/* Problem → solution arrow — two parallel verticals capped by a single triangle arrowhead */}
-          <div className="flex justify-center" aria-hidden="true">
-            <svg viewBox="0 0 40 50" className="w-8 h-10" xmlns="http://www.w3.org/2000/svg">
-              {/* Two parallel verticals — extended ~1/4 of the way down into the V */}
-              <line x1="14" y1="2" x2="14" y2="30" stroke="#4D8EF8" strokeWidth="3" strokeLinecap="round" />
-              <line x1="26" y1="2" x2="26" y2="30" stroke="#4D8EF8" strokeWidth="3" strokeLinecap="round" />
-              {/* 90° V arrowhead — two strokes meeting at a right angle at the tip (20,46) */}
-              <line x1="6"  y1="32" x2="20" y2="46" stroke="#4D8EF8" strokeWidth="3" strokeLinecap="round" />
-              <line x1="34" y1="32" x2="20" y2="46" stroke="#4D8EF8" strokeWidth="3" strokeLinecap="round" />
-            </svg>
-          </div>
+        </div>
+        {/* Problem → solution arrow — now a standalone flex child so
+            justify-between places it geometrically halfway between the
+            problem group above and the solution H2 below. */}
+        <div className="flex justify-center" aria-hidden="true">
+          <svg viewBox="0 0 40 50" className="w-8 h-10" xmlns="http://www.w3.org/2000/svg">
+            <line x1="14" y1="2" x2="14" y2="30" stroke="#4D8EF8" strokeWidth="3" strokeLinecap="round" />
+            <line x1="26" y1="2" x2="26" y2="30" stroke="#4D8EF8" strokeWidth="3" strokeLinecap="round" />
+            <line x1="6"  y1="32" x2="20" y2="46" stroke="#4D8EF8" strokeWidth="3" strokeLinecap="round" />
+            <line x1="34" y1="32" x2="20" y2="46" stroke="#4D8EF8" strokeWidth="3" strokeLinecap="round" />
+          </svg>
         </div>
         <h2 className="text-3xl md:text-4xl leading-tight tracking-tight text-slate-300">
-          Traigent <span className="font-bold text-white">rapidly</span> finds <span className="font-bold text-[#f59e0b]">Low Cost</span> and <span className="font-bold text-[#4D8EF8]">High Quality</span> options<br />
-          among{" "}
-          <a
-            href="https://www.traigent.ai/#/blog/the-config-multiverse"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-bold text-white underline underline-offset-4 decoration-white/40 hover:decoration-white transition-colors"
-          >
-            thousands possible
-          </a>
+          Traigent finds <span className="text-white">the</span> <span className="font-bold text-[#f59e0b]">Low Cost</span> and <span className="font-bold text-[#4D8EF8]">High Quality</span> options
         </h2>
       </div>
 
-      {/* Bottom: compact horizontal "Automatic Optimization" card */}
-      <div className="mt-6 bg-slate-900/70 border-2 rounded-xl py-0 px-3 flex items-center gap-6 self-center w-full max-w-4xl" style={{ borderColor: "#1A6BF5" }}>
-        {/* Loop ring */}
+      {/* Audience-outcome tiles — moved ABOVE the product card */}
+      <div className="grid grid-cols-4 gap-3 self-center w-full max-w-4xl mt-6">
+        <a
+          href="https://www.traigent.ai/#/roi"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-slate-900/70 border-2 rounded-xl px-3 py-3 text-center hover:bg-slate-900 transition-colors block"
+          style={{ borderColor: "#f59e0b66" }}
+        >
+          <div className="flex items-center justify-center gap-2" style={{ color: "#f59e0b" }}>
+            <ArrowDown className="w-7 h-7" strokeWidth={3} />
+            <span className="text-2xl font-extrabold tracking-tight leading-none">up to 60%</span>
+          </div>
+          <div className="text-[11px] font-mono uppercase tracking-wider text-slate-300 mt-1">LLM cost reduction</div>
+        </a>
+        <a
+          href="https://www.traigent.ai/#/ttm"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-slate-900/70 border-2 rounded-xl px-3 py-3 text-center hover:bg-slate-900 transition-colors block"
+          style={{ borderColor: "#4D8EF866" }}
+        >
+          <div className="flex items-center justify-center gap-2" style={{ color: "#4D8EF8" }}>
+            <ArrowDown className="w-7 h-7" strokeWidth={3} />
+            <span className="text-2xl font-extrabold tracking-tight leading-none">up to 8 wks</span>
+          </div>
+          <div className="text-[11px] font-mono uppercase tracking-wider text-slate-300 mt-1">Engineering time reclaimed</div>
+        </a>
+        <a
+          href="https://www.traigent.ai/#/ttm"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-slate-900/70 border-2 rounded-xl px-3 py-3 text-center hover:bg-slate-900 transition-colors block"
+          style={{ borderColor: "#4D8EF866" }}
+        >
+          <div className="flex items-center justify-center gap-2" style={{ color: "#4D8EF8" }}>
+            <ArrowDown className="w-7 h-7" strokeWidth={3} />
+            <span className="text-2xl font-extrabold tracking-tight leading-none">TTM</span>
+          </div>
+          <div className="text-[11px] font-mono uppercase tracking-wider text-slate-300 mt-1">shortens time to market</div>
+        </a>
+        <div className="bg-slate-900/70 border-2 rounded-xl px-3 py-3 text-center" style={{ borderColor: "#a78bfa66" }}>
+          <div className="flex items-center justify-center gap-2" style={{ color: "#a78bfa" }}>
+            <ArrowUp className="w-7 h-7" strokeWidth={3} />
+            <span className="text-2xl font-extrabold tracking-tight leading-none">100%</span>
+          </div>
+          <div className="text-[11px] font-mono uppercase tracking-wider text-slate-300 mt-1">shipment confidence</div>
+        </div>
+      </div>
+
+      {/* Product card — moved BELOW the audience-outcome tiles */}
+      <div className="mt-1 bg-slate-900/70 border-2 rounded-xl py-0 px-3 flex items-center gap-6 self-center w-full max-w-4xl" style={{ borderColor: "#1A6BF5" }}>
         <svg viewBox="0 0 240 240" className="w-[190px] h-[190px] flex-shrink-0" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <linearGradient id="ringGradMini" x1="0%" y1="0%" x2="100%" y2="100%">
+            <linearGradient id="ringGradMiniV2" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor="#4D8EF8"/>
               <stop offset="100%" stopColor="#1A6BF5"/>
             </linearGradient>
@@ -401,7 +572,7 @@ function SlideOnePagerTextTest() {
           <path
             d="M 120 38 A 82 82 0 1 1 38 120"
             fill="none"
-            stroke="url(#ringGradMini)"
+            stroke="url(#ringGradMiniV2)"
             strokeWidth="14"
             strokeLinecap="round"
           />
@@ -413,7 +584,6 @@ function SlideOnePagerTextTest() {
           <text x="120" y="155" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">REPEAT</text>
         </svg>
 
-        {/* Right: eyebrow + title + description + step pills */}
         <div className="flex-1 min-w-0 text-center">
           <h3 className="text-[34px] font-bold leading-tight mb-2 flex items-baseline justify-center gap-3">
             <span style={{ color: "#4D8EF8" }}>Traigent.ai</span>
@@ -434,33 +604,46 @@ function SlideOnePagerTextTest() {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
 
-      {/* Audience-outcome tiles — borrowed from slide 1 (OnePager2Slide top). */}
-      <div className="grid grid-cols-3 gap-3 self-center w-full max-w-4xl mt-1">
+// Slide: "How we converge rapidly" — the science angle. Establishes
+// hyper-parameter tuning as a well-studied math field, then layers
+// Traigent's empirical-data edge on top. Link to the multiverse blog.
+function SlideHowWeConverge() {
+  return (
+    <div className="w-full max-w-[1100px] mx-auto text-center self-stretch flex flex-col justify-center min-h-[600px]">
+      <h2 className="text-5xl md:text-6xl font-bold text-white leading-tight tracking-tight mb-6">
+        How we converge rapidly
+      </h2>
+
+      <div className="space-y-3 text-xl md:text-2xl text-slate-300 leading-snug mb-6">
+        <p>
+          <span className="font-bold text-white">Hyper-parameter tuning</span> is a widely researched field in <span className="font-bold text-[#4D8EF8]">mathematics</span>
+        </p>
+        <p>
+          <span className="font-bold" style={{ color: "#4D8EF8" }}>Traigent.ai</span> uses the <span className="font-bold text-white">best science</span> has to offer
+        </p>
+        <p>
+          In addition, <span className="font-bold" style={{ color: "#4D8EF8" }}>Traigent.ai</span> starts from well-documented <span className="font-bold text-[#f59e0b]">EMPIRICAL DATA</span> in this specific domain
+        </p>
+      </div>
+
+      {/* Convergence diagram + 3 killer-stat tiles from Slide06KillerStat */}
+      <ConvergenceDiagram className="w-full max-w-2xl mx-auto" />
+      <KillerStatsGrid className="grid grid-cols-3 gap-3 max-w-3xl mx-auto mt-4 text-center" />
+
+      <div className="mt-5">
         <a
-          href="https://www.traigent.ai/#/roi"
+          href="https://www.traigent.ai/#/blog/the-config-multiverse"
           target="_blank"
           rel="noopener noreferrer"
-          className="bg-slate-900/70 border-2 rounded-xl px-3 py-3 text-center hover:bg-slate-900 transition-colors block"
-          style={{ borderColor: "#f59e0b66" }}
+          className="inline-flex items-center gap-2 text-base md:text-lg font-bold text-white underline underline-offset-4 decoration-white/40 hover:decoration-white transition-colors"
         >
-          <div className="text-3xl font-extrabold tracking-tight leading-none" style={{ color: "#f59e0b" }}>up to 60%</div>
-          <div className="text-[11px] font-mono uppercase tracking-wider text-slate-300 mt-1">LLM cost reduction</div>
+          Read more in The Configuration Multiverse
+          <ArrowRight className="w-5 h-5" />
         </a>
-        <a
-          href="https://www.traigent.ai/#/ttm"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="bg-slate-900/70 border-2 rounded-xl px-3 py-3 text-center hover:bg-slate-900 transition-colors block"
-          style={{ borderColor: "#4D8EF866" }}
-        >
-          <div className="text-3xl font-extrabold tracking-tight leading-none" style={{ color: "#4D8EF8" }}>up to 8 wks</div>
-          <div className="text-[11px] font-mono uppercase tracking-wider text-slate-300 mt-1">Engineering time reclaimed</div>
-        </a>
-        <div className="bg-slate-900/70 border-2 rounded-xl px-3 py-3 text-center" style={{ borderColor: "#a78bfa66" }}>
-          <div className="text-3xl font-extrabold tracking-tight leading-none" style={{ color: "#a78bfa" }}>100%</div>
-          <div className="text-[11px] font-mono uppercase tracking-wider text-slate-300 mt-1">shipment confidence</div>
-        </div>
       </div>
     </div>
   );
@@ -468,7 +651,7 @@ function SlideOnePagerTextTest() {
 
 export const SHORT_SLIDES = [
   // ----- TEXT-ONLY ONE-PAGER (opener — swapped in from slot 22) -----
-  { title: "One-Pager Test — Text Only", section: "Traigent intro", component: SlideOnePagerTextTest },
+  { title: "One-Pager Test — Text Only (V2)", section: "Traigent intro", component: SlideOnePagerTextTestV2 },
   // ----- BEFORE / TRAIGENT / AFTER — promoted to slide 2 as the visual hook -----
   { title: "25+ Knob Problem — Before / Traigent / After", section: "Traigent intro", component: SlideParetoFrontier },
   // ----- PROBLEM -----
@@ -499,6 +682,10 @@ export const SHORT_SLIDES = [
   { title: "Beyond Optimization — Capabilities", section: "Appendix", component: SlideBeyondBoxes },
   // ----- ORIGINAL ONE-PAGER SUMMARY (moved to the end via the slot-22 ↔ slot-1 swap) -----
   { title: "One-Pager Summary", section: "Appendix", component: SlideOnePagerSummary },
+  // ----- HOW WE CONVERGE RAPIDLY (science + empirical data) -----
+  { title: "How we converge rapidly", section: "Appendix", component: SlideHowWeConverge },
+  // ----- MARKET OPPORTUNITY (for channel partners + investors) -----
+  { title: "Market Opportunity — Wave / Pain / Play", section: "Appendix", component: SlideMarketOpportunity },
 ];
 
 export default function PitchShort() {
