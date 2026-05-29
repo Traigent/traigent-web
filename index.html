@@ -21,6 +21,22 @@
     
     <!-- GitHub Pages SPA routing fix -->
     <script type="text/javascript" src="./spa-github-pages.js"></script>
+
+    <!-- Defensive guard for HubSpot chat widget. Forces the chat container
+         to top of the stacking context and clears any inherited cursor /
+         pointer-events that a rogue page overlay might apply on top of it.
+         Solves the "blocked cursor over chat input" symptom without needing
+         to identify the specific offending overlay. -->
+    <style>
+      #hubspot-messages-iframe-container,
+      #hubspot-messages-iframe-container iframe,
+      #hubspot-conversations-iframe,
+      .hs-shadow-container {
+        z-index: 2147483647 !important;
+        pointer-events: auto !important;
+        cursor: auto !important;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
