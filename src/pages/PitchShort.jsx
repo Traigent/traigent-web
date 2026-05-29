@@ -305,9 +305,10 @@ export function SlideParetoFrontier() {
               <polygon points="38,96 22,128 54,128" fill="#1A6BF5"/>
 
               <circle cx="120" cy="120" r="58" fill="#020617" stroke="#334155" strokeWidth="1"/>
-              <text x="120" y="110" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">LEARN</text>
-              <text x="120" y="127" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">DEDUCE</text>
-              <text x="120" y="144" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">TEST</text>
+              <text x="120" y="101" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">LEARN</text>
+              <text x="120" y="119" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">DEDUCE</text>
+              <text x="120" y="137" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">TEST</text>
+              <text x="120" y="155" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">REPEAT</text>
             </svg>
           </div>
 
@@ -372,6 +373,79 @@ export function SlideParetoFrontier() {
   );
 }
 
+
+// Slide: Market & Revenue — headline numbers from the May 2026 partner brief.
+// Top section: 3 stat tiles (TAM today, addressable LLM bill 2026, 2030).
+// Middle section: penetration → revenue cascade table.
+// Bottom: comparable-ramp sanity check.
+function SlideMarketAndRevenue() {
+  const rows = [
+    { year: "2026", phase: "POCs",          bill: "$21B",  pen: "0.03%", save: "$5M",   rev: "~$0.25M" },
+    { year: "2027", phase: "Early adopt",   bill: "$36B",  pen: "0.3%",  save: "$86M",  rev: "~$4M" },
+    { year: "2028", phase: "Channel + ent", bill: "$56B",  pen: "1.5%",  save: "$672M", rev: "~$34M" },
+    { year: "2029", phase: "Mainstream",    bill: "$86B",  pen: "4%",    save: "$2.8B", rev: "~$138M" },
+    { year: "2030", phase: "Category",      bill: "$128B", pen: "8%",    save: "$8.2B", rev: "~$410M" },
+  ];
+  return (
+    <div className="w-full max-w-[1180px] mx-auto text-center self-stretch flex flex-col min-h-[600px]">
+      {/* Title */}
+      <div className="mb-2">
+        <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight tracking-tight mb-1">
+          Market &amp; Revenue &mdash; <span style={{ color: "#4D8EF8" }}>Non-Vendor Agents</span>
+        </h2>
+        <p className="text-sm md:text-base text-slate-300 leading-snug">
+          Revenue grounded in <span className="font-bold text-[#4ade80]">5% of customer savings actually delivered</span> &mdash; not a TAM percentage. Customer keeps ~95&cent; of every saved dollar.
+        </p>
+      </div>
+
+      {/* Assumptions strip */}
+      <div className="bg-slate-900/70 border border-slate-700/60 rounded-xl p-3 mb-3 text-left">
+        <div className="text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-1.5">Assumptions (read first)</div>
+        <ol className="text-[12.5px] text-slate-300 leading-snug space-y-1 list-decimal pl-5">
+          <li><span className="font-bold text-white">Customers:</span> non-vendor agent companies + enterprise teams on third-party LLM APIs. Excludes foundation-model-vendor agents.</li>
+          <li><span className="font-bold text-white">Cost structure:</span> every $1 of customer LLM bill is matched by ~$0.50 of engineering on tuning (6–10 FTE on a $3–5M LLM bill).</li>
+          <li><span className="font-bold text-white">Savings Traigent delivers</span> per $1 of LLM bill: <span className="text-[#f59e0b] font-semibold">50% LLM</span> + <span className="text-[#4D8EF8] font-semibold">60% eng</span> = <span className="text-white font-bold">$0.80 total customer savings</span>.</li>
+          <li><span className="font-bold text-white">Take rate:</span> <span className="text-[#4ade80] font-bold">5%</span> of total savings &mdash; effective <span className="text-white font-bold">$0.04 of ARR per $1 of penetrated customer LLM bill</span>.</li>
+          <li><span className="font-bold text-white">Penetration:</span> share of the non-vendor LLM bill reached by Traigent customers. Revenue is calculated on savings achieved <em>within penetrated markets only</em>.</li>
+        </ol>
+      </div>
+
+      {/* Cascade table */}
+      <div className="bg-slate-900/70 border border-slate-700/60 rounded-xl p-3 flex-1 flex flex-col">
+        <div className="text-[10px] font-mono uppercase tracking-widest text-amber-400 mb-2 text-left">
+          Revenue cascade · 5% of total customer savings, penetrated markets only
+        </div>
+        <table className="w-full text-left text-[13px] flex-1">
+          <thead>
+            <tr className="text-[10px] font-mono uppercase tracking-widest text-slate-400 border-b border-slate-700">
+              <th className="py-1.5">Year</th>
+              <th className="py-1.5">Phase</th>
+              <th className="py-1.5 text-right">Addressable bill</th>
+              <th className="py-1.5 text-right">Penetration</th>
+              <th className="py-1.5 text-right">Total customer savings</th>
+              <th className="py-1.5 text-right">Traigent ARR (5%)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr key={r.year} className="border-b border-slate-800/70 last:border-b-0">
+                <td className="py-1.5 font-bold text-white">{r.year}</td>
+                <td className="py-1.5 text-slate-300">{r.phase}</td>
+                <td className="py-1.5 text-right font-mono text-slate-200">{r.bill}</td>
+                <td className="py-1.5 text-right font-mono text-slate-200">{r.pen}</td>
+                <td className="py-1.5 text-right font-mono text-slate-200">{r.save}</td>
+                <td className="py-1.5 text-right font-mono font-bold" style={{ color: "#4ade80" }}>{r.rev}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div className="text-[11px] text-slate-400 mt-2 text-left">
+          <span className="font-bold text-white">Bear / Base / Bull at 2030</span> (penetration) = 4% / 8% / 12% → <span className="font-bold text-[#4ade80]">~$205M / ~$410M / ~$615M</span> ARR. Sierra hit $150M ARR 24 mo from launch; Decagon $35M+ in 9 mo. Traigent is the picks-and-shovels every agent company needs to survive its COGS curve.
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // Slide: The Market Opportunity — for channel partners + investors.
 // Narrative: the wave (few in production, exponential explosion coming) →
@@ -675,6 +749,8 @@ export const SHORT_SLIDES = [
   { title: "How we converge rapidly", section: "Appendix", component: SlideHowWeConverge },
   // ----- MARKET OPPORTUNITY (for channel partners + investors) -----
   { title: "Market Opportunity — Wave / Pain / Play", section: "Appendix", component: SlideMarketOpportunity },
+  // ----- MARKET & REVENUE (the numbers from the partner brief) -----
+  { title: "Market & Revenue — Non-Vendor Agents", section: "Appendix", component: SlideMarketAndRevenue },
 ];
 
 export default function PitchShort() {
