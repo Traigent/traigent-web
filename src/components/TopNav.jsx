@@ -38,7 +38,6 @@ const mainTabs = [
   { label: "The Problem", href: "/value-proposition" },
   { label: "Why Traigent", href: "/blog" },
   { label: "Pricing", href: "/pricing" },
-  { label: "Pitch Deck", href: "/pitch-short-2" },
 ];
 
 function MenuItem({ item, onScroll }) {
@@ -286,6 +285,17 @@ export default function TopNav() {
               >
                 Book a demo
               </a>
+              {/* Hidden access to the scroll-mode pitch deck. Intentionally low
+                  contrast and unlabeled — only visible to anyone who knows
+                  it's there. */}
+              <Link
+                to="/pitch-short-2"
+                aria-label="Pitch deck"
+                title="Pitch deck"
+                className="text-slate-800 hover:text-slate-400 transition-colors text-sm leading-none select-none"
+              >
+                ▸
+              </Link>
             </div>
 
             {/* Mobile: hamburger only. Drawer below carries all the nav. */}
