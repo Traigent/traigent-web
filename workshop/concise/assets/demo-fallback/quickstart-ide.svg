@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="820" viewBox="0 0 1240 820" fill="none">
+  <rect width="1240" height="820" rx="30" fill="#0F1728"/>
+  <rect x="0" y="0" width="1240" height="54" rx="30" fill="#152238"/>
+  <circle cx="34" cy="27" r="7" fill="#FF5F57"/>
+  <circle cx="58" cy="27" r="7" fill="#FEBC2E"/>
+  <circle cx="82" cy="27" r="7" fill="#28C840"/>
+  <rect x="112" y="14" width="208" height="26" rx="13" fill="#1F3352"/>
+  <text x="130" y="31" fill="#D9E7FB" font-family="JetBrains Mono, monospace" font-size="15">quickstart / native demo</text>
+
+  <rect x="22" y="74" width="258" height="724" rx="22" fill="#111C2F" stroke="#22334F"/>
+  <rect x="300" y="74" width="918" height="724" rx="22" fill="#10192A" stroke="#22334F"/>
+
+  <text x="48" y="116" fill="#86A2C8" font-family="Aptos, sans-serif" font-size="15" font-weight="700">Explorer</text>
+  <text x="48" y="156" fill="#D9E7FB" font-family="JetBrains Mono, monospace" font-size="17">examples/</text>
+  <text x="66" y="188" fill="#D9E7FB" font-family="JetBrains Mono, monospace" font-size="17">quickstart/</text>
+  <rect x="56" y="202" width="198" height="34" rx="10" fill="#163B6D"/>
+  <text x="74" y="224" fill="#FFFFFF" font-family="JetBrains Mono, monospace" font-size="16">01_simple_qa.mjs</text>
+  <text x="66" y="266" fill="#D9E7FB" font-family="JetBrains Mono, monospace" font-size="17">utils/</text>
+  <text x="84" y="298" fill="#D9E7FB" font-family="JetBrains Mono, monospace" font-size="16">base-example.mjs</text>
+  <text x="66" y="340" fill="#D9E7FB" font-family="JetBrains Mono, monospace" font-size="17">datasets/</text>
+  <text x="84" y="372" fill="#D9E7FB" font-family="JetBrains Mono, monospace" font-size="16">simple_questions.jsonl</text>
+  <text x="48" y="432" fill="#86A2C8" font-family="Aptos, sans-serif" font-size="15" font-weight="700">Focus</text>
+  <rect x="46" y="450" width="210" height="44" rx="14" fill="#1C2840"/>
+  <text x="66" y="478" fill="#FFFFFF" font-family="JetBrains Mono, monospace" font-size="16">configurationSpace</text>
+  <rect x="46" y="510" width="210" height="44" rx="14" fill="#1C2840"/>
+  <text x="66" y="538" fill="#FFFFFF" font-family="JetBrains Mono, monospace" font-size="16">evaluation.data</text>
+  <rect x="46" y="570" width="210" height="44" rx="14" fill="#1C2840"/>
+  <text x="66" y="598" fill="#FFFFFF" font-family="JetBrains Mono, monospace" font-size="16">bestConfig</text>
+
+  <rect x="326" y="98" width="242" height="34" rx="11" fill="#173B6C"/>
+  <text x="346" y="120" fill="#FFFFFF" font-family="JetBrains Mono, monospace" font-size="16">01_simple_qa.mjs</text>
+  <rect x="578" y="98" width="220" height="34" rx="11" fill="#1A2740"/>
+  <text x="598" y="120" fill="#8DA7CC" font-family="JetBrains Mono, monospace" font-size="16">base-example.mjs</text>
+  <rect x="808" y="98" width="264" height="34" rx="11" fill="#1A2740"/>
+  <text x="828" y="120" fill="#8DA7CC" font-family="JetBrains Mono, monospace" font-size="16">simple_questions.jsonl</text>
+
+  <g font-family="JetBrains Mono, monospace" font-size="20">
+    <text x="340" y="172" fill="#7DD3FC">import</text>
+    <text x="424" y="172" fill="#D9E7FB">{ getTrialParam, optimize, param }</text>
+    <text x="340" y="210" fill="#C084FC">const</text>
+    <text x="406" y="210" fill="#D9E7FB">rows = await loadDataset(</text>
+    <text x="732" y="210" fill="#F6C177">'simple_questions.jsonl'</text>
+    <text x="988" y="210" fill="#D9E7FB">)</text>
+    <text x="340" y="266" fill="#7DD3FC">configurationSpace</text>
+    <text x="340" y="304" fill="#D9E7FB">model:</text>
+    <text x="430" y="304" fill="#7DD3FC">param.enum</text>
+    <text x="566" y="304" fill="#D9E7FB">([</text>
+    <text x="590" y="304" fill="#F6C177">'cheap'</text>
+    <text x="682" y="304" fill="#D9E7FB">, </text>
+    <text x="704" y="304" fill="#F6C177">'balanced'</text>
+    <text x="844" y="304" fill="#D9E7FB">, </text>
+    <text x="866" y="304" fill="#F6C177">'accurate'</text>
+    <text x="1008" y="304" fill="#D9E7FB">])</text>
+    <text x="340" y="342" fill="#D9E7FB">temperature:</text>
+    <text x="504" y="342" fill="#7DD3FC">param.float</text>
+    <text x="660" y="342" fill="#D9E7FB">({ min: 0, max: 0.4, step: 0.2 })</text>
+    <text x="340" y="398" fill="#7DD3FC">objectives</text>
+    <text x="486" y="398" fill="#D9E7FB">['accuracy', 'cost']</text>
+    <text x="340" y="454" fill="#7DD3FC">algorithm</text>
+    <text x="486" y="454" fill="#F6C177">'grid'</text>
+    <text x="340" y="492" fill="#7DD3FC">maxTrials</text>
+    <text x="486" y="492" fill="#A6E3A1">9</text>
+    <text x="340" y="548" fill="#7DD3FC">bestConfig</text>
+    <text x="486" y="548" fill="#D9E7FB">{ model: 'accurate', temperature: 0 }</text>
+    <text x="340" y="604" fill="#7DD3FC">trialCount</text>
+    <text x="486" y="604" fill="#A6E3A1">9</text>
+    <text x="340" y="660" fill="#7DD3FC">printSummary</text>
+    <text x="522" y="660" fill="#D9E7FB">('quickstart/01_simple_qa', result)</text>
+  </g>
+
+  <rect x="340" y="706" width="842" height="64" rx="18" fill="#16243A"/>
+  <text x="364" y="746" fill="#8DA7CC" font-family="JetBrains Mono, monospace" font-size="18">Tabs: script | helper | dataset</text>
+</svg>
