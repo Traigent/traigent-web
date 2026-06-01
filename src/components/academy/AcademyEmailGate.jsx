@@ -71,29 +71,11 @@ export default function AcademyEmailGate({ courseSlug, courseTitle, children }) 
 
   if (unlocked) return <>{children}</>;
 
-  // Configuration not yet set: show a friendly placeholder rather than a broken
-  // form. Lets us ship the route before the HubSpot form is created.
+  // No HubSpot form wired yet (dev, preview, or pre-launch): render the course
+  // content directly rather than a placeholder. Better UX, and lets us preview
+  // the page locally without configuring HubSpot for every developer.
   if (!HUBSPOT_PORTAL_ID || !ACADEMY_FORM_ID) {
-    return (
-      <div className="max-w-2xl mx-auto text-center py-16">
-        <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-          {courseTitle}
-        </h2>
-        <p className="text-slate-400 mb-2">
-          This course is coming soon. We're finalizing the materials.
-        </p>
-        <p className="text-slate-500 text-sm">
-          In the meantime, drop us a note at{" "}
-          <a
-            className="text-[#4D8EF8] hover:text-white underline"
-            href="mailto:amir@traigent.ai"
-          >
-            amir@traigent.ai
-          </a>{" "}
-          and we'll let you know the moment it's live.
-        </p>
-      </div>
-    );
+    return <>{children}</>;
   }
 
   async function onSubmit(e) {

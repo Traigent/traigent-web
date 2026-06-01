@@ -13,6 +13,16 @@ const COURSES = [
     summary:
       "How to take an AI agent from prototype to a production-ready, cost-performance-optimized system — without guessing.",
     duration: "~45 min · self-paced",
+    level: "Intro · engineering teams",
+    status: "available",
+  },
+  {
+    slug: "statistical-se-workshop",
+    title: "Statistical Software Engineering for AI Agents",
+    summary:
+      "A 40+ minute workshop on governed AI configuration, empirical trade-offs, TVL, tunable patterns, and a runnable Traigent SDK demo. Academic discipline, engineering rigor.",
+    duration: "~45–90 min · concise + full versions",
+    level: "Advanced · platform / ML / research",
     status: "available",
   },
 ];
@@ -24,7 +34,7 @@ export default function AcademyIndex() {
         <title>Academy · Traigent</title>
         <meta
           name="description"
-          content="Short, focused courses on shipping AI agents in production: cost-performance optimization, evaluation, and observability."
+          content="Short, focused courses on shipping AI agents in production: cost-performance optimization, evaluation, observability, and governed promotion."
         />
       </Helmet>
 
@@ -67,9 +77,10 @@ export default function AcademyIndex() {
                     <p className="text-slate-300 mb-3 leading-relaxed">
                       {c.summary}
                     </p>
-                    <p className="text-xs font-mono tracking-wider text-slate-500">
-                      {c.duration.toUpperCase()}
-                    </p>
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs font-mono tracking-wider text-slate-500">
+                      <span>{c.duration.toUpperCase()}</span>
+                      {c.level && <span>· {c.level.toUpperCase()}</span>}
+                    </div>
                   </div>
                   <ArrowRight
                     className="w-5 h-5 mt-1 flex-shrink-0 text-slate-500 group-hover:text-[#4D8EF8] group-hover:translate-x-1 transition-all"
