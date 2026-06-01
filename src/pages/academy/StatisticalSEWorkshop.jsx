@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, GraduationCap, Github, ExternalLink, Clock } from "lucide-react";
+import { ArrowLeft, GraduationCap, Github, ExternalLink } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import AcademyEmailGate from "../../components/academy/AcademyEmailGate";
+import WorkshopDeckCards from "../../components/academy/WorkshopDeckCards";
 
 const COURSE_SLUG = "statistical-se-workshop";
 const COURSE_TITLE = "Statistical Software Engineering for AI Agents";
@@ -78,41 +79,22 @@ function CourseContent() {
         citations + speaker notes).
       </p>
 
-      {/* Two open-the-deck CTAs — links go to the live decks hosted on this site */}
-      <div className="grid sm:grid-cols-2 gap-3 mb-12">
-        <a
-          href={DECK_CONCISE}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group block bg-slate-900/60 border border-slate-800 hover:border-[#4D8EF8]/40 rounded-xl p-5 transition-colors"
-        >
-          <div className="flex items-center gap-2 text-xs font-mono tracking-wider text-[#4D8EF8] mb-2">
-            <Clock className="w-3.5 h-3.5" /> CONCISE · ~45 MIN
-          </div>
-          <div className="text-lg font-semibold text-white mb-1 group-hover:text-[#4D8EF8] transition-colors">
-            Open the concise deck
-          </div>
-          <div className="text-sm text-slate-400">
-            Same arc, tighter pacing. Good for a single working session.
-          </div>
-        </a>
-        <a
-          href={DECK_FULL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group block bg-slate-900/60 border border-slate-800 hover:border-[#4D8EF8]/40 rounded-xl p-5 transition-colors"
-        >
-          <div className="flex items-center gap-2 text-xs font-mono tracking-wider text-[#4D8EF8] mb-2">
-            <Clock className="w-3.5 h-3.5" /> FULL · ~90 MIN
-          </div>
-          <div className="text-lg font-semibold text-white mb-1 group-hover:text-[#4D8EF8] transition-colors">
-            Open the full deck
-          </div>
-          <div className="text-sm text-slate-400">
-            25 slides with citations, speaker notes, and methodology appendix.
-          </div>
-        </a>
-      </div>
+      <WorkshopDeckCards
+        cards={[
+          {
+            href: DECK_CONCISE,
+            label: "CONCISE · ~45 MIN",
+            title: "Open the concise deck",
+            description: "Same arc, tighter pacing. Good for a single working session.",
+          },
+          {
+            href: DECK_FULL,
+            label: "FULL · ~90 MIN",
+            title: "Open the full deck",
+            description: "25 slides with citations, speaker notes, and methodology appendix.",
+          },
+        ]}
+      />
 
       {/* The workshop arc */}
       <h2 className="text-2xl font-bold text-white mb-4">Workshop arc</h2>

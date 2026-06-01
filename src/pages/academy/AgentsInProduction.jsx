@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, GraduationCap, Clock } from "lucide-react";
+import { ArrowLeft, GraduationCap } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import AcademyEmailGate from "../../components/academy/AcademyEmailGate";
+import WorkshopDeckCards from "../../components/academy/WorkshopDeckCards";
 
 const COURSE_SLUG = "agents-in-production";
 const COURSE_TITLE = "Agents in Production";
@@ -33,43 +34,24 @@ function CourseContent() {
         the demo and into something they can defend in production.
       </p>
 
-      {/* Open-the-deck CTAs — same decks as the deeper workshop, framed for this course */}
-      <div className="grid sm:grid-cols-2 gap-3 mb-12">
-        <a
-          href={DECK_CONCISE}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group block bg-slate-900/60 border border-slate-800 hover:border-[#4D8EF8]/40 rounded-xl p-5 transition-colors"
-        >
-          <div className="flex items-center gap-2 text-xs font-mono tracking-wider text-[#4D8EF8] mb-2">
-            <Clock className="w-3.5 h-3.5" /> CONCISE DECK · ~45 MIN
-          </div>
-          <div className="text-lg font-semibold text-white mb-1 group-hover:text-[#4D8EF8] transition-colors">
-            Open the slide deck
-          </div>
-          <div className="text-sm text-slate-400">
-            Interactive 26-slide deck. Press G for the overview grid, N for
-            speaker notes.
-          </div>
-        </a>
-        <a
-          href={DECK_FULL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group block bg-slate-900/60 border border-slate-800 hover:border-[#4D8EF8]/40 rounded-xl p-5 transition-colors"
-        >
-          <div className="flex items-center gap-2 text-xs font-mono tracking-wider text-[#4D8EF8] mb-2">
-            <Clock className="w-3.5 h-3.5" /> FULL DECK · ~90 MIN
-          </div>
-          <div className="text-lg font-semibold text-white mb-1 group-hover:text-[#4D8EF8] transition-colors">
-            Open the full deck
-          </div>
-          <div className="text-sm text-slate-400">
-            25 slides with academic citations, speaker notes, and methodology
-            appendix.
-          </div>
-        </a>
-      </div>
+      <WorkshopDeckCards
+        cards={[
+          {
+            href: DECK_CONCISE,
+            label: "CONCISE DECK · ~45 MIN",
+            title: "Open the slide deck",
+            description:
+              "Interactive 26-slide deck. Press G for the overview grid, N for speaker notes.",
+          },
+          {
+            href: DECK_FULL,
+            label: "FULL DECK · ~90 MIN",
+            title: "Open the full deck",
+            description:
+              "25 slides with academic citations, speaker notes, and methodology appendix.",
+          },
+        ]}
+      />
 
       <div className="space-y-10">
         <section>
