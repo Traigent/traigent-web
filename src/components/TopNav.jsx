@@ -38,6 +38,7 @@ const mainTabs = [
   { label: "The Problem", href: "/value-proposition" },
   { label: "Why Traigent", href: "/blog" },
   { label: "Pricing", href: "/pricing" },
+  { label: "Pitch Deck", href: "/pitch-short-2" },
 ];
 
 function MenuItem({ item, onScroll }) {
