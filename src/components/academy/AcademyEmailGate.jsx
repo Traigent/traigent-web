@@ -71,18 +71,20 @@ export default function AcademyEmailGate({ courseSlug, courseTitle, children }) 
 
   if (unlocked) return <>{children}</>;
 
-  // No HubSpot form wired yet (dev, preview, or pre-launch): render the course
-  // content directly rather than a placeholder. Better UX, and lets us preview
-  // the page locally without configuring HubSpot for every developer.
-  if (!HUBSPOT_PORTAL_ID || !ACADEMY_FORM_ID) {
-    return <>{children}</>;
-  }
+  // The form is always shown. If HubSpot env vars are missing in this
+  // environment, submissions will surface a friendly error via setError
+  // (rather than silently failing) — visitors are guided to email Amir
+  // directly so we don't lose the lead while configuration is being fixed.
+  const isConfigured = !!(HUBSPOT_PORTAL_ID && ACADEMY_FORM_ID);
 
   async function onSubmit(e) {
     e.preventDefault();
     setError(null);
     setSubmitting(true);
     try {
+      if (!isConfigured) {
+        throw new Error("HubSpot form not configured");
+      }
       await submitToHubSpot({ email, courseTitle });
       try {
         window.localStorage.setItem(storageKey(courseSlug), email || "1");
