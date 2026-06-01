@@ -22,6 +22,7 @@ import About from './pages/About'
 import Pricing from './pages/Pricing'
 import AcademyIndex from './pages/academy/AcademyIndex'
 import AgentsInProduction from './pages/academy/AgentsInProduction'
+import StatisticalSEWorkshop from './pages/academy/StatisticalSEWorkshop'
 import Layout from './layout'
 import ExternalRedirect from './components/ExternalRedirect'
 
@@ -66,6 +67,7 @@ export default function App() {
         <Route path="pricing" element={<Pricing />} />
         <Route path="academy" element={<AcademyIndex />} />
         <Route path="academy/agents-in-production" element={<AgentsInProduction />} />
+        <Route path="academy/statistical-se-workshop" element={<StatisticalSEWorkshop />} />
       </Route>
     </Routes>
   )

@@ -1,31 +1,50 @@
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { ArrowLeft, GraduationCap } from "lucide-react";
-import { Helmet } from "react-helmet-async";
-import AcademyEmailGate from "../../components/academy/AcademyEmailGate";
+import AcademyCourseLayout from "../../components/academy/AcademyCourseLayout";
+import AcademyGetStartedCTA from "../../components/academy/AcademyGetStartedCTA";
+import WorkshopDeckCards from "../../components/academy/WorkshopDeckCards";
 
 const COURSE_SLUG = "agents-in-production";
 const COURSE_TITLE = "Agents in Production";
+// HubSpot form (portal 148486827, region eu1). Each course owns its own form
+// so submissions land on a separate record and can trigger course-specific
+// follow-up workflows in HubSpot.
+const HUBSPOT_FORM_ID = "cfc1cc3c-3c99-4dfc-8ad6-541420d23f26";
 
-// Placeholder course content. Replace with the real lessons / video links /
-// downloadables when the curriculum is finalized.
+// Live decks — built from Traigent/traigent-presentations and served from
+// this site at /workshop/<concise|full>/. The .html suffix prevents Vite's
+// SPA fallback from intercepting in dev.
+const DECK_CONCISE = "/workshop/concise/index.html";
+const DECK_FULL = "/workshop/full/index.html";
+
 function CourseContent() {
   return (
-    <div className="max-w-3xl mx-auto">
-      <div
-        className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-xs font-mono tracking-wider mb-4"
-        style={{ color: "#4D8EF8" }}
-      >
-        <GraduationCap className="w-3.5 h-3.5" />
-        TRAIGENT ACADEMY
-      </div>
+    <>
       <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
         {COURSE_TITLE}
       </h1>
-      <p className="text-lg text-slate-400 mb-12 leading-relaxed">
+      <p className="text-lg text-slate-400 mb-8 leading-relaxed">
         A short, hands-on course for engineering teams getting an AI agent past
         the demo and into something they can defend in production.
       </p>
+
+      <WorkshopDeckCards
+        cards={[
+          {
+            href: DECK_CONCISE,
+            label: "CONCISE DECK · ~45 MIN",
+            title: "Open the slide deck",
+            description:
+              "Interactive 26-slide deck. Press G for the overview grid, N for speaker notes.",
+          },
+          {
+            href: DECK_FULL,
+            label: "FULL DECK · ~90 MIN",
+            title: "Open the full deck",
+            description:
+              "25 slides with academic citations, speaker notes, and methodology appendix.",
+          },
+        ]}
+      />
 
       <div className="space-y-10">
         <section>
@@ -77,53 +96,44 @@ function CourseContent() {
         </section>
       </div>
 
-      <div className="mt-16 pt-8 border-t border-slate-800 text-center">
-        <p className="text-slate-400 mb-4">
-          Want to see this on your own agent?
-        </p>
-        <Link
-          to="/get-started"
-          className="inline-flex items-center gap-2 bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white px-6 py-3 rounded-lg font-medium transition-colors"
-        >
-          Get started in 15 minutes
-        </Link>
+      <div className="mt-16 pt-8 border-t border-slate-800">
+        <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-6 md:p-8 mb-8">
+          <div className="text-xs font-mono tracking-wider text-[#4D8EF8] mb-2">
+            NEXT
+          </div>
+          <h3 className="text-xl md:text-2xl font-bold text-white mb-2">
+            Go deeper: the Statistical SE workshop
+          </h3>
+          <p className="text-slate-300 leading-relaxed mb-4">
+            A 40+ minute workshop on governed AI configuration, TVL, tunable
+            patterns, and a runnable Traigent SDK demo. Same arc as above, with
+            citations and speaker notes. Concise (45&nbsp;min) and full
+            (90&nbsp;min) versions.
+          </p>
+          <Link
+            to="/academy/statistical-se-workshop"
+            className="inline-flex items-center gap-2 text-[#4D8EF8] hover:text-white font-medium transition-colors"
+          >
+            Open the workshop →
+          </Link>
+        </div>
+
+        <AcademyGetStartedCTA />
       </div>
-    </div>
+    </>
   );
 }
 
 export default function AgentsInProduction() {
   return (
-    <>
-      <Helmet>
-        <title>Agents in Production · Traigent Academy</title>
-        <meta
-          name="description"
-          content="A short, hands-on course on shipping AI agents to production: cost-performance optimization, observability, and re-optimization as a habit."
-        />
-      </Helmet>
-
-      <section className="bg-[#080808] text-white min-h-screen py-12 md:py-16">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            <Link
-              to="/academy"
-              className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-white mb-8 transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back to Academy
-            </Link>
-
-            <AcademyEmailGate courseSlug={COURSE_SLUG} courseTitle={COURSE_TITLE}>
-              <CourseContent />
-            </AcademyEmailGate>
-          </motion.div>
-        </div>
-      </section>
-    </>
+    <AcademyCourseLayout
+      metaTitle="Agents in Production · Traigent Academy"
+      metaDescription="A short, hands-on course on shipping AI agents to production: cost-performance optimization, observability, and re-optimization as a habit."
+      courseSlug={COURSE_SLUG}
+      courseTitle={COURSE_TITLE}
+      formId={HUBSPOT_FORM_ID}
+    >
+      <CourseContent />
+    </AcademyCourseLayout>
   );
 }
