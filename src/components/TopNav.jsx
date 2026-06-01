@@ -286,13 +286,12 @@ export default function TopNav() {
                 Book a demo
               </a>
               {/* Hidden access to the scroll-mode pitch deck. Intentionally low
-                  contrast and unlabeled — only visible to anyone who knows
-                  it's there. */}
+                  contrast and unlabeled — visible only if you scan for it. */}
               <Link
                 to="/pitch-short-2"
                 aria-label="Pitch deck"
                 title="Pitch deck"
-                className="text-slate-800 hover:text-slate-400 transition-colors text-sm leading-none select-none"
+                className="text-slate-700 hover:text-slate-200 transition-colors text-base leading-none select-none px-1"
               >
                 ▸
               </Link>
