@@ -5,6 +5,10 @@ import WorkshopDeckCards from "../../components/academy/WorkshopDeckCards";
 
 const COURSE_SLUG = "statistical-se-workshop";
 const COURSE_TITLE = "Statistical Software Engineering for AI Agents";
+// HubSpot form (portal 148486827, region eu1). Each course owns its own form
+// so submissions land on a separate record and can trigger course-specific
+// follow-up workflows in HubSpot.
+const HUBSPOT_FORM_ID = "d6d8a1e2-0de0-471e-b73a-b9fead370153";
 
 // Live decks — built from Traigent/traigent-presentations and served from
 // this site at /workshop/<concise|full>/. The .html suffix prevents Vite's
@@ -173,6 +177,7 @@ export default function StatisticalSEWorkshop() {
       metaDescription="A 40+ minute workshop on governed AI configuration, empirical trade-offs, TVL, tunable patterns, and runnable Traigent SDK demos."
       courseSlug={COURSE_SLUG}
       courseTitle={COURSE_TITLE}
+      formId={HUBSPOT_FORM_ID}
       pillLabel="TRAIGENT ACADEMY · WORKSHOP"
     >
       <CourseContent />

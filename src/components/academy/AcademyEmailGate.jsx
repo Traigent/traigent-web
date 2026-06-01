@@ -22,11 +22,11 @@ function readHubSpotCookie() {
   return match ? decodeURIComponent(match[1]) : "";
 }
 
-async function submitToHubSpot({ email, courseTitle }) {
+async function submitToHubSpot({ email, courseTitle, formId }) {
   // Forms API — public, CORS-enabled, accepts direct browser POSTs. Submission
   // creates/updates the contact in HubSpot and triggers any workflow attached
   // to the form (where the welcome email is sent).
-  const url = `https://api.hsforms.com/submissions/v3/integration/submit/${HUBSPOT_PORTAL_ID}/${ACADEMY_FORM_ID}`;
+  const url = `https://api.hsforms.com/submissions/v3/integration/submit/${HUBSPOT_PORTAL_ID}/${formId}`;
   const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -52,11 +52,16 @@ async function submitToHubSpot({ email, courseTitle }) {
  * Forms API. On success it persists an unlock flag in localStorage and reveals
  * `children`.
  *
- *   <AcademyEmailGate courseSlug="agents-in-production" courseTitle="...">
+ *   <AcademyEmailGate
+ *     courseSlug="agents-in-production"
+ *     courseTitle="..."
+ *     formId="cfc1cc3c-..."   // optional; falls back to VITE_HUBSPOT_ACADEMY_FORM_ID
+ *   >
  *     <CourseContent />
  *   </AcademyEmailGate>
  */
-export default function AcademyEmailGate({ courseSlug, courseTitle, children }) {
+export default function AcademyEmailGate({ courseSlug, courseTitle, formId, children }) {
+  const effectiveFormId = formId || ACADEMY_FORM_ID;
   const [unlocked, setUnlocked] = useState(() => {
     if (typeof window === "undefined") return false;
     try {
@@ -71,11 +76,11 @@ export default function AcademyEmailGate({ courseSlug, courseTitle, children }) 
 
   if (unlocked) return <>{children}</>;
 
-  // The form is always shown. If HubSpot env vars are missing in this
-  // environment, submissions will surface a friendly error via setError
+  // The form is always shown. If HubSpot env vars / form id are missing in
+  // this environment, submissions will surface a friendly error via setError
   // (rather than silently failing) — visitors are guided to email Amir
   // directly so we don't lose the lead while configuration is being fixed.
-  const isConfigured = !!(HUBSPOT_PORTAL_ID && ACADEMY_FORM_ID);
+  const isConfigured = !!(HUBSPOT_PORTAL_ID && effectiveFormId);
 
   async function onSubmit(e) {
     e.preventDefault();
@@ -85,7 +90,7 @@ export default function AcademyEmailGate({ courseSlug, courseTitle, children }) 
       if (!isConfigured) {
         throw new Error("HubSpot form not configured");
       }
-      await submitToHubSpot({ email, courseTitle });
+      await submitToHubSpot({ email, courseTitle, formId: effectiveFormId });
       try {
         window.localStorage.setItem(storageKey(courseSlug), email || "1");
       } catch {

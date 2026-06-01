@@ -14,6 +14,7 @@ export default function AcademyCourseLayout({
   metaDescription,
   courseSlug,
   courseTitle,
+  formId,
   pillLabel = "TRAIGENT ACADEMY",
   children,
 }) {
@@ -39,7 +40,11 @@ export default function AcademyCourseLayout({
               Back to Academy
             </Link>
 
-            <AcademyEmailGate courseSlug={courseSlug} courseTitle={courseTitle}>
+            <AcademyEmailGate
+              courseSlug={courseSlug}
+              courseTitle={courseTitle}
+              formId={formId}
+            >
               <div className="max-w-3xl mx-auto">
                 <div
                   className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-xs font-mono tracking-wider mb-4"

@@ -5,6 +5,10 @@ import WorkshopDeckCards from "../../components/academy/WorkshopDeckCards";
 
 const COURSE_SLUG = "agents-in-production";
 const COURSE_TITLE = "Agents in Production";
+// HubSpot form (portal 148486827, region eu1). Each course owns its own form
+// so submissions land on a separate record and can trigger course-specific
+// follow-up workflows in HubSpot.
+const HUBSPOT_FORM_ID = "cfc1cc3c-3c99-4dfc-8ad6-541420d23f26";
 
 // Live decks — built from Traigent/traigent-presentations and served from
 // this site at /workshop/<concise|full>/. The .html suffix prevents Vite's
@@ -127,6 +131,7 @@ export default function AgentsInProduction() {
       metaDescription="A short, hands-on course on shipping AI agents to production: cost-performance optimization, observability, and re-optimization as a habit."
       courseSlug={COURSE_SLUG}
       courseTitle={COURSE_TITLE}
+      formId={HUBSPOT_FORM_ID}
     >
       <CourseContent />
     </AcademyCourseLayout>
