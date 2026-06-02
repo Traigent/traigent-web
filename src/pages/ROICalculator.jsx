@@ -1,10 +1,11 @@
 ﻿import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, TrendingDown, Clock, DollarSign, Github } from "lucide-react";
+import { ArrowRight, TrendingDown, Clock, DollarSign, Github, Sparkles, RotateCcw } from "lucide-react";
 import { Helmet } from "react-helmet-async";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { trackEvent } from "../lib/analytics";
 import { useSharedSetting } from "../lib/useSharedSetting";
+import { useCustomSearchSpace } from "../lib/useCustomSearchSpace";
 import StartNowModal from "../components/StartNowModal";
 import CalculatorTopBar from "../components/CalculatorTopBar";
 
@@ -91,6 +92,11 @@ export default function ROICalculator() {
   // dial in their own % rather than commit to one of the three published ranges.
   const [savingsScenario, setSavingsScenario] = useState("conservative");
   const [customSavingsPct, setCustomSavingsPct] = useState(15);
+  // Custom search space from the Knob Explorer. The engineering-savings math
+  // (lines below) already picks up TTM's republished `manual_hours_per_pass`
+  // automatically — this state is read only to render an orientation banner.
+  const [customSpace, , resetCustomSpace] = useCustomSearchSpace();
+  const navigate = useNavigate();
 
   function resetToDefaults() {
     setMonthlySpend(DEFAULT_MONTHLY_SPEND);
@@ -186,6 +192,53 @@ export default function ROICalculator() {
               Plug in your numbers. Pick a tier. Calculate your 12-month savings.
             </p>
           </motion.div>
+
+          {/* Custom search-space orientation banner — appears when the user
+              applied a search space from the Knob Explorer. The engineering
+              math below picks up TTM's republished per-pass hours automatically;
+              this banner just keeps the user oriented. */}
+          {customSpace && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="mb-10 bg-blue-500/10 border border-blue-500/40 rounded-2xl px-5 py-4 flex items-center justify-between gap-4 flex-wrap"
+            >
+              <div className="flex items-center gap-3">
+                <Sparkles className="w-5 h-5 text-blue-300 flex-shrink-0" />
+                <div>
+                  <div className="text-xs font-mono uppercase tracking-widest text-blue-300 font-semibold mb-0.5">
+                    Custom search space active
+                  </div>
+                  <div className="text-sm text-slate-300">
+                    Engineering-savings math derives from{" "}
+                    <span className="font-mono font-semibold text-white">
+                      {customSpace.configs.toLocaleString()}
+                    </span>{" "}
+                    configurations · via TTM Calculator
+                  </div>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => navigate("/knob-explorer?from=roi")}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-200 border border-blue-500/40 hover:bg-blue-500/30 transition-colors text-xs font-medium"
+                >
+                  Edit
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => resetCustomSpace()}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800/60 text-slate-300 border border-slate-700 hover:bg-slate-800 transition-colors text-xs"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  Reset
+                </button>
+              </div>
+            </motion.div>
+          )}
 
           {/* Inputs */}
           <motion.div
