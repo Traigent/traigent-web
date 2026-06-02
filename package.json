@@ -11,6 +11,7 @@
     "prebuild": "./scripts/update-version.sh",
     "build": "vite build && cp -f public/404.html dist/ 2>/dev/null || copy public\\404.html dist\\ 2>nul || true",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "validate:replay": "node scripts/validate_replay.mjs",
     "preview": "vite preview",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"
