@@ -407,26 +407,27 @@ function SortButton({ value, current, onChange, tone, label }) {
 }
 
 // Small pill rendering api/open license counts inside a vendor header.
+// Full words ("api"/"open") at both sizes — abbreviations like "5A" / "1O"
+// looked like "5A" and "10" respectively and confused users.
 function LicenseBadges({ closedCount, openCount, size = "expanded" }) {
   const cls =
     size === "expanded"
       ? "text-[9px] px-1 py-0.5"
-      : "text-[8px] px-1";
-  const suffix = size === "expanded" ? { closed: " api", open: " open" } : { closed: "a", open: "o" };
+      : "text-[9px] px-1";
   return (
     <>
       {closedCount > 0 && (
         <span
-          className={`${cls} font-mono uppercase tracking-wider rounded bg-slate-800/60 text-slate-400 border border-slate-700/40`}
+          className={`${cls} font-mono tracking-wide rounded bg-slate-800/60 text-slate-400 border border-slate-700/40`}
         >
-          {closedCount}{suffix.closed}
+          {closedCount} api
         </span>
       )}
       {openCount > 0 && (
         <span
-          className={`${cls} font-mono uppercase tracking-wider rounded bg-emerald-500/15 text-emerald-300 border border-emerald-600/30`}
+          className={`${cls} font-mono tracking-wide rounded bg-emerald-500/15 text-emerald-300 border border-emerald-600/30`}
         >
-          {openCount}{suffix.open}
+          {openCount} open
         </span>
       )}
     </>
