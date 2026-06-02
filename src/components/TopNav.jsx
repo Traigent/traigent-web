@@ -33,6 +33,11 @@ const PITCH_DECK_OPTIONS = [
     desc: "Configure a search space — knobs, values, combinatorics",
     href: "/#/knob-explorer",
   },
+  {
+    label: "Live optimization demo",
+    desc: "5-scene scripted demo — search space → convergence → 10× cheaper",
+    href: "/#/demo",
+  },
 ];
 
 const productItems = [
