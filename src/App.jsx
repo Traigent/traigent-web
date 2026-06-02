@@ -25,6 +25,7 @@ import AgentsInProduction from './pages/academy/AgentsInProduction'
 import StatisticalSEWorkshop from './pages/academy/StatisticalSEWorkshop'
 import KnobExplorer from './pages/KnobExplorer'
 import OptimizationDemo from './pages/OptimizationDemo'
+import DemoGallery from './pages/DemoGallery'
 import Layout from './layout'
 import ExternalRedirect from './components/ExternalRedirect'
 
@@ -70,6 +71,7 @@ export default function App() {
           element={<ExternalRedirect to="https://portal.traigent.ai/refund" label="refund" />}
         />
         <Route path="pricing" element={<Pricing />} />
+        <Route path="demos" element={<DemoGallery />} />
         <Route path="academy" element={<AcademyIndex />} />
         <Route path="academy/agents-in-production" element={<AgentsInProduction />} />
         <Route path="academy/statistical-se-workshop" element={<StatisticalSEWorkshop />} />
