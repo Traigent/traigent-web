@@ -4,7 +4,7 @@
 // rendered through PitchFull's originals with override props for the
 // subtitle / footer; everything else is imported directly. No structural
 // JSX is duplicated from PitchFull.
-import { ArrowRight, ArrowDown, ArrowUp, ChevronsDown, DollarSign, Check, Clock, ShieldCheck, TrendingDown, TrendingUp } from "lucide-react";
+import { ArrowRight, ArrowDown, ArrowUp, ChevronsDown, DollarSign, Check, Clock, ShieldCheck, TrendingDown, TrendingUp, X } from "lucide-react";
 
 // Shared optimizer ring — clockwise Learn → Deduce → Test → Repeat loop.
 // Used by slide 1, slide 2 (BEFORE/TRAIGENT/AFTER middle panel), and slide 24
@@ -44,6 +44,7 @@ import {
   ObservabilityCardBody,
 } from "../components/PlatformShowcase";
 import { ConvergenceDiagram, KillerStatsGrid } from "./pitch/shared";
+import SlideOptimizationInActionDemo from "./pitch/SlideOptimizationInActionDemo";
 import {
   PitchDeck,
   SlideOnePagerSummary,
@@ -373,6 +374,93 @@ export function SlideParetoFrontier() {
   );
 }
 
+
+// Slide: Sweep the eval + observability pack. Follow-up to slide 24.
+// Langfuse, Arize, LangSmith, Braintrust, Galileo, Helicone all rode the
+// previous wave (eval + observability) and raised hundreds of millions —
+// but none of them solve OPTIMIZATION, which slide 24's market wave is
+// making urgent. Traigent has all three pillars. We sweep the pack.
+function SlideSweepThePack() {
+  const competitors = [
+    { name: "Langfuse",   note: "Open-source, AWS partner" },
+    { name: "Arize AI",   note: "$131M raised" },
+    { name: "LangSmith",  note: "LangChain product" },
+    { name: "Braintrust", note: "$80M raised · $800M val" },
+    { name: "Galileo",    note: "Enterprise direct" },
+    { name: "Helicone",   note: "Acquired by Mintlify · maintenance mode" },
+  ];
+  const CheckCell = () => (
+    <td className="py-2.5 text-center">
+      <Check className="w-6 h-6 inline" strokeWidth={3} style={{ color: "#4ade80" }} />
+    </td>
+  );
+  const XCell = () => (
+    <td className="py-2.5 text-center">
+      <X className="w-6 h-6 inline" strokeWidth={3} style={{ color: "#f87171" }} />
+    </td>
+  );
+  return (
+    <div className="w-full max-w-[1180px] mx-auto text-center self-stretch flex flex-col min-h-[600px]">
+      {/* Title — tightened to fit within slide canvas */}
+      <div className="mb-2">
+        <h1 className="text-3xl md:text-4xl font-extrabold text-white leading-tight tracking-tight mb-1.5">
+          Why partner with <span style={{ color: "#4D8EF8" }}>Traigent.ai</span>?
+        </h1>
+        <h2 className="text-xl md:text-2xl font-bold text-white leading-tight tracking-tight mb-1">
+          Sweep the <span style={{ color: "#4D8EF8" }}>Eval + Observability</span> Pack
+        </h2>
+        <p className="text-sm md:text-base text-slate-300 leading-snug">
+          Langfuse and similar <span className="font-bold text-white">burst with success</span> on eval + observability &mdash; $1B+ valuations.
+          <br />
+          They raised hundreds of millions but never built the most important pillar: <span className="font-bold text-[#f59e0b]">optimization</span>.
+        </p>
+      </div>
+
+      {/* Capability matrix */}
+      <div className="bg-slate-900/70 border border-slate-700/60 rounded-xl p-3 flex-1 flex flex-col">
+        <table className="w-full text-left text-[14px] flex-1">
+          <thead>
+            <tr className="text-[11px] font-mono uppercase tracking-widest text-slate-400 border-b border-slate-700">
+              <th className="py-1.5">Vendor</th>
+              <th className="py-1.5 text-center">Observability</th>
+              <th className="py-1.5 text-center">Evaluation</th>
+              <th className="py-1.5 text-center" style={{ color: "#f59e0b" }}>Optimization</th>
+              <th className="py-1.5 text-right text-slate-500">Context</th>
+            </tr>
+          </thead>
+          <tbody>
+            {competitors.map((c) => (
+              <tr key={c.name} className="border-b border-slate-800/70">
+                <td className="py-1.5 font-semibold text-white">{c.name}</td>
+                <CheckCell />
+                <CheckCell />
+                <XCell />
+                <td className="py-1.5 text-right text-slate-400 text-[12px]">{c.note}</td>
+              </tr>
+            ))}
+            {/* Traigent — highlighted row */}
+            <tr className="bg-blue-500/10">
+              <td className="py-2 font-bold text-[16px]" style={{ color: "#4D8EF8" }}>Traigent.ai</td>
+              <CheckCell />
+              <CheckCell />
+              <td className="py-2 text-center">
+                <Check className="w-7 h-7 inline" strokeWidth={3.5} style={{ color: "#4ade80" }} />
+              </td>
+              <td className="py-2 text-right font-bold text-white text-[12px]">3 platforms in 1</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      {/* Punchline */}
+      <div className="mt-2 bg-slate-950 border-2 rounded-xl p-2.5 text-center" style={{ borderColor: "#4D8EF8" }}>
+        <p className="text-base md:text-lg text-slate-200 leading-snug">
+          <span className="font-bold" style={{ color: "#4D8EF8" }}>Traigent</span> has everything they have <span className="font-bold text-[#f59e0b]">PLUS the optimization layer the market is now demanding</span>. The pack gets swept.
+        </p>
+      </div>
+    </div>
+  );
+}
 
 // Slide: Market & Revenue — headline numbers from the May 2026 partner brief.
 // Top section: 3 stat tiles (TAM today, addressable LLM bill 2026, 2030).
@@ -749,8 +837,12 @@ export const SHORT_SLIDES = [
   { title: "How we converge rapidly", section: "Appendix", component: SlideHowWeConverge },
   // ----- MARKET OPPORTUNITY (for channel partners + investors) -----
   { title: "Market Opportunity — Wave / Pain / Play", section: "Appendix", component: SlideMarketOpportunity },
+  // ----- SWEEP THE EVAL + OBSERVABILITY PACK (follow-up to slide 24) -----
+  { title: "Sweep the Eval + Observability Pack", section: "Appendix", component: SlideSweepThePack },
   // ----- MARKET & REVENUE (the numbers from the partner brief) -----
   { title: "Market & Revenue — Non-Vendor Agents", section: "Appendix", component: SlideMarketAndRevenue },
+  // ----- LIVE DEMO — appears as last slide of every filtered deck via URL ranges -----
+  { title: "Optimization in Action (Video Demo)", section: "Demo", component: SlideOptimizationInActionDemo },
 ];
 
 export default function PitchShort() {

@@ -15,18 +15,18 @@ const GITHUB_URL = "https://github.com/Traigent/Traigent";
 const PITCH_DECK_OPTIONS = [
   {
     label: "Extended product presentation",
-    desc: "Full pitch deck — product, no investor section",
-    href: "/#/pitch-short-2?exclude=24-26",
+    desc: "Full product deck + live demo (no investor section)",
+    href: "/#/pitch-short-2/extended-product-presentation",
   },
   {
     label: "Short summary",
-    desc: "Slides 1–5 — the headline arc",
-    href: "/#/pitch-short-2?range=1-5",
+    desc: "Slides 1–5 + live demo — the headline arc",
+    href: "/#/pitch-short-2/short-summary",
   },
   {
     label: "Market opportunity",
-    desc: "Slides 24–26 — for partners + investors",
-    href: "/#/pitch-short-2?range=24-26",
+    desc: "Investor section + live demo",
+    href: "/#/pitch-short-2/market-opportunity",
   },
 ];
 
