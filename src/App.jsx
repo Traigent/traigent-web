@@ -35,6 +35,7 @@ export default function App() {
       <Route path="pitch-full" element={<PitchFull />} />
       <Route path="pitch-short" element={<PitchShort />} />
       <Route path="pitch-short-2" element={<PitchShort2 />} />
+      <Route path="pitch-short-2/:preset" element={<PitchShort2 />} />
       <Route path="one-pager" element={<OnePager />} />
       <Route path="one-pager-2" element={<OnePager2 />} />
 

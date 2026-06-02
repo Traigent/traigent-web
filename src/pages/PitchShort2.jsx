@@ -7,10 +7,20 @@
 // targeted versions of the deck (short summary, market opportunity, etc.).
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { SHORT_SLIDES } from "./PitchShort";
 import { OnePager2Slide } from "./OnePager2";
 import BrandMark from "../components/BrandMark";
+
+// Named presets — URLs like /pitch-short-2/extended-product-presentation map
+// onto specific range/exclude filters here, so each deck has a readable URL
+// matching its menu label. Update both this map and src/components/TopNav.jsx
+// PITCH_DECK_OPTIONS when adding a new preset.
+const PRESETS = {
+  "extended-product-presentation": { exclude: "24-26" },
+  "short-summary":                 { range:   "1-5,27" },
+  "market-opportunity":            { range:   "24-27" },
+};
 
 const SLIDE_W = 1280;
 const SLIDE_H = 720;
@@ -126,52 +136,76 @@ function SlideCanvas({ slide, index, total, scale }) {
   );
 }
 
-// Parse a "N-M" string into a [startIdx, endIdx) zero-based half-open
-// interval. Returns null when malformed or out of bounds against `total`.
-function parseRange(s, total) {
+// Parse a comma-separated list like "1-5,7,9-12" into an array of
+// [startIdx, endIdx) zero-based half-open intervals. Single numbers like
+// "27" become [26, 27). Malformed parts are skipped; returns null if nothing
+// parses.
+function parseRangeList(s, total) {
   if (!s) return null;
-  const m = /^\s*(\d+)\s*-\s*(\d+)\s*$/.exec(s);
-  if (!m) return null;
-  const start = parseInt(m[1], 10) - 1;
-  const end = parseInt(m[2], 10);
-  if (
-    Number.isNaN(start) ||
-    Number.isNaN(end) ||
-    start < 0 ||
-    end <= start ||
-    start >= total
-  ) {
-    return null;
+  const out = [];
+  for (const part of s.split(",").map((p) => p.trim()).filter(Boolean)) {
+    const range = /^\s*(\d+)\s*-\s*(\d+)\s*$/.exec(part);
+    const single = /^\s*(\d+)\s*$/.exec(part);
+    let start;
+    let end;
+    if (range) {
+      start = parseInt(range[1], 10) - 1;
+      end = parseInt(range[2], 10);
+    } else if (single) {
+      start = parseInt(single[1], 10) - 1;
+      end = start + 1;
+    } else {
+      continue;
+    }
+    if (Number.isNaN(start) || Number.isNaN(end)) continue;
+    if (start < 0 || end <= start || start >= total) continue;
+    out.push([start, Math.min(end, total)]);
   }
-  return [start, Math.min(end, total)];
+  return out.length ? out : null;
 }
 
-// Filter SCROLL_SLIDES per query params:
-//   ?range=N-M    → keep only slides N..M (1-based, inclusive both ends)
-//   ?exclude=N-M  → keep everything EXCEPT slides N..M
-// When both are set, `range` wins. Malformed values fall back to the full deck.
+// Filter SCROLL_SLIDES per query params (1-based, inclusive both ends):
+//   ?range=1-5,28   → keep only slides 1..5 and slide 28 (in that order)
+//   ?exclude=25-27  → keep everything EXCEPT slides 25..27
+// `range` wins when both are set. Malformed values fall back to the full deck.
 function resolveSlides(rangeParam, excludeParam, allSlides) {
   const total = allSlides.length;
-  const range = parseRange(rangeParam, total);
-  if (range) return allSlides.slice(range[0], range[1]);
-  const exclude = parseRange(excludeParam, total);
-  if (exclude) return allSlides.filter((_, i) => i < exclude[0] || i >= exclude[1]);
+  const ranges = parseRangeList(rangeParam, total);
+  if (ranges) {
+    const out = [];
+    for (const [s, e] of ranges) {
+      for (let i = s; i < e; i++) out.push(allSlides[i]);
+    }
+    return out;
+  }
+  const excludes = parseRangeList(excludeParam, total);
+  if (excludes) {
+    return allSlides.filter(
+      (_, i) => !excludes.some(([s, e]) => i >= s && i < e),
+    );
+  }
   return allSlides;
 }
 
 export default function PitchShort2() {
   const scale = useViewportScale();
   useRemoveChatWidget();
+  const { preset } = useParams();
   const [searchParams] = useSearchParams();
-  const slidesToRender = useMemo(
-    () =>
-      resolveSlides(
-        searchParams.get("range"),
-        searchParams.get("exclude"),
-        SCROLL_SLIDES,
-      ),
-    [searchParams],
-  );
+  const slidesToRender = useMemo(() => {
+    // Named preset on the URL path (e.g. /pitch-short-2/short-summary) wins
+    // over raw ?range= / ?exclude= query params. Unknown preset names fall
+    // through to whatever the query params (or full deck) say.
+    if (preset && PRESETS[preset]) {
+      const { range, exclude } = PRESETS[preset];
+      return resolveSlides(range, exclude, SCROLL_SLIDES);
+    }
+    return resolveSlides(
+      searchParams.get("range"),
+      searchParams.get("exclude"),
+      SCROLL_SLIDES,
+    );
+  }, [preset, searchParams]);
 
   return (
     <>
