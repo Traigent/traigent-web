@@ -587,7 +587,7 @@ export default function KnobExplorer() {
               KNOB EXPLORER
             </div>
             <h1 className="text-3xl md:text-5xl font-bold text-white mb-3 tracking-tight">
-              Configure your search space
+              Configure your optimization search space
             </h1>
             <p className="text-base md:text-lg text-slate-400 mb-5 max-w-3xl leading-relaxed">
               Pick models. Pick knobs. Pick values. Watch the combinatorics blow
