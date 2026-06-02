@@ -381,6 +381,33 @@ function SortButton({ value, current, onChange, tone, label }) {
   );
 }
 
+// Small pill rendering api/open license counts inside a vendor header.
+function LicenseBadges({ closedCount, openCount, size = "expanded" }) {
+  const cls =
+    size === "expanded"
+      ? "text-[9px] px-1 py-0.5"
+      : "text-[8px] px-1";
+  const suffix = size === "expanded" ? { closed: " api", open: " open" } : { closed: "a", open: "o" };
+  return (
+    <>
+      {closedCount > 0 && (
+        <span
+          className={`${cls} font-mono uppercase tracking-wider rounded bg-slate-800/60 text-slate-400 border border-slate-700/40`}
+        >
+          {closedCount}{suffix.closed}
+        </span>
+      )}
+      {openCount > 0 && (
+        <span
+          className={`${cls} font-mono uppercase tracking-wider rounded bg-emerald-500/15 text-emerald-300 border border-emerald-600/30`}
+        >
+          {openCount}{suffix.open}
+        </span>
+      )}
+    </>
+  );
+}
+
 function VendorGroup({ vendor, models, selectedIds, onToggle, open, onToggleOpen }) {
   const total = models.length;
   const selected = models.filter((m) => selectedIds.includes(m.id)).length;
@@ -405,16 +432,7 @@ function VendorGroup({ vendor, models, selectedIds, onToggle, open, onToggleOpen
                 {selected} / {total}
               </span>
               <span className="flex gap-1.5">
-                {closedCount > 0 && (
-                  <span className="text-[9px] font-mono uppercase tracking-wider px-1 py-0.5 rounded bg-slate-800/60 text-slate-400 border border-slate-700/40">
-                    {closedCount} api
-                  </span>
-                )}
-                {openCount > 0 && (
-                  <span className="text-[9px] font-mono uppercase tracking-wider px-1 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-600/30">
-                    {openCount} open
-                  </span>
-                )}
+                <LicenseBadges closedCount={closedCount} openCount={openCount} size="expanded" />
               </span>
             </div>
             <ChevronUp className="w-4 h-4 text-slate-500 flex-shrink-0" />
@@ -430,16 +448,7 @@ function VendorGroup({ vendor, models, selectedIds, onToggle, open, onToggleOpen
               <span className="text-[10px] font-mono text-slate-500">
                 {selected ? `${selected}/${total}` : `${total}`}
               </span>
-              {closedCount > 0 && (
-                <span className="text-[8px] font-mono uppercase tracking-wider px-1 rounded bg-slate-800/60 text-slate-400 border border-slate-700/40">
-                  {closedCount}a
-                </span>
-              )}
-              {openCount > 0 && (
-                <span className="text-[8px] font-mono uppercase tracking-wider px-1 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-600/30">
-                  {openCount}o
-                </span>
-              )}
+              <LicenseBadges closedCount={closedCount} openCount={openCount} size="compact" />
             </div>
           </>
         )}
