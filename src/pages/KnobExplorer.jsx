@@ -325,6 +325,29 @@ function KnobRow({ knob, selectedValues, onToggleValue, onToggleEnabled, enabled
   );
 }
 
+// Renders a sorted list of KnobRow controls for one knob catalog. Lifts the
+// repeated mapping + value/enabled binding out of the page body so the three
+// knob sections (agent / common / per-model specific) all use the same code.
+function KnobList({ knobs, sortBy, knobValues, onToggleEnabled, onToggleValue, idFor = (k) => k.id }) {
+  return (
+    <div className="space-y-2.5">
+      {sortKnobsByImpact(knobs, sortBy).map((k) => {
+        const key = idFor(k);
+        return (
+          <KnobRow
+            key={key}
+            knob={k}
+            enabled={!!knobValues[key]}
+            selectedValues={knobValues[key] || []}
+            onToggleEnabled={() => onToggleEnabled(key, k.values)}
+            onToggleValue={(v) => onToggleValue(key, v)}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
 function ModelCard({ model, selected, onToggle }) {
   return (
     <button
@@ -727,34 +750,24 @@ export default function KnobExplorer() {
 
             {/* Agent knobs */}
             <Section title="Agent knobs" count={enabledAgentCount}>
-              <div className="space-y-2.5">
-                {sortKnobsByImpact(AGENT_KNOBS, sortBy).map((k) => (
-                  <KnobRow
-                    key={k.id}
-                    knob={k}
-                    enabled={!!knobValues[k.id]}
-                    selectedValues={knobValues[k.id] || []}
-                    onToggleEnabled={() => toggleKnobEnabled(k.id, k.values)}
-                    onToggleValue={(v) => toggleKnobValue(k.id, v)}
-                  />
-                ))}
-              </div>
+              <KnobList
+                knobs={AGENT_KNOBS}
+                sortBy={sortBy}
+                knobValues={knobValues}
+                onToggleEnabled={toggleKnobEnabled}
+                onToggleValue={toggleKnobValue}
+              />
             </Section>
 
             {/* Common model knobs */}
             <Section title="Common model knobs" count={enabledCommonCount}>
-              <div className="space-y-2.5">
-                {sortKnobsByImpact(COMMON_MODEL_KNOBS, sortBy).map((k) => (
-                  <KnobRow
-                    key={k.id}
-                    knob={k}
-                    enabled={!!knobValues[k.id]}
-                    selectedValues={knobValues[k.id] || []}
-                    onToggleEnabled={() => toggleKnobEnabled(k.id, k.values)}
-                    onToggleValue={(v) => toggleKnobValue(k.id, v)}
-                  />
-                ))}
-              </div>
+              <KnobList
+                knobs={COMMON_MODEL_KNOBS}
+                sortBy={sortBy}
+                knobValues={knobValues}
+                onToggleEnabled={toggleKnobEnabled}
+                onToggleValue={toggleKnobValue}
+              />
             </Section>
 
             {/* Specific model knobs */}
@@ -787,21 +800,14 @@ export default function KnobExplorer() {
                             {model?.provider}
                           </span>
                         </div>
-                        <div className="space-y-2.5">
-                          {sortKnobsByImpact(knobs, sortBy).map((k) => {
-                            const key = `${mid}.${k.id}`;
-                            return (
-                              <KnobRow
-                                key={key}
-                                knob={k}
-                                enabled={!!knobValues[key]}
-                                selectedValues={knobValues[key] || []}
-                                onToggleEnabled={() => toggleKnobEnabled(key, k.values)}
-                                onToggleValue={(v) => toggleKnobValue(key, v)}
-                              />
-                            );
-                          })}
-                        </div>
+                        <KnobList
+                          knobs={knobs}
+                          sortBy={sortBy}
+                          knobValues={knobValues}
+                          onToggleEnabled={toggleKnobEnabled}
+                          onToggleValue={toggleKnobValue}
+                          idFor={(k) => `${mid}.${k.id}`}
+                        />
                       </div>
                     );
                   })}
