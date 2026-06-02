@@ -23,6 +23,7 @@ import Pricing from './pages/Pricing'
 import AcademyIndex from './pages/academy/AcademyIndex'
 import AgentsInProduction from './pages/academy/AgentsInProduction'
 import StatisticalSEWorkshop from './pages/academy/StatisticalSEWorkshop'
+import KnobExplorer from './pages/KnobExplorer'
 import Layout from './layout'
 import ExternalRedirect from './components/ExternalRedirect'
 
@@ -36,6 +37,7 @@ export default function App() {
       <Route path="pitch-short" element={<PitchShort />} />
       <Route path="pitch-short-2" element={<PitchShort2 />} />
       <Route path="pitch-short-2/:preset" element={<PitchShort2 />} />
+      <Route path="knob-explorer" element={<KnobExplorer />} />
       <Route path="one-pager" element={<OnePager />} />
       <Route path="one-pager-2" element={<OnePager2 />} />
 
