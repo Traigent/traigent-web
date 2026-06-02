@@ -16,7 +16,7 @@ const PITCH_DECK_OPTIONS = [
   {
     label: "Extended product presentation",
     desc: "Full pitch deck — product, no investor section",
-    href: "/#/pitch-short-2?exclude=24-25",
+    href: "/#/pitch-short-2?exclude=24-26",
   },
   {
     label: "Short summary",
@@ -25,8 +25,8 @@ const PITCH_DECK_OPTIONS = [
   },
   {
     label: "Market opportunity",
-    desc: "Slides 24–25 — for partners + investors",
-    href: "/#/pitch-short-2?range=24-25",
+    desc: "Slides 24–26 — for partners + investors",
+    href: "/#/pitch-short-2?range=24-26",
   },
 ];
 
