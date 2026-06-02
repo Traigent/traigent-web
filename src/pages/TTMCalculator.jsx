@@ -1,10 +1,11 @@
 import { useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Clock, Zap, Layers, FileText, SlidersHorizontal } from "lucide-react";
+import { ArrowRight, Clock, Zap, Layers, FileText, SlidersHorizontal, Sparkles, RotateCcw } from "lucide-react";
 import { Helmet } from "react-helmet-async";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { trackEvent } from "../lib/analytics";
 import { useSharedSetting } from "../lib/useSharedSetting";
+import { useCustomSearchSpace } from "../lib/useCustomSearchSpace";
 import CalculatorTopBar from "../components/CalculatorTopBar";
 
 const BLUE = "#1A6BF5";
@@ -184,6 +185,10 @@ export default function TTMCalculator() {
   // fraction. This slider lets the user reflect that reality and surfaces the
   // confidence they're sacrificing in return.
   const [manualCoveragePct, setManualCoveragePct] = useState(20);
+  // Custom search space from the Knob Explorer. When set, overrides the
+  // 6-slider product below and the slider UI hides behind a summary card.
+  const [customSpace, , resetCustomSpace] = useCustomSearchSpace();
+  const navigate = useNavigate();
 
   function resetToDefaults() {
     setModels(6);
@@ -199,7 +204,12 @@ export default function TTMCalculator() {
   }
 
   const r = useMemo(() => {
-    const totalConfigs = models * prompts * maxTokensVariants * fewShots * selfConsistency * otherDims;
+    // Knob Explorer's "Apply to TTM" writes a configs number to the shared
+    // setting. When present, it overrides the 6-slider product. All downstream
+    // numbers (engineer hours, weeks, dollars) flow from totalConfigs and pick
+    // up the override automatically.
+    const sliderConfigs = models * prompts * maxTokensVariants * fewShots * selfConsistency * otherDims;
+    const totalConfigs = customSpace?.configs ?? sliderConfigs;
     const manualConfigsTested = Math.max(1, Math.round(totalConfigs * manualCoveragePct / 100));
     const manualEngineerHours = (manualConfigsTested * minPerConfig) / 60;
     const manualFteWeeks = manualEngineerHours / FTE_HOURS_PER_WEEK;
@@ -240,7 +250,7 @@ export default function TTMCalculator() {
       dollarsSaved,
       fullSweepDollarsSaved,
     };
-  }, [models, prompts, maxTokensVariants, fewShots, selfConsistency, otherDims, minPerConfig, manualCoveragePct, hourlyRate]);
+  }, [models, prompts, maxTokensVariants, fewShots, selfConsistency, otherDims, minPerConfig, manualCoveragePct, hourlyRate, customSpace]);
 
   // Republish the per-pass manual hours whenever it changes — ROI Calculator
   // listens on this key for its engineering-hours derivation.
@@ -419,9 +429,64 @@ export default function TTMCalculator() {
               Search-space dimensions
             </span>
             <div className="flex-1 h-px bg-slate-800" />
+            {!customSpace && (
+              <Link
+                to="/knob-explorer?from=ttm"
+                className="text-xs text-slate-400 hover:text-white inline-flex items-center gap-1 transition-colors whitespace-nowrap"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                Configure custom search space →
+              </Link>
+            )}
           </motion.div>
 
-          {/* Inputs — search-space sliders */}
+          {/* Custom search-space card — shown instead of the 6 sliders when
+              the Knob Explorer has applied a configuration. */}
+          {customSpace && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="mb-10 bg-blue-500/10 border border-blue-500/40 rounded-2xl p-5 md:p-6"
+            >
+              <div className="flex items-start justify-between gap-4 flex-wrap">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Sparkles className="w-4 h-4 text-blue-300" />
+                    <span className="text-xs font-mono uppercase tracking-widest text-blue-300 font-bold">
+                      Custom search space · from Knob Explorer
+                    </span>
+                  </div>
+                  <div className="text-4xl md:text-5xl font-extrabold text-white tracking-tight font-mono tabular-nums">
+                    {customSpace.configs.toLocaleString()}
+                  </div>
+                  <div className="text-sm text-slate-400 mt-1">configurations</div>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <button
+                    type="button"
+                    onClick={() => navigate("/knob-explorer?from=ttm")}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-200 border border-blue-500/40 hover:bg-blue-500/30 transition-colors text-sm font-medium"
+                  >
+                    Edit in Knob Explorer
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => resetCustomSpace()}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800/60 text-slate-300 border border-slate-700 hover:bg-slate-800 transition-colors text-xs"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    Reset to slider mode
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Inputs — search-space sliders. Hidden when a custom space from
+              the Knob Explorer is active. */}
+          {!customSpace && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -515,6 +580,7 @@ export default function TTMCalculator() {
               }
             />
           </motion.div>
+          )}
 
           {/* Section header: Your engineering parameters */}
           <motion.div

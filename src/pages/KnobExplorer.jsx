@@ -6,10 +6,12 @@
 //
 // Reachable via the hidden ▸ menu in TopNav.
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
-import { ArrowLeft, ChevronDown, ChevronUp, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronDown, ChevronUp, Clock, DollarSign, Sparkles } from "lucide-react";
+import { useSharedSetting } from "../lib/useSharedSetting";
+import { useCustomSearchSpace } from "../lib/useCustomSearchSpace";
 
 // =============================================================================
 // Knob catalog — generic across agent types (not text-to-SQL specific).
@@ -544,12 +546,25 @@ function sortKnobsByImpact(knobs, metric) {
 }
 
 export default function KnobExplorer() {
-  const [selectedModels, setSelectedModels] = useState([]);
+  // Persist selections + sort preference across reloads / tabs so the user
+  // can leave the page and come back to the same configuration.
+  const [selectedModels, setSelectedModels] = useSharedSetting(
+    "traigent_knob_explorer_models",
+    [],
+  );
   // knobValues maps knob-id (or `${modelId}.${knobId}` for specific) → array of selected values.
   // Presence in the map (with at least one value) = "enabled".
-  const [knobValues, setKnobValues] = useState({});
+  const [knobValues, setKnobValues] = useSharedSetting(
+    "traigent_knob_explorer_knob_values",
+    {},
+  );
   // Which impact metric to rank knobs by. Doesn't affect the Models section.
-  const [sortBy, setSortBy] = useState("a");
+  const [sortBy, setSortBy] = useSharedSetting("traigent_knob_explorer_sort_by", "a");
+  // Bidirectional link with the TTM + ROI calculators.
+  const [, applySearchSpace] = useCustomSearchSpace();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const cameFrom = searchParams.get("from"); // "ttm" | "roi" | null
   // Set of vendor names currently expanded in the Models section. Lifted here
   // so the grid wrapper can apply col-span-full to expanded cells.
   const [expandedVendors, setExpandedVendors] = useState(new Set());
@@ -637,6 +652,31 @@ export default function KnobExplorer() {
               Back to traigent.ai
             </Link>
 
+            {/* Return banner — when arriving from /ttm or /roi via "Configure
+                custom search space", offer one-click return that also writes
+                the current combinatorics to the shared setting so the calc
+                picks it up. */}
+            {cameFrom && (
+              <button
+                type="button"
+                onClick={() => {
+                  applySearchSpace(total);
+                  navigate(`/${cameFrom}`);
+                }}
+                className="w-full mb-5 flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-blue-500/10 border border-blue-500/40 text-blue-200 hover:bg-blue-500/20 transition-colors text-left"
+              >
+                <span className="flex items-center gap-2">
+                  <ArrowLeft className="w-4 h-4" />
+                  Return to{" "}
+                  <span className="font-semibold uppercase">{cameFrom}</span>{" "}
+                  calculator with this search space
+                </span>
+                <span className="font-mono text-xs text-blue-300">
+                  {total.toLocaleString()} configs →
+                </span>
+              </button>
+            )}
+
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-xs font-mono tracking-wider mb-3 text-[#4D8EF8]">
               <Sparkles className="w-3.5 h-3.5" />
               KNOB EXPLORER
@@ -705,6 +745,42 @@ export default function KnobExplorer() {
                       {enabledSpecificCount} model-specific
                     </span>
                   </div>
+                </div>
+
+                {/* Apply buttons — write the current combinatorics to the shared
+                    setting (TTM + ROI both pick it up automatically) and jump
+                    to the chosen calculator. */}
+                <div className="mt-4 pt-3 border-t border-slate-700/60 flex items-center gap-2 flex-wrap">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-slate-500 mr-1">
+                    Apply to →
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      applySearchSpace(total);
+                      navigate("/ttm");
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-500/15 text-blue-200 border border-blue-500/40 hover:bg-blue-500/25 transition-colors text-xs font-medium"
+                  >
+                    <Clock className="w-3.5 h-3.5" />
+                    TTM calculator
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      applySearchSpace(total);
+                      navigate("/roi");
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-500/15 text-blue-200 border border-blue-500/40 hover:bg-blue-500/25 transition-colors text-xs font-medium"
+                  >
+                    <DollarSign className="w-3.5 h-3.5" />
+                    ROI calculator
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                  <span className="text-[10px] text-slate-500">
+                    (updates both; opens only the one clicked)
+                  </span>
                 </div>
               </div>
             </div>
