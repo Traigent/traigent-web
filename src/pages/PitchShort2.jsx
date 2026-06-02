@@ -1,8 +1,13 @@
 // /pitch-short-2 - same slides as /pitch-short, but rendered as a vertical
 // scrollable page. Each slide is a fixed 1280x720 canvas scaled down to fit
 // the viewport, which keeps it readable on iPhone landscape without clipping.
-import { useEffect, useState } from "react";
+//
+// Subset filtering: `?range=N-M` (1-based, inclusive) renders only that slice.
+// Used by the hidden presentations menu in the top nav to share narrowly-
+// targeted versions of the deck (short summary, market opportunity, etc.).
+import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
+import { useSearchParams } from "react-router-dom";
 import { SHORT_SLIDES } from "./PitchShort";
 import { OnePager2Slide } from "./OnePager2";
 import BrandMark from "../components/BrandMark";
@@ -121,9 +126,52 @@ function SlideCanvas({ slide, index, total, scale }) {
   );
 }
 
+// Parse a "N-M" string into a [startIdx, endIdx) zero-based half-open
+// interval. Returns null when malformed or out of bounds against `total`.
+function parseRange(s, total) {
+  if (!s) return null;
+  const m = /^\s*(\d+)\s*-\s*(\d+)\s*$/.exec(s);
+  if (!m) return null;
+  const start = parseInt(m[1], 10) - 1;
+  const end = parseInt(m[2], 10);
+  if (
+    Number.isNaN(start) ||
+    Number.isNaN(end) ||
+    start < 0 ||
+    end <= start ||
+    start >= total
+  ) {
+    return null;
+  }
+  return [start, Math.min(end, total)];
+}
+
+// Filter SCROLL_SLIDES per query params:
+//   ?range=N-M    → keep only slides N..M (1-based, inclusive both ends)
+//   ?exclude=N-M  → keep everything EXCEPT slides N..M
+// When both are set, `range` wins. Malformed values fall back to the full deck.
+function resolveSlides(rangeParam, excludeParam, allSlides) {
+  const total = allSlides.length;
+  const range = parseRange(rangeParam, total);
+  if (range) return allSlides.slice(range[0], range[1]);
+  const exclude = parseRange(excludeParam, total);
+  if (exclude) return allSlides.filter((_, i) => i < exclude[0] || i >= exclude[1]);
+  return allSlides;
+}
+
 export default function PitchShort2() {
   const scale = useViewportScale();
   useRemoveChatWidget();
+  const [searchParams] = useSearchParams();
+  const slidesToRender = useMemo(
+    () =>
+      resolveSlides(
+        searchParams.get("range"),
+        searchParams.get("exclude"),
+        SCROLL_SLIDES,
+      ),
+    [searchParams],
+  );
 
   return (
     <>
@@ -148,12 +196,12 @@ export default function PitchShort2() {
         }
       `}</style>
       <div className="bg-[#080808] text-white">
-        {SCROLL_SLIDES.map((slide, i) => (
+        {slidesToRender.map((slide, i) => (
           <SlideCanvas
             key={`${i}-${slide.title}`}
             slide={slide}
             index={i}
-            total={SCROLL_SLIDES.length}
+            total={slidesToRender.length}
             scale={scale}
           />
         ))}

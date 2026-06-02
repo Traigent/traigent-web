@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { ChevronDown, Github, Menu, X } from "lucide-react";
 import StartNowModal from "./StartNowModal";
@@ -8,6 +8,27 @@ import { trackEvent } from "../lib/analytics";
 const PORTAL_URL = "https://portal.traigent.ai";
 const DEMO_URL = "https://meetings-eu1.hubspot.com/amir8";
 const GITHUB_URL = "https://github.com/Traigent/Traigent";
+
+// Hidden access point: presentations menu behind the obscure ▸ glyph in the
+// far-right of the nav. Each item opens the scroll-mode deck in a new tab
+// with a different ?range= filter (see PitchShort2.jsx).
+const PITCH_DECK_OPTIONS = [
+  {
+    label: "Extended product presentation",
+    desc: "Full pitch deck — product, no investor section",
+    href: "/#/pitch-short-2?exclude=24-25",
+  },
+  {
+    label: "Short summary",
+    desc: "Slides 1–5 — the headline arc",
+    href: "/#/pitch-short-2?range=1-5",
+  },
+  {
+    label: "Market opportunity",
+    desc: "Slides 24–25 — for partners + investors",
+    href: "/#/pitch-short-2?range=24-25",
+  },
+];
 
 const productItems = [
   { label: "Optimization Engine", scrollId: "optimization", desc: "Picks next best config from run history" },
@@ -147,8 +168,29 @@ export default function TopNav() {
   const [openMenu, setOpenMenu] = useState(null);
   const [showStartNow, setShowStartNow] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [pitchMenuOpen, setPitchMenuOpen] = useState(false);
+  const pitchMenuRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Close the pitch-deck dropdown on outside-click or Escape.
+  useEffect(() => {
+    if (!pitchMenuOpen) return;
+    const onDocClick = (e) => {
+      if (pitchMenuRef.current && !pitchMenuRef.current.contains(e.target)) {
+        setPitchMenuOpen(false);
+      }
+    };
+    const onKey = (e) => {
+      if (e.key === "Escape") setPitchMenuOpen(false);
+    };
+    document.addEventListener("mousedown", onDocClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDocClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [pitchMenuOpen]);
 
   // Click handler for in-page anchor scrolling.
   // If we're on the homepage, scrollIntoView directly.
@@ -285,16 +327,49 @@ export default function TopNav() {
               >
                 Book a demo
               </a>
-              {/* Hidden access to the scroll-mode pitch deck. Intentionally low
-                  contrast and unlabeled — visible only if you scan for it. */}
-              <Link
-                to="/pitch-short-2"
-                aria-label="Pitch deck"
-                title="Pitch deck"
-                className="text-slate-700 hover:text-slate-200 transition-colors text-base leading-none select-none px-1"
-              >
-                ▸
-              </Link>
+              {/* Hidden access to the presentations menu. The ▸ glyph is the
+                  trigger; right-click toggles a small dropdown of decks, each
+                  opening in a new tab. Left-click is intentionally a no-op
+                  so the surface stays obscure. */}
+              <div className="relative" ref={pitchMenuRef}>
+                <button
+                  type="button"
+                  onClick={(e) => e.preventDefault()}
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                    setPitchMenuOpen((v) => !v);
+                  }}
+                  aria-label="Presentations menu"
+                  aria-haspopup="menu"
+                  aria-expanded={pitchMenuOpen}
+                  title="Presentations"
+                  className="text-slate-700 hover:text-slate-200 transition-colors text-base leading-none select-none px-1"
+                >
+                  ▸
+                </button>
+                {pitchMenuOpen && (
+                  <div
+                    role="menu"
+                    aria-label="Presentations"
+                    className="absolute top-full right-0 mt-2 w-72 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl p-2 z-[60]"
+                  >
+                    {PITCH_DECK_OPTIONS.map((item) => (
+                      <a
+                        key={item.href}
+                        href={item.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        role="menuitem"
+                        onClick={() => setPitchMenuOpen(false)}
+                        className="block px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors"
+                      >
+                        <div className="text-sm text-white font-medium">{item.label}</div>
+                        <div className="text-xs text-slate-400 mt-0.5">{item.desc}</div>
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Mobile: hamburger only. Drawer below carries all the nav. */}
