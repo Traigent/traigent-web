@@ -358,6 +358,29 @@ function ModelCard({ model, selected, onToggle }) {
   );
 }
 
+// Single segmented-control button. Colored when active, grey when not.
+// Kept inline next to its siblings (in the `Rank knobs by` toggle row).
+const SORT_TONES = {
+  emerald: "bg-emerald-500/20 text-emerald-200",
+  rose:    "bg-rose-500/20 text-rose-200",
+  indigo:  "bg-indigo-500/20 text-indigo-200",
+  amber:   "bg-amber-500/20 text-amber-200",
+};
+function SortButton({ value, current, onChange, tone, label }) {
+  const active = value === current;
+  return (
+    <button
+      type="button"
+      onClick={() => onChange(value)}
+      className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+        active ? SORT_TONES[tone] : "text-slate-400 hover:text-slate-200"
+      }`}
+    >
+      {label}
+    </button>
+  );
+}
+
 function VendorGroup({ vendor, models, selectedIds, onToggle, open, onToggleOpen }) {
   const total = models.length;
   const selected = models.filter((m) => selectedIds.includes(m.id)).length;
@@ -660,50 +683,10 @@ export default function KnobExplorer() {
                 Rank knobs by:
               </span>
               <div className="inline-flex rounded-lg bg-slate-900/60 border border-slate-700 p-0.5">
-                <button
-                  type="button"
-                  onClick={() => setSortBy("a")}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
-                    sortBy === "a"
-                      ? "bg-emerald-500/20 text-emerald-200"
-                      : "text-slate-400 hover:text-slate-200"
-                  }`}
-                >
-                  Accuracy impact ↓
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSortBy("c")}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
-                    sortBy === "c"
-                      ? "bg-rose-500/20 text-rose-200"
-                      : "text-slate-400 hover:text-slate-200"
-                  }`}
-                >
-                  Cost impact ↓
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSortBy("ac")}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
-                    sortBy === "ac"
-                      ? "bg-indigo-500/20 text-indigo-200"
-                      : "text-slate-400 hover:text-slate-200"
-                  }`}
-                >
-                  Accuracy + Cost ↓
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSortBy("l")}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
-                    sortBy === "l"
-                      ? "bg-amber-500/20 text-amber-200"
-                      : "text-slate-400 hover:text-slate-200"
-                  }`}
-                >
-                  Latency impact ↓
-                </button>
+                <SortButton value="a"  current={sortBy} onChange={setSortBy} tone="emerald" label="Accuracy impact ↓" />
+                <SortButton value="c"  current={sortBy} onChange={setSortBy} tone="rose"    label="Cost impact ↓" />
+                <SortButton value="ac" current={sortBy} onChange={setSortBy} tone="indigo"  label="Accuracy + Cost ↓" />
+                <SortButton value="l"  current={sortBy} onChange={setSortBy} tone="amber"   label="Latency impact ↓" />
               </div>
               <span className="text-[10px] text-slate-500">
                 (highest first; Models section is unaffected)
