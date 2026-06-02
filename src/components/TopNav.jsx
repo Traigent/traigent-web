@@ -28,6 +28,11 @@ const PITCH_DECK_OPTIONS = [
     desc: "Investor section + live demo",
     href: "/#/pitch-short-2/market-opportunity",
   },
+  {
+    label: "Knob explorer",
+    desc: "Configure a search space — knobs, values, combinatorics",
+    href: "/#/knob-explorer",
+  },
 ];
 
 const productItems = [
