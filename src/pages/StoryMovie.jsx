@@ -328,6 +328,12 @@ function Act5Punch({ startAtEnd = false, paused = false }) {
   const handleNarrationComplete = useCallback(() => setNarrationDone(true), []);
   return (
     <div className="w-full h-full flex flex-col items-center justify-center px-8 md:px-16">
+      {/* Fixed "The Win" headline — same treatment as Act 1's "The Problem"
+          and Act 3's "What everyone wants", with an emerald accent that
+          thematically signals success. */}
+      <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-emerald-300 tracking-tight mb-6 md:mb-8">
+        The Win
+      </h1>
       {/* Narration + tagline + buttons sit in a single column centered
           vertically as one group. The tagline/buttons block reserves its
           layout space from the start (rendered with opacity 0 until the
@@ -335,7 +341,9 @@ function Act5Punch({ startAtEnd = false, paused = false }) {
           when the buttons fade in. */}
       <Narration
         sentences={ACT_5_SENTENCES}
-        wpm={315}
+        wpm={470}
+        rowPauseMs={70}
+        sentencePauseMs={270}
         onComplete={handleNarrationComplete}
         noWrapper
         paused={paused}
@@ -422,10 +430,34 @@ function Act1Problem({ onComplete, paused, startAtEnd }) {
 }
 
 const ACT_3_SENTENCES = [
-  ["We want to rapidly find", "the optimal accuracy"],
-  ["Then we want similar accuracies", "but with much lower LLM costs"],
+  ["Rapidly find the best accuracy"],
+  ["Then find similar accuracies", "but with much lower LLM costs"],
   ["Let's see how Traigent", "does this automatically."],
 ];
+
+// Act 3 wrapper — fixed "What everyone wants" headline at the top, with
+// the narration centered below as one vertically-centered group. Mirrors
+// Act1Problem's structure but with a sky-blue accent (aspirational vs
+// rose's "problem" signal).
+function Act3Want({ onComplete, paused, startAtEnd }) {
+  return (
+    <div className="w-full h-full flex flex-col items-center justify-center px-8 md:px-16">
+      <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-sky-300 tracking-tight mb-6 md:mb-8">
+        What everyone wants
+      </h1>
+      <Narration
+        sentences={ACT_3_SENTENCES}
+        wpm={470}
+        rowPauseMs={70}
+        sentencePauseMs={270}
+        onComplete={onComplete}
+        paused={paused}
+        startAtEnd={startAtEnd}
+        noWrapper
+      />
+    </div>
+  );
+}
 
 // Render signature: (onComplete, restart, opts) where opts may carry
 // { paused: bool, showFinal: bool } for the playback controls.
@@ -445,11 +477,11 @@ const ACTS = [
   {
     id: 2,
     label: "The config space",
-    durationMs: 35_000,
+    durationMs: 24_500,
     render: (onComplete, _restart, opts = {}) => (
       <EmbeddedAct
         src={`/#/knob-explorer?guided=BIRD&chrome=hidden${opts.showFinal ? "&final=1" : ""}`}
-        durationMs={35_000}
+        durationMs={24_500}
         title="Knob space — BIRD configuration"
         onComplete={onComplete}
         paused={opts.paused}
@@ -462,9 +494,7 @@ const ACTS = [
     label: "The want",
     durationMs: 20_000,
     render: (onComplete, _restart, opts = {}) => (
-      <Narration
-        sentences={ACT_3_SENTENCES}
-        wpm={315}
+      <Act3Want
         onComplete={onComplete}
         paused={opts.paused}
         startAtEnd={opts.showFinal}
@@ -504,15 +534,25 @@ const ACTS = [
 // Page
 // =============================================================================
 
+// Initial landing state — the page opens directly on the end-frame of
+// Act 1 (paused, all narration revealed). This makes the page immediately
+// content-rich (no "click to start" idle screen) so a LinkedIn or social
+// visitor lands inside the story rather than on a splash. Restart-from-top
+// returns to this same state.
+const INITIAL_ACT = 1;
+const INITIAL_PAUSED = true;
+const INITIAL_SHOW_FINAL = true;
+
 export default function StoryMovie() {
-  // currentAct: 0 = idle (haven't started), 1..5 = act in progress, 6 = done.
-  const [currentAct, setCurrentAct] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
+  // currentAct: 0 = idle / splash (no longer the default — reachable only
+  // if something explicitly sets it back to 0), 1..5 = act in progress.
+  const [currentAct, setCurrentAct] = useState(INITIAL_ACT);
+  const [isPaused, setIsPaused] = useState(INITIAL_PAUSED);
   // True when the current act should render in its FINAL frame (all narration
   // rows revealed for text acts; iframe page in its terminal state for
   // embedded acts). Set when the user clicks an "End Act N" button. Cleared
   // on any natural advance.
-  const [showFinalState, setShowFinalState] = useState(false);
+  const [showFinalState, setShowFinalState] = useState(INITIAL_SHOW_FINAL);
   // Elapsed ms in the current act — drives the per-act progress fill on the
   // controls bar.
   const [actElapsedMs, setActElapsedMs] = useState(0);
@@ -534,13 +574,15 @@ export default function StoryMovie() {
     setCurrentAct(0);
     setTimeout(() => setCurrentAct(1), 100);
   }, []);
-  // "Restart from the top" — returns to the idle screen (the big Play button).
+  // "Restart from the top" — returns to the initial end-of-Act-1 landing
+  // state (paused, all narration revealed). Same shape as the page's first
+  // mount.
   const restartFromTop = useCallback(() => {
     advancingRef.current = false;
-    setIsPaused(false);
-    setShowFinalState(false);
+    setIsPaused(INITIAL_PAUSED);
+    setShowFinalState(INITIAL_SHOW_FINAL);
     setActElapsedMs(0);
-    setCurrentAct(0);
+    setCurrentAct(INITIAL_ACT);
   }, []);
 
   const advance = useCallback(() => {
@@ -711,6 +753,37 @@ export default function StoryMovie() {
             {/* Act indicator */}
             <div className="absolute top-4 right-4 text-[10px] font-mono uppercase tracking-widest text-slate-600 z-50">
               Act {act.id} / {ACTS.length} · {act.label}
+            </div>
+          </div>
+        )}
+
+        {/* Landing-state hint — shown only when sitting on Act 1's end frame
+            (the default initial state). Cues the viewer toward the controls
+            bar so they know they can play through or jump straight to any
+            scene. Hides as soon as anything else happens. */}
+        {currentAct === 1 && isPaused && showFinalState && (
+          <div className="absolute bottom-30 left-0 right-0 z-40 flex justify-center pointer-events-none px-4" style={{ bottom: "7.5rem" }}>
+            <div className="pointer-events-auto inline-flex items-center gap-2.5 md:gap-3 px-3 md:px-4 py-2 md:py-2.5 rounded-full bg-yellow-400/20 border border-yellow-400/70 backdrop-blur">
+              <span className="text-base md:text-xl text-white font-medium">
+                {/* A real, clickable play button — same handler as the bottom-
+                    bar Play. Solid blue so it pops against the yellow pill
+                    background as the obvious next action. */}
+                <button
+                  type="button"
+                  onClick={togglePause}
+                  className="inline-flex items-center gap-1 mr-1.5 px-2.5 py-0.5 rounded-full bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white font-bold transition-colors shadow-lg shadow-blue-500/40 align-baseline"
+                >
+                  <Play className="w-3.5 h-3.5 md:w-4 md:h-4 fill-white" />
+                  play
+                </button>
+                or jump directly to scenes
+              </span>
+              <span
+                className="text-2xl md:text-3xl text-yellow-200 font-bold animate-bounce"
+                style={{ filter: "drop-shadow(0 0 12px rgba(250, 204, 21, 0.8))" }}
+              >
+                ↓
+              </span>
             </div>
           </div>
         )}
