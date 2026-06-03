@@ -444,7 +444,7 @@ const ACTS = [
   },
   {
     id: 2,
-    label: "Search space",
+    label: "The config space",
     durationMs: 35_000,
     render: (onComplete, _restart, opts = {}) => (
       <EmbeddedAct
@@ -473,7 +473,7 @@ const ACTS = [
   },
   {
     id: 4,
-    label: "Optimize",
+    label: "The optimization",
     durationMs: 26_500,
     render: (onComplete, _restart, opts = {}) => (
       <EmbeddedAct
@@ -668,7 +668,7 @@ export default function StoryMovie() {
                 Why Traigent
               </h1>
               <p className="text-lg md:text-xl text-slate-400 mb-8">
-                The problem · Search space · The want · Optimize · The win.
+                The problem · The config space · The want · The optimization · The win.
                 <br />
                 Five acts. About one minute.
               </p>
@@ -682,9 +682,11 @@ export default function StoryMovie() {
               </button>
               {/* Hint that the controls bar at the bottom lets the viewer
                   skip straight to any act's end frame. */}
-              <p className="mt-5 text-sm text-slate-500">
-                Or skip to any scene from the controls bar below
-                <span className="text-slate-600"> ↓</span>
+              <p className="mt-6 text-base md:text-lg text-slate-300">
+                Or skip to any scene via the control bars below
+                <span className="inline-block ml-4 md:ml-6 text-2xl md:text-3xl text-blue-300 font-bold align-middle animate-bounce">
+                  ↓
+                </span>
               </p>
             </div>
           </div>
