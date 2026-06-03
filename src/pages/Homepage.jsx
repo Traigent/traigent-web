@@ -149,7 +149,7 @@ export default function Homepage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.18 }}
-              className="text-2xl md:text-3xl lg:text-[2rem] text-slate-300 leading-snug mb-10"
+              className="text-2xl md:text-3xl lg:text-[2rem] text-slate-300 leading-snug mb-6"
             >
               among{" "}
               <Link
@@ -159,6 +159,27 @@ export default function Homepage() {
                 thousands possible
               </Link>
             </motion.p>
+            {/* "Traigent in action" — 2-minute narrated walkthrough CTA, with a
+                prominent play button so it reads as "watch video" at a glance. */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.19 }}
+              className="flex justify-center mb-10"
+            >
+              <Link
+                to="/story"
+                onClick={() => trackEvent("hero_video_clicked", { destination: "story" })}
+                className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-slate-900/60 border border-slate-700 hover:border-blue-500/60 hover:bg-slate-900/80 transition-colors group"
+              >
+                <span className="flex items-center justify-center w-10 h-10 rounded-full bg-[#1A6BF5] group-hover:bg-[#4D8EF8] transition-colors shadow-lg shadow-blue-500/30">
+                  <Play className="w-4 h-4 text-white fill-white ml-0.5" />
+                </span>
+                <span className="text-base md:text-lg font-medium text-slate-100">
+                  Traigent in action <span className="text-slate-500 mx-1">·</span> <span className="text-slate-400 font-normal">1-min video</span>
+                </span>
+              </Link>
+            </motion.div>
             {/* Two-column value summary: HOW (method) + BENEFITS (outcomes) */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}

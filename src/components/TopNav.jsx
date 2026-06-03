@@ -38,6 +38,11 @@ const PITCH_DECK_OPTIONS = [
     desc: "5-scene scripted demo — search space → convergence → 10× cheaper",
     href: "/#/demo",
   },
+  {
+    label: "Traigent in action (1-min video)",
+    desc: "Problem → search space → solution → the win",
+    href: "/#/story",
+  },
 ];
 
 const productItems = [
