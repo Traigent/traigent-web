@@ -440,6 +440,14 @@ const ACT_3_SENTENCES = [
 // Act1Problem's structure but with a sky-blue accent (aspirational vs
 // rose's "problem" signal).
 function Act3Want({ onComplete, paused, startAtEnd }) {
+  // Hold the slide for an extra 2 seconds after the narration finishes
+  // before advancing to Act 4 — gives the viewer a beat to absorb the
+  // "what everyone wants" framing before the demo kicks in.
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
+  const handleNarrationComplete = useCallback(() => {
+    setTimeout(() => onCompleteRef.current?.(), 2000);
+  }, []);
   return (
     <div className="w-full h-full flex flex-col items-center justify-center px-8 md:px-16">
       <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-sky-300 tracking-tight mb-6 md:mb-8">
@@ -450,7 +458,7 @@ function Act3Want({ onComplete, paused, startAtEnd }) {
         wpm={470}
         rowPauseMs={70}
         sentencePauseMs={270}
-        onComplete={onComplete}
+        onComplete={handleNarrationComplete}
         paused={paused}
         startAtEnd={startAtEnd}
         noWrapper
