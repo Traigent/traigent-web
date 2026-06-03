@@ -607,8 +607,11 @@ export default function OptimizationDemo() {
   const showFinal = searchParams.get("final") === "1";
   useRemoveChatWidget();
 
-  const [scene, setScene] = useState(0);          // 0 = idle / not started
-  const [isPlaying, setIsPlaying] = useState(false);
+  // When ?autostart=1 is set (the /story embed case), initialize state
+  // directly to scene 1 + playing so the idle "Start" screen never flashes
+  // and there's no autostart-delay dead time at the head of the demo.
+  const [scene, setScene] = useState(autostart && !showFinal ? 1 : 0);
+  const [isPlaying, setIsPlaying] = useState(autostart && !showFinal);
   const [speedMultiplier, setSpeedMultiplier] = useState(initialSpeed);
   const [phase1Visible, setPhase1Visible] = useState(0);
   const [phase2Visible, setPhase2Visible] = useState(0);
@@ -630,13 +633,10 @@ export default function OptimizationDemo() {
     setIsPlaying(true);
   }, [reset]);
 
-  // Autostart on mount when ?autostart=1 (used when /demo is embedded in /story).
-  useEffect(() => {
-    if (!autostart) return;
-    if (showFinal) return; // showFinal takes precedence, skips auto-play
-    const t = setTimeout(() => start(), 400);
-    return () => clearTimeout(t);
-  }, [autostart, start, showFinal]);
+  // Autostart is handled by the useState initializers above (scene=1,
+  // isPlaying=true on mount when ?autostart=1). No separate effect needed —
+  // the previous setTimeout(start, 400) added ~1s of dead time at the head
+  // of the embedded demo.
 
   // ?final=1 → jump straight to the terminal state on mount: Scene 5 with
   // every Phase-1 and Phase-2 trial revealed and the winners card visible.

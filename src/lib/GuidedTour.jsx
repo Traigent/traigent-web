@@ -20,7 +20,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 
-const SCROLL_SETTLE_MS = 650;
+const SCROLL_SETTLE_MS = 400;
 
 function findClickTarget(el) {
   // If the marker is on a wrapper, find the innermost clickable inside.
@@ -38,7 +38,15 @@ export default function GuidedTour({ active, steps, onComplete }) {
   useEffect(() => {
     if (!active) return undefined;
     if (stepIdx >= steps.length) {
-      const t = setTimeout(() => onComplete?.(), 200);
+      // Tour finished. Fire onComplete and CLEAR the highlight/cursor so
+      // the page settles into its static end state — otherwise the cursor
+      // + yellow box would sit on the last target indefinitely and the
+      // tour's end-frame would differ from a "final state" jump.
+      const t = setTimeout(() => {
+        onComplete?.();
+        setRect(null);
+        setCursorPos(null);
+      }, 200);
       return () => clearTimeout(t);
     }
     const step = steps[stepIdx];

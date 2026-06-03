@@ -5,7 +5,7 @@
 // color-coded pills so the user can see which knobs are worth tuning.
 //
 // Reachable via the hidden ▸ menu in TopNav.
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
@@ -33,61 +33,61 @@ import GuidedTour from "../lib/GuidedTour";
 // Product: 5×4×3×3×3×3×3×2 = 9,720; ×6 models = 58,320.
 const BIRD_TOUR_STEPS = [
   // Intro: orient on the controls (no clicks)
-  { selector: '[data-tour="legend"]',       dwellMs: 1700 },
-  { selector: '[data-tour="counter"]',      dwellMs: 1700 },
-  { selector: '[data-tour="sort-toggle"]',  dwellMs: 1500 },
+  { selector: '[data-tour="legend"]',       dwellMs: 1100 },
+  { selector: '[data-tour="counter"]',      dwellMs: 1100 },
+  { selector: '[data-tour="sort-toggle"]',  dwellMs: 1000 },
 
   // Expand OpenAI; select GPT-4o and GPT-4o mini (highlight: full grid row)
-  { selector: '[data-tour="vendor-OpenAI"]', click: true, dwellMs: 700 },
+  { selector: '[data-tour="vendor-OpenAI"]', click: true, dwellMs: 400 },
   { selector: '[data-tour="vendor-grid-OpenAI"]',
-    clickSelector: '[data-tour="model-gpt-4o"]',     dwellMs: 700 },
+    clickSelector: '[data-tour="model-gpt-4o"]',     dwellMs: 400 },
   { selector: '[data-tour="vendor-grid-OpenAI"]',
-    clickSelector: '[data-tour="model-gpt-4o-mini"]', dwellMs: 700 },
+    clickSelector: '[data-tour="model-gpt-4o-mini"]', dwellMs: 400 },
 
   // Expand Anthropic; select Sonnet + Haiku
-  { selector: '[data-tour="vendor-Anthropic"]', click: true, dwellMs: 700 },
+  { selector: '[data-tour="vendor-Anthropic"]', click: true, dwellMs: 400 },
   { selector: '[data-tour="vendor-grid-Anthropic"]',
-    clickSelector: '[data-tour="model-claude-3.5-sonnet"]', dwellMs: 700 },
+    clickSelector: '[data-tour="model-claude-3.5-sonnet"]', dwellMs: 400 },
   { selector: '[data-tour="vendor-grid-Anthropic"]',
-    clickSelector: '[data-tour="model-claude-3.5-haiku"]',  dwellMs: 700 },
+    clickSelector: '[data-tour="model-claude-3.5-haiku"]',  dwellMs: 400 },
 
   // Expand Google; select Gemini Flash
-  { selector: '[data-tour="vendor-Google"]', click: true, dwellMs: 700 },
+  { selector: '[data-tour="vendor-Google"]', click: true, dwellMs: 400 },
   { selector: '[data-tour="vendor-grid-Google"]',
-    clickSelector: '[data-tour="model-gemini-1.5-flash"]', dwellMs: 700 },
+    clickSelector: '[data-tour="model-gemini-1.5-flash"]', dwellMs: 400 },
 
   // Expand Meta; select Llama 70B
-  { selector: '[data-tour="vendor-Meta"]', click: true, dwellMs: 700 },
+  { selector: '[data-tour="vendor-Meta"]', click: true, dwellMs: 400 },
   { selector: '[data-tour="vendor-grid-Meta"]',
-    clickSelector: '[data-tour="model-llama-3.1-70b"]', dwellMs: 700 },
+    clickSelector: '[data-tour="model-llama-3.1-70b"]', dwellMs: 400 },
 
-  // Enable 12 knobs to multiply the search space toward ~8.4M.
   // For few-shot-k we ALSO demo value clicks (deselect 10, reselect 10) so
   // the viewer sees value-level interaction. The other knobs use defaults.
   { selector: '[data-tour="knob-row-few-shot-k"]',
-    clickSelector: '[data-tour="knob-toggle-few-shot-k"]', dwellMs: 600 },
+    clickSelector: '[data-tour="knob-toggle-few-shot-k"]', dwellMs: 400 },
   { selector: '[data-tour="knob-row-few-shot-k"]',
-    clickSelector: '[data-tour="value-few-shot-k-10"]',    dwellMs: 450 },
+    clickSelector: '[data-tour="value-few-shot-k-10"]',    dwellMs: 350 },
   { selector: '[data-tour="knob-row-few-shot-k"]',
-    clickSelector: '[data-tour="value-few-shot-k-10"]',    dwellMs: 450 },
+    clickSelector: '[data-tour="value-few-shot-k-10"]',    dwellMs: 350 },
 
   { selector: '[data-tour="knob-row-example-selection"]',
-    clickSelector: '[data-tour="knob-toggle-example-selection"]', dwellMs: 500 },
+    clickSelector: '[data-tour="knob-toggle-example-selection"]', dwellMs: 350 },
   { selector: '[data-tour="knob-row-cot"]',
-    clickSelector: '[data-tour="knob-toggle-cot"]', dwellMs: 500 },
+    clickSelector: '[data-tour="knob-toggle-cot"]', dwellMs: 350 },
   { selector: '[data-tour="knob-row-self-consistency"]',
-    clickSelector: '[data-tour="knob-toggle-self-consistency"]', dwellMs: 500 },
+    clickSelector: '[data-tour="knob-toggle-self-consistency"]', dwellMs: 350 },
   { selector: '[data-tour="knob-row-self-correction"]',
-    clickSelector: '[data-tour="knob-toggle-self-correction"]', dwellMs: 500 },
+    clickSelector: '[data-tour="knob-toggle-self-correction"]', dwellMs: 350 },
   { selector: '[data-tour="knob-row-decomposition"]',
-    clickSelector: '[data-tour="knob-toggle-decomposition"]', dwellMs: 500 },
+    clickSelector: '[data-tour="knob-toggle-decomposition"]', dwellMs: 350 },
   { selector: '[data-tour="knob-row-reflection"]',
-    clickSelector: '[data-tour="knob-toggle-reflection"]', dwellMs: 500 },
+    clickSelector: '[data-tour="knob-toggle-reflection"]', dwellMs: 350 },
   { selector: '[data-tour="knob-row-tool-execution"]',
-    clickSelector: '[data-tour="knob-toggle-tool-execution"]', dwellMs: 500 },
+    clickSelector: '[data-tour="knob-toggle-tool-execution"]', dwellMs: 350 },
 
-  // Outro — pan back to the counter to land on the big config number.
-  { selector: '[data-tour="counter"]', dwellMs: 1000 },
+  // Outro — pan back to the counter to land on 58,320 and hold for 2s so
+  // the viewer reads the headline figure before Act 3 takes over.
+  { selector: '[data-tour="counter"]', dwellMs: 2000 },
 ];
 
 // =============================================================================
@@ -661,6 +661,16 @@ export default function KnobExplorer() {
   const showFinal = searchParams.get("final") === "1";
   useRemoveChatWidget();
 
+  // STABLE callback for GuidedTour — an inline arrow here would change every
+  // render. GuidedTour's effect depends on onComplete identity, and the tour
+  // updates state on every click (selectedModels / knobValues / expandedVendors),
+  // which re-renders KnobExplorer. An unstable callback would make the effect
+  // re-run mid-step and RE-FIRE the current step's click, producing the
+  // open/close cycle on OpenAI we saw.
+  const handleTourComplete = useCallback(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
   // Set of vendor names currently expanded in the Models section. Lifted here
   // so the grid wrapper can apply col-span-full to expanded cells. Default
   // matches BIRD final state when ?guided=BIRD&final=1 so the model section
@@ -773,7 +783,11 @@ export default function KnobExplorer() {
         <meta name="robots" content="noindex" />
       </Helmet>
       <ChatKillerStyle />
-      <GuidedTour active={guided === "BIRD" && !showFinal} steps={BIRD_TOUR_STEPS} />
+      <GuidedTour
+        active={guided === "BIRD" && !showFinal}
+        steps={BIRD_TOUR_STEPS}
+        onComplete={handleTourComplete}
+      />
 
       <section className="bg-[#080808] text-white min-h-screen py-10 md:py-14">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
