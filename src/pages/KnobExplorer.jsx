@@ -5,13 +5,90 @@
 // color-coded pills so the user can see which knobs are worth tuning.
 //
 // Reachable via the hidden ▸ menu in TopNav.
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, ChevronDown, ChevronUp, Clock, DollarSign, Sparkles } from "lucide-react";
 import { useSharedSetting } from "../lib/useSharedSetting";
 import { useCustomSearchSpace } from "../lib/useCustomSearchSpace";
+import { useRemoveChatWidget } from "../lib/useRemoveChatWidget";
+import ChatKillerStyle from "../lib/ChatKillerStyle";
+import GuidedTour from "../lib/GuidedTour";
+
+// Tour sequence used by Act 2 of /story. Walks legend → counter → sort →
+// expands each BIRD vendor group → clicks 6 BIRD models → enables 8 knobs
+// whose default value counts multiply to 9,720, so the counter lands on
+// exactly 58,320 — the same number the Live Demo (Act 4) uses for its
+// search-space headline. Knob choices are semantic best-effort matches
+// for the demo's 9 axes:
+//   kShot          ↔ few-shot-k         (5)
+//   exampleSel     ↔ example-selection  (4)
+//   cot            ↔ cot                (3)
+//   selfConsist    ↔ self-consistency   (3)
+//   selfCorrect    ↔ self-correction    (3)
+//   decomposition  ↔ decomposition      (3)
+//   hints/valueRet ↔ reflection         (3)
+//   schemaPrune    ↔ tool-execution     (2)
+// Product: 5×4×3×3×3×3×3×2 = 9,720; ×6 models = 58,320.
+const BIRD_TOUR_STEPS = [
+  // Intro: orient on the controls (no clicks)
+  { selector: '[data-tour="legend"]',       dwellMs: 1700 },
+  { selector: '[data-tour="counter"]',      dwellMs: 1700 },
+  { selector: '[data-tour="sort-toggle"]',  dwellMs: 1500 },
+
+  // Expand OpenAI; select GPT-4o and GPT-4o mini (highlight: full grid row)
+  { selector: '[data-tour="vendor-OpenAI"]', click: true, dwellMs: 700 },
+  { selector: '[data-tour="vendor-grid-OpenAI"]',
+    clickSelector: '[data-tour="model-gpt-4o"]',     dwellMs: 700 },
+  { selector: '[data-tour="vendor-grid-OpenAI"]',
+    clickSelector: '[data-tour="model-gpt-4o-mini"]', dwellMs: 700 },
+
+  // Expand Anthropic; select Sonnet + Haiku
+  { selector: '[data-tour="vendor-Anthropic"]', click: true, dwellMs: 700 },
+  { selector: '[data-tour="vendor-grid-Anthropic"]',
+    clickSelector: '[data-tour="model-claude-3.5-sonnet"]', dwellMs: 700 },
+  { selector: '[data-tour="vendor-grid-Anthropic"]',
+    clickSelector: '[data-tour="model-claude-3.5-haiku"]',  dwellMs: 700 },
+
+  // Expand Google; select Gemini Flash
+  { selector: '[data-tour="vendor-Google"]', click: true, dwellMs: 700 },
+  { selector: '[data-tour="vendor-grid-Google"]',
+    clickSelector: '[data-tour="model-gemini-1.5-flash"]', dwellMs: 700 },
+
+  // Expand Meta; select Llama 70B
+  { selector: '[data-tour="vendor-Meta"]', click: true, dwellMs: 700 },
+  { selector: '[data-tour="vendor-grid-Meta"]',
+    clickSelector: '[data-tour="model-llama-3.1-70b"]', dwellMs: 700 },
+
+  // Enable 12 knobs to multiply the search space toward ~8.4M.
+  // For few-shot-k we ALSO demo value clicks (deselect 10, reselect 10) so
+  // the viewer sees value-level interaction. The other knobs use defaults.
+  { selector: '[data-tour="knob-row-few-shot-k"]',
+    clickSelector: '[data-tour="knob-toggle-few-shot-k"]', dwellMs: 600 },
+  { selector: '[data-tour="knob-row-few-shot-k"]',
+    clickSelector: '[data-tour="value-few-shot-k-10"]',    dwellMs: 450 },
+  { selector: '[data-tour="knob-row-few-shot-k"]',
+    clickSelector: '[data-tour="value-few-shot-k-10"]',    dwellMs: 450 },
+
+  { selector: '[data-tour="knob-row-example-selection"]',
+    clickSelector: '[data-tour="knob-toggle-example-selection"]', dwellMs: 500 },
+  { selector: '[data-tour="knob-row-cot"]',
+    clickSelector: '[data-tour="knob-toggle-cot"]', dwellMs: 500 },
+  { selector: '[data-tour="knob-row-self-consistency"]',
+    clickSelector: '[data-tour="knob-toggle-self-consistency"]', dwellMs: 500 },
+  { selector: '[data-tour="knob-row-self-correction"]',
+    clickSelector: '[data-tour="knob-toggle-self-correction"]', dwellMs: 500 },
+  { selector: '[data-tour="knob-row-decomposition"]',
+    clickSelector: '[data-tour="knob-toggle-decomposition"]', dwellMs: 500 },
+  { selector: '[data-tour="knob-row-reflection"]',
+    clickSelector: '[data-tour="knob-toggle-reflection"]', dwellMs: 500 },
+  { selector: '[data-tour="knob-row-tool-execution"]',
+    clickSelector: '[data-tour="knob-toggle-tool-execution"]', dwellMs: 500 },
+
+  // Outro — pan back to the counter to land on the big config number.
+  { selector: '[data-tour="counter"]', dwellMs: 1000 },
+];
 
 // =============================================================================
 // Knob catalog — generic across agent types (not text-to-SQL specific).
@@ -270,11 +347,12 @@ function ImpactBlock({ impact }) {
   );
 }
 
-function ValueChip({ value, active, onClick }) {
+function ValueChip({ value, active, onClick, tourId }) {
   return (
     <button
       type="button"
       onClick={onClick}
+      data-tour={tourId}
       className={`px-2.5 py-1 text-xs font-mono rounded-md border transition-colors ${
         active
           ? "bg-blue-500/20 text-blue-200 border-blue-500/50"
@@ -286,9 +364,10 @@ function ValueChip({ value, active, onClick }) {
   );
 }
 
-function KnobRow({ knob, selectedValues, onToggleValue, onToggleEnabled, enabled }) {
+function KnobRow({ knob, selectedValues, onToggleValue, onToggleEnabled, enabled, tourKey }) {
   return (
     <div
+      data-tour={tourKey ? `knob-row-${tourKey}` : undefined}
       className={`rounded-xl border transition-colors ${
         enabled ? "bg-slate-900/60 border-slate-700" : "bg-slate-900/30 border-slate-800/60"
       } p-3 md:p-4`}
@@ -299,6 +378,7 @@ function KnobRow({ knob, selectedValues, onToggleValue, onToggleEnabled, enabled
             type="checkbox"
             checked={enabled}
             onChange={onToggleEnabled}
+            data-tour={tourKey ? `knob-toggle-${tourKey}` : undefined}
             className="mt-0.5 w-4 h-4 accent-blue-500 cursor-pointer"
           />
           <div className="flex-1">
@@ -319,6 +399,7 @@ function KnobRow({ knob, selectedValues, onToggleValue, onToggleEnabled, enabled
               value={v}
               active={selectedValues.includes(v)}
               onClick={() => onToggleValue(v)}
+              tourId={tourKey ? `value-${tourKey}-${String(v)}` : undefined}
             />
           ))}
         </div>
@@ -343,6 +424,7 @@ function KnobList({ knobs, sortBy, knobValues, onToggleEnabled, onToggleValue, i
             selectedValues={knobValues[key] || []}
             onToggleEnabled={() => onToggleEnabled(key, k.values)}
             onToggleValue={(v) => onToggleValue(key, v)}
+            tourKey={key}
           />
         );
       })}
@@ -355,6 +437,7 @@ function ModelCard({ model, selected, onToggle }) {
     <button
       type="button"
       onClick={onToggle}
+      data-tour={`model-${model.id}`}
       className={`text-left p-3 rounded-xl border transition-colors ${
         selected
           ? "bg-blue-500/10 border-blue-500/50"
@@ -445,6 +528,7 @@ function VendorGroup({ vendor, models, selectedIds, onToggle, open, onToggleOpen
       <button
         type="button"
         onClick={onToggleOpen}
+        data-tour={`vendor-${vendor}`}
         className={`w-full px-2.5 py-2 hover:bg-slate-900/60 transition-colors text-left ${
           open ? "flex items-center justify-between" : "flex flex-col gap-1"
         }`}
@@ -480,7 +564,10 @@ function VendorGroup({ vendor, models, selectedIds, onToggle, open, onToggleOpen
         )}
       </button>
       {open && (
-        <div className="px-3 pb-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+        <div
+          data-tour={`vendor-grid-${vendor}`}
+          className="px-3 pb-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5"
+        >
           {models.map((m) => (
             <ModelCard
               key={m.id}
@@ -566,9 +653,57 @@ export default function KnobExplorer() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const cameFrom = searchParams.get("from"); // "ttm" | "roi" | null
+  // /story uses ?guided=BIRD&chrome=hidden to embed this page as Act 2.
+  // ?final=1 (with guided=BIRD) skips the tour and renders the FINAL state
+  // immediately — used by the "End Act 2" jump button on /story.
+  const guided = searchParams.get("guided");
+  const chromeHidden = searchParams.get("chrome") === "hidden";
+  const showFinal = searchParams.get("final") === "1";
+  useRemoveChatWidget();
+
   // Set of vendor names currently expanded in the Models section. Lifted here
-  // so the grid wrapper can apply col-span-full to expanded cells.
-  const [expandedVendors, setExpandedVendors] = useState(new Set());
+  // so the grid wrapper can apply col-span-full to expanded cells. Default
+  // matches BIRD final state when ?guided=BIRD&final=1 so the model section
+  // opens already expanded.
+  const [expandedVendors, setExpandedVendors] = useState(
+    guided === "BIRD" && showFinal
+      ? new Set(["OpenAI", "Anthropic", "Google", "Meta"])
+      : new Set()
+  );
+
+  // Always open with a CLEAN slate (nothing selected, counter = 1) unless the
+  // user arrived from TTM/ROI for an explicit configure-then-return flow, OR
+  // we're in ?guided=BIRD&final=1 mode where we pre-fill the final BIRD
+  // configuration directly so the counter shows 58,320 without running the
+  // tour.
+  useEffect(() => {
+    if (cameFrom) return; // configure-then-return flow — preserve state
+    if (guided === "BIRD" && showFinal) {
+      setSelectedModels([
+        "gpt-4o",
+        "gpt-4o-mini",
+        "claude-3.5-sonnet",
+        "claude-3.5-haiku",
+        "gemini-1.5-flash",
+        "llama-3.1-70b",
+      ]);
+      // 8 knobs at full default values → 5×4×3×3×3×3×3×2 = 9,720 × 6 = 58,320.
+      setKnobValues({
+        "few-shot-k":         [0, 1, 3, 5, 10],
+        "example-selection":  ["random", "BM25", "dense-embedding", "task-aware"],
+        "cot":                ["off", "brief", "extended"],
+        "self-consistency":   [1, 3, 5],
+        "self-correction":    [0, 1, 2],
+        "decomposition":      ["single-shot", "plan-then-execute", "iterative"],
+        "reflection":         ["off", "post-step", "end-of-task"],
+        "tool-execution":     ["sequential", "parallel"],
+      });
+      return;
+    }
+    setSelectedModels([]);
+    setKnobValues({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function toggleVendor(vendor) {
     setExpandedVendors((prev) => {
@@ -637,6 +772,8 @@ export default function KnobExplorer() {
         <title>Knob Explorer · Traigent</title>
         <meta name="robots" content="noindex" />
       </Helmet>
+      <ChatKillerStyle />
+      <GuidedTour active={guided === "BIRD" && !showFinal} steps={BIRD_TOUR_STEPS} />
 
       <section className="bg-[#080808] text-white min-h-screen py-10 md:py-14">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -645,13 +782,15 @@ export default function KnobExplorer() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <Link
-              to="/"
-              className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-white mb-6 transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back to traigent.ai
-            </Link>
+            {!chromeHidden && (
+              <Link
+                to="/"
+                className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-white mb-6 transition-colors"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back to traigent.ai
+              </Link>
+            )}
 
             {/* Return banner — when arriving from /ttm or /roi via "Configure
                 custom search space", offer one-click return that also writes
@@ -694,7 +833,10 @@ export default function KnobExplorer() {
             </p>
 
             {/* Legend */}
-            <div className="mb-6 bg-slate-900/40 border border-slate-800 rounded-xl px-4 py-3 text-xs text-slate-400 flex flex-wrap items-center gap-3 leading-relaxed">
+            <div
+              data-tour="legend"
+              className="mb-6 bg-slate-900/40 border border-slate-800 rounded-xl px-4 py-3 text-xs text-slate-400 flex flex-wrap items-center gap-3 leading-relaxed"
+            >
               <span className="font-mono uppercase tracking-wider text-slate-500">Legend:</span>
               <span className="inline-flex items-center gap-1.5">
                 <ImpactPill metric="A" magnitude={3} />
@@ -722,7 +864,10 @@ export default function KnobExplorer() {
 
             {/* Combinatorics counter */}
             <div className="sticky top-2 z-40 mb-10">
-              <div className="bg-slate-900/95 backdrop-blur border border-slate-700 rounded-2xl px-5 py-4 shadow-xl">
+              <div
+                data-tour="counter"
+                className="bg-slate-900/95 backdrop-blur border border-slate-700 rounded-2xl px-5 py-4 shadow-xl"
+              >
                 <div className="flex items-center justify-between gap-4 flex-wrap">
                   <div>
                     <div className="text-[10px] font-mono uppercase tracking-widest text-slate-500 mb-1">
@@ -787,7 +932,7 @@ export default function KnobExplorer() {
             </div>
 
             {/* Sort-by toggle — affects knob ranking, NOT the Models section. */}
-            <div className="mb-6 flex items-center gap-3 flex-wrap">
+            <div data-tour="sort-toggle" className="mb-6 flex items-center gap-3 flex-wrap">
               <span className="text-xs font-mono uppercase tracking-wider text-slate-500">
                 Rank knobs by:
               </span>

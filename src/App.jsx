@@ -25,6 +25,7 @@ import AgentsInProduction from './pages/academy/AgentsInProduction'
 import StatisticalSEWorkshop from './pages/academy/StatisticalSEWorkshop'
 import KnobExplorer from './pages/KnobExplorer'
 import OptimizationDemo from './pages/OptimizationDemo'
+import StoryMovie from './pages/StoryMovie'
 import Layout from './layout'
 import ExternalRedirect from './components/ExternalRedirect'
 
@@ -40,6 +41,7 @@ export default function App() {
       <Route path="pitch-short-2/:preset" element={<PitchShort2 />} />
       <Route path="knob-explorer" element={<KnobExplorer />} />
       <Route path="demo" element={<OptimizationDemo />} />
+      <Route path="story" element={<StoryMovie />} />
       <Route path="one-pager" element={<OnePager />} />
       <Route path="one-pager-2" element={<OnePager2 />} />
 
