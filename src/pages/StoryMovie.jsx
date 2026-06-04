@@ -15,7 +15,7 @@ import { Fragment, useEffect, useMemo, useRef, useState, useCallback } from "rea
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, Pause, Play, RotateCcw, SkipBack, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronDown, ChevronUp, Pause, Play, RotateCcw, SkipBack, SkipForward, Sparkles } from "lucide-react";
 import { useRemoveChatWidget } from "../lib/useRemoveChatWidget";
 import ChatKillerStyle from "../lib/ChatKillerStyle";
 import StartNowModal from "../components/StartNowModal";
@@ -209,8 +209,15 @@ function Narration({
 // =============================================================================
 
 function EmbeddedAct({ src, durationMs, onComplete, title, paused = false, showFinal = false }) {
+  // Lock the iframe src at mount. Without this, when an act played all the
+  // way through and the parent flipped `showFinal=true` to enter the end-
+  // of-act freeze state, the parent's src prop would change (the parent
+  // appends `&final=1` when showFinal is set), forcing the iframe to re-
+  // mount — visible to the user as a black "blink" reloading the same
+  // end-frame the tour already produced. Locking it ignores prop changes.
+  const [lockedSrc] = useState(src);
   const [loaded, setLoaded] = useState(false);
-  const [absoluteSrc, setAbsoluteSrc] = useState(src);
+  const [absoluteSrc, setAbsoluteSrc] = useState(lockedSrc);
 
   // Resolve to an absolute URL once the component is on the client. Using
   // `window.location.origin + src` removes any base-path ambiguity that can
@@ -219,9 +226,9 @@ function EmbeddedAct({ src, durationMs, onComplete, title, paused = false, showF
   // setups, producing an empty page).
   useEffect(() => {
     if (typeof window !== "undefined") {
-      setAbsoluteSrc(window.location.origin + src);
+      setAbsoluteSrc(window.location.origin + lockedSrc);
     }
-  }, [src]);
+  }, [lockedSrc]);
 
   // Advance timer is suspended while paused. When unpaused, the iframe is
   // (re)mounted fresh and the timer restarts at 0 — the inner page (Knob
@@ -233,6 +240,22 @@ function EmbeddedAct({ src, durationMs, onComplete, title, paused = false, showF
     const t = setTimeout(() => onComplete?.(), durationMs);
     return () => clearTimeout(t);
   }, [durationMs, onComplete, paused]);
+
+  // Some embedded pages (the demo) post `traigent:demo:complete` when their
+  // internal flow actually finishes — fire onComplete early on that signal
+  // so the parent transitions at the right moment regardless of how long
+  // the viewer spent on any internal pause / cheat sheet.
+  useEffect(() => {
+    if (paused) return undefined;
+    const handler = (e) => {
+      if (e.origin !== window.location.origin) return;
+      if (e.data?.type === "traigent:demo:complete") {
+        onComplete?.();
+      }
+    };
+    window.addEventListener("message", handler);
+    return () => window.removeEventListener("message", handler);
+  }, [onComplete, paused]);
 
   // When showFinal is set, the iframe must mount even while paused — the
   // `&final=1` URL renders the page's terminal state directly (which is the
@@ -314,18 +337,25 @@ const ACT_5_SENTENCES = [
   },
 ];
 
-function Act5Punch({ startAtEnd = false, paused = false }) {
+function Act5Punch({ onComplete, startAtEnd = false, paused = false }) {
   // When startAtEnd is true (user clicked "End Act 5" from controls), the
   // narration is skipped to its final state and the buttons appear instantly.
   const [narrationDone, setNarrationDone] = useState(startAtEnd);
   // Modal state for the "Start Now" CTA — same install/checkout flow as the
   // homepage TopNav button.
   const [showStartNow, setShowStartNow] = useState(false);
-  // STABLE callback — Narration depends on `onComplete` reference identity.
-  // An inline arrow here would change every render, and StoryMovie's 100ms
-  // progress ticker re-renders the whole act tree, which would reset
-  // Narration's row-reveal timer and freeze Act 5 after the first row.
-  const handleNarrationComplete = useCallback(() => setNarrationDone(true), []);
+  // Ref so we can call the latest onComplete from a stable callback. Inline
+  // arrows here would change every render and reset Narration's timer
+  // (the 100ms progress ticker on the parent re-renders the act tree).
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
+  const handleNarrationComplete = useCallback(() => {
+    setNarrationDone(true);
+    // Signal the parent that Act 5's narration is done — flips parent into
+    // end-of-act state so the Act 5 cheat sheet slides in on the right
+    // alongside the existing in-slide CTAs.
+    onCompleteRef.current?.();
+  }, []);
   return (
     <div className="w-full h-full flex flex-col items-center justify-center px-8 md:px-16">
       {/* Fixed "The Win" headline — same treatment as Act 1's "The Problem"
@@ -376,6 +406,231 @@ function Act5Punch({ startAtEnd = false, paused = false }) {
       </motion.div>
       {showStartNow && <StartNowModal onClose={() => setShowStartNow(false)} />}
     </div>
+  );
+}
+
+// =============================================================================
+// Cheat sheets — semi-transparent yellow panel that floats on the right side
+// at end-of-act state. Each act gets a different content set following the
+// classic marketing pattern: tell them what they're going to see, tell them
+// what they saw, then a final recap at the end driving the message home.
+//
+// Narrative arc baked into the sheets (3-step optimization story):
+//   Act 1: the problem (many knobs, big space)
+//   Act 2: Step 1 — choose the knobs (search space catalog)
+//   Act 3: bridge to what we want (peak accuracy, then cheaper)
+//   Act 4: Steps 2 & 3 — find accuracy peak, then cheaper alternatives
+//   Act 5: QED — Traigent is necessary for any agent dev team
+// =============================================================================
+
+// Each cheat sheet has `saw` and `next` as ARRAYS of paragraph strings —
+// the renderer puts visible whitespace between them so a sheet with three
+// statements reads as three statements, not one wall of text.
+const CHEAT_SHEETS = {
+  1: {
+    badge: "Act 1 of 5 · The Problem",
+    sawTitle: "What you just saw",
+    saw: [
+      "AI agent accuracy AND cost depend on many configuration choices.",
+      "Trial-and-error tuning is brutal — slow, expensive, no guarantee of finding the optimum.",
+    ],
+    nextTitle: "Coming up in next scene",
+    next: [
+      "Knob Selection.",
+      "Choose which knobs to tune your agent with. A guided tour through one realistic search space.",
+      "All grounded in BIRD — a real, published text-to-SQL benchmark with a known dev/test set and a tracked SOTA leaderboard. Not a hypothetical.",
+    ],
+    links: [
+      { label: "Explore all the knobs available (25+)", href: "/knob-explorer" },
+      { label: "BIRD-bench leaderboard (external)", href: "https://bird-bench.github.io/", external: true },
+    ],
+  },
+  2: {
+    badge: "Act 2 of 5 · Knob Selection",
+    sawTitle: "What you just saw",
+    saw: [
+      "Knobs were selected for the BIRD text-to-SQL agent — 6 models and 8 agent-level knobs.",
+      "6 × 5 × 4 × 3 × 3 × 3 × 3 × 3 × 2 = 58,320",
+      "(models × few-shot k × example sel × CoT × self-consistency × self-correction × decomposition × reflection × tool exec)",
+      "This is conservative — real production agents have 20+ knobs and millions of configs.",
+    ],
+    nextTitle: "Coming up in next scene",
+    next: [
+      "Now we've selected the knobs.",
+      "Next: what we actually want to find — high accuracy AND low cost, fast.",
+    ],
+    links: [
+      { label: "Configuration Multiverse (deep dive)", href: "/blog/the-config-multiverse" },
+    ],
+    tip: "Note the legend and sort bar. You may scroll down and explore what was selected — and what wasn't (yet).",
+  },
+  3: {
+    badge: "Act 3 of 5 · What we want",
+    sawTitle: "What you just saw",
+    saw: [
+      "Two goals, in order:",
+      "(1) find the peak accuracy;",
+      "(2) at that accuracy band, find equally-good alternatives at much lower cost.",
+      "Both fast.",
+    ],
+    nextTitle: "Coming up in next scene",
+    next: [
+      "The two Optimization Steps:",
+      "Step 1 — find the accuracy peak.",
+      "Step 2 — hold that accuracy and sweep for the cheapest equivalents.",
+      "Both at 4× speed.",
+    ],
+    links: [],
+  },
+  4: {
+    badge: "Act 4 of 5 · The Optimization",
+    sawTitle: "What you just saw",
+    saw: [
+      "Step 1 (Run #1) needed just 81 of the 58,320 possible configurations to find 74.8% accuracy — Claude Sonnet, $0.00036/query, SOTA-band.",
+      "Step 2 (Run #2) then needed only 50 more to find feasible alternatives at the same accuracy band at ~1/10 the cost.",
+      "Both fully automatic.",
+    ],
+    nextTitle: "Coming up in next scene",
+    next: [
+      "The bottom line — what this means for any agent dev team.",
+    ],
+    links: [],
+  },
+  5: {
+    badge: "Act 5 of 5 · The Win",
+    sawTitle: "The whole story in one breath",
+    saw: [
+      "You select knobs, Traigent (1) finds the highest accuracy, then (2) finds the cheapest equivalent.",
+      "Minutes. Zero engineering effort.",
+      "Out of millions of options you get the right one — not the one you guessed.",
+    ],
+    nextTitle: "Optimization is never done",
+    next: [
+      "Today's optimum is tomorrow's stale config. Each of these triggers a re-sweep:",
+      "• New knobs (new selections)",
+      "• New datasets — your workload evolves",
+      "• New agent release — your code changed",
+      "• New models — providers ship constantly",
+      "• New token prices",
+      "• New monthly LLM budget constraints",
+      "Optimization is ongoing. So is Traigent.",
+    ],
+    links: [
+      { label: "Explore the search space", href: "/knob-explorer" },
+    ],
+  },
+};
+
+function CheatSheet({ sheet, onResume, isLastAct }) {
+  const [collapsed, setCollapsed] = useState(false);
+  if (!sheet) return null;
+  const resumeLabel = isLastAct ? "Replay from Act 1" : "Resume — Next act";
+  const ResumeIcon = isLastAct ? RotateCcw : SkipForward;
+  const ToggleIcon = collapsed ? ChevronDown : ChevronUp;
+  return (
+    <motion.aside
+      initial={{ opacity: 0, x: 30 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: 30 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+      className="absolute top-16 md:top-20 right-3 md:right-6 z-40 w-[min(94vw,22rem)] md:w-[24rem] max-h-[calc(100vh-10rem)] overflow-y-auto pointer-events-auto"
+    >
+      <div className="rounded-2xl bg-yellow-400/15 border border-yellow-400/60 backdrop-blur-md shadow-2xl shadow-yellow-500/10 p-5 md:p-6">
+        {/* Header row: badge + collapse/expand toggle. */}
+        <div className="flex items-start justify-between gap-2 mb-4">
+          <div className="text-[10px] md:text-[11px] font-mono uppercase tracking-widest text-yellow-200 flex-1">
+            {sheet.badge}
+          </div>
+          <button
+            type="button"
+            onClick={() => setCollapsed((c) => !c)}
+            title={collapsed ? "Expand" : "Hide details"}
+            className="flex-shrink-0 -mt-1 -mr-1 w-7 h-7 flex items-center justify-center rounded-md text-yellow-200 hover:text-white hover:bg-yellow-400/20 transition-colors"
+          >
+            <ToggleIcon className="w-4 h-4" />
+          </button>
+        </div>
+        {!collapsed && (
+          <div className="mb-5">
+            <div className="text-[10px] font-mono uppercase tracking-widest text-yellow-300/90 mb-2">
+              {sheet.sawTitle}
+            </div>
+            <div className="space-y-2.5">
+              {(Array.isArray(sheet.saw) ? sheet.saw : [sheet.saw]).map((para, i) => (
+                <p key={i} className="text-sm md:text-[15px] text-white leading-relaxed">
+                  {para}
+                </p>
+              ))}
+            </div>
+          </div>
+        )}
+        {!collapsed && (
+          <div className={sheet.links.length ? "mb-5" : ""}>
+            <div className="text-[10px] font-mono uppercase tracking-widest text-yellow-300/90 mb-2">
+              {sheet.nextTitle}
+            </div>
+            <div className="space-y-2.5">
+              {(Array.isArray(sheet.next) ? sheet.next : [sheet.next]).map((para, i) => (
+                <p key={i} className="text-sm md:text-[15px] text-white leading-relaxed">
+                  {para}
+                </p>
+              ))}
+            </div>
+          </div>
+        )}
+        {!collapsed && sheet.links.length > 0 && (
+          <div className="flex flex-col gap-1.5 mt-3 pt-3 border-t border-yellow-400/30">
+            <div className="text-[10px] font-mono uppercase tracking-widest text-yellow-300/90 mb-0.5">
+              Dig deeper
+            </div>
+            {sheet.links.map((link) =>
+              link.external ? (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-sm text-yellow-100 hover:text-white underline decoration-yellow-400/40 hover:decoration-yellow-300 underline-offset-2 transition-colors"
+                >
+                  {link.label}
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </a>
+              ) : (
+                <Link
+                  key={link.href}
+                  to={link.href}
+                  className="inline-flex items-center gap-1.5 text-sm text-yellow-100 hover:text-white underline decoration-yellow-400/40 hover:decoration-yellow-300 underline-offset-2 transition-colors"
+                >
+                  {link.label}
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              )
+            )}
+          </div>
+        )}
+        {!collapsed && sheet.tip && (
+          <div className="mt-3 pt-3 border-t border-yellow-400/30">
+            <div className="text-[10px] font-mono uppercase tracking-widest text-yellow-300/90 mb-2">
+              Tip
+            </div>
+            <p className="text-sm md:text-[15px] text-white/90 leading-relaxed italic">
+              {sheet.tip}
+            </p>
+          </div>
+        )}
+        {/* Resume / Replay button — same handler as the controls bar Play
+            (which already advances to the next act in end-of-act state).
+            On Act 5, becomes a Replay-from-Act-1 control. */}
+        <button
+          type="button"
+          onClick={onResume}
+          className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 mt-5 rounded-lg bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white font-semibold transition-colors shadow-lg shadow-blue-500/30"
+        >
+          <ResumeIcon className="w-4 h-4 fill-white" />
+          {resumeLabel}
+        </button>
+      </div>
+    </motion.aside>
   );
 }
 
@@ -440,14 +695,8 @@ const ACT_3_SENTENCES = [
 // Act1Problem's structure but with a sky-blue accent (aspirational vs
 // rose's "problem" signal).
 function Act3Want({ onComplete, paused, startAtEnd }) {
-  // Hold the slide for an extra 2 seconds after the narration finishes
-  // before advancing to Act 4 — gives the viewer a beat to absorb the
-  // "what everyone wants" framing before the demo kicks in.
-  const onCompleteRef = useRef(onComplete);
-  onCompleteRef.current = onComplete;
-  const handleNarrationComplete = useCallback(() => {
-    setTimeout(() => onCompleteRef.current?.(), 2000);
-  }, []);
+  // No explicit dwell here anymore — the parent freezes the act at its
+  // end-frame waiting for the user's Next click, which is the dwell.
   return (
     <div className="w-full h-full flex flex-col items-center justify-center px-8 md:px-16">
       <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-sky-300 tracking-tight mb-6 md:mb-8">
@@ -458,7 +707,7 @@ function Act3Want({ onComplete, paused, startAtEnd }) {
         wpm={470}
         rowPauseMs={70}
         sentencePauseMs={270}
-        onComplete={handleNarrationComplete}
+        onComplete={onComplete}
         paused={paused}
         startAtEnd={startAtEnd}
         noWrapper
@@ -512,11 +761,11 @@ const ACTS = [
   {
     id: 4,
     label: "The optimization",
-    durationMs: 26_500,
+    durationMs: 90_000,
     render: (onComplete, _restart, opts = {}) => (
       <EmbeddedAct
-        src={`/#/demo?autostart=1&speed=4x&chrome=hidden${opts.showFinal ? "&final=1" : ""}`}
-        durationMs={26_500}
+        src={`/#/demo?autostart=1&speed=4x&chrome=hidden${opts.showFinal ? "&final=1" : "&pauseAfterStep1=1"}`}
+        durationMs={90_000}
         title="Optimization demo (4× speed)"
         onComplete={onComplete}
         paused={opts.paused}
@@ -532,8 +781,8 @@ const ACTS = [
     // Book a demo CTAs). The opts.showFinal flag (set when user clicks
     // "End Act 5") skips the narration so the final state with buttons
     // appears instantly.
-    render: (_onComplete, _restart, opts = {}) => (
-      <Act5Punch paused={opts.paused} startAtEnd={opts.showFinal} />
+    render: (onComplete, _restart, opts = {}) => (
+      <Act5Punch onComplete={onComplete} paused={opts.paused} startAtEnd={opts.showFinal} />
     ),
   },
 ];
@@ -604,6 +853,21 @@ export default function StoryMovie() {
     }, 50);
   }, []);
 
+  // Called when an act's content (narration or iframe) finishes playing.
+  // Instead of advancing to the next act automatically, we FREEZE on the
+  // act's end-frame and wait for the user to click Next (the Play button
+  // now reads as Next in this state) or Back.
+  const actCompleted = useCallback(() => {
+    if (advancingRef.current) return;
+    advancingRef.current = true;
+    setIsPaused(true);
+    setShowFinalState(true);
+    setActElapsedMs(0);
+    setTimeout(() => {
+      advancingRef.current = false;
+    }, 50);
+  }, []);
+
   // Jump to the END frame of act N — stays on the same act but renders its
   // final state (all narration revealed for text acts, iframe at terminal
   // state for embedded acts), paused. Pressing Play then advances to the
@@ -613,8 +877,16 @@ export default function StoryMovie() {
     setIsPaused(true);
     setShowFinalState(true);
     setActElapsedMs(0);
-    setCurrentAct(n);
-  }, []);
+    if (currentAct === n) {
+      // Already on this act — EmbeddedAct locks its src at mount, so we
+      // need a full remount to swap the iframe to the `&final=1` URL. Cycle
+      // through act 0 briefly so AnimatePresence rebuilds the subtree.
+      setCurrentAct(0);
+      setTimeout(() => setCurrentAct(n), 50);
+    } else {
+      setCurrentAct(n);
+    }
+  }, [currentAct]);
 
   const togglePause = useCallback(() => {
     // On the idle screen (currentAct === 0), Play kicks off the story.
@@ -679,15 +951,16 @@ export default function StoryMovie() {
 
   // Hard timeout fallback per act so the movie can't stall if a nested
   // component never fires onComplete. The LAST act (Act 5 punch) is skipped
-  // here — it owns its own end-state with the in-slide Replay + Visit
-  // buttons, so we don't auto-advance off it. Also suspended while paused.
+  // here — it owns its own end-state with its in-slide CTAs. Suspended
+  // while paused. Calls actCompleted (not advance) so the act freezes on
+  // its end-frame waiting for the user's Next click.
   useEffect(() => {
     if (currentAct < 1 || currentAct >= ACTS.length) return;
     if (isPaused) return;
     const act = ACTS[currentAct - 1];
-    const fallback = setTimeout(() => advance(), act.durationMs + 2000);
+    const fallback = setTimeout(() => actCompleted(), act.durationMs + 2000);
     return () => clearTimeout(fallback);
-  }, [currentAct, advance, isPaused]);
+  }, [currentAct, actCompleted, isPaused]);
 
   const act = currentAct >= 1 && currentAct <= ACTS.length ? ACTS[currentAct - 1] : null;
 
@@ -742,6 +1015,15 @@ export default function StoryMovie() {
           </div>
         )}
 
+        {/* Persistent back-to-home link — visible across every act so the
+            viewer can always exit the story back to the homepage. */}
+        <Link
+          to="/"
+          className="absolute top-4 left-4 z-50 inline-flex items-center gap-1.5 text-xs md:text-sm text-slate-400 hover:text-white transition-colors px-2.5 py-1.5 rounded-md bg-slate-900/40 hover:bg-slate-900/70 backdrop-blur"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" /> Back to traigent.ai
+        </Link>
+
         {/* Active act */}
         {act && (
           <div className="absolute inset-0">
@@ -754,7 +1036,7 @@ export default function StoryMovie() {
                 transition={{ duration: 0.4 }}
                 className="absolute inset-0"
               >
-                {act.render(advance, restart, { paused: isPaused, showFinal: showFinalState })}
+                {act.render(actCompleted, restart, { paused: isPaused, showFinal: showFinalState })}
               </motion.div>
             </AnimatePresence>
 
@@ -764,6 +1046,20 @@ export default function StoryMovie() {
             </div>
           </div>
         )}
+
+        {/* Cheat sheet — yellow educational panel that floats over the right
+            side of the screen at end-of-act state. Recaps what the viewer
+            saw and previews what's next, plus optional dig-deeper links. */}
+        <AnimatePresence>
+          {currentAct >= 1 && isPaused && showFinalState && (
+            <CheatSheet
+              key={`sheet-${currentAct}`}
+              sheet={CHEAT_SHEETS[currentAct]}
+              onResume={togglePause}
+              isLastAct={currentAct >= ACTS.length}
+            />
+          )}
+        </AnimatePresence>
 
         {/* Landing-state hint — shown only when sitting on Act 1's end frame
             (the default initial state). Cues the viewer toward the controls
@@ -843,10 +1139,13 @@ function PlaybackControls({
   onJumpToEndOfAct,
   onTogglePause,
 }) {
-  // Pause icon shows only while the story is actively PLAYING (i.e. not
-  // paused, not on idle, not at end of an act). Everywhere else Play is the
-  // correct icon — clicking it advances to whatever the next step is.
+  // Three button states:
+  //   - actively playing → ⏸ Pause
+  //   - paused at end of an act → ⏭ Next (Skip-forward icon — clicking
+  //     advances to the start of the next act)
+  //   - everything else (idle, paused mid-act) → ▶ Play
   const showPauseIcon = !isPaused && currentAct >= 1 && !showFinalState;
+  const showNextIcon  = isPaused && showFinalState && currentAct >= 1;
   return (
     <div className="absolute bottom-0 left-0 right-0 z-50 px-4 pb-4 pointer-events-none">
       <div className="mx-auto max-w-5xl rounded-2xl bg-slate-900/85 backdrop-blur border border-slate-700/70 shadow-2xl px-3 py-2.5 flex items-center gap-2 pointer-events-auto">
@@ -914,10 +1213,16 @@ function PlaybackControls({
         <button
           type="button"
           onClick={onTogglePause}
-          title={showPauseIcon ? "Pause" : "Play"}
+          title={showPauseIcon ? "Pause" : showNextIcon ? "Next act" : "Play"}
           className="flex items-center justify-center w-9 h-9 rounded-lg bg-blue-500/20 text-blue-100 border border-blue-500/50 hover:bg-blue-500/30 transition-colors"
         >
-          {showPauseIcon ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+          {showPauseIcon ? (
+            <Pause className="w-4 h-4" />
+          ) : showNextIcon ? (
+            <SkipForward className="w-4 h-4 fill-current" />
+          ) : (
+            <Play className="w-4 h-4" />
+          )}
         </button>
       </div>
     </div>

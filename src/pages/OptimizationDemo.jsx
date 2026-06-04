@@ -3,7 +3,7 @@
 // One self-contained page that plays five scenes in sequence:
 //   Scene 1: weights snap to A=1 / C=0 / L=0 (find peak accuracy)
 //   Scene 2: knob-space catalog with the 58,320 combinations headline
-//             (= 6 BIRD models × 9 knob axes at full default values, the
+//             (= 6 BIRD models × 8 knob axes at full default values, the
 //             exact figure the Knob Explorer also lands on in Story Act 2
 //             once we align it — see KNOB_AXES below for the breakdown)
 //   Scene 3: Excel-style table populates row-by-row to a gold-highlighted peak
@@ -19,7 +19,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
-import { ArrowLeft, Pause, Play, RotateCcw, Sparkles } from "lucide-react";
+import { ArrowLeft, ChevronDown, ChevronUp, Pause, Play, RotateCcw, Sparkles } from "lucide-react";
 import { useRemoveChatWidget } from "../lib/useRemoveChatWidget";
 import ChatKillerStyle from "../lib/ChatKillerStyle";
 
@@ -605,6 +605,11 @@ export default function OptimizationDemo() {
   // trials visible, winner cards on screen. Used by the "End Act 4" jump
   // button on /story.
   const showFinal = searchParams.get("final") === "1";
+  // ?pauseAfterStep1=1 → after Phase-1 finishes (Run #1, find accuracy peak)
+  // the demo freezes and shows a yellow cheat sheet with a Resume button.
+  // Lets the viewer absorb the Step 2 → Step 3 transition. Used when the
+  // demo is embedded in /story (Act 4).
+  const pauseAfterStep1Flag = searchParams.get("pauseAfterStep1") === "1";
   useRemoveChatWidget();
 
   // When ?autostart=1 is set (the /story embed case), initialize state
@@ -615,6 +620,14 @@ export default function OptimizationDemo() {
   const [speedMultiplier, setSpeedMultiplier] = useState(initialSpeed);
   const [phase1Visible, setPhase1Visible] = useState(0);
   const [phase2Visible, setPhase2Visible] = useState(0);
+  // True after Phase-1 (Run #1, accuracy peak) finishes and the
+  // pauseAfterStep1 flag is set — freezes the demo and shows the cheat
+  // sheet until the user clicks Resume.
+  const [isPausedAfterStep1, setIsPausedAfterStep1] = useState(false);
+  // Collapse state for the post-Step-1 cheat sheet — same affordance as
+  // the story cheat sheets, lets the viewer hide the details while keeping
+  // the badge + Resume button.
+  const [step1SheetCollapsed, setStep1SheetCollapsed] = useState(false);
   const sceneStartedAtRef = useRef(null);
   const timerRef = useRef(null);
 
@@ -623,6 +636,7 @@ export default function OptimizationDemo() {
     setIsPlaying(false);
     setPhase1Visible(0);
     setPhase2Visible(0);
+    setIsPausedAfterStep1(false);
     sceneStartedAtRef.current = null;
     if (timerRef.current) clearTimeout(timerRef.current);
   }, []);
@@ -649,7 +663,53 @@ export default function OptimizationDemo() {
     setIsPlaying(false);
   }, [showFinal, phase1Trials.length, phase2Trials.length]);
 
-  const togglePause = useCallback(() => setIsPlaying((p) => !p), []);
+  // Trigger the post-Step-1 freeze when scene 3 finishes (Phase-1 reaches
+  // the last trial) — clicking Resume advances to Scene 4.
+  useEffect(() => {
+    if (!pauseAfterStep1Flag) return;
+    if (scene !== 3) return;
+    if (phase1Visible < phase1Trials.length) return;
+    // Hold on Scene 3's terminal frame; clear the auto-advance timer so we
+    // don't slip past while the cheat sheet is up.
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setIsPlaying(false);
+    setIsPausedAfterStep1(true);
+  }, [pauseAfterStep1Flag, scene, phase1Visible, phase1Trials.length]);
+
+  // Resume from the post-Step-1 freeze — advance to Scene 4 and continue.
+  const resumeFromStep1 = useCallback(() => {
+    setIsPausedAfterStep1(false);
+    setScene(4);
+    setIsPlaying(true);
+  }, []);
+
+  // When Phase 2 finishes (Run #2 / Optimization Step 2 done), signal the
+  // parent /story page so it can transition Act 4 to its end-frame at the
+  // right moment — without this, the parent's hard-fallback timer fires
+  // at a fixed offset regardless of how long the viewer spent on the
+  // post-Step-1 cheat sheet. We trigger on phase2Visible reaching its
+  // max (not scene > SCENES.length, which is unreachable — the scene
+  // increment is capped at SCENES.length).
+  useEffect(() => {
+    if (phase2Visible < phase2Trials.length) return;
+    if (typeof window === "undefined") return;
+    if (window.parent === window) return;
+    // Brief delay so the Phase-1/Phase-2 winner cards have time to mount
+    // and animate in before the story cheat sheet slides in on the right.
+    const t = setTimeout(() => {
+      window.parent.postMessage({ type: "traigent:demo:complete" }, window.location.origin);
+    }, 1500);
+    return () => clearTimeout(t);
+  }, [phase2Visible, phase2Trials.length]);
+
+  const togglePause = useCallback(() => {
+    // If we're in the post-Step-1 cheat-sheet freeze, Play means Resume.
+    if (isPausedAfterStep1) {
+      resumeFromStep1();
+      return;
+    }
+    setIsPlaying((p) => !p);
+  }, [isPausedAfterStep1, resumeFromStep1]);
 
   // Scene-advance timer.
   useEffect(() => {
@@ -823,7 +883,7 @@ export default function OptimizationDemo() {
           {/* Scene 2 — Knob catalog */}
           {scene === 2 && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
-              <SceneHeader scene={2} title={`Six models. Nine knobs. ${THEORETICAL_COMBINATIONS.toLocaleString()} configuration options.`} subtitle="Search space" />
+              <SceneHeader scene={2} title={`Six models. Eight knobs. ${THEORETICAL_COMBINATIONS.toLocaleString()} configuration options.`} subtitle="Search space" />
               <KnobCatalog />
               <p className="text-center text-slate-400 mt-6 italic">
                 "Most teams pick a handful by hand. Watch what we do."
@@ -936,6 +996,84 @@ export default function OptimizationDemo() {
           )}
         </div>
       </section>
+
+      {/* Post-Step-1 cheat sheet — yellow semi-transparent panel that
+          floats over the right side of the demo when Phase-1 finishes and
+          ?pauseAfterStep1=1 was set. The trial table behind it is still
+          fully visible on the left. Resume button continues to Scene 4. */}
+      {isPausedAfterStep1 && (
+        <motion.aside
+          initial={{ opacity: 0, x: 30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+          className="fixed top-16 md:top-20 right-3 md:right-6 z-50 w-[min(94vw,24rem)] md:w-[26rem] max-h-[calc(100vh-8rem)] overflow-y-auto"
+        >
+          <div className="rounded-2xl bg-yellow-400/15 border border-yellow-400/60 backdrop-blur-md shadow-2xl shadow-yellow-500/10 p-5 md:p-6">
+            {/* Header row: badge + collapse/expand toggle. */}
+            <div className="flex items-start justify-between gap-2 mb-4">
+              <div className="text-[10px] md:text-[11px] font-mono uppercase tracking-widest text-yellow-200 flex-1">
+                Optimization Step 1 done · Step 2 next
+              </div>
+              <button
+                type="button"
+                onClick={() => setStep1SheetCollapsed((c) => !c)}
+                title={step1SheetCollapsed ? "Expand" : "Hide details"}
+                className="flex-shrink-0 -mt-1 -mr-1 w-7 h-7 flex items-center justify-center rounded-md text-yellow-200 hover:text-white hover:bg-yellow-400/20 transition-colors"
+              >
+                {step1SheetCollapsed
+                  ? <ChevronDown className="w-4 h-4" />
+                  : <ChevronUp className="w-4 h-4" />}
+              </button>
+            </div>
+            {!step1SheetCollapsed && (
+              <div className="mb-5">
+                <div className="text-[10px] font-mono uppercase tracking-widest text-yellow-300/90 mb-2">
+                  What just happened
+                </div>
+                <div className="space-y-2.5">
+                  <p className="text-sm md:text-[15px] text-white leading-relaxed">
+                    Run #1 (Optimization Step 1) needed just{" "}
+                    <span className="font-semibold text-yellow-200">{phase1Trials.length}</span> of the{" "}
+                    <span className="font-semibold text-yellow-200">{THEORETICAL_COMBINATIONS.toLocaleString()}</span>{" "}
+                    possible configurations.
+                  </p>
+                  <p className="text-sm md:text-[15px] text-white leading-relaxed">
+                    Found the accuracy peak: {phase1Winner?.accuracy.toFixed(1)}% —
+                    {" "}{phase1Winner?.model.name},
+                    {" "}{phase1Winner ? formatCents(phase1Winner.cost) : "—"} per query.
+                  </p>
+                  <p className="text-sm md:text-[15px] text-white leading-relaxed">
+                    <span className="font-semibold text-yellow-200">Fully automatic</span> — no human in the loop.
+                  </p>
+                </div>
+              </div>
+            )}
+            {!step1SheetCollapsed && (
+              <div className="mb-5">
+                <div className="text-[10px] font-mono uppercase tracking-widest text-yellow-300/90 mb-2">
+                  Coming up in next scene
+                </div>
+                <div className="space-y-2.5">
+                  <p className="text-sm md:text-[15px] text-white leading-relaxed">
+                    Run #2 (Optimization Step 2) — same dataset, different objective.
+                  </p>
+                  <p className="text-sm md:text-[15px] text-white leading-relaxed">
+                    Hold the accuracy bar at ≥ 71% and sweep for the CHEAPEST configs that still hit it.
+                  </p>
+                </div>
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={resumeFromStep1}
+              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white font-semibold transition-colors shadow-lg shadow-blue-500/30"
+            >
+              <Play className="w-4 h-4 fill-white" />
+              Resume
+            </button>
+          </div>
+        </motion.aside>
+      )}
     </>
   );
 }
