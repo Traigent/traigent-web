@@ -21,7 +21,7 @@ import GuidedTour from "../lib/GuidedTour";
 // whose default value counts multiply to 9,720, so the counter lands on
 // exactly 58,320 — the same number the Live Demo (Act 4) uses for its
 // search-space headline. Knob choices are semantic best-effort matches
-// for the demo's 9 axes:
+// for the demo's 8 axes:
 //   kShot          ↔ few-shot-k         (5)
 //   exampleSel     ↔ example-selection  (4)
 //   cot            ↔ cot                (3)
