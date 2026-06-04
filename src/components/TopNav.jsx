@@ -43,6 +43,16 @@ const PITCH_DECK_OPTIONS = [
     desc: "Problem → search space → solution → the win",
     href: "/#/story",
   },
+  {
+    label: "Agent Knobs 101 (3-min read)",
+    desc: "Primer · three concrete knobs, what they do, why they matter",
+    href: "/#/blog/agent-knobs-101",
+  },
+  {
+    label: "Implementing Agent Knobs (18-min read)",
+    desc: "Reference · every knob with effect + code you can paste in",
+    href: "/#/blog/implementing-agent-knobs",
+  },
 ];
 
 const productItems = [
