@@ -133,7 +133,7 @@ export default function GetStarted() {
         <div className="mt-10 p-6 rounded-xl bg-slate-900/60 border border-slate-800">
           <h2 className="text-xl font-semibold mb-2">Drive it from your coding agent</h2>
           <p className="text-slate-300 mb-4 max-w-3xl">
-            Claude Code, Cursor, Codex, Gemini CLI and 30+ other agents pick up the Traigent skill bundle automatically. They&apos;ll guide you through dry-run-first setup, generate the eval dataset, and apply the best config — without you leaving your editor.
+            Claude Code, Cursor, Codex, Gemini CLI and 30+ other agents pick up the Traigent skill bundle automatically. They&apos;ll guide you through dry-run-first setup, generate the eval dataset, and apply the best config — without you leaving your editor. Coding agent? Point it at <a href="/agent.md" className="text-blue-300 hover:text-blue-200 underline underline-offset-4">traigent.ai/agent.md</a>.
           </p>
           <InstallCommand
             command={SDK_SKILL_INSTALL_COMMAND}
