@@ -8,10 +8,9 @@ import { Check, Copy } from "lucide-react";
 /**
  * A single-line install command with a copy-to-clipboard affordance.
  *
- * The bundled `traigent quickstart` is the load-bearing demo on the
- * funnel: no API keys, no LLM provider calls, ~6 seconds to a results
- * table on a fresh laptop. This component is what lets a visitor copy
- * the command in one click without leaving the page.
+ * This component lets a visitor copy an install or quickstart command in
+ * one click without leaving the page. The packaged Python SDK quickstart
+ * is runnable as `python -m traigent.examples.quickstart`.
  *
  * @param {object}  props
  * @param {string}  props.command    — the shell string to display + copy
