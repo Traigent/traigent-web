@@ -136,15 +136,15 @@ If a catalog entry is guidance rather than executable wiring, branch manually on
 
 ```bash
 traigent onboard
-traigent auth device-login
+traigent auth device-login  # if available; otherwise traigent auth login (API key from portal.traigent.ai); TRAIGENT_API_KEY works non-interactively
 ```
 
-For backend access in non-interactive environments, use `TRAIGENT_API_KEY`.
+For backend access, prefer `traigent auth device-login` when the installed SDK has it; otherwise use `traigent auth login` and paste an API key from `portal.traigent.ai`; `TRAIGENT_API_KEY` works in both paths for non-interactive environments.
 
 12. Use the appropriate algorithm and mode.
     - `random`: local.
     - `grid`: local.
-    - `tpe`: backend hybrid, with `traigent auth device-login` or `TRAIGENT_API_KEY`.
+    - `tpe`: backend hybrid, with `traigent auth device-login` if available; otherwise `traigent auth login` (API key from `portal.traigent.ai`); `TRAIGENT_API_KEY` works in both paths for non-interactive use.
 
 13. Read completed trials from the result table.
 
@@ -210,7 +210,7 @@ Draft evidence may support integration work. It does not certify improvement.
 4. Use a fresh interpreter/process after mock mode before real execution.
 5. Use large `timeout` values for real optimization so the run is not silently truncated.
 6. Prefer local `random` or `grid` until the evaluator is stable.
-7. Use backend hybrid `tpe` only when authenticated with `traigent auth device-login` or `TRAIGENT_API_KEY`.
+7. Use backend hybrid `tpe` only when authenticated with `traigent auth device-login` if available; otherwise `traigent auth login` (API key from `portal.traigent.ai`); `TRAIGENT_API_KEY` works in both paths for non-interactive use.
 8. Keep provider API keys out of code, docs, diffs, and logs.
 9. Keep baseline, optimization, rerank, and held-out evidence separate.
 10. Read reporting data from `result.to_dataframe()`.
@@ -239,6 +239,6 @@ The following are rolling out and must not be assumed available everywhere:
 
 1. `traigent mcp` local MCP server.
 2. Backend-generated example datasets.
-3. Free self-service signup plus device-login general availability.
+3. Free self-service signup and device-login general availability are rolling out; device-login exists in newer SDKs, so check `traigent auth device-login --help` before relying on it.
 
 This file is versioned. If SDK behavior changes, update this playbook with the new current surface.
