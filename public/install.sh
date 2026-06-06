@@ -20,10 +20,11 @@ PATH="$HOME/.local/bin:$HOME/.cargo/bin${ORIGINAL_PATH:+:$ORIGINAL_PATH}"
 export PATH
 
 # Keep the installer default aligned with the packaged quickstart dependencies.
-# Switch this to traigent[recommended] once that extras bundle ships.
-PACKAGE="traigent[integrations]"
+# traigent[recommended] shipped in 0.12.0 (= integrations + analytics + hybrid
+# + visualization + bayesian + pydanticai) — the intended onboarding bundle.
+PACKAGE="traigent[recommended]"
 if [ -n "${TRAIGENT_VERSION:-}" ]; then
-  PACKAGE="traigent[integrations]==${TRAIGENT_VERSION}"
+  PACKAGE="traigent[recommended]==${TRAIGENT_VERSION}"
 fi
 
 ATTEMPT_SUMMARY=""
@@ -80,8 +81,7 @@ guard_root() {
   fi
 
   if [ -f /.dockerenv ] || [ -f /run/.containerenv ] || [ "${CI+x}" = "x" ]; then
-    say "notice: running as root inside a container/CI context; continuing."
-    return 0
+    die "running as root inside a container/CI context is blocked. Re-run as a normal user, or set TRAIGENT_ALLOW_ROOT=1 for an explicit controlled install."
   fi
 
   die "do not run this installer with sudo/root. Install as your normal user so 'traigent' lands on your user PATH. Set TRAIGENT_ALLOW_ROOT=1 to override."

@@ -29,9 +29,9 @@ const SDK_SKILL_INSTALL_COMMAND = [
 const TERMINAL_INSTALL_COMMAND = "curl -fsSL https://traigent.ai/install.sh | sh";
 // Switch these defaults to traigent[recommended] once that extras bundle ships.
 const MANUAL_INSTALL_COMMANDS = [
-  "uv tool install 'traigent[integrations]'",
-  "pipx install 'traigent[integrations]'",
-  "pip install 'traigent[integrations]'",
+  "uv tool install 'traigent[recommended]'",
+  "pipx install 'traigent[recommended]'",
+  "pip install 'traigent[recommended]'",
 ];
 
 export default function GetStarted() {
@@ -131,7 +131,7 @@ export default function GetStarted() {
           <div className="p-6 rounded-xl bg-slate-900/60 border border-slate-800 flex flex-col">
             <h2 className="text-xl font-semibold mb-2">Traigent SDK</h2>
             <p className="text-slate-300 mb-4">
-              Install the published Python SDK from your terminal. The bootstrap is a thin shell script that installs <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">traigent[integrations]</code>, verifies <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">traigent info</code>, and never prompts for or reads credentials. Today&apos;s SDK uses an API key from <a href="https://portal.traigent.ai" target="_blank" rel="noopener noreferrer" className="text-blue-300 hover:text-blue-200 underline underline-offset-4">portal.traigent.ai</a>; when <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">traigent onboard</code> ships, the installer will detect it.
+              Install the published Python SDK from your terminal. The bootstrap is a thin shell script that installs <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">traigent[recommended]</code>, verifies <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">traigent info</code>, refuses root/container installs unless <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">TRAIGENT_ALLOW_ROOT=1</code> is explicitly set, and never prompts for or reads credentials. The installer detects <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">traigent onboard</code> (included in the published SDK) and suggests it next — it sets up device login against <a href="https://portal.traigent.ai" target="_blank" rel="noopener noreferrer" className="text-blue-300 hover:text-blue-200 underline underline-offset-4">portal.traigent.ai</a> and your coding agent.
             </p>
             {unlocked && (
               <>
