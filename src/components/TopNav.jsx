@@ -529,7 +529,7 @@ export default function TopNav() {
         </div>
       )}
 
-      {showStartNow && <StartNowModal onClose={() => setShowStartNow(false)} />}
+      {showStartNow && <StartNowModal onClose={() => setShowStartNow(false)} location="topnav" />}
     </>
   );
 }

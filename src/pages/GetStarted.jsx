@@ -1,8 +1,17 @@
-﻿import React from "react";
+﻿import React, { useState, useEffect } from "react";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import InstallCommand from "../components/InstallCommand";
+import HubSpotStartNowForm from "../components/HubSpotStartNowForm";
+import {
+  isUnlocked,
+  markUnlocked,
+  getUnlockedEmail,
+  shouldNotifyRepeatVisit,
+} from "../lib/startNowGate";
+import { notifyStartNowRepeat } from "../lib/hubspotForms";
+import { trackEvent } from "../lib/analytics";
 
 const createPageUrl = (path) => path;
 const SDK_SKILL_INSTALL_COMMAND = [
@@ -25,6 +34,28 @@ const MANUAL_INSTALL_COMMANDS = [
 ];
 
 export default function GetStarted() {
+  // Gate the install commands behind the HubSpot form on first visit.
+  // Same 90-day localStorage memory as the Start Now modal so a visitor
+  // who unlocked there doesn't see the form again here, and vice versa.
+  const [unlocked, setUnlocked] = useState(() => isUnlocked());
+
+  // Repeat-visit notification — see StartNowModal for the rationale.
+  useEffect(() => {
+    if (!unlocked) return;
+    if (!shouldNotifyRepeatVisit()) return;
+    const email = getUnlockedEmail();
+    if (!email) return;
+    notifyStartNowRepeat({ email, location: "get_started_page" });
+    trackEvent("start_now_repeat_visit", { location: "get_started_page" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleSubmitted = (email) => {
+    markUnlocked(email);
+    setUnlocked(true);
+    trackEvent("start_now_form_submitted", { location: "get_started_page" });
+  };
+
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       <Helmet>
@@ -47,6 +78,18 @@ export default function GetStarted() {
         <p className="text-lg text-slate-300 mb-10 max-w-2xl">
           Start bottom-up with the SDK, or start foundational with TVL. Either way: specify, evaluate, optimize, and apply—like software.
         </p>
+
+        {!unlocked && (
+          <div className="mb-10 p-6 rounded-xl bg-slate-900/60 border border-slate-800">
+            <h2 className="text-xl font-semibold mb-2">First, tell us where to send setup tips</h2>
+            <p className="text-slate-300 mb-4 max-w-3xl">
+              The install commands below appear as soon as you submit. We won't
+              email you more than once a month, and you can unsubscribe with one
+              click.
+            </p>
+            <HubSpotStartNowForm onSuccess={handleSubmitted} targetId="hs-form-getstarted" />
+          </div>
+        )}
 
         <div className="grid md:grid-cols-2 gap-6">
           <div className="p-6 rounded-xl bg-slate-900/60 border border-slate-800 flex flex-col">
@@ -72,50 +115,54 @@ export default function GetStarted() {
             <p className="text-slate-300 mb-4">
               Install the published Python SDK from your terminal. The bootstrap is a thin shell script that installs <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">traigent[integrations]</code>, verifies <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">traigent info</code>, and never prompts for or reads credentials. Today&apos;s SDK uses an API key from <a href="https://portal.traigent.ai" target="_blank" rel="noopener noreferrer" className="text-blue-300 hover:text-blue-200 underline underline-offset-4">portal.traigent.ai</a>; when <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">traigent onboard</code> ships, the installer will detect it.
             </p>
-            <InstallCommand
-              command={TERMINAL_INSTALL_COMMAND}
-              secondary="Set TRAIGENT_VERSION before the command to pin a published SDK version."
-              className="mb-4"
-            />
-            <div className="border-t border-slate-800 pt-4 mb-4">
-              <h3 className="text-sm font-semibold text-slate-200 mb-2">or install manually</h3>
-              <div className="space-y-1 font-mono text-sm text-slate-300">
-                {MANUAL_INSTALL_COMMANDS.map((command) => (
-                  <div key={command}>
-                    <span className="text-slate-500 select-none">$ </span>
-                    <code>{command}</code>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="border-t border-slate-800 pt-4 mb-5 flex-grow">
-              <h3 className="text-sm font-semibold text-slate-200 mb-2">next steps</h3>
-              <div className="space-y-3 text-sm text-slate-300">
-                <div>
-                  <div className="text-slate-400 mb-1">If your installed SDK includes onboard:</div>
-                  <div className="font-mono">
-                    <span className="text-slate-500 select-none">$ </span>
-                    <code>traigent onboard</code>
+            {unlocked && (
+              <>
+                <InstallCommand
+                  command={TERMINAL_INSTALL_COMMAND}
+                  secondary="Set TRAIGENT_VERSION before the command to pin a published SDK version."
+                  className="mb-4"
+                />
+                <div className="border-t border-slate-800 pt-4 mb-4">
+                  <h3 className="text-sm font-semibold text-slate-200 mb-2">or install manually</h3>
+                  <div className="space-y-1 font-mono text-sm text-slate-300">
+                    {MANUAL_INSTALL_COMMANDS.map((command) => (
+                      <div key={command}>
+                        <span className="text-slate-500 select-none">$ </span>
+                        <code>{command}</code>
+                      </div>
+                    ))}
                   </div>
                 </div>
-                <div>
-                  <div className="text-slate-400 mb-1">Current SDK fallback:</div>
-                  <div className="space-y-1 font-mono">
+                <div className="border-t border-slate-800 pt-4 mb-5 flex-grow">
+                  <h3 className="text-sm font-semibold text-slate-200 mb-2">next steps</h3>
+                  <div className="space-y-3 text-sm text-slate-300">
                     <div>
-                      <span className="text-slate-500 select-none">$ </span>
-                      <code>traigent auth login</code>
+                      <div className="text-slate-400 mb-1">If your installed SDK includes onboard:</div>
+                      <div className="font-mono">
+                        <span className="text-slate-500 select-none">$ </span>
+                        <code>traigent onboard</code>
+                      </div>
                     </div>
                     <div>
-                      <span className="text-slate-500 select-none">$ </span>
-                      <code>python -m traigent.examples.quickstart</code>
+                      <div className="text-slate-400 mb-1">Current SDK fallback:</div>
+                      <div className="space-y-1 font-mono">
+                        <div>
+                          <span className="text-slate-500 select-none">$ </span>
+                          <code>traigent auth login</code>
+                        </div>
+                        <div>
+                          <span className="text-slate-500 select-none">$ </span>
+                          <code>python -m traigent.examples.quickstart</code>
+                        </div>
+                      </div>
+                      <p className="text-xs text-slate-500 mt-2">
+                        Paste an API key from the portal when prompted; the packaged quickstart is a zero-cost mock run.
+                      </p>
                     </div>
                   </div>
-                  <p className="text-xs text-slate-500 mt-2">
-                    Paste an API key from the portal when prompted; the packaged quickstart is a zero-cost mock run.
-                  </p>
                 </div>
-              </div>
-            </div>
+              </>
+            )}
             <div className="flex flex-wrap gap-3">
               <a
                 href="https://github.com/Traigent/Traigent"
@@ -135,10 +182,12 @@ export default function GetStarted() {
           <p className="text-slate-300 mb-4 max-w-3xl">
             Claude Code, Cursor, Codex, Gemini CLI and 30+ other agents pick up the Traigent skill bundle automatically. They&apos;ll guide you through dry-run-first setup, generate the eval dataset, and apply the best config — without you leaving your editor. Coding agent? Point it at <a href="/agent.md" className="text-blue-300 hover:text-blue-200 underline underline-offset-4">traigent.ai/agent.md</a>.
           </p>
-          <InstallCommand
-            command={SDK_SKILL_INSTALL_COMMAND}
-            secondary="Installs only the user-facing Traigent SDK skills. Internal review, PR, and security tools stay out of the bundle."
-          />
+          {unlocked && (
+            <InstallCommand
+              command={SDK_SKILL_INSTALL_COMMAND}
+              secondary="Installs only the user-facing Traigent SDK skills. Internal review, PR, and security tools stay out of the bundle."
+            />
+          )}
         </div>
 
         <div className="mt-12 p-6 rounded-xl bg-gradient-to-br from-indigo-600/20 to-purple-700/20 border border-white/10">
