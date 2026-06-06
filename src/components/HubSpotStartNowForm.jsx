@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 
 const HUBSPOT_SCRIPT_SRC = "https://js-eu1.hsforms.net/forms/embed/v2.js";
 const HUBSPOT_PORTAL_ID = "148486827";
-const HUBSPOT_FORM_ID = "35384a3e-7386-45b0-924e-84e5d6f637e4";
+const HUBSPOT_DEFAULT_FORM_ID = "35384a3e-7386-45b0-924e-84e5d6f637e4";
 const HUBSPOT_REGION = "eu1";
 
 let scriptPromise = null;
@@ -100,7 +100,11 @@ function loadHubSpotScript() {
  * @param {Function} props.onSuccess  — fires after HubSpot confirms submission
  * @param {string}   [props.targetId] — DOM id for the form container
  */
-export default function HubSpotStartNowForm({ onSuccess, targetId = "hs-start-now-form" }) {
+export default function HubSpotStartNowForm({
+  onSuccess,
+  targetId = "hs-start-now-form",
+  formId = HUBSPOT_DEFAULT_FORM_ID,
+}) {
   const onSuccessRef = useRef(onSuccess);
   onSuccessRef.current = onSuccess;
   // We grab the email value off the HubSpot form DOM in onFormSubmit (which
@@ -138,7 +142,7 @@ export default function HubSpotStartNowForm({ onSuccess, targetId = "hs-start-no
         }
         hbspt.forms.create({
           portalId: HUBSPOT_PORTAL_ID,
-          formId: HUBSPOT_FORM_ID,
+          formId,
           region: HUBSPOT_REGION,
           target: `#${targetId}`,
           onFormReady: () => {
@@ -175,7 +179,7 @@ export default function HubSpotStartNowForm({ onSuccess, targetId = "hs-start-no
       cancelled = true;
       window.removeEventListener("message", handleHsMessage);
     };
-  }, [targetId]);
+  }, [targetId, formId]);
 
   return (
     <div>

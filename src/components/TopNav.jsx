@@ -2,8 +2,15 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { ChevronDown, Github, Menu, X } from "lucide-react";
 import StartNowModal from "./StartNowModal";
+import PortalGateModal from "./PortalGateModal";
 import BrandMark from "./BrandMark";
 import { trackEvent } from "../lib/analytics";
+import {
+  isUnlocked,
+  getUnlockedEmail,
+  shouldNotifyRepeatVisit,
+} from "../lib/startNowGate";
+import { notifyPortalRepeat } from "../lib/hubspotForms";
 
 const PORTAL_URL = "https://portal.traigent.ai";
 const DEMO_URL = "https://meetings-eu1.hubspot.com/amir8";
@@ -192,6 +199,25 @@ function MobileSectionLabel({ children }) {
 export default function TopNav() {
   const [openMenu, setOpenMenu] = useState(null);
   const [showStartNow, setShowStartNow] = useState(false);
+  const [showPortalGate, setShowPortalGate] = useState(false);
+
+  // Click handler for the "Open portal" CTA. Unlocked visitors skip the gate
+  // entirely (no friction — that was the whole point of the unlock) and we
+  // silently re-notify HubSpot in the background. Locked visitors get the
+  // form. The `loc` parameter is the breadcrumb (topnav / topnav_mobile).
+  const handleOpenPortal = (loc) => {
+    if (isUnlocked()) {
+      const email = getUnlockedEmail();
+      if (email && shouldNotifyRepeatVisit()) {
+        notifyPortalRepeat({ email, location: loc });
+      }
+      trackEvent("portal_opened", { location: loc });
+      window.open(PORTAL_URL, "_blank", "noopener,noreferrer");
+      return;
+    }
+    trackEvent("portal_clicked_gated", { location: loc });
+    setShowPortalGate(true);
+  };
   const [mobileOpen, setMobileOpen] = useState(false);
   const [pitchMenuOpen, setPitchMenuOpen] = useState(false);
   const pitchMenuRef = useRef(null);
@@ -325,15 +351,13 @@ export default function TopNav() {
               >
                 <Github className="w-5 h-5" />
               </a>
-              <a
-                href={PORTAL_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => trackEvent("portal_opened", { location: "topnav" })}
+              <button
+                type="button"
+                onClick={() => handleOpenPortal("topnav")}
                 className="text-sm text-slate-300 hover:text-white transition-colors whitespace-nowrap"
               >
                 Open portal
-              </a>
+              </button>
               <button
                 onClick={() => {
                   trackEvent("start_now_clicked", { location: "topnav" });
@@ -485,15 +509,13 @@ export default function TopNav() {
 
             {/* CTAs pinned to the bottom */}
             <div className="border-t border-slate-800 px-4 sm:px-6 py-4 flex flex-col gap-2 flex-shrink-0">
-              <a
-                href={PORTAL_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => { trackEvent("portal_opened", { location: "topnav_mobile" }); closeMobile(); }}
+              <button
+                type="button"
+                onClick={() => { handleOpenPortal("topnav_mobile"); closeMobile(); }}
                 className="text-center text-sm text-slate-300 hover:text-white py-2 transition-colors"
               >
                 Open portal
-              </a>
+              </button>
               <button
                 type="button"
                 onClick={() => {
@@ -530,6 +552,7 @@ export default function TopNav() {
       )}
 
       {showStartNow && <StartNowModal onClose={() => setShowStartNow(false)} location="topnav" />}
+      {showPortalGate && <PortalGateModal onClose={() => setShowPortalGate(false)} location="topnav" />}
     </>
   );
 }
