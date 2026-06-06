@@ -14,6 +14,8 @@
 // Any var left unset turns its corresponding integration into a no-op.
 // ===================================================================
 
+import { hasMarketingConsent } from './consent';
+
 const GA4_ID = import.meta.env.VITE_GA4_ID;
 const CLARITY_ID = import.meta.env.VITE_CLARITY_ID;
 const HUBSPOT_PORTAL_ID = import.meta.env.VITE_HUBSPOT_PORTAL_ID;
@@ -23,12 +25,152 @@ const POSTHOG_HOST = import.meta.env.VITE_POSTHOG_HOST || "https://us.i.posthog.
 
 let initialized = false;
 
+const ANALYTICS_LOCAL_STORAGE_KEYS = [
+  "traigent_utms",
+  "traigent_hsutk_check",
+];
+
+const ANALYTICS_COOKIE_NAMES = [
+  "_ga",
+  "_gid",
+  "_gat",
+  "_gcl_au",
+  "_clck",
+  "_clsk",
+  "hubspotutk",
+  "__hstc",
+  "__hssc",
+  "__hssrc",
+  "__hs_cookie_cat_pref",
+  "messagesUtk",
+];
+
+function analyticsCookieMatcher(name) {
+  return (
+    ANALYTICS_COOKIE_NAMES.includes(name) ||
+    name.startsWith("_ga_") ||
+    name.startsWith("_gat_") ||
+    name.startsWith("_gcl_") ||
+    name.startsWith("ph_") ||
+    name.toLowerCase().includes("posthog")
+  );
+}
+
+function analyticsStorageMatcher(key) {
+  const normalized = key.toLowerCase();
+  return (
+    ANALYTICS_LOCAL_STORAGE_KEYS.includes(key) ||
+    key.startsWith("ph_") ||
+    normalized.includes("posthog")
+  );
+}
+
+function clearMatchingStorage(storage) {
+  if (!storage) return;
+  const keys = [];
+  for (let i = 0; i < storage.length; i += 1) {
+    const key = storage.key(i);
+    if (key && analyticsStorageMatcher(key)) keys.push(key);
+  }
+  keys.forEach((key) => storage.removeItem(key));
+}
+
+function cookieDomainCandidates(hostname) {
+  if (!hostname || hostname === "localhost" || /^\d+\.\d+\.\d+\.\d+$/.test(hostname)) {
+    return [""];
+  }
+  const parts = hostname.split(".");
+  const candidates = ["", hostname, `.${hostname}`];
+  for (let i = 1; i < parts.length - 1; i += 1) {
+    candidates.push(`.${parts.slice(i).join(".")}`);
+  }
+  return [...new Set(candidates)];
+}
+
+function expireCookie(name) {
+  if (typeof document === "undefined") return;
+  const hostname = window.location.hostname;
+  const domains = cookieDomainCandidates(hostname);
+  const paths = ["/", window.location.pathname || "/"];
+  const expiry = "Max-Age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+
+  for (const path of paths) {
+    for (const domain of domains) {
+      const domainPart = domain ? `; domain=${domain}` : "";
+      document.cookie = `${name}=; ${expiry}; path=${path}${domainPart}; SameSite=Lax`;
+    }
+  }
+}
+
+function clearAnalyticsCookies() {
+  if (typeof document === "undefined") return;
+  const existingCookieNames = document.cookie
+    .split(";")
+    .map((cookie) => cookie.trim().split("=")[0])
+    .filter(Boolean);
+  const names = new Set([
+    ...ANALYTICS_COOKIE_NAMES,
+    ...existingCookieNames.filter(analyticsCookieMatcher),
+  ]);
+  names.forEach(expireCookie);
+}
+
+function removeInjectedAnalyticsScripts() {
+  const selectors = [
+    'script[src*="googletagmanager.com/gtag/js"]',
+    'script[src*="clarity.ms/tag/"]',
+    'script[id="hs-script-loader"]',
+    'script[src*="hs-scripts.com"]',
+    'script[src*="posthog"][src*="/static/array.js"]',
+  ];
+  selectors.forEach((selector) => {
+    document.querySelectorAll(selector).forEach((script) => script.remove());
+  });
+}
+
+function clearAnalyticsGlobals() {
+  if (GA4_ID) window[`ga-disable-${GA4_ID}`] = true;
+  window.dataLayer = [];
+  window.gtag = undefined;
+  window._hsq = undefined;
+  window.posthog = undefined;
+  window.clarity = undefined;
+}
+
+export function teardownAnalytics({ reload = true } = {}) {
+  if (typeof window === "undefined") return;
+  const shouldReload = initialized && reload;
+
+  if (window.clarity) {
+    try { window.clarity("consent", false); } catch { /* noop */ }
+  }
+
+  if (window.posthog) {
+    try { window.posthog.stopSessionRecording?.(); } catch { /* noop */ }
+    try { window.posthog.opt_out_capturing?.(); } catch { /* noop */ }
+    try { window.posthog.reset?.(true); } catch { /* noop */ }
+  }
+
+  try { clearMatchingStorage(window.localStorage); } catch { /* noop */ }
+  try { clearMatchingStorage(window.sessionStorage); } catch { /* noop */ }
+  clearAnalyticsCookies();
+  removeInjectedAnalyticsScripts();
+  clearAnalyticsGlobals();
+  initialized = false;
+
+  if (shouldReload) {
+    window.location.reload();
+  }
+}
+
 export function initAnalytics() {
   if (initialized || typeof window === "undefined") return;
+  if (!hasMarketingConsent()) return;
   initialized = true;
 
   // ---- Google Analytics 4 (gtag.js) ----
   if (GA4_ID) {
+    window[`ga-disable-${GA4_ID}`] = false;
     const s = document.createElement("script");
     s.async = true;
     s.src = `https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`;
@@ -50,6 +192,7 @@ export function initAnalytics() {
       t.src = "https://www.clarity.ms/tag/" + i;
       y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
     })(window, document, "clarity", "script", CLARITY_ID);
+    try { window.clarity("consent", true); } catch { /* noop */ }
   }
 
   // ---- HubSpot tracking ----
@@ -97,6 +240,7 @@ export function initAnalytics() {
 /** Fire on every route change. Call this from a router listener. */
 export function trackPageView(path) {
   if (typeof window === "undefined") return;
+  if (!hasMarketingConsent()) return;
   if (GA4_ID && window.gtag) {
     window.gtag("event", "page_view", {
       page_path: path,
@@ -118,6 +262,7 @@ export function trackPageView(path) {
  */
 export function trackEvent(name, params = {}) {
   if (typeof window === "undefined") return;
+  if (!hasMarketingConsent()) return;
   if (GA4_ID && window.gtag) {
     window.gtag("event", name, params);
   }
@@ -149,6 +294,7 @@ export function trackEvent(name, params = {}) {
  */
 export function identify(userId, traits = {}) {
   if (typeof window === "undefined") return;
+  if (!hasMarketingConsent()) return;
   if (!userId && !traits.email) {
     if (import.meta.env.DEV) {
       // eslint-disable-next-line no-console
