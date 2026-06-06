@@ -25,6 +25,7 @@ import {
   ONEPAGER_STYLE,
 } from "../components/OnePagerAtoms";
 import BrandMark from "../components/BrandMark";
+import { usePageView } from "../lib/usePageView";
 
 function ProblemPanel({ icon: Icon, title, number, numberColor, line, extra, linkHref, linkLabel }) {
   return (
@@ -341,6 +342,7 @@ function SlideSolution() {
 }
 
 export default function OnePager() {
+  usePageView();
   return (
     <>
       <Helmet>

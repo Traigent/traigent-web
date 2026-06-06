@@ -12,6 +12,9 @@
 
 const STORAGE_KEY = "traigent_start_now_unlocked";
 const TTL_MS = 90 * 24 * 60 * 60 * 1000;
+// One notification per visitor per surface per hour. Prevents tab-discard
+// reloads, link-preview bots, and multi-device visits from spamming the
+// founder's inbox with repeat-visit submissions.
 const REPEAT_NOTIFY_THROTTLE_MS = 60 * 60 * 1000;
 
 function readEntry() {

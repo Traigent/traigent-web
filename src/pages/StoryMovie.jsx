@@ -22,6 +22,7 @@ import StartNowModal from "../components/StartNowModal";
 import { checkKnownContact } from "../lib/hubspotIdentify";
 import { notifyStoryWatched } from "../lib/hubspotForms";
 import { trackEvent } from "../lib/analytics";
+import { usePageView } from "../lib/usePageView";
 
 // Same CTA URL as the homepage TopNav — HubSpot meeting booking.
 const DEMO_BOOKING_URL = "https://meetings-eu1.hubspot.com/amir8";
@@ -804,6 +805,7 @@ const INITIAL_PAUSED = true;
 const INITIAL_SHOW_FINAL = true;
 
 export default function StoryMovie() {
+  usePageView();
   // currentAct: 0 = idle / splash (no longer the default — reachable only
   // if something explicitly sets it back to 0), 1..5 = act in progress.
   const [currentAct, setCurrentAct] = useState(INITIAL_ACT);

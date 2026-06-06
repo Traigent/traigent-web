@@ -13,6 +13,7 @@ import { OnePager2Slide } from "./OnePager2";
 import BrandMark from "../components/BrandMark";
 import { useKnownContactNotify } from "../lib/useKnownContactNotify";
 import { notifyPitchDeckViewed } from "../lib/hubspotForms";
+import { usePageView } from "../lib/usePageView";
 
 // Named presets — URLs like /pitch-short-2/extended-product-presentation map
 // onto specific range/exclude filters here, so each deck has a readable URL
@@ -190,6 +191,7 @@ function resolveSlides(rangeParam, excludeParam, allSlides) {
 }
 
 export default function PitchShort2() {
+  usePageView();
   useKnownContactNotify({
     notify: notifyPitchDeckViewed,
     location: "pitch_short_2",

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { trackEvent } from "../../lib/analytics";
 import { checkKnownContact } from "../../lib/hubspotIdentify";
 
+// One notification per visitor per course per hour. Matches the global
+// gate's throttle window so the inbox volume stays sane in prod.
 const REPEAT_NOTIFY_THROTTLE_MS = 60 * 60 * 1000;
 
 // Configuration read at build time. The Forms API is CORS-enabled and our

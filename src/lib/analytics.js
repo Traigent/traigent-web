@@ -237,21 +237,54 @@ export function initAnalytics() {
   captureFirstTouchUtms();
 }
 
+/**
+ * Derive the page NAME we show in analytics dashboards from the path we
+ * actually navigated to. We want every tool (GA4, PostHog, Clarity, HubSpot)
+ * to label a pageview with the URL ending (the part after `traigent.ai/`
+ * or `traigent.ai/#/`) — not the Helmet document.title, which varies by
+ * page and makes cross-tool comparison impossible.
+ *
+ *   "/story"               → "/story"
+ *   "/blog/agent-knobs-101?utm_source=x" → "/blog/agent-knobs-101"
+ *   "/"                    → "/"
+ */
+function derivePageName(path) {
+  if (!path) return "/";
+  const noQuery = path.split("?")[0];
+  return noQuery || "/";
+}
+
 /** Fire on every route change. Call this from a router listener. */
 export function trackPageView(path) {
   if (typeof window === "undefined") return;
   if (!hasMarketingConsent()) return;
+  const pageName = derivePageName(path);
   if (GA4_ID && window.gtag) {
+    // page_title overrides document.title for THIS event, so the GA4
+    // Pages report shows "/story" instead of "Full story · Traigent".
     window.gtag("event", "page_view", {
       page_path: path,
       page_location: window.location.href,
+      page_title: pageName,
     });
   }
   if (HUBSPOT_PORTAL_ID && window._hsq) {
     window._hsq.push(["setPath", path], ["trackPageView"]);
   }
   if (POSTHOG_KEY && window.posthog && window.posthog.capture) {
-    window.posthog.capture("$pageview", { $current_url: window.location.href });
+    // Override $pathname: with HashRouter the real window.location.pathname
+    // is "/" for every route, which would collapse every page into one row
+    // in PostHog's Web Analytics. Forcing the SPA path here groups correctly.
+    window.posthog.capture("$pageview", {
+      $current_url: window.location.href,
+      $pathname: pageName,
+    });
+  }
+  // Clarity's auto-pageview detection watches the History API, which we
+  // don't trigger inside HashRouter. `set` "page" tags the current Clarity
+  // session with the SPA path so heatmaps + recordings group per-route.
+  if (CLARITY_ID && window.clarity) {
+    try { window.clarity("set", "page", pageName); } catch { /* noop */ }
   }
 }
 

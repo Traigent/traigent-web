@@ -8,6 +8,7 @@ import { OnePager2Slide } from "./OnePager2";
 import BrandMark from "../components/BrandMark";
 import { useKnownContactNotify } from "../lib/useKnownContactNotify";
 import { notifyPitchDeckViewed } from "../lib/hubspotForms";
+import { usePageView } from "../lib/usePageView";
 
 // ===================================================================
 // Brand tokens
@@ -1392,6 +1393,7 @@ export function PitchDeck({ slides }) {
 // (e.g. /pitch-short) compose PitchDeck with their own slides arrays.
 // ===================================================================
 export default function PitchFull() {
+  usePageView();
   useKnownContactNotify({
     notify: notifyPitchDeckViewed,
     location: "pitch_full",
