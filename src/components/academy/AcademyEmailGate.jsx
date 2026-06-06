@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { trackEvent } from "../../lib/analytics";
 
-// Same 24h throttle window as the Start Now repeat-notify, so a repeat
-// visitor never triggers more than one HubSpot notification per day per
-// surface. The academy gate stores its own entry per course.
-const REPEAT_NOTIFY_THROTTLE_MS = 24 * 60 * 60 * 1000;
+// TEMP — set to 0 for end-to-end testing across all 3 gates. Bump back to
+// 60 * 60 * 1000 (1 hour) once Amir confirms repeat notifications land.
+const REPEAT_NOTIFY_THROTTLE_MS = 0;
 
 // Configuration read at build time. The Forms API is CORS-enabled and our
 // CSP already allows api.hsforms.com via the *.hsforms.com entry.
