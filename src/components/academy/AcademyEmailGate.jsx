@@ -22,6 +22,16 @@ function readHubSpotCookie() {
   return match ? decodeURIComponent(match[1]) : "";
 }
 
+// Thrown when HubSpot rejects the email because the form has a "blocked free
+// email domains" rule turned on (the "business emails only" setting). The
+// component shows a specific "use your business email" message in this case.
+class BusinessEmailRequiredError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "BusinessEmailRequiredError";
+  }
+}
+
 async function submitToHubSpot({ email, courseTitle, formId }) {
   // Forms API — public, CORS-enabled, accepts direct browser POSTs. Submission
   // creates/updates the contact in HubSpot and triggers any workflow attached
@@ -41,9 +51,31 @@ async function submitToHubSpot({ email, courseTitle, formId }) {
     }),
   });
   if (!res.ok) {
-    const text = await res.text().catch(() => "");
+    const body = await res.json().catch(() => null);
+    if (isBlockedEmailDomainError(res.status, body)) {
+      throw new BusinessEmailRequiredError("blocked email domain");
+    }
+    const text = body ? JSON.stringify(body) : await res.text().catch(() => "");
     throw new Error(`HubSpot ${res.status}: ${text || res.statusText}`);
   }
+}
+
+// HubSpot returns 400 + an errors[] entry whose errorType / message references
+// a blocked domain when the form's "block free email providers" rule rejects
+// the submission. Matching on either signal — errorType varies across the API.
+function isBlockedEmailDomainError(status, body) {
+  if (status !== 400 || !body || !Array.isArray(body.errors)) return false;
+  return body.errors.some((e) => {
+    const t = String(e.errorType || "").toUpperCase();
+    const m = String(e.message || "").toLowerCase();
+    return (
+      t === "BLOCKED_EMAIL_DOMAIN" ||
+      t === "EMAIL_INVALID" ||
+      m.includes("blocked from form submissions") ||
+      m.includes("free email") ||
+      m.includes("business email")
+    );
+  });
 }
 
 /**
@@ -98,10 +130,12 @@ export default function AcademyEmailGate({ courseSlug, courseTitle, formId, chil
       }
       trackEvent("academy_email_submitted", { course: courseSlug });
       setUnlocked(true);
-    } catch {
-      setError(
-        "Something went wrong sending you the link. Try again, or email amir@traigent.ai and we'll send it directly."
-      );
+    } catch (err) {
+      if (err instanceof BusinessEmailRequiredError) {
+        setError("business_email");
+      } else {
+        setError("generic");
+      }
     } finally {
       setSubmitting(false);
     }
@@ -142,9 +176,14 @@ export default function AcademyEmailGate({ courseSlug, courseTitle, formId, chil
             {submitting ? "Sending…" : "Send me the access link"}
           </button>
         </form>
-        {error && (
+        {error === "business_email" && (
           <p className="text-amber-400 text-sm mt-4" role="alert">
-            {error}
+            Please enter your <u>business</u> email
+          </p>
+        )}
+        {error === "generic" && (
+          <p className="text-amber-400 text-sm mt-4" role="alert">
+            Something went wrong sending you the link. Try again, or email amir@traigent.ai and we&apos;ll send it directly.
           </p>
         )}
         <p className="text-xs text-slate-500 mt-6">

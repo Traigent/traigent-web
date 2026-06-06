@@ -113,7 +113,7 @@ export default function Homepage() {
           })}
         </script>
       </Helmet>
-      {showStartNow && <StartNowModal onClose={() => setShowStartNow(false)} />}
+      {showStartNow && <StartNowModal onClose={() => setShowStartNow(false)} location="homepage_hero" />}
       {/* Hero Section */}
       <section className="relative overflow-x-clip bg-[#080808] text-white">
         {/* Noise texture overlay */}

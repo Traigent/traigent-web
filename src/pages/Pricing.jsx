@@ -610,7 +610,7 @@ export default function Pricing() {
           </FadeIn>
         </div>
       </section>
-      {showStartNow && <StartNowModal onClose={() => setShowStartNow(false)} />}
+      {showStartNow && <StartNowModal onClose={() => setShowStartNow(false)} location="pricing" />}
     </div>
   );
 }

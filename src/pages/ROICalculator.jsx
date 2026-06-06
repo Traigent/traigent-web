@@ -806,7 +806,7 @@ export default function ROICalculator() {
           </motion.div>
         </div>
       </section>
-      {showStartNow && <StartNowModal onClose={() => setShowStartNow(false)} />}
+      {showStartNow && <StartNowModal onClose={() => setShowStartNow(false)} location="roi_calculator" />}
     </>
   );
 }

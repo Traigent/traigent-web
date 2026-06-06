@@ -404,7 +404,7 @@ function Act5Punch({ onComplete, startAtEnd = false, paused = false }) {
           Book a demo
         </a>
       </motion.div>
-      {showStartNow && <StartNowModal onClose={() => setShowStartNow(false)} />}
+      {showStartNow && <StartNowModal onClose={() => setShowStartNow(false)} location="story_act_5" />}
     </div>
   );
 }

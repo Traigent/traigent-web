@@ -1,8 +1,11 @@
-﻿import React from "react";
+﻿import React, { useState } from "react";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import InstallCommand from "../components/InstallCommand";
+import HubSpotStartNowForm from "../components/HubSpotStartNowForm";
+import { isUnlocked, markUnlocked } from "../lib/startNowGate";
+import { trackEvent } from "../lib/analytics";
 
 const createPageUrl = (path) => path;
 const SDK_SKILL_INSTALL_COMMAND = [
@@ -18,6 +21,16 @@ const SDK_SKILL_INSTALL_COMMAND = [
 ].join(" ");
 
 export default function GetStarted() {
+  // Gate the install commands behind the HubSpot form on first visit.
+  // Same 90-day localStorage memory as the Start Now modal so a visitor
+  // who unlocked there doesn't see the form again here, and vice versa.
+  const [unlocked, setUnlocked] = useState(() => isUnlocked());
+  const handleSubmitted = () => {
+    markUnlocked();
+    setUnlocked(true);
+    trackEvent("start_now_form_submitted", { location: "get_started_page" });
+  };
+
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       <Helmet>
@@ -40,6 +53,18 @@ export default function GetStarted() {
         <p className="text-lg text-slate-300 mb-10 max-w-2xl">
           Start bottom-up with the SDK, or start foundational with TVL. Either way: specify, evaluate, optimize, and apply—like software.
         </p>
+
+        {!unlocked && (
+          <div className="mb-10 p-6 rounded-xl bg-slate-900/60 border border-slate-800">
+            <h2 className="text-xl font-semibold mb-2">First, tell us where to send setup tips</h2>
+            <p className="text-slate-300 mb-4 max-w-3xl">
+              The install commands below appear as soon as you submit. We won't
+              email you more than once a month, and you can unsubscribe with one
+              click.
+            </p>
+            <HubSpotStartNowForm onSuccess={handleSubmitted} targetId="hs-form-getstarted" />
+          </div>
+        )}
 
         <div className="grid md:grid-cols-2 gap-6">
           <div className="p-6 rounded-xl bg-slate-900/60 border border-slate-800 flex flex-col">
@@ -65,11 +90,13 @@ export default function GetStarted() {
             <p className="text-slate-300 mb-4 flex-grow">
               Attach to your existing AI calls with a decorator, run governed optimization on real workloads, and apply the best config. The bundled <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">traigent quickstart</code> demo runs locally in mock mode — no API keys, no LLM provider calls — so you can validate the pipeline before pointing it at real LLMs.
             </p>
-            <InstallCommand
-              command='uv tool install "traigent[recommended]" && traigent quickstart'
-              secondary="Prefer pip? `pip install` is a drop-in replacement."
-              className="mb-4"
-            />
+            {unlocked && (
+              <InstallCommand
+                command='uv tool install "traigent[recommended]" && traigent quickstart'
+                secondary="Prefer pip? `pip install` is a drop-in replacement."
+                className="mb-4"
+              />
+            )}
             <div className="flex flex-wrap gap-3">
               <a
                 href="https://github.com/Traigent/Traigent"
@@ -89,10 +116,12 @@ export default function GetStarted() {
           <p className="text-slate-300 mb-4 max-w-3xl">
             Claude Code, Cursor, Codex, Gemini CLI and 30+ other agents pick up the Traigent skill bundle automatically. They&apos;ll guide you through dry-run-first setup, generate the eval dataset, and apply the best config — without you leaving your editor.
           </p>
-          <InstallCommand
-            command={SDK_SKILL_INSTALL_COMMAND}
-            secondary="Installs only the user-facing Traigent SDK skills. Internal review, PR, and security tools stay out of the bundle."
-          />
+          {unlocked && (
+            <InstallCommand
+              command={SDK_SKILL_INSTALL_COMMAND}
+              secondary="Installs only the user-facing Traigent SDK skills. Internal review, PR, and security tools stay out of the bundle."
+            />
+          )}
         </div>
 
         <div className="mt-12 p-6 rounded-xl bg-gradient-to-br from-indigo-600/20 to-purple-700/20 border border-white/10">
