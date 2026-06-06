@@ -4,11 +4,17 @@ import { HashRouter as Router } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import App from './App.jsx'
 import { initAnalytics } from './lib/analytics'
+import { subscribeConsent, hasMarketingConsent } from './lib/consent'
 import './index.css'
 
-// Initialize analytics once at app bootstrap. Becomes a no-op
-// until VITE_GA4_ID / VITE_CLARITY_ID are set in .env.
-initAnalytics()
+// Initialize analytics once at app bootstrap if consent is granted.
+// Otherwise, wait for consent to be granted.
+if (hasMarketingConsent()) {
+  initAnalytics()
+}
+subscribeConsent((granted) => {
+  if (granted) initAnalytics()
+})
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

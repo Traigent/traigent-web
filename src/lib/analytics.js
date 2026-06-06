@@ -14,6 +14,8 @@
 // Any var left unset turns its corresponding integration into a no-op.
 // ===================================================================
 
+import { hasMarketingConsent, subscribeConsent } from './consent';
+
 const GA4_ID = import.meta.env.VITE_GA4_ID;
 const CLARITY_ID = import.meta.env.VITE_CLARITY_ID;
 const HUBSPOT_PORTAL_ID = import.meta.env.VITE_HUBSPOT_PORTAL_ID;
@@ -25,6 +27,7 @@ let initialized = false;
 
 export function initAnalytics() {
   if (initialized || typeof window === "undefined") return;
+  if (!hasMarketingConsent()) return;
   initialized = true;
 
   // ---- Google Analytics 4 (gtag.js) ----
@@ -97,6 +100,7 @@ export function initAnalytics() {
 /** Fire on every route change. Call this from a router listener. */
 export function trackPageView(path) {
   if (typeof window === "undefined") return;
+  if (!hasMarketingConsent()) return;
   if (GA4_ID && window.gtag) {
     window.gtag("event", "page_view", {
       page_path: path,
@@ -118,6 +122,7 @@ export function trackPageView(path) {
  */
 export function trackEvent(name, params = {}) {
   if (typeof window === "undefined") return;
+  if (!hasMarketingConsent()) return;
   if (GA4_ID && window.gtag) {
     window.gtag("event", name, params);
   }
@@ -149,6 +154,7 @@ export function trackEvent(name, params = {}) {
  */
 export function identify(userId, traits = {}) {
   if (typeof window === "undefined") return;
+  if (!hasMarketingConsent()) return;
   if (!userId && !traits.email) {
     if (import.meta.env.DEV) {
       // eslint-disable-next-line no-console

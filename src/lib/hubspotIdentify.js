@@ -13,7 +13,10 @@
 // Worker on every page load. A change in identity is rare; an hour stale
 // is fine.
 
+import { hasMarketingConsent } from './consent';
+
 const CHECK_URL = import.meta.env.VITE_HSUTK_CHECK_URL || "";
+const IDENTIFY_ENABLED = import.meta.env.VITE_HSUTK_IDENTIFY_ENABLED === 'true';
 const CACHE_KEY = "traigent_hsutk_check";
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
 const REQUEST_TIMEOUT_MS = 1500;
@@ -56,6 +59,8 @@ function writeCache(utk, result) {
  * decide — show the form".
  */
 export async function checkKnownContact() {
+  if (!IDENTIFY_ENABLED) return null;
+  if (!hasMarketingConsent()) return null;
   if (!CHECK_URL) return null;
   const utk = readHubSpotCookie();
   if (!utk) return { known: false };

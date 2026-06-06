@@ -28,10 +28,13 @@ import OptimizationDemo from './pages/OptimizationDemo'
 import StoryMovie from './pages/StoryMovie'
 import Layout from './layout'
 import ExternalRedirect from './components/ExternalRedirect'
+import CookieConsent from './components/CookieConsent'
 
 export default function App() {
   return (
-    <Routes>
+    <>
+      <CookieConsent />
+      <Routes>
       <Route path="table-demo" element={<TableDemo />} />
       {/* Pitch decks & outreach one-pager — no layout/nav, full-bleed slides */}
       <Route path="pitch" element={<Pitch />} />
@@ -77,5 +80,6 @@ export default function App() {
         <Route path="academy/statistical-se-workshop" element={<StatisticalSEWorkshop />} />
       </Route>
     </Routes>
+    </>
   )
 } 
