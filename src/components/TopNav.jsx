@@ -25,17 +25,17 @@ const PITCH_DECK_OPTIONS = [
   {
     label: "Extended product presentation",
     desc: "Full product deck + live demo (no investor section)",
-    href: "/#/pitch-short-2/extended-product-presentation",
+    href: "/#/extended-product-presentation",
   },
   {
     label: "Short summary",
     desc: "Slides 1–5 + live demo — the headline arc",
-    href: "/#/pitch-short-2/short-summary",
+    href: "/#/short-summary",
   },
   {
     label: "Market opportunity",
     desc: "Investor section + live demo",
-    href: "/#/pitch-short-2/market-opportunity",
+    href: "/#/market-opportunity",
   },
   {
     label: "Knob explorer",
@@ -55,12 +55,12 @@ const PITCH_DECK_OPTIONS = [
   {
     label: "Agent Knobs 101 (3-min read)",
     desc: "Primer · three concrete knobs, what they do, why they matter",
-    href: "/#/blog/agent-knobs-101",
+    href: "/#/agent-knobs-101",
   },
   {
     label: "Implementing Agent Knobs (18-min read)",
     desc: "Reference · every knob with effect + code you can paste in",
-    href: "/#/blog/implementing-agent-knobs",
+    href: "/#/implementing-agent-knobs",
   },
 ];
 

@@ -190,7 +190,7 @@ function resolveSlides(rangeParam, excludeParam, allSlides) {
   return allSlides;
 }
 
-export default function PitchShort2() {
+export default function PitchShort2({ forcedPreset } = {}) {
   usePageView();
   useKnownContactNotify({
     notify: notifyPitchDeckViewed,
@@ -199,7 +199,10 @@ export default function PitchShort2() {
   });
   const scale = useViewportScale();
   useRemoveChatWidget();
-  const { preset } = useParams();
+  // forcedPreset lets App.jsx mount this deck at a short top-level route
+  // (e.g. /extended-product-presentation) without the /pitch-short-2/ prefix.
+  const { preset: urlPreset } = useParams();
+  const preset = forcedPreset || urlPreset;
   const [searchParams] = useSearchParams();
   const slidesToRender = useMemo(() => {
     // Named preset on the URL path (e.g. /pitch-short-2/short-summary) wins

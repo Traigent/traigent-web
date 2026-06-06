@@ -43,6 +43,10 @@ export default function App() {
       <Route path="pitch-short" element={<PitchShort />} />
       <Route path="pitch-short-2" element={<PitchShort2 />} />
       <Route path="pitch-short-2/:preset" element={<PitchShort2 />} />
+      {/* Short, shareable aliases for outreach (no /pitch-short-2/ prefix) */}
+      <Route path="extended-product-presentation" element={<PitchShort2 forcedPreset="extended-product-presentation" />} />
+      <Route path="short-summary" element={<PitchShort2 forcedPreset="short-summary" />} />
+      <Route path="market-opportunity" element={<PitchShort2 forcedPreset="market-opportunity" />} />
       <Route path="knob-explorer" element={<KnobExplorer />} />
       <Route path="demo" element={<OptimizationDemo />} />
       <Route path="story" element={<StoryMovie />} />
@@ -55,6 +59,9 @@ export default function App() {
         <Route path="value-proposition" element={<ValueProposition />} />
         <Route path="blog" element={<Blog />} />
         <Route path="blog/:slug" element={<BlogPost />} />
+        {/* Short, shareable aliases for outreach (no /blog/ prefix) */}
+        <Route path="agent-knobs-101" element={<BlogPost forcedSlug="agent-knobs-101" />} />
+        <Route path="implementing-agent-knobs" element={<BlogPost forcedSlug="implementing-agent-knobs" />} />
         <Route path="research" element={<Research />} />
         <Route path="roi" element={<ROICalculator />} />
         <Route path="ttm" element={<TTMCalculator />} />
