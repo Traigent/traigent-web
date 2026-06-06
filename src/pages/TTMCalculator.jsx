@@ -7,6 +7,8 @@ import { trackEvent } from "../lib/analytics";
 import { useSharedSetting } from "../lib/useSharedSetting";
 import { useCustomSearchSpace } from "../lib/useCustomSearchSpace";
 import CalculatorTopBar from "../components/CalculatorTopBar";
+import { useKnownContactNotify } from "../lib/useKnownContactNotify";
+import { notifyTtmCalcViewed } from "../lib/hubspotForms";
 
 const BLUE = "#1A6BF5";
 const BLUE_LIGHT = "#4D8EF8";
@@ -168,6 +170,11 @@ function otherDimensionsExamples() {
 }
 
 export default function TTMCalculator() {
+  useKnownContactNotify({
+    notify: notifyTtmCalcViewed,
+    location: "ttm_calculator_page",
+    eventName: "ttm_calc_viewed_known",
+  });
   const [models, setModels] = useState(6);
   const [prompts, setPrompts] = useState(3);
   const [maxTokensVariants, setMaxTokensVariants] = useState(3);

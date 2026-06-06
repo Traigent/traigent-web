@@ -8,10 +8,16 @@
 const HUBSPOT_PORTAL_ID = "148486827";
 const STARTNOW_FORM_ID = "35384a3e-7386-45b0-924e-84e5d6f637e4";
 const PORTAL_FORM_ID = "692b03aa-e984-411c-8792-2e86baed2614";
-// /story is intentionally NOT gated — anyone can watch. We still want a
-// notification when a *known* contact watches it, so a known-contact
-// pageview fires a silent submission to this form.
+// Tracking-only forms — surfaces are intentionally NOT gated (anyone can
+// view), but a known HubSpot contact viewing fires a silent submission so
+// the founder gets an intent notification. One form per surface so the
+// HubSpot notification surfaces the right context.
 const STORY_FORM_ID = "3af25090-75c0-4291-8889-3221ea0e3f2d";
+const PRICING_FORM_ID = "57287a7b-6d54-4fcd-8eae-6336100ca57e";
+const TTM_FORM_ID = "157b3560-f3c7-428e-af44-73d9326d839f";
+const ROI_FORM_ID = "b1a8947a-65bf-4da1-a2a9-7c6748d43d25";
+const KNOB_EXPLORER_FORM_ID = "a9bc858e-add8-4094-995a-188ae08fd56e";
+const PITCH_DECK_FORM_ID = "728ef1b3-0a23-476b-9a3d-bcae6ec6ba64";
 
 function readHubSpotCookie() {
   if (typeof document === "undefined") return "";
@@ -63,6 +69,26 @@ export function notifyPortalRepeat({ email, location }) {
 
 export function notifyStoryWatched({ email, location }) {
   return notifyRepeatVisit({ email, formId: STORY_FORM_ID, location, label: "Story watched" });
+}
+
+export function notifyPricingViewed({ email, location }) {
+  return notifyRepeatVisit({ email, formId: PRICING_FORM_ID, location, label: "Pricing intent" });
+}
+
+export function notifyTtmCalcViewed({ email, location }) {
+  return notifyRepeatVisit({ email, formId: TTM_FORM_ID, location, label: "TTM calculator" });
+}
+
+export function notifyRoiCalcViewed({ email, location }) {
+  return notifyRepeatVisit({ email, formId: ROI_FORM_ID, location, label: "ROI calculator" });
+}
+
+export function notifyKnobExplorerViewed({ email, location }) {
+  return notifyRepeatVisit({ email, formId: KNOB_EXPLORER_FORM_ID, location, label: "Knob Explorer" });
+}
+
+export function notifyPitchDeckViewed({ email, location }) {
+  return notifyRepeatVisit({ email, formId: PITCH_DECK_FORM_ID, location, label: "Slide deck viewed" });
 }
 
 export { PORTAL_FORM_ID };

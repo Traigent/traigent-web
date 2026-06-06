@@ -11,6 +11,8 @@ import { useParams, useSearchParams } from "react-router-dom";
 import { SHORT_SLIDES } from "./PitchShort";
 import { OnePager2Slide } from "./OnePager2";
 import BrandMark from "../components/BrandMark";
+import { useKnownContactNotify } from "../lib/useKnownContactNotify";
+import { notifyPitchDeckViewed } from "../lib/hubspotForms";
 
 // Named presets — URLs like /pitch-short-2/extended-product-presentation map
 // onto specific range/exclude filters here, so each deck has a readable URL
@@ -188,6 +190,11 @@ function resolveSlides(rangeParam, excludeParam, allSlides) {
 }
 
 export default function PitchShort2() {
+  useKnownContactNotify({
+    notify: notifyPitchDeckViewed,
+    location: "pitch_short_2",
+    eventName: "pitch_deck_viewed_known",
+  });
   const scale = useViewportScale();
   useRemoveChatWidget();
   const { preset } = useParams();

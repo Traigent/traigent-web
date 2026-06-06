@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import { trackEvent } from "../lib/analytics";
 import StartNowModal from "../components/StartNowModal";
+import { useKnownContactNotify } from "../lib/useKnownContactNotify";
+import { notifyPricingViewed } from "../lib/hubspotForms";
 
 const BLUE = "#1A6BF5";
 const BLUE_LIGHT = "#4D8EF8";
@@ -241,6 +243,11 @@ function FeatureRow({ label, free, starter, pro, enterprise, section = false }) 
 // ============================================================================
 export default function Pricing() {
   const [showStartNow, setShowStartNow] = useState(false);
+  useKnownContactNotify({
+    notify: notifyPricingViewed,
+    location: "pricing_page",
+    eventName: "pricing_viewed_known",
+  });
   return (
     <div className="bg-[#080808] text-white min-h-screen">
       <Helmet>

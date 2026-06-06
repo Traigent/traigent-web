@@ -6,6 +6,8 @@ import { Helmet } from "react-helmet-async";
 import { ConvergenceDiagram, KillerStatsGrid, ThreeProductsGrid } from "./pitch/shared";
 import { OnePager2Slide } from "./OnePager2";
 import BrandMark from "../components/BrandMark";
+import { useKnownContactNotify } from "../lib/useKnownContactNotify";
+import { notifyPitchDeckViewed } from "../lib/hubspotForms";
 
 // ===================================================================
 // Brand tokens
@@ -1390,5 +1392,10 @@ export function PitchDeck({ slides }) {
 // (e.g. /pitch-short) compose PitchDeck with their own slides arrays.
 // ===================================================================
 export default function PitchFull() {
+  useKnownContactNotify({
+    notify: notifyPitchDeckViewed,
+    location: "pitch_full",
+    eventName: "pitch_deck_viewed_known",
+  });
   return <PitchDeck slides={FULL_SLIDES} />;
 }
