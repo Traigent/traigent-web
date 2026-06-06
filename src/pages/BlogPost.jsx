@@ -100,8 +100,11 @@ const mdComponents = {
   ),
 };
 
-export default function BlogPost() {
-  const { slug } = useParams();
+export default function BlogPost({ forcedSlug } = {}) {
+  const { slug: urlSlug } = useParams();
+  // forcedSlug lets App.jsx mount a BlogPost at a short top-level route
+  // (/agent-knobs-101) without needing the /blog/ prefix in the URL.
+  const slug = forcedSlug || urlSlug;
   const post = getPostBySlug(slug);
 
   if (!post) return <Navigate to="/blog" replace />;
