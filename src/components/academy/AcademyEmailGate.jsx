@@ -1,5 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { trackEvent } from "../../lib/analytics";
+
+// Same 24h throttle window as the Start Now repeat-notify, so a repeat
+// visitor never triggers more than one HubSpot notification per day per
+// surface. The academy gate stores its own entry per course.
+const REPEAT_NOTIFY_THROTTLE_MS = 24 * 60 * 60 * 1000;
 
 // Configuration read at build time. The Forms API is CORS-enabled and our
 // CSP already allows api.hsforms.com via the *.hsforms.com entry.
@@ -7,9 +12,38 @@ const HUBSPOT_PORTAL_ID = import.meta.env.VITE_HUBSPOT_PORTAL_ID;
 const ACADEMY_FORM_ID = import.meta.env.VITE_HUBSPOT_ACADEMY_FORM_ID;
 
 // LocalStorage key — namespaced per course so different academy modules each
-// gate independently. Value is the email the user submitted.
+// gate independently. Value is JSON { email, ts, lastNotifiedTs }.
 function storageKey(courseSlug) {
   return `traigent_academy_unlock:${courseSlug}`;
+}
+
+function readUnlockEntry(courseSlug) {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(storageKey(courseSlug));
+    if (!raw) return null;
+    // Backward compat: old format was the raw email string (or "1").
+    if (!raw.startsWith("{")) {
+      return { email: raw === "1" ? "" : raw, ts: 0, lastNotifiedTs: 0 };
+    }
+    const parsed = JSON.parse(raw);
+    return {
+      email: typeof parsed.email === "string" ? parsed.email : "",
+      ts: Number(parsed.ts) || 0,
+      lastNotifiedTs: Number(parsed.lastNotifiedTs) || 0,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function writeUnlockEntry(courseSlug, entry) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(storageKey(courseSlug), JSON.stringify(entry));
+  } catch {
+    /* private mode — soft-degrade */
+  }
 }
 
 // hubspotutk cookie is set by the HubSpot tracking script (loaded site-wide
@@ -94,14 +128,30 @@ function isBlockedEmailDomainError(status, body) {
  */
 export default function AcademyEmailGate({ courseSlug, courseTitle, formId, children }) {
   const effectiveFormId = formId || ACADEMY_FORM_ID;
-  const [unlocked, setUnlocked] = useState(() => {
-    if (typeof window === "undefined") return false;
-    try {
-      return !!window.localStorage.getItem(storageKey(courseSlug));
-    } catch {
-      return false;
-    }
-  });
+  const [unlocked, setUnlocked] = useState(() => !!readUnlockEntry(courseSlug));
+
+  // When an already-unlocked visitor reopens a course, silently re-submit
+  // their stored email to HubSpot — gives the founder a notification that
+  // the same person came back. Throttled to once per 24h per course.
+  useEffect(() => {
+    if (!unlocked) return;
+    const entry = readUnlockEntry(courseSlug);
+    if (!entry || !entry.email) return;
+    const now = Date.now();
+    if (now - entry.lastNotifiedTs < REPEAT_NOTIFY_THROTTLE_MS) return;
+    // Inline the configured check — `isConfigured` is declared after the
+    // early-return below, so it isn't in scope when unlocked === true.
+    if (!HUBSPOT_PORTAL_ID || !effectiveFormId) return;
+    writeUnlockEntry(courseSlug, { ...entry, lastNotifiedTs: now });
+    // Fire and forget — the unlock flow doesn't depend on it succeeding.
+    submitToHubSpot({
+      email: entry.email,
+      courseTitle: `${courseTitle} (repeat visit)`,
+      formId: effectiveFormId,
+    }).catch(() => {});
+    trackEvent("academy_repeat_visit", { course: courseSlug });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
@@ -123,11 +173,13 @@ export default function AcademyEmailGate({ courseSlug, courseTitle, formId, chil
         throw new Error("HubSpot form not configured");
       }
       await submitToHubSpot({ email, courseTitle, formId: effectiveFormId });
-      try {
-        window.localStorage.setItem(storageKey(courseSlug), email || "1");
-      } catch {
-        /* private mode — soft-degrade */
-      }
+      writeUnlockEntry(courseSlug, {
+        email,
+        ts: Date.now(),
+        // First-submit IS the first notification — stamp it so the repeat
+        // useEffect doesn't immediately re-fire on the same render cycle.
+        lastNotifiedTs: Date.now(),
+      });
       trackEvent("academy_email_submitted", { course: courseSlug });
       setUnlocked(true);
     } catch (err) {

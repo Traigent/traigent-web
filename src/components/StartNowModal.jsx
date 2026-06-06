@@ -3,7 +3,13 @@ import { useEffect, useState } from "react";
 import { X, ArrowRight, Github } from "lucide-react";
 import InstallCommand from "./InstallCommand";
 import HubSpotStartNowForm from "./HubSpotStartNowForm";
-import { isUnlocked, markUnlocked } from "../lib/startNowGate";
+import {
+  isUnlocked,
+  markUnlocked,
+  getUnlockedEmail,
+  shouldNotifyRepeatVisit,
+} from "../lib/startNowGate";
+import { notifyStartNowRepeat } from "../lib/hubspotForms";
 import { trackEvent } from "../lib/analytics";
 
 /**
@@ -32,8 +38,24 @@ export default function StartNowModal({ onClose, location = "unknown" }) {
     };
   }, [onClose]);
 
-  const handleSubmitted = () => {
-    markUnlocked();
+  // When an already-unlocked visitor reopens the modal, silently re-submit
+  // their stored email to HubSpot so the founder gets a notification that
+  // they came back. Throttled to once per 24h per visitor (see
+  // shouldNotifyRepeatVisit in startNowGate.js) so the inbox stays sane.
+  useEffect(() => {
+    if (!unlocked) return;
+    if (!shouldNotifyRepeatVisit()) return;
+    const email = getUnlockedEmail();
+    if (!email) return;
+    notifyStartNowRepeat({ email, location });
+    trackEvent("start_now_repeat_visit", { location });
+    // We only want this to fire on mount when the modal opens unlocked,
+    // never re-fire on re-render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleSubmitted = (email) => {
+    markUnlocked(email);
     setUnlocked(true);
     trackEvent("start_now_form_submitted", { location });
   };

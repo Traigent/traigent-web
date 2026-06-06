@@ -10,6 +10,35 @@ const HUBSPOT_REGION = "eu1";
 
 let scriptPromise = null;
 
+// HubSpot has shipped several shapes for submissionValues over the years.
+// Pluck the email out across all of them defensively.
+function extractEmail(message) {
+  if (!message || !message.data) return "";
+  const d = message.data;
+  if (typeof d.email === "string") return d.email;
+  if (d.submissionValues && typeof d.submissionValues.email === "string") {
+    return d.submissionValues.email;
+  }
+  if (Array.isArray(d.submissionValues)) {
+    const found = d.submissionValues.find((f) => f && f.name === "email");
+    if (found && typeof found.value === "string") return found.value;
+  }
+  return "";
+}
+
+function extractEmailFromCallbackData(data) {
+  if (!data) return "";
+  if (typeof data.email === "string") return data.email;
+  if (data.submissionValues && typeof data.submissionValues.email === "string") {
+    return data.submissionValues.email;
+  }
+  if (Array.isArray(data.submissionValues)) {
+    const found = data.submissionValues.find((f) => f && f.name === "email");
+    if (found && typeof found.value === "string") return found.value;
+  }
+  return "";
+}
+
 /** Load the HubSpot embed script once and cache the promise. */
 function loadHubSpotScript() {
   if (scriptPromise) return scriptPromise;
@@ -59,7 +88,7 @@ export default function HubSpotStartNowForm({ onSuccess, targetId = "hs-start-no
       if (d.eventName === "onFormSubmitted") {
         // eslint-disable-next-line no-console
         console.debug("[hs-form] postMessage onFormSubmitted", d);
-        onSuccessRef.current?.();
+        onSuccessRef.current?.(extractEmail(d));
       }
     };
     window.addEventListener("message", handleHsMessage);
@@ -83,10 +112,10 @@ export default function HubSpotStartNowForm({ onSuccess, targetId = "hs-start-no
             // eslint-disable-next-line no-console
             console.debug("[hs-form] onFormSubmit (click)");
           },
-          onFormSubmitted: () => {
+          onFormSubmitted: (_form, data) => {
             // eslint-disable-next-line no-console
-            console.debug("[hs-form] inline onFormSubmitted");
-            onSuccessRef.current?.();
+            console.debug("[hs-form] inline onFormSubmitted", data);
+            onSuccessRef.current?.(extractEmailFromCallbackData(data));
           },
         });
         setStatus("ready");

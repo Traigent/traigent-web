@@ -1,10 +1,16 @@
-﻿import React, { useState } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import InstallCommand from "../components/InstallCommand";
 import HubSpotStartNowForm from "../components/HubSpotStartNowForm";
-import { isUnlocked, markUnlocked } from "../lib/startNowGate";
+import {
+  isUnlocked,
+  markUnlocked,
+  getUnlockedEmail,
+  shouldNotifyRepeatVisit,
+} from "../lib/startNowGate";
+import { notifyStartNowRepeat } from "../lib/hubspotForms";
 import { trackEvent } from "../lib/analytics";
 
 const createPageUrl = (path) => path;
@@ -32,8 +38,20 @@ export default function GetStarted() {
   // Same 90-day localStorage memory as the Start Now modal so a visitor
   // who unlocked there doesn't see the form again here, and vice versa.
   const [unlocked, setUnlocked] = useState(() => isUnlocked());
-  const handleSubmitted = () => {
-    markUnlocked();
+
+  // Repeat-visit notification — see StartNowModal for the rationale.
+  useEffect(() => {
+    if (!unlocked) return;
+    if (!shouldNotifyRepeatVisit()) return;
+    const email = getUnlockedEmail();
+    if (!email) return;
+    notifyStartNowRepeat({ email, location: "get_started_page" });
+    trackEvent("start_now_repeat_visit", { location: "get_started_page" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleSubmitted = (email) => {
+    markUnlocked(email);
     setUnlocked(true);
     trackEvent("start_now_form_submitted", { location: "get_started_page" });
   };
