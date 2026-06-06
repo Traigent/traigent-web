@@ -20,10 +20,11 @@ PATH="$HOME/.local/bin:$HOME/.cargo/bin${ORIGINAL_PATH:+:$ORIGINAL_PATH}"
 export PATH
 
 # Keep the installer default aligned with the packaged quickstart dependencies.
-# Switch this to traigent[recommended] once that extras bundle ships.
-PACKAGE="traigent[integrations]"
+# traigent[recommended] shipped in 0.12.0 (= integrations + analytics + hybrid
+# + visualization + bayesian + pydanticai) — the intended onboarding bundle.
+PACKAGE="traigent[recommended]"
 if [ -n "${TRAIGENT_VERSION:-}" ]; then
-  PACKAGE="traigent[integrations]==${TRAIGENT_VERSION}"
+  PACKAGE="traigent[recommended]==${TRAIGENT_VERSION}"
 fi
 
 ATTEMPT_SUMMARY=""
