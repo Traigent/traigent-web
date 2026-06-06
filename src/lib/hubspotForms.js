@@ -7,6 +7,7 @@
 
 const HUBSPOT_PORTAL_ID = "148486827";
 const STARTNOW_FORM_ID = "35384a3e-7386-45b0-924e-84e5d6f637e4";
+const PORTAL_FORM_ID = "692b03aa-e984-411c-8792-2e86baed2614";
 
 function readHubSpotCookie() {
   if (typeof document === "undefined") return "";
@@ -15,12 +16,18 @@ function readHubSpotCookie() {
 }
 
 /**
- * Silently re-submit the Start Now form for an already-known visitor. Used
- * to fire a HubSpot notification ("amir@traigent.ai came back") without
+ * Silently re-submit a HubSpot form for an already-known visitor — fires
+ * the form's notification workflow ("amir@traigent.ai came back") without
  * making the visitor fill the form again. No-op when email is empty.
+ *
+ * @param {object} opts
+ * @param {string} opts.email   — visitor email
+ * @param {string} opts.formId  — HubSpot form GUID to submit to
+ * @param {string} opts.location — surface (topnav / homepage_hero / etc)
+ * @param {string} opts.label    — short label for the pageName ("Start Now", "Portal")
  */
-export async function notifyStartNowRepeat({ email, location, formId = STARTNOW_FORM_ID }) {
-  if (!email) return;
+export async function notifyRepeatVisit({ email, formId, location, label }) {
+  if (!email || !formId) return;
   const url = `https://api.hsforms.com/submissions/v3/integration/submit/${HUBSPOT_PORTAL_ID}/${formId}`;
   try {
     await fetch(url, {
@@ -32,7 +39,7 @@ export async function notifyStartNowRepeat({ email, location, formId = STARTNOW_
         context: {
           hutk: readHubSpotCookie(),
           pageUri: typeof window !== "undefined" ? window.location.href : "",
-          pageName: `Traigent — Start Now (repeat: ${location || "unknown"})`,
+          pageName: `Traigent — ${label || "Repeat visit"} (repeat: ${location || "unknown"})`,
         },
       }),
     });
@@ -40,3 +47,14 @@ export async function notifyStartNowRepeat({ email, location, formId = STARTNOW_
     // Silent — the unlock flow must continue even if HubSpot is unreachable.
   }
 }
+
+/** Convenience wrappers so call sites don't have to remember form IDs. */
+export function notifyStartNowRepeat({ email, location }) {
+  return notifyRepeatVisit({ email, formId: STARTNOW_FORM_ID, location, label: "Start Now" });
+}
+
+export function notifyPortalRepeat({ email, location }) {
+  return notifyRepeatVisit({ email, formId: PORTAL_FORM_ID, location, label: "Portal" });
+}
+
+export { PORTAL_FORM_ID };
