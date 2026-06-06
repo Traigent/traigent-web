@@ -16,6 +16,13 @@ const SDK_SKILL_INSTALL_COMMAND = [
   "--skill traigent-debugging",
   "--skill traigent-integrations",
 ].join(" ");
+const TERMINAL_INSTALL_COMMAND = "curl -fsSL https://traigent.ai/install.sh | sh";
+// Switch these defaults to traigent[recommended] once that extras bundle ships.
+const MANUAL_INSTALL_COMMANDS = [
+  "uv tool install 'traigent[integrations]'",
+  "pipx install 'traigent[integrations]'",
+  "pip install 'traigent[integrations]'",
+];
 
 export default function GetStarted() {
   return (
@@ -62,14 +69,53 @@ export default function GetStarted() {
 
           <div className="p-6 rounded-xl bg-slate-900/60 border border-slate-800 flex flex-col">
             <h2 className="text-xl font-semibold mb-2">Traigent SDK</h2>
-            <p className="text-slate-300 mb-4 flex-grow">
-              Attach to your existing AI calls with a decorator, run governed optimization on real workloads, and apply the best config. The bundled <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">traigent quickstart</code> demo runs locally in mock mode — no API keys, no LLM provider calls — so you can validate the pipeline before pointing it at real LLMs.
+            <p className="text-slate-300 mb-4">
+              Install the published Python SDK from your terminal. The bootstrap is a thin shell script that installs <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">traigent[integrations]</code>, verifies <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">traigent info</code>, and never prompts for or reads credentials. Today&apos;s SDK uses an API key from <a href="https://portal.traigent.ai" target="_blank" rel="noopener noreferrer" className="text-blue-300 hover:text-blue-200 underline underline-offset-4">portal.traigent.ai</a>; when <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">traigent onboard</code> ships, the installer will detect it.
             </p>
             <InstallCommand
-              command='uv tool install "traigent[recommended]" && traigent quickstart'
-              secondary="Prefer pip? `pip install` is a drop-in replacement."
+              command={TERMINAL_INSTALL_COMMAND}
+              secondary="Set TRAIGENT_VERSION before the command to pin a published SDK version."
               className="mb-4"
             />
+            <div className="border-t border-slate-800 pt-4 mb-4">
+              <h3 className="text-sm font-semibold text-slate-200 mb-2">or install manually</h3>
+              <div className="space-y-1 font-mono text-sm text-slate-300">
+                {MANUAL_INSTALL_COMMANDS.map((command) => (
+                  <div key={command}>
+                    <span className="text-slate-500 select-none">$ </span>
+                    <code>{command}</code>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="border-t border-slate-800 pt-4 mb-5 flex-grow">
+              <h3 className="text-sm font-semibold text-slate-200 mb-2">next steps</h3>
+              <div className="space-y-3 text-sm text-slate-300">
+                <div>
+                  <div className="text-slate-400 mb-1">If your installed SDK includes onboard:</div>
+                  <div className="font-mono">
+                    <span className="text-slate-500 select-none">$ </span>
+                    <code>traigent onboard</code>
+                  </div>
+                </div>
+                <div>
+                  <div className="text-slate-400 mb-1">Current SDK fallback:</div>
+                  <div className="space-y-1 font-mono">
+                    <div>
+                      <span className="text-slate-500 select-none">$ </span>
+                      <code>traigent auth login</code>
+                    </div>
+                    <div>
+                      <span className="text-slate-500 select-none">$ </span>
+                      <code>python -m traigent.examples.quickstart</code>
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-2">
+                    Paste an API key from the portal when prompted; the packaged quickstart is a zero-cost mock run.
+                  </p>
+                </div>
+              </div>
+            </div>
             <div className="flex flex-wrap gap-3">
               <a
                 href="https://github.com/Traigent/Traigent"
@@ -87,7 +133,7 @@ export default function GetStarted() {
         <div className="mt-10 p-6 rounded-xl bg-slate-900/60 border border-slate-800">
           <h2 className="text-xl font-semibold mb-2">Drive it from your coding agent</h2>
           <p className="text-slate-300 mb-4 max-w-3xl">
-            Claude Code, Cursor, Codex, Gemini CLI and 30+ other agents pick up the Traigent skill bundle automatically. They&apos;ll guide you through dry-run-first setup, generate the eval dataset, and apply the best config — without you leaving your editor.
+            Claude Code, Cursor, Codex, Gemini CLI and 30+ other agents pick up the Traigent skill bundle automatically. They&apos;ll guide you through dry-run-first setup, generate the eval dataset, and apply the best config — without you leaving your editor. Coding agent? Point it at <a href="/agent.md" className="text-blue-300 hover:text-blue-200 underline underline-offset-4">traigent.ai/agent.md</a>.
           </p>
           <InstallCommand
             command={SDK_SKILL_INSTALL_COMMAND}
