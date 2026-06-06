@@ -11,6 +11,7 @@ import {
   shouldNotifyRepeatVisit,
 } from "../lib/startNowGate";
 import { notifyStartNowRepeat } from "../lib/hubspotForms";
+import { checkKnownContact } from "../lib/hubspotIdentify";
 import { trackEvent } from "../lib/analytics";
 
 const createPageUrl = (path) => path;
@@ -47,6 +48,23 @@ export default function GetStarted() {
     if (!email) return;
     notifyStartNowRepeat({ email, location: "get_started_page" });
     trackEvent("start_now_repeat_visit", { location: "get_started_page" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Identity check via the hsutk Worker — auto-unlock known contacts.
+  useEffect(() => {
+    if (unlocked) return;
+    let cancelled = false;
+    checkKnownContact().then((result) => {
+      if (cancelled) return;
+      if (result && result.known && result.email) {
+        markUnlocked(result.email);
+        setUnlocked(true);
+        notifyStartNowRepeat({ email: result.email, location: "get_started_page" });
+        trackEvent("start_now_auto_unlocked", { location: "get_started_page" });
+      }
+    });
+    return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

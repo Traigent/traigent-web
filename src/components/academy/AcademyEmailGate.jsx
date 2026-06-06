@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { trackEvent } from "../../lib/analytics";
+import { checkKnownContact } from "../../lib/hubspotIdentify";
 
 // TEMP — set to 0 for end-to-end testing across all 3 gates. Bump back to
 // 60 * 60 * 1000 (1 hour) once Amir confirms repeat notifications land.
@@ -149,6 +150,35 @@ export default function AcademyEmailGate({ courseSlug, courseTitle, formId, chil
       formId: effectiveFormId,
     }).catch(() => {});
     trackEvent("academy_repeat_visit", { course: courseSlug });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Identity check via the hsutk Worker — auto-unlock known contacts for
+  // this course (they may have submitted Start Now, opened a meeting, or
+  // shown up via BCC linkage without ever touching this academy gate).
+  useEffect(() => {
+    if (unlocked) return;
+    if (!HUBSPOT_PORTAL_ID || !effectiveFormId) return;
+    let cancelled = false;
+    checkKnownContact().then((result) => {
+      if (cancelled) return;
+      if (!(result && result.known && result.email)) return;
+      writeUnlockEntry(courseSlug, {
+        email: result.email,
+        ts: Date.now(),
+        lastNotifiedTs: Date.now(),
+      });
+      // Fire the per-course re-notify so HubSpot sees "they came back
+      // for this course" specifically.
+      submitToHubSpot({
+        email: result.email,
+        courseTitle: `${courseTitle} (auto-unlock — known contact)`,
+        formId: effectiveFormId,
+      }).catch(() => {});
+      trackEvent("academy_auto_unlocked", { course: courseSlug });
+      setUnlocked(true);
+    });
+    return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const [email, setEmail] = useState("");
