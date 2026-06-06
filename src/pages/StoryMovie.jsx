@@ -19,6 +19,9 @@ import { ArrowLeft, ArrowRight, ChevronDown, ChevronUp, Pause, Play, RotateCcw, 
 import { useRemoveChatWidget } from "../lib/useRemoveChatWidget";
 import ChatKillerStyle from "../lib/ChatKillerStyle";
 import StartNowModal from "../components/StartNowModal";
+import { checkKnownContact } from "../lib/hubspotIdentify";
+import { notifyStoryWatched } from "../lib/hubspotForms";
+import { trackEvent } from "../lib/analytics";
 
 // Same CTA URL as the homepage TopNav — HubSpot meeting booking.
 const DEMO_BOOKING_URL = "https://meetings-eu1.hubspot.com/amir8";
@@ -815,6 +818,21 @@ export default function StoryMovie() {
   const [actElapsedMs, setActElapsedMs] = useState(0);
   const advancingRef = useRef(false);
   useRemoveChatWidget();
+
+  // /story is intentionally ungated — no email form. We still want a
+  // notification when a known HubSpot contact watches it (Contact Us
+  // submitter, meeting booker, BCC-linked lead). Identity check fires once
+  // on mount; if known, silently re-submits to the Story-watched form.
+  useEffect(() => {
+    let cancelled = false;
+    checkKnownContact().then((result) => {
+      if (cancelled) return;
+      if (!(result && result.known && result.email)) return;
+      notifyStoryWatched({ email: result.email, location: "story_page" });
+      trackEvent("story_watched_known", { location: "story_page" });
+    });
+    return () => { cancelled = true; };
+  }, []);
 
   const start = useCallback(() => {
     advancingRef.current = false;

@@ -8,6 +8,10 @@
 const HUBSPOT_PORTAL_ID = "148486827";
 const STARTNOW_FORM_ID = "35384a3e-7386-45b0-924e-84e5d6f637e4";
 const PORTAL_FORM_ID = "692b03aa-e984-411c-8792-2e86baed2614";
+// /story is intentionally NOT gated — anyone can watch. We still want a
+// notification when a *known* contact watches it, so a known-contact
+// pageview fires a silent submission to this form.
+const STORY_FORM_ID = "3af25090-75c0-4291-8889-3221ea0e3f2d";
 
 function readHubSpotCookie() {
   if (typeof document === "undefined") return "";
@@ -55,6 +59,10 @@ export function notifyStartNowRepeat({ email, location }) {
 
 export function notifyPortalRepeat({ email, location }) {
   return notifyRepeatVisit({ email, formId: PORTAL_FORM_ID, location, label: "Portal" });
+}
+
+export function notifyStoryWatched({ email, location }) {
+  return notifyRepeatVisit({ email, formId: STORY_FORM_ID, location, label: "Story watched" });
 }
 
 export { PORTAL_FORM_ID };

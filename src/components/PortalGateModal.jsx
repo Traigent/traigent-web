@@ -9,6 +9,7 @@ import {
   shouldNotifyRepeatVisit,
 } from "../lib/startNowGate";
 import { notifyPortalRepeat, PORTAL_FORM_ID } from "../lib/hubspotForms";
+import { checkKnownContact } from "../lib/hubspotIdentify";
 import { trackEvent } from "../lib/analytics";
 
 const PORTAL_URL = "https://portal.traigent.ai";
@@ -29,6 +30,7 @@ const PORTAL_URL = "https://portal.traigent.ai";
  */
 export default function PortalGateModal({ onClose, location = "unknown" }) {
   const [unlocked, setUnlocked] = useState(() => isUnlocked());
+  const [checkingIdentity, setCheckingIdentity] = useState(() => !isUnlocked());
 
   useEffect(() => {
     const onKey = (e) => {
@@ -42,10 +44,8 @@ export default function PortalGateModal({ onClose, location = "unknown" }) {
     };
   }, [onClose]);
 
-  // If the modal opens already unlocked (user previously submitted Start Now
-  // or Portal), fire the silent portal re-notify so the founder sees
-  // "they came back for the portal". Throttled by shouldNotifyRepeatVisit
-  // so we don't spam on every reopen.
+  // If the modal opens already unlocked, fire the silent portal re-notify
+  // so the founder sees "they came back for the portal". Throttled.
   useEffect(() => {
     if (!unlocked) return;
     if (!shouldNotifyRepeatVisit()) return;
@@ -53,6 +53,24 @@ export default function PortalGateModal({ onClose, location = "unknown" }) {
     if (!email) return;
     notifyPortalRepeat({ email, location });
     trackEvent("portal_repeat_visit", { location });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Identity check via Cloudflare Worker (Contact Us / meeting / BCC etc).
+  useEffect(() => {
+    if (unlocked) return;
+    let cancelled = false;
+    checkKnownContact().then((result) => {
+      if (cancelled) return;
+      if (result && result.known && result.email) {
+        markUnlocked(result.email);
+        setUnlocked(true);
+        notifyPortalRepeat({ email: result.email, location });
+        trackEvent("portal_auto_unlocked", { location });
+      }
+      setCheckingIdentity(false);
+    });
+    return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -89,13 +107,26 @@ export default function PortalGateModal({ onClose, location = "unknown" }) {
           <X className="w-5 h-5" />
         </button>
 
-        {unlocked ? (
+        {checkingIdentity ? (
+          <CheckingView />
+        ) : unlocked ? (
           <UnlockedView onOpenPortal={handleOpenPortal} />
         ) : (
           <LockedView onSubmitted={handleSubmitted} />
         )}
       </div>
     </div>
+  );
+}
+
+function CheckingView() {
+  return (
+    <>
+      <h2 id="portal-gate-title" className="text-2xl font-bold text-white mb-2">
+        Open the Traigent portal
+      </h2>
+      <p className="text-slate-400 mb-6 animate-pulse">Checking your access…</p>
+    </>
   );
 }
 

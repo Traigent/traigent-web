@@ -10,6 +10,7 @@ import {
   shouldNotifyRepeatVisit,
 } from "../lib/startNowGate";
 import { notifyStartNowRepeat } from "../lib/hubspotForms";
+import { checkKnownContact } from "../lib/hubspotIdentify";
 import { trackEvent } from "../lib/analytics";
 
 /**
@@ -25,6 +26,10 @@ import { trackEvent } from "../lib/analytics";
 export default function StartNowModal({ onClose, location = "unknown" }) {
   // Initialize from localStorage so repeat visitors skip the form.
   const [unlocked, setUnlocked] = useState(() => isUnlocked());
+  // Briefly check whether the hubspotutk cookie maps to a known HubSpot
+  // contact (Contact Us submitter, meeting booker, BCC'd lead, etc.). If
+  // it does, auto-unlock without showing the form.
+  const [checkingIdentity, setCheckingIdentity] = useState(() => !isUnlocked());
 
   useEffect(() => {
     const onKey = (e) => {
@@ -40,8 +45,8 @@ export default function StartNowModal({ onClose, location = "unknown" }) {
 
   // When an already-unlocked visitor reopens the modal, silently re-submit
   // their stored email to HubSpot so the founder gets a notification that
-  // they came back. Throttled to once per 24h per visitor (see
-  // shouldNotifyRepeatVisit in startNowGate.js) so the inbox stays sane.
+  // they came back. Throttled by shouldNotifyRepeatVisit so the inbox
+  // stays sane.
   useEffect(() => {
     if (!unlocked) return;
     if (!shouldNotifyRepeatVisit()) return;
@@ -51,6 +56,27 @@ export default function StartNowModal({ onClose, location = "unknown" }) {
     trackEvent("start_now_repeat_visit", { location });
     // We only want this to fire on mount when the modal opens unlocked,
     // never re-fire on re-render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Identity check via the Cloudflare Worker. Runs once on mount when not
+  // locally unlocked. If the visitor's hubspotutk cookie maps to a known
+  // HubSpot contact, auto-unlock + fire the re-notify to this gate's
+  // form. Falls through to the form on any failure / timeout / no match.
+  useEffect(() => {
+    if (unlocked) return;
+    let cancelled = false;
+    checkKnownContact().then((result) => {
+      if (cancelled) return;
+      if (result && result.known && result.email) {
+        markUnlocked(result.email);
+        setUnlocked(true);
+        notifyStartNowRepeat({ email: result.email, location });
+        trackEvent("start_now_auto_unlocked", { location });
+      }
+      setCheckingIdentity(false);
+    });
+    return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -81,13 +107,26 @@ export default function StartNowModal({ onClose, location = "unknown" }) {
           <X className="w-5 h-5" />
         </button>
 
-        {unlocked ? (
+        {checkingIdentity ? (
+          <CheckingView />
+        ) : unlocked ? (
           <UnlockedView />
         ) : (
           <LockedView onSubmitted={handleSubmitted} />
         )}
       </div>
     </div>
+  );
+}
+
+function CheckingView() {
+  return (
+    <>
+      <h2 id="start-now-title" className="text-2xl font-bold text-white mb-2">
+        Start Now — Free
+      </h2>
+      <p className="text-slate-400 mb-6 animate-pulse">Checking your access…</p>
+    </>
   );
 }
 

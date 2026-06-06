@@ -7,10 +7,12 @@ import BrandMark from "./BrandMark";
 import { trackEvent } from "../lib/analytics";
 import {
   isUnlocked,
+  markUnlocked,
   getUnlockedEmail,
   shouldNotifyRepeatVisit,
 } from "../lib/startNowGate";
 import { notifyPortalRepeat } from "../lib/hubspotForms";
+import { checkKnownContact } from "../lib/hubspotIdentify";
 
 const PORTAL_URL = "https://portal.traigent.ai";
 const DEMO_URL = "https://meetings-eu1.hubspot.com/amir8";
@@ -201,17 +203,29 @@ export default function TopNav() {
   const [showStartNow, setShowStartNow] = useState(false);
   const [showPortalGate, setShowPortalGate] = useState(false);
 
-  // Click handler for the "Open portal" CTA. Unlocked visitors skip the gate
-  // entirely (no friction — that was the whole point of the unlock) and we
-  // silently re-notify HubSpot in the background. Locked visitors get the
-  // form. The `loc` parameter is the breadcrumb (topnav / topnav_mobile).
-  const handleOpenPortal = (loc) => {
+  // Click handler for the "Open portal" CTA. Three paths:
+  //   1. Locally unlocked → open portal immediately + silent re-notify
+  //   2. Not locally unlocked but recognized as a known HubSpot contact
+  //      via the hsutk Worker → mark unlocked + re-notify + open portal
+  //   3. Genuinely new visitor → show the gate modal
+  // The Worker check is cached for 1h in localStorage so repeat clicks are
+  // instant after the first.
+  const handleOpenPortal = async (loc) => {
     if (isUnlocked()) {
       const email = getUnlockedEmail();
       if (email && shouldNotifyRepeatVisit()) {
         notifyPortalRepeat({ email, location: loc });
       }
       trackEvent("portal_opened", { location: loc });
+      window.open(PORTAL_URL, "_blank", "noopener,noreferrer");
+      return;
+    }
+    const result = await checkKnownContact();
+    if (result && result.known && result.email) {
+      markUnlocked(result.email);
+      notifyPortalRepeat({ email: result.email, location: loc });
+      trackEvent("portal_opened", { location: loc });
+      trackEvent("portal_auto_unlocked", { location: loc });
       window.open(PORTAL_URL, "_blank", "noopener,noreferrer");
       return;
     }
