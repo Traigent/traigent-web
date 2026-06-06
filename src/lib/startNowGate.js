@@ -12,9 +12,10 @@
 
 const STORAGE_KEY = "traigent_start_now_unlocked";
 const TTL_MS = 90 * 24 * 60 * 60 * 1000;
-// TEMP — set to 0 for end-to-end testing across all 3 gates. Bump back to
-// 60 * 60 * 1000 (1 hour) once Amir confirms repeat notifications land.
-const REPEAT_NOTIFY_THROTTLE_MS = 0;
+// One notification per visitor per surface per hour. Prevents tab-discard
+// reloads, link-preview bots, and multi-device visits from spamming the
+// founder's inbox with repeat-visit submissions.
+const REPEAT_NOTIFY_THROTTLE_MS = 60 * 60 * 1000;
 
 function readEntry() {
   if (typeof window === "undefined") return null;

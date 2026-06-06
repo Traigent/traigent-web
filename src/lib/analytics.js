@@ -109,6 +109,12 @@ export function trackPageView(path) {
   if (POSTHOG_KEY && window.posthog && window.posthog.capture) {
     window.posthog.capture("$pageview", { $current_url: window.location.href });
   }
+  // Clarity's auto-pageview detection watches the History API, which we
+  // don't trigger inside HashRouter. `set` "page" tags the current Clarity
+  // session with the SPA path so heatmaps + recordings group per-route.
+  if (CLARITY_ID && window.clarity) {
+    try { window.clarity("set", "page", path); } catch { /* noop */ }
+  }
 }
 
 /**

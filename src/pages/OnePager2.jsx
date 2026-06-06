@@ -12,6 +12,7 @@ import {
   ONEPAGER_STYLE,
 } from "../components/OnePagerAtoms";
 import BrandMark from "../components/BrandMark";
+import { usePageView } from "../lib/usePageView";
 
 // ---------- Solution stat (full-size for one-pager-2) ----------
 function SolutionStat({ value, label, color }) {
@@ -179,6 +180,7 @@ export function OnePager2Slide({ showHeader = true, showFooter = true, costStatV
 }
 
 export default function OnePager2() {
+  usePageView();
   return (
     <>
       <Helmet>

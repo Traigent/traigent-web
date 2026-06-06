@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { trackEvent } from "../../lib/analytics";
 import { checkKnownContact } from "../../lib/hubspotIdentify";
 
-// TEMP — set to 0 for end-to-end testing across all 3 gates. Bump back to
-// 60 * 60 * 1000 (1 hour) once Amir confirms repeat notifications land.
-const REPEAT_NOTIFY_THROTTLE_MS = 0;
+// One notification per visitor per course per hour. Matches the global
+// gate's throttle window so the inbox volume stays sane in prod.
+const REPEAT_NOTIFY_THROTTLE_MS = 60 * 60 * 1000;
 
 // Configuration read at build time. The Forms API is CORS-enabled and our
 // CSP already allows api.hsforms.com via the *.hsforms.com entry.

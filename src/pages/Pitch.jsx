@@ -6,6 +6,7 @@ import { Helmet } from "react-helmet-async";
 import { ConvergenceDiagram, KillerStatsGrid, ThreeProductsGrid } from "./pitch/shared";
 import { useKnownContactNotify } from "../lib/useKnownContactNotify";
 import { notifyPitchDeckViewed } from "../lib/hubspotForms";
+import { usePageView } from "../lib/usePageView";
 
 // ===================================================================
 // Brand tokens — single source of truth so all slides match the site.
@@ -200,6 +201,7 @@ const slides = [
 // Deck shell — keyboard nav, fullscreen, transitions.
 // ===================================================================
 export default function Pitch() {
+  usePageView();
   useKnownContactNotify({
     notify: notifyPitchDeckViewed,
     location: "pitch",

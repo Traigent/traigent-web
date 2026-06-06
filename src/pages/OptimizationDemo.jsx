@@ -22,6 +22,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, ChevronDown, ChevronUp, Pause, Play, RotateCcw, Sparkles } from "lucide-react";
 import { useRemoveChatWidget } from "../lib/useRemoveChatWidget";
 import ChatKillerStyle from "../lib/ChatKillerStyle";
+import { usePageView } from "../lib/usePageView";
 
 // =============================================================================
 // Models — v1 set per the PRD (§16.1). Each carries base accuracy + cost so
@@ -584,6 +585,7 @@ const SPEED_OPTIONS = [
 ];
 
 export default function OptimizationDemo() {
+  usePageView();
   const phase1Trials = useMemo(() => buildPhase1Trials(80), []);
   const phase2Trials = useMemo(() => buildPhase2Trials(50, 71), []);
 

@@ -15,6 +15,7 @@ import { useCustomSearchSpace } from "../lib/useCustomSearchSpace";
 import { useRemoveChatWidget } from "../lib/useRemoveChatWidget";
 import { useKnownContactNotify } from "../lib/useKnownContactNotify";
 import { notifyKnobExplorerViewed } from "../lib/hubspotForms";
+import { usePageView } from "../lib/usePageView";
 import ChatKillerStyle from "../lib/ChatKillerStyle";
 import GuidedTour from "../lib/GuidedTour";
 
@@ -636,6 +637,7 @@ function sortKnobsByImpact(knobs, metric) {
 }
 
 export default function KnobExplorer() {
+  usePageView();
   useKnownContactNotify({
     notify: notifyKnobExplorerViewed,
     location: "knob_explorer_page",
