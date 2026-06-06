@@ -81,8 +81,7 @@ guard_root() {
   fi
 
   if [ -f /.dockerenv ] || [ -f /run/.containerenv ] || [ "${CI+x}" = "x" ]; then
-    say "notice: running as root inside a container/CI context; continuing."
-    return 0
+    die "running as root inside a container/CI context is blocked. Re-run as a normal user, or set TRAIGENT_ALLOW_ROOT=1 for an explicit controlled install."
   fi
 
   die "do not run this installer with sudo/root. Install as your normal user so 'traigent' lands on your user PATH. Set TRAIGENT_ALLOW_ROOT=1 to override."
