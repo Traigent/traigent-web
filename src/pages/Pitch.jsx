@@ -4,6 +4,8 @@ import { ChevronLeft, ChevronRight, Home, Maximize2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { ConvergenceDiagram, KillerStatsGrid, ThreeProductsGrid } from "./pitch/shared";
+import { useKnownContactNotify } from "../lib/useKnownContactNotify";
+import { notifyPitchDeckViewed } from "../lib/hubspotForms";
 
 // ===================================================================
 // Brand tokens — single source of truth so all slides match the site.
@@ -198,6 +200,11 @@ const slides = [
 // Deck shell — keyboard nav, fullscreen, transitions.
 // ===================================================================
 export default function Pitch() {
+  useKnownContactNotify({
+    notify: notifyPitchDeckViewed,
+    location: "pitch",
+    eventName: "pitch_deck_viewed_known",
+  });
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
   const containerRef = useRef(null);

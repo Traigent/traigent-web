@@ -13,6 +13,8 @@ import { ArrowLeft, ArrowRight, ChevronDown, ChevronUp, Clock, DollarSign, Spark
 import { useSharedSetting } from "../lib/useSharedSetting";
 import { useCustomSearchSpace } from "../lib/useCustomSearchSpace";
 import { useRemoveChatWidget } from "../lib/useRemoveChatWidget";
+import { useKnownContactNotify } from "../lib/useKnownContactNotify";
+import { notifyKnobExplorerViewed } from "../lib/hubspotForms";
 import ChatKillerStyle from "../lib/ChatKillerStyle";
 import GuidedTour from "../lib/GuidedTour";
 
@@ -634,6 +636,11 @@ function sortKnobsByImpact(knobs, metric) {
 }
 
 export default function KnobExplorer() {
+  useKnownContactNotify({
+    notify: notifyKnobExplorerViewed,
+    location: "knob_explorer_page",
+    eventName: "knob_explorer_viewed_known",
+  });
   // Persist selections + sort preference across reloads / tabs so the user
   // can leave the page and come back to the same configuration.
   const [selectedModels, setSelectedModels] = useSharedSetting(

@@ -8,6 +8,8 @@ import { useSharedSetting } from "../lib/useSharedSetting";
 import { useCustomSearchSpace } from "../lib/useCustomSearchSpace";
 import StartNowModal from "../components/StartNowModal";
 import CalculatorTopBar from "../components/CalculatorTopBar";
+import { useKnownContactNotify } from "../lib/useKnownContactNotify";
+import { notifyRoiCalcViewed } from "../lib/hubspotForms";
 
 const BLUE = "#1A6BF5";
 
@@ -81,6 +83,11 @@ function Stat({ label, value, sublabel, icon: Icon, accent }) {
 
 export default function ROICalculator() {
   const [showStartNow, setShowStartNow] = useState(false);
+  useKnownContactNotify({
+    notify: notifyRoiCalcViewed,
+    location: "roi_calculator_page",
+    eventName: "roi_calc_viewed_known",
+  });
   const [monthlySpend, setMonthlySpend] = useState(DEFAULT_MONTHLY_SPEND);
   // Engineering side is now derived from the TTM Calculator's per-pass figure
   // multiplied by a user-set optimization cadence. Both are shared via localStorage.
