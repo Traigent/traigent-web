@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { setConsent } from '../lib/consent';
+import { getConsentRecord, setConsent } from '../lib/consent';
 
 export default function CookieConsent() {
   const [showBanner, setShowBanner] = useState(false);
@@ -8,8 +8,7 @@ export default function CookieConsent() {
   useEffect(() => {
     // If there's no explicit choice yet, show the banner
     if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('traigent_marketing_consent');
-      if (stored === null) {
+      if (!getConsentRecord()) {
         setShowBanner(true);
       }
     }
@@ -51,7 +50,15 @@ export default function CookieConsent() {
           <h3 className="text-white font-semibold mb-2">Cookie Preferences</h3>
           <p className="text-slate-300 text-sm">
             We use cookies to improve your experience, understand how you interact with our site, and personalize our marketing. 
-            By clicking "Accept", you consent to our use of these cookies. You can change your choice at any time.
+            By clicking "Accept", you consent to our use of these cookies. You can change your choice at any time.{' '}
+            <a
+              href="https://portal.traigent.ai/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-300 hover:text-blue-200 underline underline-offset-2"
+            >
+              Privacy Policy
+            </a>
           </p>
         </div>
         <div className="flex items-center gap-3 shrink-0">
