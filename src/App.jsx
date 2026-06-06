@@ -11,6 +11,7 @@ import PitchShort from './pages/PitchShort'
 import PitchShort2 from './pages/PitchShort2'
 import Blog from './pages/Blog'
 import BlogPost from './pages/BlogPost'
+import Research from './pages/Research'
 import ROICalculator from './pages/ROICalculator'
 import TTMCalculator from './pages/TTMCalculator'
 import AgentOptimization from './pages/AgentOptimization'
@@ -54,6 +55,7 @@ export default function App() {
         <Route path="value-proposition" element={<ValueProposition />} />
         <Route path="blog" element={<Blog />} />
         <Route path="blog/:slug" element={<BlogPost />} />
+        <Route path="research" element={<Research />} />
         <Route path="roi" element={<ROICalculator />} />
         <Route path="ttm" element={<TTMCalculator />} />
         <Route path="agent-optimization" element={<AgentOptimization />} />

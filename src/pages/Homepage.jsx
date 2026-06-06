@@ -655,6 +655,11 @@ def answer_question(question: str) -> str:
                   </Link>
                 </li>
                 <li>
+                  <Link to="/research" className="text-slate-400 hover:text-white transition-colors">
+                    Research
+                  </Link>
+                </li>
+                <li>
                   <a href="https://www.tvl-lang.org/" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">
                     Learn TVL
                   </a>
