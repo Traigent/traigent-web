@@ -39,6 +39,36 @@ function extractEmailFromCallbackData(data) {
   return "";
 }
 
+// Reads the email input value off the jQuery-wrapped form HubSpot passes to
+// onFormSubmit. Falls back gracefully if HubSpot ever ships a plain DOM form.
+function readEmailFromHsForm($form) {
+  if (!$form) return "";
+  const formEl =
+    (typeof $form.get === "function" && $form.get(0)) ||
+    (Array.isArray($form) && $form[0]) ||
+    (typeof $form === "object" && $form[0]) ||
+    (typeof $form === "object" && $form.form) ||
+    null;
+  if (!formEl || !formEl.querySelector) return "";
+  const input =
+    formEl.querySelector('input[type="email"]') ||
+    formEl.querySelector('input[name="email"]');
+  return (input && typeof input.value === "string") ? input.value.trim() : "";
+}
+
+// Belt-and-suspenders: read the email straight out of the target container,
+// regardless of how HubSpot wrapped the input. Used as the final fallback
+// when neither the callback nor the captured ref produced a value.
+function readEmailFromTarget(targetId) {
+  if (typeof document === "undefined") return "";
+  const root = document.getElementById(targetId);
+  if (!root) return "";
+  const input =
+    root.querySelector('input[type="email"]') ||
+    root.querySelector('input[name="email"]');
+  return (input && typeof input.value === "string") ? input.value.trim() : "";
+}
+
 /** Load the HubSpot embed script once and cache the promise. */
 function loadHubSpotScript() {
   if (scriptPromise) return scriptPromise;
@@ -73,6 +103,12 @@ function loadHubSpotScript() {
 export default function HubSpotStartNowForm({ onSuccess, targetId = "hs-start-now-form" }) {
   const onSuccessRef = useRef(onSuccess);
   onSuccessRef.current = onSuccess;
+  // We grab the email value off the HubSpot form DOM in onFormSubmit (which
+  // fires BEFORE submission) and stash it here, then read it back when
+  // onFormSubmitted fires. The postMessage / inline-callback data shape
+  // sometimes omits submissionValues entirely, so DOM read is the load-
+  // bearing capture path — the other extractors are kept as safety nets.
+  const capturedEmailRef = useRef("");
   const [status, setStatus] = useState("loading"); // "loading" | "ready" | "error"
 
   useEffect(() => {
@@ -88,7 +124,8 @@ export default function HubSpotStartNowForm({ onSuccess, targetId = "hs-start-no
       if (d.eventName === "onFormSubmitted") {
         // eslint-disable-next-line no-console
         console.debug("[hs-form] postMessage onFormSubmitted", d);
-        onSuccessRef.current?.(extractEmail(d));
+        const email = extractEmail(d) || capturedEmailRef.current || readEmailFromTarget(targetId);
+        onSuccessRef.current?.(email);
       }
     };
     window.addEventListener("message", handleHsMessage);
@@ -108,14 +145,22 @@ export default function HubSpotStartNowForm({ onSuccess, targetId = "hs-start-no
             // eslint-disable-next-line no-console
             console.debug("[hs-form] onFormReady");
           },
-          onFormSubmit: () => {
+          onFormSubmit: ($form) => {
+            // CAPTURE EMAIL HERE — this fires BEFORE submission, while the
+            // form DOM still holds the values the visitor typed.
+            const captured = readEmailFromHsForm($form) || readEmailFromTarget(targetId);
+            capturedEmailRef.current = captured;
             // eslint-disable-next-line no-console
-            console.debug("[hs-form] onFormSubmit (click)");
+            console.debug("[hs-form] onFormSubmit captured email:", captured);
           },
           onFormSubmitted: (_form, data) => {
             // eslint-disable-next-line no-console
             console.debug("[hs-form] inline onFormSubmitted", data);
-            onSuccessRef.current?.(extractEmailFromCallbackData(data));
+            const email =
+              extractEmailFromCallbackData(data) ||
+              capturedEmailRef.current ||
+              readEmailFromTarget(targetId);
+            onSuccessRef.current?.(email);
           },
         });
         setStatus("ready");
