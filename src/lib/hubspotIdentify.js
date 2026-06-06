@@ -27,13 +27,22 @@ function readHubSpotCookie() {
   return match ? decodeURIComponent(match[1]) : "";
 }
 
-function readCache(utk) {
+async function cacheKeyForUtk(utk) {
+  if (typeof window === "undefined" || !window.crypto?.subtle) return "";
+  const bytes = new TextEncoder().encode(utk);
+  const digest = await window.crypto.subtle.digest("SHA-256", bytes);
+  return [...new Uint8Array(digest)]
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+function readCache(utkHash) {
   if (typeof window === "undefined") return null;
   try {
     const raw = window.localStorage.getItem(CACHE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
-    if (parsed.utk !== utk) return null;
+    if (parsed.utkHash !== utkHash) return null;
     if (Date.now() - parsed.ts > CACHE_TTL_MS) return null;
     return parsed.result;
   } catch {
@@ -41,12 +50,12 @@ function readCache(utk) {
   }
 }
 
-function writeCache(utk, result) {
+function writeCache(utkHash, result) {
   if (typeof window === "undefined") return;
   try {
     window.localStorage.setItem(
       CACHE_KEY,
-      JSON.stringify({ utk, ts: Date.now(), result })
+      JSON.stringify({ utkHash, ts: Date.now(), result })
     );
   } catch {
     /* private mode / quota — silent */
@@ -65,16 +74,22 @@ export async function checkKnownContact() {
   const utk = readHubSpotCookie();
   if (!utk) return { known: false };
 
-  const cached = readCache(utk);
+  const utkHash = await cacheKeyForUtk(utk);
+  const cached = utkHash ? readCache(utkHash) : null;
   if (cached) return cached;
 
   try {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
-    const res = await fetch(
-      `${CHECK_URL}/check?utk=${encodeURIComponent(utk)}`,
-      { signal: controller.signal }
-    );
+    const res = await fetch(`${CHECK_URL}/check`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ utk }),
+      signal: controller.signal,
+      cache: "no-store",
+      credentials: "omit",
+      referrerPolicy: "no-referrer",
+    });
     clearTimeout(timer);
 
     if (!res.ok) return null;
@@ -83,7 +98,7 @@ export async function checkKnownContact() {
     // email?: string }. Anything else, treat as no answer.
     if (typeof result?.known !== "boolean") return null;
 
-    writeCache(utk, result);
+    if (utkHash) writeCache(utkHash, result);
     return result;
   } catch {
     return null;
