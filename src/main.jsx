@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import { HashRouter as Router } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import App from './App.jsx'
-import { initAnalytics } from './lib/analytics'
+import { initAnalytics, teardownAnalytics } from './lib/analytics'
 import { subscribeConsent, hasMarketingConsent } from './lib/consent'
 import './index.css'
 
@@ -11,9 +11,15 @@ import './index.css'
 // Otherwise, wait for consent to be granted.
 if (hasMarketingConsent()) {
   initAnalytics()
+} else {
+  teardownAnalytics({ reload: false })
 }
 subscribeConsent((granted) => {
-  if (granted) initAnalytics()
+  if (granted) {
+    initAnalytics()
+  } else {
+    teardownAnalytics()
+  }
 })
 
 ReactDOM.createRoot(document.getElementById('root')).render(

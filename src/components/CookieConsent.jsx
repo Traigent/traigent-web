@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { hasMarketingConsent, setConsent, subscribeConsent } from '../lib/consent';
+import { useState, useEffect } from 'react';
+import { setConsent } from '../lib/consent';
 
 export default function CookieConsent() {
   const [showBanner, setShowBanner] = useState(false);
@@ -21,7 +21,9 @@ export default function CookieConsent() {
     setShowPreferences(false);
   };
 
-  const handleReject = () => {
+  const handleReject = (event) => {
+    event?.preventDefault();
+    event?.stopPropagation();
     setConsent(false);
     setShowBanner(false);
     setShowPreferences(false);
@@ -55,6 +57,7 @@ export default function CookieConsent() {
         <div className="flex items-center gap-3 shrink-0">
           <button
             onClick={handleReject}
+            onPointerDownCapture={handleReject}
             className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors border border-slate-700"
           >
             Reject All
