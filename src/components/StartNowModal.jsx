@@ -7,7 +7,7 @@ import {
   isUnlocked,
   markUnlocked,
   getUnlockedEmail,
-  shouldNotifyRepeatVisit,
+  shouldNotifyForGate,
 } from "../lib/startNowGate";
 import { notifyStartNowRepeat } from "../lib/hubspotForms";
 import { checkKnownContact } from "../lib/hubspotIdentify";
@@ -49,7 +49,7 @@ export default function StartNowModal({ onClose, location = "unknown" }) {
   // stays sane.
   useEffect(() => {
     if (!unlocked) return;
-    if (!shouldNotifyRepeatVisit()) return;
+    if (!shouldNotifyForGate("startnow")) return;
     const email = getUnlockedEmail();
     if (!email) return;
     notifyStartNowRepeat({ email, location });

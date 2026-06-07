@@ -174,6 +174,7 @@ export default function TTMCalculator() {
     notify: notifyTtmCalcViewed,
     location: "ttm_calculator_page",
     eventName: "ttm_calc_viewed_known",
+    gateKey: "ttm",
   });
   const [models, setModels] = useState(6);
   const [prompts, setPrompts] = useState(3);

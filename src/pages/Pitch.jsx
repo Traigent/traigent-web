@@ -206,6 +206,7 @@ export default function Pitch() {
     notify: notifyPitchDeckViewed,
     location: "pitch",
     eventName: "pitch_deck_viewed_known",
+    gateKey: "pitch_deck",
   });
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);

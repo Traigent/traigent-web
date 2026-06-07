@@ -9,7 +9,7 @@ import {
   isUnlocked,
   markUnlocked,
   getUnlockedEmail,
-  shouldNotifyRepeatVisit,
+  shouldNotifyForGate,
 } from "../lib/startNowGate";
 import { notifyPortalRepeat } from "../lib/hubspotForms";
 import { checkKnownContact } from "../lib/hubspotIdentify";
@@ -214,7 +214,7 @@ export default function TopNav() {
   const handleOpenPortal = async (loc) => {
     if (isUnlocked()) {
       const email = getUnlockedEmail();
-      if (email && shouldNotifyRepeatVisit()) {
+      if (email && shouldNotifyForGate("portal")) {
         notifyPortalRepeat({ email, location: loc });
       }
       trackEvent("portal_opened", { location: loc });
@@ -224,7 +224,7 @@ export default function TopNav() {
     const result = await checkKnownContact();
     if (result && result.known && result.email) {
       markUnlocked(result.email);
-      notifyPortalRepeat({ email: result.email, location: loc });
+      if (shouldNotifyForGate("portal")) notifyPortalRepeat({ email: result.email, location: loc });
       trackEvent("portal_opened", { location: loc });
       trackEvent("portal_auto_unlocked", { location: loc });
       window.open(PORTAL_URL, "_blank", "noopener,noreferrer");

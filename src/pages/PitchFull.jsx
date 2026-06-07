@@ -1398,6 +1398,7 @@ export default function PitchFull() {
     notify: notifyPitchDeckViewed,
     location: "pitch_full",
     eventName: "pitch_deck_viewed_known",
+    gateKey: "pitch_deck",
   });
   return <PitchDeck slides={FULL_SLIDES} />;
 }

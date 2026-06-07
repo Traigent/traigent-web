@@ -87,6 +87,7 @@ export default function ROICalculator() {
     notify: notifyRoiCalcViewed,
     location: "roi_calculator_page",
     eventName: "roi_calc_viewed_known",
+    gateKey: "roi",
   });
   const [monthlySpend, setMonthlySpend] = useState(DEFAULT_MONTHLY_SPEND);
   // Engineering side is now derived from the TTM Calculator's per-pass figure

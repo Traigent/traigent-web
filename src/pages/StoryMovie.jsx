@@ -19,9 +19,8 @@ import { ArrowLeft, ArrowRight, ChevronDown, ChevronUp, Pause, Play, RotateCcw, 
 import { useRemoveChatWidget } from "../lib/useRemoveChatWidget";
 import ChatKillerStyle from "../lib/ChatKillerStyle";
 import StartNowModal from "../components/StartNowModal";
-import { checkKnownContact } from "../lib/hubspotIdentify";
 import { notifyStoryWatched } from "../lib/hubspotForms";
-import { trackEvent } from "../lib/analytics";
+import { useKnownContactNotify } from "../lib/useKnownContactNotify";
 import { usePageView } from "../lib/usePageView";
 
 // Same CTA URL as the homepage TopNav — HubSpot meeting booking.
@@ -821,20 +820,16 @@ export default function StoryMovie() {
   const advancingRef = useRef(false);
   useRemoveChatWidget();
 
-  // /story is intentionally ungated — no email form. We still want a
-  // notification when a known HubSpot contact watches it (Contact Us
-  // submitter, meeting booker, BCC-linked lead). Identity check fires once
-  // on mount; if known, silently re-submits to the Story-watched form.
-  useEffect(() => {
-    let cancelled = false;
-    checkKnownContact().then((result) => {
-      if (cancelled) return;
-      if (!(result && result.known && result.email)) return;
-      notifyStoryWatched({ email: result.email, location: "story_page" });
-      trackEvent("story_watched_known", { location: "story_page" });
-    });
-    return () => { cancelled = true; };
-  }, []);
+  // /story is intentionally ungated — no email form. The hook below
+  // silently fires a Story-watched notification when a known visitor
+  // lands on the page (localStorage email OR hsutk Worker match). 1h
+  // per-gate throttle.
+  useKnownContactNotify({
+    notify: notifyStoryWatched,
+    location: "story_page",
+    eventName: "story_watched_known",
+    gateKey: "story",
+  });
 
   const start = useCallback(() => {
     advancingRef.current = false;

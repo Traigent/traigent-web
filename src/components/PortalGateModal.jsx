@@ -6,7 +6,7 @@ import {
   isUnlocked,
   markUnlocked,
   getUnlockedEmail,
-  shouldNotifyRepeatVisit,
+  shouldNotifyForGate,
 } from "../lib/startNowGate";
 import { notifyPortalRepeat, PORTAL_FORM_ID } from "../lib/hubspotForms";
 import { checkKnownContact } from "../lib/hubspotIdentify";
@@ -48,7 +48,7 @@ export default function PortalGateModal({ onClose, location = "unknown" }) {
   // so the founder sees "they came back for the portal". Throttled.
   useEffect(() => {
     if (!unlocked) return;
-    if (!shouldNotifyRepeatVisit()) return;
+    if (!shouldNotifyForGate("portal")) return;
     const email = getUnlockedEmail();
     if (!email) return;
     notifyPortalRepeat({ email, location });

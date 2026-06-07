@@ -23,12 +23,19 @@ function readEntry() {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
     // Backward compat: old format was a plain timestamp string.
-    if (/^\d+$/.test(raw)) return { ts: Number(raw), email: "", lastNotifiedTs: 0 };
+    if (/^\d+$/.test(raw)) return { ts: Number(raw), email: "", lastNotifiedTs: 0, lastNotifiedByGate: {} };
     const parsed = JSON.parse(raw);
     return {
       ts: Number(parsed.ts) || 0,
       email: typeof parsed.email === "string" ? parsed.email : "",
+      // Legacy single-field throttle from the early per-visitor (not per-gate) design.
       lastNotifiedTs: Number(parsed.lastNotifiedTs) || 0,
+      // New per-gate throttle map: { startnow: ts, portal: ts, pricing: ts, ... }
+      // so a Portal visit doesn't throttle a Start Now visit and vice versa.
+      lastNotifiedByGate:
+        parsed.lastNotifiedByGate && typeof parsed.lastNotifiedByGate === "object"
+          ? parsed.lastNotifiedByGate
+          : {},
     };
   } catch {
     return null;
@@ -51,7 +58,15 @@ export function isUnlocked() {
 }
 
 export function markUnlocked(email = "") {
-  writeEntry({ ts: Date.now(), email, lastNotifiedTs: Date.now() });
+  const prev = readEntry() || {};
+  writeEntry({
+    ts: Date.now(),
+    email,
+    lastNotifiedTs: Date.now(),
+    // Preserve any prior per-gate stamps so a re-submit doesn't reset
+    // throttles on other gates the visitor hit recently.
+    lastNotifiedByGate: prev.lastNotifiedByGate || {},
+  });
 }
 
 export function getUnlockedEmail() {
@@ -59,15 +74,33 @@ export function getUnlockedEmail() {
 }
 
 /**
- * Returns true at most once per 24h. Side effect: stamps the lastNotifiedTs
- * so the next call within the window returns false. Use this to gate the
- * silent re-submit so we don't spam HubSpot on every modal open.
+ * Per-gate throttle. Returns true at most once per hour PER gateKey, so a
+ * Portal visit doesn't block a subsequent Start Now / Pricing / Story
+ * notification (and vice versa). Stamps lastNotifiedByGate[gateKey] on success.
+ *
+ *   shouldNotifyForGate("portal")    // → true (first call this hour)
+ *   shouldNotifyForGate("startnow")  // → true (independent of portal)
+ *   shouldNotifyForGate("portal")    // → false (within the portal throttle)
  */
-export function shouldNotifyRepeatVisit() {
+export function shouldNotifyForGate(gateKey) {
+  if (!gateKey) return false;
   const entry = readEntry();
   if (!entry || !entry.email) return false;
   const now = Date.now();
-  if (now - entry.lastNotifiedTs < REPEAT_NOTIFY_THROTTLE_MS) return false;
-  writeEntry({ ...entry, lastNotifiedTs: now });
+  const stamps = entry.lastNotifiedByGate || {};
+  const lastTs = Number(stamps[gateKey]) || 0;
+  if (now - lastTs < REPEAT_NOTIFY_THROTTLE_MS) return false;
+  writeEntry({
+    ...entry,
+    lastNotifiedByGate: { ...stamps, [gateKey]: now },
+  });
   return true;
+}
+
+/**
+ * Legacy alias kept for any caller that hasn't been migrated to the
+ * per-gate API. New code should use `shouldNotifyForGate(gateKey)`.
+ */
+export function shouldNotifyRepeatVisit() {
+  return shouldNotifyForGate("legacy");
 }

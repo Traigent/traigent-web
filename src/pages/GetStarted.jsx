@@ -8,7 +8,7 @@ import {
   isUnlocked,
   markUnlocked,
   getUnlockedEmail,
-  shouldNotifyRepeatVisit,
+  shouldNotifyForGate,
 } from "../lib/startNowGate";
 import { notifyStartNowRepeat } from "../lib/hubspotForms";
 import { checkKnownContact } from "../lib/hubspotIdentify";
@@ -43,7 +43,7 @@ export default function GetStarted() {
   // Repeat-visit notification — see StartNowModal for the rationale.
   useEffect(() => {
     if (!unlocked) return;
-    if (!shouldNotifyRepeatVisit()) return;
+    if (!shouldNotifyForGate("get_started_page")) return;
     const email = getUnlockedEmail();
     if (!email) return;
     notifyStartNowRepeat({ email, location: "get_started_page" });

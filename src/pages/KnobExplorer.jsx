@@ -642,6 +642,7 @@ export default function KnobExplorer() {
     notify: notifyKnobExplorerViewed,
     location: "knob_explorer_page",
     eventName: "knob_explorer_viewed_known",
+    gateKey: "knob_explorer",
   });
   // Persist selections + sort preference across reloads / tabs so the user
   // can leave the page and come back to the same configuration.
