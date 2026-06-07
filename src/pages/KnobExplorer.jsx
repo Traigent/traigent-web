@@ -994,18 +994,18 @@ export default function KnobExplorer() {
                       {total.toLocaleString()}
                     </div>
                   </div>
+                  {/* Summary chips mirror the new section taxonomy:
+                      Models (top-level) / Agent knobs (super) / Model knobs
+                      (super = Common + Specific). X / Y selected. */}
                   <div className="flex gap-2 flex-wrap text-xs">
                     <span className="px-2 py-1 rounded bg-slate-800/60 border border-slate-700 text-slate-300">
-                      {selectedModels.length} models
+                      Models — {selectedModels.length} / {MODELS.length} selected
                     </span>
                     <span className="px-2 py-1 rounded bg-slate-800/60 border border-slate-700 text-slate-300">
-                      {enabledAgentCount} agent knobs
+                      Agent knobs — {enabledAgentCount} / {AGENT_KNOBS.length} selected
                     </span>
                     <span className="px-2 py-1 rounded bg-slate-800/60 border border-slate-700 text-slate-300">
-                      {enabledCommonCount} common knobs
-                    </span>
-                    <span className="px-2 py-1 rounded bg-slate-800/60 border border-slate-700 text-slate-300">
-                      {enabledSpecificCount} model-specific
+                      Model knobs — {enabledCommonCount + enabledSpecificCount} / {COMMON_MODEL_KNOBS.length + specificTotal} selected
                     </span>
                   </div>
                 </div>
