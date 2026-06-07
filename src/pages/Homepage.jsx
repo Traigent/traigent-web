@@ -143,17 +143,17 @@ export default function Homepage() {
               transition={{ duration: 0.5, delay: 0.15 }}
               className="text-2xl md:text-3xl lg:text-[2rem] text-slate-300 leading-snug mb-3"
             >
-              <span className="font-bold text-white">Rapidly</span> finds <span className="font-bold text-[#4D8EF8]">High Accuracy</span> and <span className="font-bold text-[#f59e0b]">Low Cost</span> yielding configurations
+              <span className="font-bold text-white">Rapidly</span> finds <span className="font-bold text-[#4D8EF8]">High Accuracy</span> and <span className="font-bold text-[#f59e0b]">Low Cost</span>
             </motion.p>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.18 }}
-              className="text-2xl md:text-3xl lg:text-[2rem] text-slate-300 leading-snug mb-6"
+              className="text-2xl md:text-3xl lg:text-[2rem] text-slate-300 leading-snug mb-6 whitespace-nowrap"
             >
-              among{" "}
+              yielding configurations among{" "}
               <Link
-                to="/blog/the-config-multiverse"
+                to="/knob-explorer"
                 className="font-bold text-white underline underline-offset-4 decoration-white/40 hover:decoration-white transition-colors"
               >
                 thousands possible
