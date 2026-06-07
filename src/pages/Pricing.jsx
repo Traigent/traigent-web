@@ -247,6 +247,7 @@ export default function Pricing() {
     notify: notifyPricingViewed,
     location: "pricing_page",
     eventName: "pricing_viewed_known",
+    gateKey: "pricing",
   });
   return (
     <div className="bg-[#080808] text-white min-h-screen">

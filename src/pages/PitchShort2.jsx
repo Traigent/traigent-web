@@ -196,6 +196,7 @@ export default function PitchShort2({ forcedPreset } = {}) {
     notify: notifyPitchDeckViewed,
     location: "pitch_short_2",
     eventName: "pitch_deck_viewed_known",
+    gateKey: "pitch_deck",
   });
   const scale = useViewportScale();
   useRemoveChatWidget();
