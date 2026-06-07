@@ -626,10 +626,12 @@ export default function OptimizationDemo() {
   // pauseAfterStep1 flag is set — freezes the demo and shows the cheat
   // sheet until the user clicks Resume.
   const [isPausedAfterStep1, setIsPausedAfterStep1] = useState(false);
-  // Collapse state for the post-Step-1 cheat sheet — same affordance as
-  // the story cheat sheets, lets the viewer hide the details while keeping
+  // Collapse state for the post-Step-1 cheat sheet — starts COLLAPSED so
+  // the trial table behind it stays in focus; the bouncing down-arrow on
+  // the toggle button signals that there's content to expand. Same
+  // affordance as the story cheat sheets, lets the viewer hide details while keeping
   // the badge + Resume button.
-  const [step1SheetCollapsed, setStep1SheetCollapsed] = useState(false);
+  const [step1SheetCollapsed, setStep1SheetCollapsed] = useState(true);
   const sceneStartedAtRef = useRef(null);
   const timerRef = useRef(null);
 
@@ -1020,10 +1022,12 @@ export default function OptimizationDemo() {
                 type="button"
                 onClick={() => setStep1SheetCollapsed((c) => !c)}
                 title={step1SheetCollapsed ? "Expand" : "Hide details"}
-                className="flex-shrink-0 -mt-1 -mr-1 w-7 h-7 flex items-center justify-center rounded-md text-yellow-200 hover:text-white hover:bg-yellow-400/20 transition-colors"
+                className={`flex-shrink-0 -mt-1 -mr-1 w-7 h-7 flex items-center justify-center rounded-md text-yellow-200 hover:text-white hover:bg-yellow-400/20 transition-colors ${
+                  step1SheetCollapsed ? "ring-2 ring-yellow-300/60" : ""
+                }`}
               >
                 {step1SheetCollapsed
-                  ? <ChevronDown className="w-4 h-4" />
+                  ? <ChevronDown className="w-4 h-4 animate-bounce" />
                   : <ChevronUp className="w-4 h-4" />}
               </button>
             </div>
