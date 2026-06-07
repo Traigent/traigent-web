@@ -15,7 +15,7 @@ import { Fragment, useEffect, useMemo, useRef, useState, useCallback } from "rea
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, ChevronDown, ChevronUp, Pause, Play, RotateCcw, SkipBack, SkipForward, Sparkles } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, ChevronDown, ChevronUp, Pause, Play, RotateCcw, SkipBack, SkipForward, Sparkles } from "lucide-react";
 import { useRemoveChatWidget } from "../lib/useRemoveChatWidget";
 import ChatKillerStyle from "../lib/ChatKillerStyle";
 import StartNowModal from "../components/StartNowModal";
@@ -382,11 +382,61 @@ function Act5Punch({ onComplete, startAtEnd = false, paused = false }) {
         paused={paused}
         startAtEnd={startAtEnd}
       />
+      {/* 4 benefit boxes — same content as the one-pager's opener tiles
+          (LLM cost ↓, Eng time ↓, TTM ↓, Shipment confidence ↑). Fade in
+          with the CTAs once the narration finishes. */}
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: narrationDone ? 1 : 0, y: narrationDone ? 0 : 24 }}
         transition={{ duration: 0.7 }}
-        className="mt-14 flex items-center gap-4"
+        className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-3 w-full max-w-4xl"
+      >
+        <Link
+          to="/roi"
+          className="bg-slate-900/70 border-2 rounded-xl px-3 py-3 text-center hover:bg-slate-900 transition-colors block"
+          style={{ borderColor: "#f59e0b66" }}
+        >
+          <div className="flex items-center justify-center gap-2" style={{ color: "#f59e0b" }}>
+            <ArrowDown className="w-6 h-6" strokeWidth={3} />
+            <span className="text-xl md:text-2xl font-extrabold tracking-tight leading-none">up to 60%</span>
+          </div>
+          <div className="text-[10px] md:text-[11px] font-mono uppercase tracking-wider text-slate-300 mt-1">LLM cost reduction</div>
+        </Link>
+        <Link
+          to="/ttm"
+          className="bg-slate-900/70 border-2 rounded-xl px-3 py-3 text-center hover:bg-slate-900 transition-colors block"
+          style={{ borderColor: "#4D8EF866" }}
+        >
+          <div className="flex items-center justify-center gap-2" style={{ color: "#4D8EF8" }}>
+            <ArrowDown className="w-6 h-6" strokeWidth={3} />
+            <span className="text-xl md:text-2xl font-extrabold tracking-tight leading-none">up to 8 wks</span>
+          </div>
+          <div className="text-[10px] md:text-[11px] font-mono uppercase tracking-wider text-slate-300 mt-1">Engineering time reclaimed</div>
+        </Link>
+        <Link
+          to="/ttm"
+          className="bg-slate-900/70 border-2 rounded-xl px-3 py-3 text-center hover:bg-slate-900 transition-colors block"
+          style={{ borderColor: "#4D8EF866" }}
+        >
+          <div className="flex items-center justify-center gap-2" style={{ color: "#4D8EF8" }}>
+            <ArrowDown className="w-6 h-6" strokeWidth={3} />
+            <span className="text-xl md:text-2xl font-extrabold tracking-tight leading-none">TTM</span>
+          </div>
+          <div className="text-[10px] md:text-[11px] font-mono uppercase tracking-wider text-slate-300 mt-1">shortens time to market</div>
+        </Link>
+        <div className="bg-slate-900/70 border-2 rounded-xl px-3 py-3 text-center" style={{ borderColor: "#a78bfa66" }}>
+          <div className="flex items-center justify-center gap-2" style={{ color: "#a78bfa" }}>
+            <ArrowUp className="w-6 h-6" strokeWidth={3} />
+            <span className="text-xl md:text-2xl font-extrabold tracking-tight leading-none">100%</span>
+          </div>
+          <div className="text-[10px] md:text-[11px] font-mono uppercase tracking-wider text-slate-300 mt-1">shipment confidence</div>
+        </div>
+      </motion.div>
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: narrationDone ? 1 : 0, y: narrationDone ? 0 : 24 }}
+        transition={{ duration: 0.7, delay: 0.15 }}
+        className="mt-8 flex items-center gap-4"
       >
         {/* Same two CTAs as the homepage TopNav — Start Now opens the modal
             install/checkout flow; Book a demo opens the HubSpot meeting
