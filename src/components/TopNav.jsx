@@ -43,13 +43,13 @@ const PITCH_DECK_OPTIONS = [
     href: "/#/knob-explorer",
   },
   {
-    label: "Live optimization demo",
-    desc: "5-scene scripted demo — search space → convergence → 10× cheaper",
+    label: "Optimization Engine (no narration)",
+    desc: "Accuracy/Cost Optimization (2-step)",
     href: "/#/demo",
   },
   {
-    label: "Traigent in action (1-min video)",
-    desc: "Problem → search space → solution → the win",
+    label: "Agent Optimization Demo (1-min)",
+    desc: "Narrated walkthrough · problem → solution → the win",
     href: "/#/story",
   },
   {
