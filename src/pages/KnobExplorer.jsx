@@ -659,8 +659,10 @@ function VendorGroup({ vendor, models, selectedIds, onToggle, open, onToggleOpen
   );
 }
 
-function Section({ title, count, children, defaultOpen = true }) {
+function Section({ title, count, total, children, defaultOpen = true }) {
   const [open, setOpen] = useState(defaultOpen);
+  const hasCount = typeof count === "number";
+  const hasTotal = typeof total === "number";
   return (
     <section className="mb-6">
       <button
@@ -672,9 +674,9 @@ function Section({ title, count, children, defaultOpen = true }) {
           <h2 className="text-xl md:text-2xl font-bold text-white group-hover:text-blue-300 transition-colors">
             {title}
           </h2>
-          {typeof count === "number" && (
+          {hasCount && (
             <span className="text-xs font-mono text-slate-500 px-2 py-0.5 rounded bg-slate-900/60 border border-slate-700/60">
-              {count} selected
+              {hasTotal ? `${count} / ${total} selected` : `${count} selected`}
             </span>
           )}
         </div>
@@ -858,6 +860,11 @@ export default function KnobExplorer() {
   const enabledCommonCount = COMMON_MODEL_KNOBS.filter((k) => knobValues[k.id]).length;
   const enabledSpecificCount = selectedModels.reduce((sum, m) => {
     return sum + (SPECIFIC_MODEL_KNOBS[m] || []).filter((k) => knobValues[`${m}.${k.id}`]).length;
+  }, 0);
+  // Total available specific knobs across the currently-selected models —
+  // this is the denominator for the "X / Y" badge on the Specific section.
+  const specificTotal = selectedModels.reduce((sum, m) => {
+    return sum + (SPECIFIC_MODEL_KNOBS[m] || []).length;
   }, 0);
 
   return (
@@ -1046,7 +1053,7 @@ export default function KnobExplorer() {
             </div>
 
             {/* Models — vendors render as a compact grid; click one to expand */}
-            <Section title="Models" count={selectedModels.length}>
+            <Section title="Models" count={selectedModels.length} total={MODELS.length}>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
                 {VENDOR_ORDER.map((vendor) => {
                   const models = MODELS.filter((m) => m.provider === vendor);
@@ -1068,10 +1075,19 @@ export default function KnobExplorer() {
               </div>
             </Section>
 
-            {/* Agent knobs — rendered as one collapsible Section per typed
-                group (Core / Retrieval / Memory / Cost / Reliability / UX
-                / Orchestration). Specialty groups close by default to keep
-                the page scannable; user expands the ones they care about. */}
+            {/* Agent knobs — non-collapsible umbrella label above the 7
+                typed sub-groups (Core / Retrieval / Memory / Cost / Reliability
+                / UX / Orchestration). All of these are agent-level configs;
+                the umbrella makes that explicit and surfaces the total
+                X / Y count across all groups in one place. */}
+            <div className="flex items-baseline justify-between mt-6 mb-3 pb-2 border-b border-slate-700/50">
+              <span className="text-[11px] md:text-xs font-mono uppercase tracking-widest text-slate-400">
+                Agent knobs
+              </span>
+              <span className="text-[11px] md:text-xs font-mono text-slate-500">
+                {enabledAgentCount} / {AGENT_KNOBS.length} selected
+              </span>
+            </div>
             {AGENT_KNOB_GROUPS.map((group) => {
               const enabledInGroup = group.knobs.filter((k) => knobValues[k.id]).length;
               return (
@@ -1079,6 +1095,7 @@ export default function KnobExplorer() {
                   key={group.id}
                   title={group.title}
                   count={enabledInGroup}
+                  total={group.knobs.length}
                   defaultOpen={group.defaultOpen}
                 >
                   <KnobList
@@ -1093,7 +1110,7 @@ export default function KnobExplorer() {
             })}
 
             {/* Common model knobs */}
-            <Section title="Common model knobs" count={enabledCommonCount}>
+            <Section title="Common model knobs" count={enabledCommonCount} total={COMMON_MODEL_KNOBS.length}>
               <KnobList
                 knobs={COMMON_MODEL_KNOBS}
                 sortBy={sortBy}
@@ -1104,7 +1121,7 @@ export default function KnobExplorer() {
             </Section>
 
             {/* Specific model knobs */}
-            <Section title="Specific model knobs" count={enabledSpecificCount}>
+            <Section title="Specific model knobs" count={enabledSpecificCount} total={specificTotal}>
               {selectedModels.length === 0 ? (
                 <div className="text-sm text-slate-500 italic bg-slate-900/30 border border-slate-800/60 rounded-xl p-4">
                   Pick at least one model above to reveal its model-specific knobs.
