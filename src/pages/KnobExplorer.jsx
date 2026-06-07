@@ -163,6 +163,15 @@ const AGENT_KNOBS = [
   { id: "output-schema",      name: "Output schema enforcement",       values: ["free-form", "JSON-mode", "structured-generation"],         impact: { a: 2, c: 0, l: 0 } },
   { id: "retry-budget",       name: "Error retry budget",              values: [0, 1, 2, 3],                                                impact: { a: 2, c: 2, l: 2 } },
   { id: "context-management", name: "Long-context management",         values: ["truncate", "summarize", "RAG-windowed", "full-context"],   impact: { a: 3, c: 2, l: 1 } },
+  // Retrieval / RAG knobs — for any agent that uses a retrieval pipeline.
+  // Each one moves accuracy + cost meaningfully on retrieval-heavy tasks;
+  // collectively they're the difference between "naive RAG" and a tuned
+  // one (often 20-40 pts on retrieval QA benchmarks).
+  { id: "retrieval-top-k",    name: "Retrieval top-k",                 values: [0, 1, 3, 5, 10, 20],                                        impact: { a: 3, c: 2, l: 1 } },
+  { id: "chunk-size",         name: "Chunk size (tokens)",             values: [256, 512, 1024, 2048],                                      impact: { a: 3, c: 1, l: 0 } },
+  { id: "chunk-overlap",      name: "Chunk overlap (%)",               values: [0, 10, 20],                                                 impact: { a: 2, c: 1, l: 0 } },
+  { id: "embedding-model",    name: "Embedding model",                 values: ["text-embedding-3-small", "text-embedding-3-large", "ada-002", "bge-large"], impact: { a: 3, c: 2, l: 0 } },
+  { id: "reranker",           name: "Reranker",                        values: ["none", "cross-encoder", "LLM-rerank"],                     impact: { a: 3, c: 2, l: 2 } },
 ];
 
 const COMMON_MODEL_KNOBS = [
