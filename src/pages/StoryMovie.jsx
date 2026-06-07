@@ -525,7 +525,11 @@ const CHEAT_SHEETS = {
 };
 
 function CheatSheet({ sheet, onResume, isLastAct }) {
-  const [collapsed, setCollapsed] = useState(false);
+  // Starts COLLAPSED so the act's punch frame (the title + the prose the
+  // viewer just heard narrated) stays visually unobstructed. The bouncing
+  // ChevronDown + yellow ring on the toggle button signal that there's
+  // more to read if they want it.
+  const [collapsed, setCollapsed] = useState(true);
   if (!sheet) return null;
   const resumeLabel = isLastAct ? "Replay from Act 1" : "Resume — Next act";
   const ResumeIcon = isLastAct ? RotateCcw : SkipForward;
@@ -548,9 +552,11 @@ function CheatSheet({ sheet, onResume, isLastAct }) {
             type="button"
             onClick={() => setCollapsed((c) => !c)}
             title={collapsed ? "Expand" : "Hide details"}
-            className="flex-shrink-0 -mt-1 -mr-1 w-7 h-7 flex items-center justify-center rounded-md text-yellow-200 hover:text-white hover:bg-yellow-400/20 transition-colors"
+            className={`flex-shrink-0 -mt-1 -mr-1 w-7 h-7 flex items-center justify-center rounded-md text-yellow-200 hover:text-white hover:bg-yellow-400/20 transition-colors ${
+              collapsed ? "ring-2 ring-yellow-300/60" : ""
+            }`}
           >
-            <ToggleIcon className="w-4 h-4" />
+            <ToggleIcon className={`w-4 h-4 ${collapsed ? "animate-bounce" : ""}`} />
           </button>
         </div>
         {!collapsed && (
