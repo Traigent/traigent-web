@@ -172,6 +172,26 @@ const AGENT_KNOBS = [
   { id: "chunk-overlap",      name: "Chunk overlap (%)",               values: [0, 10, 20],                                                 impact: { a: 2, c: 1, l: 0 } },
   { id: "embedding-model",    name: "Embedding model",                 values: ["text-embedding-3-small", "text-embedding-3-large", "ada-002", "bge-large"], impact: { a: 3, c: 2, l: 0 } },
   { id: "reranker",           name: "Reranker",                        values: ["none", "cross-encoder", "LLM-rerank"],                     impact: { a: 3, c: 2, l: 2 } },
+  // Retrieval / RAG — pipeline extras
+  { id: "hybrid-search",      name: "Hybrid search (BM25 + dense)",    values: ["dense-only", "BM25-only", "30/70", "50/50", "70/30"],      impact: { a: 2, c: 1, l: 0 } },
+  { id: "query-rewriting",    name: "Query rewriting / HyDE",          values: ["off", "query-expansion", "multi-query", "HyDE"],           impact: { a: 3, c: 1, l: 1 } },
+  { id: "chunking-strategy",  name: "Chunking strategy",               values: ["fixed-token", "sentence-boundary", "semantic", "recursive"], impact: { a: 2, c: 0, l: 0 } },
+  { id: "vector-db",          name: "Vector DB / index",               values: ["pgvector", "Pinecone", "Weaviate", "FAISS", "Qdrant"],     impact: { a: 1, c: 2, l: 3 } },
+  { id: "distance-metric",    name: "Distance metric",                 values: ["cosine", "dot", "L2"],                                     impact: { a: 1, c: 0, l: 0 } },
+  // Memory — conversational + cross-session
+  { id: "short-term-memory",  name: "Short-term memory",               values: ["none", "last-N-turns", "summarized-buffer", "hybrid"],     impact: { a: 3, c: 2, l: 0 } },
+  { id: "long-term-memory",   name: "Long-term memory",                values: ["none", "vector-store", "episodic", "knowledge-graph"],     impact: { a: 2, c: 2, l: 0 } },
+  // Cost & caching
+  { id: "cache",              name: "Semantic / prompt cache",         values: ["none", "exact-match", "semantic-cache", "prompt-cache"],   impact: { a: 0, c: 3, l: 3 } },
+  { id: "token-budget",       name: "Token budget cap",                values: ["none", "soft-cap", "hard-cap"],                            impact: { a: 1, c: 3, l: 0 } },
+  // Reliability & safety
+  { id: "fallback-chain",     name: "Fallback model chain",            values: ["none", "single-fallback", "multi-tier"],                   impact: { a: 2, c: 3, l: 1 } },
+  { id: "output-validation",  name: "Output validation",               values: ["none", "JSON-schema", "Pydantic", "regex-postfilter"],     impact: { a: 1, c: 0, l: 0 } },
+  { id: "guardrails",         name: "Guardrails",                      values: ["off", "content-mod", "PII-redact", "jailbreak-detect", "all"], impact: { a: 1, c: 1, l: 1 } },
+  // Latency / UX
+  { id: "streaming",          name: "Streaming output",                values: ["off", "on"],                                               impact: { a: 0, c: 0, l: 3 } },
+  // Multi-agent orchestration
+  { id: "multi-agent",        name: "Multi-agent orchestration",       values: ["single", "supervisor-workers", "peer-to-peer"],            impact: { a: 3, c: 3, l: 2 } },
 ];
 
 const COMMON_MODEL_KNOBS = [
