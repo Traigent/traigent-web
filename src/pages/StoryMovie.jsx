@@ -311,7 +311,11 @@ function EmbeddedAct({ src, durationMs, onComplete, title, paused = false, showF
 // screen until the user acts. No auto-transition to a separate end screen.
 // =============================================================================
 
-const ACT_5_SENTENCES = [
+// Split into PART1 (the achievement statement) and PART2 (the wow + the
+// dismissive afterthought) so we can inject the 4 benefit boxes between
+// them — the boxes need to land above "Fast. Automatic." so the viewer
+// sees benefits, then the emerald punchline.
+const ACT_5_SENTENCES_PART1 = [
   // The achievement — full size, white (default). Last row gets a trailing
   // button that links to the Knob Explorer so curious viewers can poke at
   // the search space themselves.
@@ -326,6 +330,9 @@ const ACT_5_SENTENCES = [
       href: "/knob-explorer",
     },
   },
+];
+
+const ACT_5_SENTENCES_PART2 = [
   // The wow factor — emerald accent flags this as the success punch.
   {
     rows: ["Fast. Automatic."],
@@ -343,6 +350,8 @@ const ACT_5_SENTENCES = [
 function Act5Punch({ onComplete, startAtEnd = false, paused = false }) {
   // When startAtEnd is true (user clicked "End Act 5" from controls), the
   // narration is skipped to its final state and the buttons appear instantly.
+  // Two flags so the boxes can land between Part 1 and Part 2 narrations.
+  const [part1Done, setPart1Done] = useState(startAtEnd);
   const [narrationDone, setNarrationDone] = useState(startAtEnd);
   // Modal state for the "Start Now" CTA — same install/checkout flow as the
   // homepage TopNav button.
@@ -352,6 +361,9 @@ function Act5Punch({ onComplete, startAtEnd = false, paused = false }) {
   // (the 100ms progress ticker on the parent re-renders the act tree).
   const onCompleteRef = useRef(onComplete);
   onCompleteRef.current = onComplete;
+  const handlePart1Complete = useCallback(() => {
+    setPart1Done(true);
+  }, []);
   const handleNarrationComplete = useCallback(() => {
     setNarrationDone(true);
     // Signal the parent that Act 5's narration is done — flips parent into
@@ -367,27 +379,27 @@ function Act5Punch({ onComplete, startAtEnd = false, paused = false }) {
       <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-emerald-300 tracking-tight mb-6 md:mb-8">
         The Win
       </h1>
-      {/* Narration + tagline + buttons sit in a single column centered
-          vertically as one group. The tagline/buttons block reserves its
-          layout space from the start (rendered with opacity 0 until the
-          narration finishes), so the narration position doesn't shift
-          when the buttons fade in. */}
+      {/* Part 1 narration — "Traigent finds the HIGHEST ACCURACY..." with
+          the Explore-the-configuration-space trailing button. Once it
+          finishes, the 4 benefit boxes fade in below; Part 2 ("Fast.
+          Automatic.") then mounts and reveals below the boxes. */}
       <Narration
-        sentences={ACT_5_SENTENCES}
+        sentences={ACT_5_SENTENCES_PART1}
         wpm={470}
         rowPauseMs={70}
         sentencePauseMs={270}
-        onComplete={handleNarrationComplete}
+        onComplete={handlePart1Complete}
         noWrapper
         paused={paused}
         startAtEnd={startAtEnd}
       />
       {/* 4 benefit boxes — same content as the one-pager's opener tiles
           (LLM cost ↓, Eng time ↓, TTM ↓, Shipment confidence ↑). Fade in
-          with the CTAs once the narration finishes. */}
+          once Part 1 of the narration finishes, before Part 2 begins so
+          the viewer lands on benefits → emerald punchline. */}
       <motion.div
         initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: narrationDone ? 1 : 0, y: narrationDone ? 0 : 24 }}
+        animate={{ opacity: part1Done ? 1 : 0, y: part1Done ? 0 : 24 }}
         transition={{ duration: 0.7 }}
         className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-3 w-full max-w-4xl"
       >
@@ -432,6 +444,24 @@ function Act5Punch({ onComplete, startAtEnd = false, paused = false }) {
           <div className="text-[10px] md:text-[11px] font-mono uppercase tracking-wider text-slate-300 mt-1">shipment confidence</div>
         </div>
       </motion.div>
+      {/* Part 2 narration — "Fast. Automatic." (emerald punchline) +
+          "No trial and error / No guesswork" muted afterthought. Mounts
+          only after Part 1 finishes so the order is: Part 1 → boxes →
+          Part 2 → CTAs. */}
+      {part1Done && (
+        <div className="mt-8">
+          <Narration
+            sentences={ACT_5_SENTENCES_PART2}
+            wpm={470}
+            rowPauseMs={70}
+            sentencePauseMs={270}
+            onComplete={handleNarrationComplete}
+            noWrapper
+            paused={paused}
+            startAtEnd={startAtEnd}
+          />
+        </div>
+      )}
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: narrationDone ? 1 : 0, y: narrationDone ? 0 : 24 }}
