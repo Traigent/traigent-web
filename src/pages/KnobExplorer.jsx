@@ -147,52 +147,97 @@ const VENDOR_ORDER = [
   "Cohere",
 ];
 
-const AGENT_KNOBS = [
-  { id: "few-shot-k",         name: "In-context examples (k)",         values: [0, 1, 3, 5, 10],                                            impact: { a: 3, c: 2, l: 1 } },
-  { id: "example-selection",  name: "Example selection strategy",      values: ["random", "BM25", "dense-embedding", "task-aware"],         impact: { a: 3, c: 0, l: 0 } },
-  { id: "cot",                name: "Chain-of-thought",                values: ["off", "brief", "extended"],                                impact: { a: 3, c: 3, l: 2 } },
-  { id: "self-consistency",   name: "Self-consistency (votes)",        values: [1, 3, 5],                                                   impact: { a: 3, c: 3, l: 3 } },
-  { id: "self-correction",    name: "Self-correction passes",          values: [0, 1, 2],                                                   impact: { a: 3, c: 3, l: 2 } },
-  { id: "decomposition",      name: "Decomposition / multi-step",      values: ["single-shot", "plan-then-execute", "iterative"],           impact: { a: 3, c: 2, l: 2 } },
-  { id: "reflection",         name: "Reflection / self-critique",      values: ["off", "post-step", "end-of-task"],                         impact: { a: 2, c: 2, l: 2 } },
-  { id: "system-prompt",      name: "System prompt template",          values: ["concise", "verbose", "persona", "rule-based"],             impact: { a: 3, c: 1, l: 0 } },
-  { id: "tool-format",        name: "Tool-calling format",             values: ["native", "JSON-mode", "function-call", "unstructured"],    impact: { a: 2, c: 0, l: 1 } },
-  { id: "tool-selection",     name: "Tool selection strategy",         values: ["all-in-context", "top-k-retrieved", "hierarchical"],       impact: { a: 2, c: 2, l: 1 } },
-  { id: "tool-description",   name: "Tool description verbosity",      values: ["terse", "standard", "rich-with-examples"],                 impact: { a: 2, c: 1, l: 0 } },
-  { id: "tool-execution",     name: "Tool execution mode",             values: ["sequential", "parallel"],                                  impact: { a: 1, c: 0, l: 3 } },
-  { id: "output-schema",      name: "Output schema enforcement",       values: ["free-form", "JSON-mode", "structured-generation"],         impact: { a: 2, c: 0, l: 0 } },
-  { id: "retry-budget",       name: "Error retry budget",              values: [0, 1, 2, 3],                                                impact: { a: 2, c: 2, l: 2 } },
-  { id: "context-management", name: "Long-context management",         values: ["truncate", "summarize", "RAG-windowed", "full-context"],   impact: { a: 3, c: 2, l: 1 } },
-  // Retrieval / RAG knobs — for any agent that uses a retrieval pipeline.
-  // Each one moves accuracy + cost meaningfully on retrieval-heavy tasks;
-  // collectively they're the difference between "naive RAG" and a tuned
-  // one (often 20-40 pts on retrieval QA benchmarks).
-  { id: "retrieval-top-k",    name: "Retrieval top-k",                 values: [0, 1, 3, 5, 10, 20],                                        impact: { a: 3, c: 2, l: 1 } },
-  { id: "chunk-size",         name: "Chunk size (tokens)",             values: [256, 512, 1024, 2048],                                      impact: { a: 3, c: 1, l: 0 } },
-  { id: "chunk-overlap",      name: "Chunk overlap (%)",               values: [0, 10, 20],                                                 impact: { a: 2, c: 1, l: 0 } },
-  { id: "embedding-model",    name: "Embedding model",                 values: ["text-embedding-3-small", "text-embedding-3-large", "ada-002", "bge-large"], impact: { a: 3, c: 2, l: 0 } },
-  { id: "reranker",           name: "Reranker",                        values: ["none", "cross-encoder", "LLM-rerank"],                     impact: { a: 3, c: 2, l: 2 } },
-  // Retrieval / RAG — pipeline extras
-  { id: "hybrid-search",      name: "Hybrid search (BM25 + dense)",    values: ["dense-only", "BM25-only", "30/70", "50/50", "70/30"],      impact: { a: 2, c: 1, l: 0 } },
-  { id: "query-rewriting",    name: "Query rewriting / HyDE",          values: ["off", "query-expansion", "multi-query", "HyDE"],           impact: { a: 3, c: 1, l: 1 } },
-  { id: "chunking-strategy",  name: "Chunking strategy",               values: ["fixed-token", "sentence-boundary", "semantic", "recursive"], impact: { a: 2, c: 0, l: 0 } },
-  { id: "vector-db",          name: "Vector DB / index",               values: ["pgvector", "Pinecone", "Weaviate", "FAISS", "Qdrant"],     impact: { a: 1, c: 2, l: 3 } },
-  { id: "distance-metric",    name: "Distance metric",                 values: ["cosine", "dot", "L2"],                                     impact: { a: 1, c: 0, l: 0 } },
-  // Memory — conversational + cross-session
-  { id: "short-term-memory",  name: "Short-term memory",               values: ["none", "last-N-turns", "summarized-buffer", "hybrid"],     impact: { a: 3, c: 2, l: 0 } },
-  { id: "long-term-memory",   name: "Long-term memory",                values: ["none", "vector-store", "episodic", "knowledge-graph"],     impact: { a: 2, c: 2, l: 0 } },
-  // Cost & caching
-  { id: "cache",              name: "Semantic / prompt cache",         values: ["none", "exact-match", "semantic-cache", "prompt-cache"],   impact: { a: 0, c: 3, l: 3 } },
-  { id: "token-budget",       name: "Token budget cap",                values: ["none", "soft-cap", "hard-cap"],                            impact: { a: 1, c: 3, l: 0 } },
-  // Reliability & safety
-  { id: "fallback-chain",     name: "Fallback model chain",            values: ["none", "single-fallback", "multi-tier"],                   impact: { a: 2, c: 3, l: 1 } },
-  { id: "output-validation",  name: "Output validation",               values: ["none", "JSON-schema", "Pydantic", "regex-postfilter"],     impact: { a: 1, c: 0, l: 0 } },
-  { id: "guardrails",         name: "Guardrails",                      values: ["off", "content-mod", "PII-redact", "jailbreak-detect", "all"], impact: { a: 1, c: 1, l: 1 } },
-  // Latency / UX
-  { id: "streaming",          name: "Streaming output",                values: ["off", "on"],                                               impact: { a: 0, c: 0, l: 3 } },
-  // Multi-agent orchestration
-  { id: "multi-agent",        name: "Multi-agent orchestration",       values: ["single", "supervisor-workers", "peer-to-peer"],            impact: { a: 3, c: 3, l: 2 } },
+// Agent knobs organized into typed groups so the UI can render each as
+// its own collapsible section (specialty groups close by default to keep
+// the panel scannable). AGENT_KNOBS below is a flat derived list — keep
+// using it for combinatorics math, sort ordering, total-count display.
+const AGENT_KNOB_GROUPS = [
+  {
+    id: "core",
+    title: "Core agent knobs",
+    defaultOpen: true,
+    knobs: [
+      { id: "few-shot-k",         name: "In-context examples (k)",         values: [0, 1, 3, 5, 10],                                            impact: { a: 3, c: 2, l: 1 } },
+      { id: "example-selection",  name: "Example selection strategy",      values: ["random", "BM25", "dense-embedding", "task-aware"],         impact: { a: 3, c: 0, l: 0 } },
+      { id: "cot",                name: "Chain-of-thought",                values: ["off", "brief", "extended"],                                impact: { a: 3, c: 3, l: 2 } },
+      { id: "self-consistency",   name: "Self-consistency (votes)",        values: [1, 3, 5],                                                   impact: { a: 3, c: 3, l: 3 } },
+      { id: "self-correction",    name: "Self-correction passes",          values: [0, 1, 2],                                                   impact: { a: 3, c: 3, l: 2 } },
+      { id: "decomposition",      name: "Decomposition / multi-step",      values: ["single-shot", "plan-then-execute", "iterative"],           impact: { a: 3, c: 2, l: 2 } },
+      { id: "reflection",         name: "Reflection / self-critique",      values: ["off", "post-step", "end-of-task"],                         impact: { a: 2, c: 2, l: 2 } },
+      { id: "system-prompt",      name: "System prompt template",          values: ["concise", "verbose", "persona", "rule-based"],             impact: { a: 3, c: 1, l: 0 } },
+      { id: "tool-format",        name: "Tool-calling format",             values: ["native", "JSON-mode", "function-call", "unstructured"],    impact: { a: 2, c: 0, l: 1 } },
+      { id: "tool-selection",     name: "Tool selection strategy",         values: ["all-in-context", "top-k-retrieved", "hierarchical"],       impact: { a: 2, c: 2, l: 1 } },
+      { id: "tool-description",   name: "Tool description verbosity",      values: ["terse", "standard", "rich-with-examples"],                 impact: { a: 2, c: 1, l: 0 } },
+      { id: "tool-execution",     name: "Tool execution mode",             values: ["sequential", "parallel"],                                  impact: { a: 1, c: 0, l: 3 } },
+      { id: "output-schema",      name: "Output schema enforcement",       values: ["free-form", "JSON-mode", "structured-generation"],         impact: { a: 2, c: 0, l: 0 } },
+      { id: "retry-budget",       name: "Error retry budget",              values: [0, 1, 2, 3],                                                impact: { a: 2, c: 2, l: 2 } },
+      { id: "context-management", name: "Long-context management",         values: ["truncate", "summarize", "RAG-windowed", "full-context"],   impact: { a: 3, c: 2, l: 1 } },
+    ],
+  },
+  {
+    id: "retrieval",
+    title: "Retrieval / RAG",
+    defaultOpen: false,
+    knobs: [
+      { id: "retrieval-top-k",    name: "Retrieval top-k",                 values: [0, 1, 3, 5, 10, 20],                                        impact: { a: 3, c: 2, l: 1 } },
+      { id: "chunk-size",         name: "Chunk size (tokens)",             values: [256, 512, 1024, 2048],                                      impact: { a: 3, c: 1, l: 0 } },
+      { id: "chunk-overlap",      name: "Chunk overlap (%)",               values: [0, 10, 20],                                                 impact: { a: 2, c: 1, l: 0 } },
+      { id: "embedding-model",    name: "Embedding model",                 values: ["text-embedding-3-small", "text-embedding-3-large", "ada-002", "bge-large"], impact: { a: 3, c: 2, l: 0 } },
+      { id: "reranker",           name: "Reranker",                        values: ["none", "cross-encoder", "LLM-rerank"],                     impact: { a: 3, c: 2, l: 2 } },
+      { id: "hybrid-search",      name: "Hybrid search (BM25 + dense)",    values: ["dense-only", "BM25-only", "30/70", "50/50", "70/30"],      impact: { a: 2, c: 1, l: 0 } },
+      { id: "query-rewriting",    name: "Query rewriting / HyDE",          values: ["off", "query-expansion", "multi-query", "HyDE"],           impact: { a: 3, c: 1, l: 1 } },
+      { id: "chunking-strategy",  name: "Chunking strategy",               values: ["fixed-token", "sentence-boundary", "semantic", "recursive"], impact: { a: 2, c: 0, l: 0 } },
+      { id: "vector-db",          name: "Vector DB / index",               values: ["pgvector", "Pinecone", "Weaviate", "FAISS", "Qdrant"],     impact: { a: 1, c: 2, l: 3 } },
+      { id: "distance-metric",    name: "Distance metric",                 values: ["cosine", "dot", "L2"],                                     impact: { a: 1, c: 0, l: 0 } },
+    ],
+  },
+  {
+    id: "memory",
+    title: "Memory",
+    defaultOpen: false,
+    knobs: [
+      { id: "short-term-memory",  name: "Short-term memory",               values: ["none", "last-N-turns", "summarized-buffer", "hybrid"],     impact: { a: 3, c: 2, l: 0 } },
+      { id: "long-term-memory",   name: "Long-term memory",                values: ["none", "vector-store", "episodic", "knowledge-graph"],     impact: { a: 2, c: 2, l: 0 } },
+    ],
+  },
+  {
+    id: "cost",
+    title: "Cost & caching",
+    defaultOpen: false,
+    knobs: [
+      { id: "cache",              name: "Semantic / prompt cache",         values: ["none", "exact-match", "semantic-cache", "prompt-cache"],   impact: { a: 0, c: 3, l: 3 } },
+      { id: "token-budget",       name: "Token budget cap",                values: ["none", "soft-cap", "hard-cap"],                            impact: { a: 1, c: 3, l: 0 } },
+    ],
+  },
+  {
+    id: "reliability",
+    title: "Reliability & safety",
+    defaultOpen: false,
+    knobs: [
+      { id: "fallback-chain",     name: "Fallback model chain",            values: ["none", "single-fallback", "multi-tier"],                   impact: { a: 2, c: 3, l: 1 } },
+      { id: "output-validation",  name: "Output validation",               values: ["none", "JSON-schema", "Pydantic", "regex-postfilter"],     impact: { a: 1, c: 0, l: 0 } },
+      { id: "guardrails",         name: "Guardrails",                      values: ["off", "content-mod", "PII-redact", "jailbreak-detect", "all"], impact: { a: 1, c: 1, l: 1 } },
+    ],
+  },
+  {
+    id: "ux",
+    title: "Latency / UX",
+    defaultOpen: false,
+    knobs: [
+      { id: "streaming",          name: "Streaming output",                values: ["off", "on"],                                               impact: { a: 0, c: 0, l: 3 } },
+    ],
+  },
+  {
+    id: "orchestration",
+    title: "Orchestration",
+    defaultOpen: false,
+    knobs: [
+      { id: "multi-agent",        name: "Multi-agent orchestration",       values: ["single", "supervisor-workers", "peer-to-peer"],            impact: { a: 3, c: 3, l: 2 } },
+    ],
+  },
 ];
+
+const AGENT_KNOBS = AGENT_KNOB_GROUPS.flatMap((g) => g.knobs);
 
 const COMMON_MODEL_KNOBS = [
   { id: "temperature",       name: "Temperature",                values: [0.0, 0.2, 0.5, 0.7, 1.0], impact: { a: 2, c: 0, l: 0 } },
@@ -1023,16 +1068,29 @@ export default function KnobExplorer() {
               </div>
             </Section>
 
-            {/* Agent knobs */}
-            <Section title="Agent knobs" count={enabledAgentCount}>
-              <KnobList
-                knobs={AGENT_KNOBS}
-                sortBy={sortBy}
-                knobValues={knobValues}
-                onToggleEnabled={toggleKnobEnabled}
-                onToggleValue={toggleKnobValue}
-              />
-            </Section>
+            {/* Agent knobs — rendered as one collapsible Section per typed
+                group (Core / Retrieval / Memory / Cost / Reliability / UX
+                / Orchestration). Specialty groups close by default to keep
+                the page scannable; user expands the ones they care about. */}
+            {AGENT_KNOB_GROUPS.map((group) => {
+              const enabledInGroup = group.knobs.filter((k) => knobValues[k.id]).length;
+              return (
+                <Section
+                  key={group.id}
+                  title={group.title}
+                  count={enabledInGroup}
+                  defaultOpen={group.defaultOpen}
+                >
+                  <KnobList
+                    knobs={group.knobs}
+                    sortBy={sortBy}
+                    knobValues={knobValues}
+                    onToggleEnabled={toggleKnobEnabled}
+                    onToggleValue={toggleKnobValue}
+                  />
+                </Section>
+              );
+            })}
 
             {/* Common model knobs */}
             <Section title="Common model knobs" count={enabledCommonCount}>
