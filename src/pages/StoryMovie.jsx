@@ -53,9 +53,15 @@ function Narration({
   // `isLastOfSentence` flag controls whether we pause longer after this row
   // (end-of-sentence dwell). The optional colorClass / sizeClass come from
   // the sentence object form (used by Act 5's color hierarchy):
-  //   - string                                  → single row
-  //   - string[]                                → multi-row sentence
-  //   - { rows: string[], colorClass?, sizeClass? } → styled sentence
+  //   - string                                  → single row, text-only
+  //   - { text, render }                        → row with inline JSX (e.g.
+  //                                                an underlined word). `text`
+  //                                                drives reveal timing + the
+  //                                                clip-path wipe content;
+  //                                                `render` is rendered after
+  //                                                the wipe completes.
+  //   - string[]  / row-object[]                → multi-row sentence
+  //   - { rows: ..., colorClass?, sizeClass? }  → styled sentence
   const flatRows = useMemo(() => {
     const out = [];
     sentences.forEach((s) => {
@@ -70,10 +76,13 @@ function Narration({
         sizeClass = s.sizeClass;
         trailingButton = s.trailingButton;
       }
-      rows.forEach((text, i) => {
+      rows.forEach((row, i) => {
         const isLast = i === rows.length - 1;
+        const text = typeof row === "string" ? row : row.text;
+        const render = typeof row === "string" ? null : row.render;
         out.push({
           text,
+          render,
           isLastOfSentence: isLast,
           colorClass,
           sizeClass,
@@ -120,7 +129,7 @@ function Narration({
 
   const inner = (
     <div className="max-w-6xl w-full text-center">
-      {flatRows.map(({ text, isLastOfSentence, colorClass, sizeClass, trailingButton }, i) => {
+      {flatRows.map(({ text, render, isLastOfSentence, colorClass, sizeClass, trailingButton }, i) => {
           const isPast = i < activeIdx;
           const isActive = i === activeIdx;
           // Future rows: invisible placeholder so vertical layout is fixed
@@ -143,7 +152,10 @@ function Narration({
               >
                 {isPast && (
                   // Already revealed — stays fully visible, no animation.
-                  <span style={{ display: "inline-block", paddingBottom: "0.15em" }}>{text}</span>
+                  // Prefer the `render` JSX override when provided so rows
+                  // with inline emphasis (underline, color span, etc.)
+                  // keep that styling after reveal.
+                  <span style={{ display: "inline-block", paddingBottom: "0.15em" }}>{render || text}</span>
                 )}
                 {isActive && (
                   // Currently revealing — left-to-right clip-path wipe. Negative
@@ -155,7 +167,7 @@ function Narration({
                     transition={{ duration: rowReveals[i] / 1000, ease: "linear" }}
                     style={{ display: "inline-block", paddingBottom: "0.15em" }}
                   >
-                    {text}
+                    {render || text}
                   </motion.span>
                 )}
                 {!isPast && !isActive && (
@@ -745,9 +757,12 @@ const ACT_1_SENTENCES = [
     },
   },
   [
-    "Trial and Error can be brutal",
-    "Not guaranteed to find the optimum",
-    "Consumes time and effort",
+    "Trial and Error consumes Time and Effort",
+    {
+      text: "May not find the optimum",
+      render: <>May not find the <span className="underline underline-offset-4 decoration-current">optimum</span></>,
+    },
+    "Does not reduce LLM costs",
   ],
 ];
 
