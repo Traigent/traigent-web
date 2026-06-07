@@ -990,9 +990,16 @@ export default function KnobExplorer() {
                     <div className="text-[10px] font-mono uppercase tracking-widest text-slate-500 mb-1">
                       Total possible configurations
                     </div>
-                    <div className="text-3xl md:text-5xl font-bold text-white font-mono tabular-nums">
-                      {total.toLocaleString()}
-                    </div>
+                    {selectedModels.length === 0 && enabledAgentCount === 0 && enabledCommonCount === 0 && enabledSpecificCount === 0 ? (
+                      <div className="text-3xl md:text-5xl font-bold font-mono tabular-nums leading-none">
+                        <span className="text-slate-400">N/A</span>
+                        <span className="text-base md:text-lg font-normal text-slate-500 ml-3 align-middle">(select below)</span>
+                      </div>
+                    ) : (
+                      <div className="text-3xl md:text-5xl font-bold text-white font-mono tabular-nums">
+                        {total.toLocaleString()}
+                      </div>
+                    )}
                   </div>
                   {/* Summary chips mirror the new section taxonomy:
                       Models (top-level) / Agent knobs (super) / Model knobs
