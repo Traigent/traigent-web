@@ -1109,6 +1109,20 @@ export default function KnobExplorer() {
               );
             })}
 
+            {/* Model knobs — non-collapsible umbrella label above the
+                Common + Specific sub-groups. Mirrors the AGENT KNOBS
+                umbrella; makes the parallel between "knobs that apply
+                across all models" (Common) and "knobs unique to a model
+                family" (Specific) explicit and surfaces the cross-
+                sub-group total in one place. */}
+            <div className="flex items-baseline justify-between mt-6 mb-3 pb-2 border-b border-slate-700/50">
+              <span className="text-[11px] md:text-xs font-mono uppercase tracking-widest text-slate-400">
+                Model knobs
+              </span>
+              <span className="text-[11px] md:text-xs font-mono text-slate-500">
+                {enabledCommonCount + enabledSpecificCount} / {COMMON_MODEL_KNOBS.length + specificTotal} selected
+              </span>
+            </div>
             {/* Common model knobs */}
             <Section title="Common model knobs" count={enabledCommonCount} total={COMMON_MODEL_KNOBS.length}>
               <KnobList
