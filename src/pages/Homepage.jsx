@@ -81,14 +81,14 @@ export default function Homepage() {
     <div className="bg-white">
       <Helmet>
         <title>Traigent — Agent Optimization Platform</title>
-        <meta name="description" content="Rapidly finds Low Cost and High Accuracy options among thousands possible." />
+        <meta name="description" content="Rapidly finds High Accuracy and Low Cost yielding configurations among thousands possible." />
         <meta property="og:title" content="Traigent — AI Agent Optimization Platform" />
-        <meta property="og:description" content="Rapidly finds Low Cost and High Accuracy options among thousands possible." />
+        <meta property="og:description" content="Rapidly finds High Accuracy and Low Cost yielding configurations among thousands possible." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://traigent.ai" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Traigent — AI Agent Optimization Platform" />
-        <meta name="twitter:description" content="Rapidly finds Low Cost and High Accuracy options among thousands possible." />
+        <meta name="twitter:description" content="Rapidly finds High Accuracy and Low Cost yielding configurations among thousands possible." />
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
@@ -143,7 +143,7 @@ export default function Homepage() {
               transition={{ duration: 0.5, delay: 0.15 }}
               className="text-2xl md:text-3xl lg:text-[2rem] text-slate-300 leading-snug mb-3"
             >
-              <span className="font-bold text-white">Rapidly</span> finds <span className="font-bold text-[#f59e0b]">Low Cost</span> and <span className="font-bold text-[#4D8EF8]">High Accuracy</span> options
+              <span className="font-bold text-white">Rapidly</span> finds <span className="font-bold text-[#4D8EF8]">High Accuracy</span> and <span className="font-bold text-[#f59e0b]">Low Cost</span> yielding configurations
             </motion.p>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
