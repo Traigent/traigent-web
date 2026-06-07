@@ -388,7 +388,7 @@ function Act5Punch({ onComplete, startAtEnd = false, paused = false }) {
       {/* Fixed "The Win" headline — same treatment as Act 1's "The Problem"
           and Act 3's "What everyone wants", with an emerald accent that
           thematically signals success. */}
-      <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-emerald-300 tracking-tight mb-6 md:mb-8">
+      <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-emerald-300 tracking-tight mb-3 md:mb-4">
         The Win
       </h1>
       {/* Part 1 narration — "Traigent finds the HIGHEST ACCURACY..." with
@@ -413,47 +413,47 @@ function Act5Punch({ onComplete, startAtEnd = false, paused = false }) {
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: part1Done ? 1 : 0, y: part1Done ? 0 : 24 }}
         transition={{ duration: 0.7 }}
-        className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-3 w-full max-w-4xl"
+        className="mt-5 grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 w-full max-w-4xl"
       >
         <Link
           to="/roi"
-          className="bg-slate-900/70 border-2 rounded-xl px-3 py-3 text-center hover:bg-slate-900 transition-colors block"
+          className="bg-slate-900/70 border-2 rounded-xl px-3 py-2 text-center hover:bg-slate-900 transition-colors block"
           style={{ borderColor: "#f59e0b66" }}
         >
-          <div className="flex items-center justify-center gap-2" style={{ color: "#f59e0b" }}>
-            <ArrowDown className="w-6 h-6" strokeWidth={3} />
-            <span className="text-xl md:text-2xl font-extrabold tracking-tight leading-none">up to 60%</span>
+          <div className="flex items-center justify-center gap-1.5" style={{ color: "#f59e0b" }}>
+            <ArrowDown className="w-4 h-4 md:w-5 md:h-5" strokeWidth={3} />
+            <span className="text-base md:text-xl font-extrabold tracking-tight leading-none">up to 60%</span>
           </div>
-          <div className="text-[10px] md:text-[11px] font-mono uppercase tracking-wider text-slate-300 mt-1">LLM cost reduction</div>
+          <div className="text-[9px] md:text-[10px] font-mono uppercase tracking-wider text-slate-300 mt-0.5">LLM cost reduction</div>
         </Link>
         <Link
           to="/ttm"
-          className="bg-slate-900/70 border-2 rounded-xl px-3 py-3 text-center hover:bg-slate-900 transition-colors block"
+          className="bg-slate-900/70 border-2 rounded-xl px-3 py-2 text-center hover:bg-slate-900 transition-colors block"
           style={{ borderColor: "#4D8EF866" }}
         >
-          <div className="flex items-center justify-center gap-2" style={{ color: "#4D8EF8" }}>
-            <ArrowDown className="w-6 h-6" strokeWidth={3} />
-            <span className="text-xl md:text-2xl font-extrabold tracking-tight leading-none">up to 8 wks</span>
+          <div className="flex items-center justify-center gap-1.5" style={{ color: "#4D8EF8" }}>
+            <ArrowDown className="w-4 h-4 md:w-5 md:h-5" strokeWidth={3} />
+            <span className="text-base md:text-xl font-extrabold tracking-tight leading-none">up to 8 wks</span>
           </div>
-          <div className="text-[10px] md:text-[11px] font-mono uppercase tracking-wider text-slate-300 mt-1">Engineering time reclaimed</div>
+          <div className="text-[9px] md:text-[10px] font-mono uppercase tracking-wider text-slate-300 mt-0.5">Engineering time reclaimed</div>
         </Link>
         <Link
           to="/ttm"
-          className="bg-slate-900/70 border-2 rounded-xl px-3 py-3 text-center hover:bg-slate-900 transition-colors block"
+          className="bg-slate-900/70 border-2 rounded-xl px-3 py-2 text-center hover:bg-slate-900 transition-colors block"
           style={{ borderColor: "#4D8EF866" }}
         >
-          <div className="flex items-center justify-center gap-2" style={{ color: "#4D8EF8" }}>
-            <ArrowDown className="w-6 h-6" strokeWidth={3} />
-            <span className="text-xl md:text-2xl font-extrabold tracking-tight leading-none">TTM</span>
+          <div className="flex items-center justify-center gap-1.5" style={{ color: "#4D8EF8" }}>
+            <ArrowDown className="w-4 h-4 md:w-5 md:h-5" strokeWidth={3} />
+            <span className="text-base md:text-xl font-extrabold tracking-tight leading-none">TTM</span>
           </div>
-          <div className="text-[10px] md:text-[11px] font-mono uppercase tracking-wider text-slate-300 mt-1">shortens time to market</div>
+          <div className="text-[9px] md:text-[10px] font-mono uppercase tracking-wider text-slate-300 mt-0.5">shortens time to market</div>
         </Link>
-        <div className="bg-slate-900/70 border-2 rounded-xl px-3 py-3 text-center" style={{ borderColor: "#a78bfa66" }}>
-          <div className="flex items-center justify-center gap-2" style={{ color: "#a78bfa" }}>
-            <ArrowUp className="w-6 h-6" strokeWidth={3} />
-            <span className="text-xl md:text-2xl font-extrabold tracking-tight leading-none">100%</span>
+        <div className="bg-slate-900/70 border-2 rounded-xl px-3 py-2 text-center" style={{ borderColor: "#a78bfa66" }}>
+          <div className="flex items-center justify-center gap-1.5" style={{ color: "#a78bfa" }}>
+            <ArrowUp className="w-4 h-4 md:w-5 md:h-5" strokeWidth={3} />
+            <span className="text-base md:text-xl font-extrabold tracking-tight leading-none">100%</span>
           </div>
-          <div className="text-[10px] md:text-[11px] font-mono uppercase tracking-wider text-slate-300 mt-1">shipment confidence</div>
+          <div className="text-[9px] md:text-[10px] font-mono uppercase tracking-wider text-slate-300 mt-0.5">shipment confidence</div>
         </div>
       </motion.div>
       {/* Part 2 narration — "Fast. Automatic." (emerald punchline) +
@@ -461,7 +461,7 @@ function Act5Punch({ onComplete, startAtEnd = false, paused = false }) {
           only after Part 1 finishes so the order is: Part 1 → boxes →
           Part 2 → CTAs. */}
       {part1Done && (
-        <div className="mt-8">
+        <div className="mt-4">
           <Narration
             sentences={ACT_5_SENTENCES_PART2}
             wpm={470}
@@ -478,7 +478,7 @@ function Act5Punch({ onComplete, startAtEnd = false, paused = false }) {
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: narrationDone ? 1 : 0, y: narrationDone ? 0 : 24 }}
         transition={{ duration: 0.7, delay: 0.15 }}
-        className="mt-8 flex items-center gap-4"
+        className="mt-4 flex items-center gap-4"
       >
         {/* Same two CTAs as the homepage TopNav — Start Now opens the modal
             install/checkout flow; Book a demo opens the HubSpot meeting
