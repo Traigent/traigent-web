@@ -760,7 +760,7 @@ const ACT_1_SENTENCES = [
     "Trial and Error consumes Time and Effort",
     {
       text: "May not find the optimum",
-      render: <>May not find the <span className="underline underline-offset-4 decoration-current">optimum</span></>,
+      render: <>May not find <span className="underline underline-offset-4 decoration-current">the</span> optimum</>,
     },
     "Does not reduce LLM costs",
   ],
