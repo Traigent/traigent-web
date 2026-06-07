@@ -659,10 +659,20 @@ function VendorGroup({ vendor, models, selectedIds, onToggle, open, onToggleOpen
   );
 }
 
-function Section({ title, count, total, children, defaultOpen = true }) {
+// `variant`:
+//   - "default" (omitted) — bold white title; used for the actual
+//     leaf sub-categories the visitor toggles between.
+//   - "super" — same size, medium-weight, muted slate-300 color, with
+//     indented children when expanded. Used for taxonomy umbrellas
+//     ("Agent knobs", "Model knobs") that group sub-sections.
+function Section({ title, count, total, children, defaultOpen = true, variant = "default" }) {
   const [open, setOpen] = useState(defaultOpen);
   const hasCount = typeof count === "number";
   const hasTotal = typeof total === "number";
+  const isSuper = variant === "super";
+  const titleClass = isSuper
+    ? "text-xl md:text-2xl font-medium text-slate-300 group-hover:text-blue-300 transition-colors"
+    : "text-xl md:text-2xl font-bold text-white group-hover:text-blue-300 transition-colors";
   return (
     <section className="mb-6">
       <button
@@ -671,7 +681,7 @@ function Section({ title, count, total, children, defaultOpen = true }) {
         className="w-full flex items-center justify-between gap-3 mb-3 py-2 group"
       >
         <div className="flex items-center gap-3">
-          <h2 className="text-xl md:text-2xl font-bold text-white group-hover:text-blue-300 transition-colors">
+          <h2 className={titleClass}>
             {title}
           </h2>
           {hasCount && (
@@ -686,7 +696,9 @@ function Section({ title, count, total, children, defaultOpen = true }) {
           <ChevronDown className="w-5 h-5 text-slate-500 group-hover:text-slate-300" />
         )}
       </button>
-      {open && children}
+      {open && (isSuper
+        ? <div className="pl-4 md:pl-6 border-l border-slate-800/60 ml-1">{children}</div>
+        : children)}
     </section>
   );
 }
@@ -1075,67 +1087,63 @@ export default function KnobExplorer() {
               </div>
             </Section>
 
-            {/* Agent knobs — non-collapsible umbrella label above the 7
-                typed sub-groups (Core / Retrieval / Memory / Cost / Reliability
-                / UX / Orchestration). All of these are agent-level configs;
-                the umbrella makes that explicit and surfaces the total
-                X / Y count across all groups in one place. */}
-            <div className="flex items-baseline justify-between mt-6 mb-3 pb-2 border-b border-slate-700/50">
-              <span className="text-[11px] md:text-xs font-mono uppercase tracking-widest text-slate-400">
-                Agent knobs
-              </span>
-              <span className="text-[11px] md:text-xs font-mono text-slate-500">
-                {enabledAgentCount} / {AGENT_KNOBS.length} selected
-              </span>
-            </div>
-            {AGENT_KNOB_GROUPS.map((group) => {
-              const enabledInGroup = group.knobs.filter((k) => knobValues[k.id]).length;
-              return (
-                <Section
-                  key={group.id}
-                  title={group.title}
-                  count={enabledInGroup}
-                  total={group.knobs.length}
-                  defaultOpen={group.defaultOpen}
-                >
-                  <KnobList
-                    knobs={group.knobs}
-                    sortBy={sortBy}
-                    knobValues={knobValues}
-                    onToggleEnabled={toggleKnobEnabled}
-                    onToggleValue={toggleKnobValue}
-                  />
-                </Section>
-              );
-            })}
-
-            {/* Model knobs — non-collapsible umbrella label above the
-                Common + Specific sub-groups. Mirrors the AGENT KNOBS
-                umbrella; makes the parallel between "knobs that apply
-                across all models" (Common) and "knobs unique to a model
-                family" (Specific) explicit and surfaces the cross-
-                sub-group total in one place. */}
-            <div className="flex items-baseline justify-between mt-6 mb-3 pb-2 border-b border-slate-700/50">
-              <span className="text-[11px] md:text-xs font-mono uppercase tracking-widest text-slate-400">
-                Model knobs
-              </span>
-              <span className="text-[11px] md:text-xs font-mono text-slate-500">
-                {enabledCommonCount + enabledSpecificCount} / {COMMON_MODEL_KNOBS.length + specificTotal} selected
-              </span>
-            </div>
-            {/* Common model knobs */}
-            <Section title="Common model knobs" count={enabledCommonCount} total={COMMON_MODEL_KNOBS.length}>
-              <KnobList
-                knobs={COMMON_MODEL_KNOBS}
-                sortBy={sortBy}
-                knobValues={knobValues}
-                onToggleEnabled={toggleKnobEnabled}
-                onToggleValue={toggleKnobValue}
-              />
+            {/* Agent knobs — super-Section wrapping 7 typed sub-Sections
+                (Core / Retrieval / Memory / Cost / Reliability / UX /
+                Orchestration). Sub-Sections indent inside the super so
+                the hierarchy is visible at a glance. Collapsing the
+                super hides the whole sub-tree. */}
+            <Section
+              title="Agent knobs"
+              count={enabledAgentCount}
+              total={AGENT_KNOBS.length}
+              variant="super"
+              defaultOpen={true}
+            >
+              {AGENT_KNOB_GROUPS.map((group) => {
+                const enabledInGroup = group.knobs.filter((k) => knobValues[k.id]).length;
+                return (
+                  <Section
+                    key={group.id}
+                    title={group.title}
+                    count={enabledInGroup}
+                    total={group.knobs.length}
+                    defaultOpen={group.defaultOpen}
+                  >
+                    <KnobList
+                      knobs={group.knobs}
+                      sortBy={sortBy}
+                      knobValues={knobValues}
+                      onToggleEnabled={toggleKnobEnabled}
+                      onToggleValue={toggleKnobValue}
+                    />
+                  </Section>
+                );
+              })}
             </Section>
 
-            {/* Specific model knobs */}
-            <Section title="Specific model knobs" count={enabledSpecificCount} total={specificTotal}>
+            {/* Model knobs — super-Section wrapping the Common +
+                Specific sub-Sections. Mirrors the Agent knobs super
+                above. */}
+            <Section
+              title="Model knobs"
+              count={enabledCommonCount + enabledSpecificCount}
+              total={COMMON_MODEL_KNOBS.length + specificTotal}
+              variant="super"
+              defaultOpen={true}
+            >
+              {/* Common model knobs */}
+              <Section title="Common model knobs" count={enabledCommonCount} total={COMMON_MODEL_KNOBS.length}>
+                <KnobList
+                  knobs={COMMON_MODEL_KNOBS}
+                  sortBy={sortBy}
+                  knobValues={knobValues}
+                  onToggleEnabled={toggleKnobEnabled}
+                  onToggleValue={toggleKnobValue}
+                />
+              </Section>
+
+              {/* Specific model knobs */}
+              <Section title="Specific model knobs" count={enabledSpecificCount} total={specificTotal}>
               {selectedModels.length === 0 ? (
                 <div className="text-sm text-slate-500 italic bg-slate-900/30 border border-slate-800/60 rounded-xl p-4">
                   Pick at least one model above to reveal its model-specific knobs.
@@ -1177,6 +1185,7 @@ export default function KnobExplorer() {
                   })}
                 </div>
               )}
+              </Section>
             </Section>
 
           </motion.div>
