@@ -13,7 +13,7 @@ order: 0
 
 **TL;DR.** Every agent has a few dozen settings — what we call *knobs* — that change how it answers and what it costs. Most teams hardcode them and never look again. The right combination can swing accuracy 10–30 points and cost 10× or more on the same workload. Below: three concrete knobs, what they actually look like, and what they actually do.
 
-**See it in action:** [▶ Traigent in action · 1-min video](/#/story) · [Explore the configuration space →](/#/knob-explorer)
+**See it in action:** [▶ Agent Optimization Demo · 1-min](/#/story) · [Explore the configuration space →](/#/knob-explorer)
 
 ---
 

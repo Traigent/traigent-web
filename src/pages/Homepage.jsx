@@ -159,7 +159,7 @@ export default function Homepage() {
                 thousands possible
               </Link>
             </motion.p>
-            {/* "Traigent in action" — 2-minute narrated walkthrough CTA, with a
+            {/* "Agent Optimization Demo" — 1-minute narrated walkthrough CTA, with a
                 prominent play button so it reads as "watch video" at a glance. */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -176,7 +176,7 @@ export default function Homepage() {
                   <Play className="w-4 h-4 text-white fill-white ml-0.5" />
                 </span>
                 <span className="text-base md:text-lg font-medium text-slate-100">
-                  Traigent in action <span className="text-slate-500 mx-1">·</span> <span className="text-slate-400 font-normal">1-min video</span>
+                  Agent Optimization Demo <span className="text-slate-500 mx-1">·</span> <span className="text-slate-400 font-normal">1-min</span>
                 </span>
               </Link>
             </motion.div>
