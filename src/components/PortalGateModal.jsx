@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import { X, ExternalLink } from "lucide-react";
 import HubSpotStartNowForm from "./HubSpotStartNowForm";
+import ConsentGate from "./ConsentGate";
+import ConsentCheckbox from "./ConsentCheckbox";
 import {
   isUnlocked,
   markUnlocked,
@@ -131,6 +133,7 @@ function CheckingView() {
 }
 
 function LockedView({ onSubmitted }) {
+  const [agreed, setAgreed] = useState(false);
   return (
     <>
       <h2 id="portal-gate-title" className="text-2xl font-bold text-white mb-2">
@@ -140,11 +143,26 @@ function LockedView({ onSubmitted }) {
         Tell us where to send setup tips — the portal opens as soon as you
         submit.
       </p>
-      <HubSpotStartNowForm
-        formId={PORTAL_FORM_ID}
-        onSuccess={onSubmitted}
-        targetId="hs-portal-gate-form"
-      />
+      <ConsentGate>
+        <div className="mb-4">
+          <ConsentCheckbox
+            id="portal-gate-consent"
+            checked={agreed}
+            onChange={setAgreed}
+          />
+        </div>
+        {agreed ? (
+          <HubSpotStartNowForm
+            formId={PORTAL_FORM_ID}
+            onSuccess={onSubmitted}
+            targetId="hs-portal-gate-form"
+          />
+        ) : (
+          <p className="text-xs text-slate-500">
+            Tick the box above to load the form.
+          </p>
+        )}
+      </ConsentGate>
     </>
   );
 }

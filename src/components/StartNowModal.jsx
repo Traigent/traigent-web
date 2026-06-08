@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { X, ArrowRight, Github } from "lucide-react";
 import InstallCommand from "./InstallCommand";
 import HubSpotStartNowForm from "./HubSpotStartNowForm";
+import ConsentGate from "./ConsentGate";
+import ConsentCheckbox from "./ConsentCheckbox";
 import {
   isUnlocked,
   markUnlocked,
@@ -131,6 +133,7 @@ function CheckingView() {
 }
 
 function LockedView({ onSubmitted }) {
+  const [agreed, setAgreed] = useState(false);
   return (
     <>
       <h2 id="start-now-title" className="text-2xl font-bold text-white mb-2">
@@ -140,7 +143,22 @@ function LockedView({ onSubmitted }) {
         Run the keyless demo on your laptop in under a minute. Tell us where to
         send setup tips — the install command unlocks as soon as you submit.
       </p>
-      <HubSpotStartNowForm onSuccess={onSubmitted} />
+      <ConsentGate>
+        <div className="mb-4">
+          <ConsentCheckbox
+            id="start-now-consent"
+            checked={agreed}
+            onChange={setAgreed}
+          />
+        </div>
+        {agreed ? (
+          <HubSpotStartNowForm onSuccess={onSubmitted} />
+        ) : (
+          <p className="text-xs text-slate-500">
+            Tick the box above to load the form.
+          </p>
+        )}
+      </ConsentGate>
     </>
   );
 }
