@@ -11,9 +11,9 @@
   "slide-02.png": [
     {
       "href": "https://scholar.google.com/citations?hl=en&user=UPlO02gAAAAJ&view_op=list_works&citft=1&citft=2&citft=3&email_for_op=achi%40traigent.ai&sortby=pubdate",
-      "x": 0.04165,
+      "x": 0.19153,
       "y": 0.57926,
-      "w": 0.27517,
+      "w": 0.01405,
       "h": 0.24103
     }
   ],
@@ -28,33 +28,75 @@
   ],
   "slide-07.png": [
     {
+      "href": "https://www.gartner.com/en/documents/5314863",
+      "x": 0.1026,
+      "y": 0.70109,
+      "w": 0.19231,
+      "h": 0.04983
+    },
+    {
       "href": "https://www.hpcwire.com/aiwire/2024/07/29/idc-reports-rapid-growth-in-ai-platforms-software-market-with-153b-forecast-by-2028/",
-      "x": 0.04766,
-      "y": 0.65127,
-      "w": 0.43957,
-      "h": 0.09965
+      "x": 0.37733,
+      "y": 0.70109,
+      "w": 0.08242,
+      "h": 0.04983
+    },
+    {
+      "href": "https://www.marketsandmarkets.com/PressReleases/ai-agents.asp",
+      "x": 0.5673,
+      "y": 0.55378,
+      "w": 0.10658,
+      "h": 0.06958
+    },
+    {
+      "href": "https://www.grandviewresearch.com/industry-analysis/ai-agents-market-report",
+      "x": 0.68809,
+      "y": 0.55378,
+      "w": 0.12079,
+      "h": 0.06958
     },
     {
       "href": "https://www.mordorintelligence.com/industry-reports/agentic-ai-market",
-      "x": 0.5602,
-      "y": 0.4842,
-      "w": 0.39788,
-      "h": 0.13915
+      "x": 0.82308,
+      "y": 0.55378,
+      "w": 0.12789,
+      "h": 0.06958
     }
   ],
   "slide-11.png": [
     {
-      "href": "https://www.linkedin.com/in/nimrod-busany-phd-0b938216/",
-      "x": 0.24174,
+      "href": "mailto:nimrod@traigent.ai",
+      "x": 0.3916,
       "y": 0.6415,
-      "w": 0.52844,
+      "w": 0.14197,
+      "h": 0.03031
+    },
+    {
+      "href": "https://www.linkedin.com/in/nimrod-busany-phd-0b938216/",
+      "x": 0.70709,
+      "y": 0.6415,
+      "w": 0.0631,
+      "h": 0.03031
+    },
+    {
+      "href": "mailto:nimrod@traigent.ai",
+      "x": 0.42253,
+      "y": 0.70109,
+      "w": 0.02781,
+      "h": 0.03031
+    },
+    {
+      "href": "mailto:nimrod@traigent.ai",
+      "x": 0.45034,
+      "y": 0.70109,
+      "w": 0.08344,
       "h": 0.03031
     },
     {
       "href": "https://www.linkedin.com/in/amir-barnea-1aa449/",
-      "x": 0.24174,
+      "x": 0.71456,
       "y": 0.70109,
-      "w": 0.52844,
+      "w": 0.05563,
       "h": 0.03031
     }
   ]
