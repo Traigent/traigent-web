@@ -74,12 +74,18 @@ export const SCROLL_DECK_GLOBAL_CSS = `
 // right. The actual slide content goes in `children`. `extraSlideClassName`
 // lets a deck add extra classes to the inner slide element (used by
 // /pitch-short-2 for the one-pager grid override).
+//
+// `withBrandMark` defaults to true. /investor-pitch sets it to false because
+// the investor deck's source slides already carry their own Traigent branding
+// (slide 1 hero logo) — overlaying our chip on top of that doubles the
+// wordmark and looks broken.
 export function ScrollCanvasFrame({
   index,
   total,
   scale,
   children,
   extraSlideClassName = "",
+  withBrandMark = true,
 }) {
   return (
     <section
@@ -102,15 +108,17 @@ export function ScrollCanvasFrame({
             transformOrigin: "top left",
           }}
         >
-          <a
-            href="https://www.traigent.ai/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="absolute top-4 left-4 z-10 hover:opacity-80 transition-opacity"
-            aria-label="Traigent.ai"
-          >
-            <BrandMark size="md" />
-          </a>
+          {withBrandMark && (
+            <a
+              href="https://www.traigent.ai/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="absolute top-4 left-4 z-10 hover:opacity-80 transition-opacity"
+              aria-label="Traigent.ai"
+            >
+              <BrandMark size="md" />
+            </a>
+          )}
 
           {children}
 

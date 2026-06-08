@@ -88,6 +88,7 @@ export default function PitchInvestor() {
               index={i}
               total={INVESTOR_SLIDES.length}
               scale={scale}
+              withBrandMark={false}
             >
               <img
                 src={`${import.meta.env.BASE_URL}investor-deck/slides/${slide.file}`}

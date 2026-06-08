@@ -426,6 +426,35 @@ function extractShapeHotspots(slideXml, rels, slideSize) {
   });
 }
 
+// Source-deck bug workarounds applied after extraction. The canonical
+// PPTX wires "amir@traigent.ai" text on slide 11 to mailto:nimrod@traigent.ai
+// — both halves of the email and the surrounding shape. Rather than wait
+// for the source to be fixed, we route any mailto:nimrod@traigent.ai hotspot
+// found in Amir's row (the lower contact-row band on slide 11) to
+// mailto:amir@traigent.ai so the deployed deck does the right thing.
+const HREF_OVERRIDES = [
+  {
+    slide: "slide-11.png",
+    predicate: (h) => h.href === "mailto:nimrod@traigent.ai" && h.y >= 0.67,
+    href: "mailto:amir@traigent.ai",
+    reason: "source-deck bug: Amir's email text wired to Nimrod's mailbox",
+  },
+];
+
+function applyHrefOverrides(slideKey, hotspots) {
+  const overrides = HREF_OVERRIDES.filter((o) => o.slide === slideKey);
+  if (overrides.length === 0) return hotspots;
+  return hotspots.map((h) => {
+    for (const o of overrides) {
+      if (o.predicate(h)) {
+        console.log(`  override: ${h.href} -> ${o.href}  (${o.reason})`);
+        return { ...h, href: o.href };
+      }
+    }
+    return h;
+  });
+}
+
 function main() {
   const slideSize = getSlideSize();
   console.log(`Slide canvas: ${slideSize.cx} x ${slideSize.cy} EMU`);
@@ -435,9 +464,10 @@ function main() {
     const slideXml = readSourceXml("slides", `slide${i}.xml`);
     const relsXml = readSourceXml("slides", "_rels", `slide${i}.xml.rels`);
     const rels = parseRels(relsXml);
-    const hotspots = extractShapeHotspots(slideXml, rels, slideSize);
-    if (hotspots.length > 0) {
+    const rawHotspots = extractShapeHotspots(slideXml, rels, slideSize);
+    if (rawHotspots.length > 0) {
       const key = `slide-${String(i).padStart(2, "0")}.png`;
+      const hotspots = applyHrefOverrides(key, rawHotspots);
       manifest[key] = hotspots;
       console.log(`Slide ${i}: ${hotspots.length} hotspot(s)`);
       for (const h of hotspots) {
