@@ -103,7 +103,7 @@ export default function PitchInvestor() {
                   coordinates. Same href targets as the PPTX. */}
               {hotspots.map((h, hi) => (
                 <a
-                  key={hi}
+                  key={`${h.href}-${h.x}-${h.y}-${h.w}-${h.h}`}
                   href={h.href}
                   target="_blank"
                   rel="noopener noreferrer"

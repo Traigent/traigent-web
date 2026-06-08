@@ -79,11 +79,11 @@ function parseRels(xml) {
 // the rel type is hyperlink.
 function decodeXmlEntities(s) {
   return s
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&apos;/g, "'")
-    .replace(/&amp;/g, "&");
+    .replaceAll("&lt;", "<")
+    .replaceAll("&gt;", ">")
+    .replaceAll("&quot;", '"')
+    .replaceAll("&apos;", "'")
+    .replaceAll("&amp;", "&");
 }
 
 function normalizeHref(target) {
@@ -107,8 +107,8 @@ function getSlideSize() {
   if (!m) throw new Error("Could not find <p:sldSz> in presentation.xml");
   // PPTX is cy-first when CX/CY order varies; both regexes try both orders.
   // Standard 16:9 is cx=12192000 cy=6858000.
-  const a = parseInt(m[1], 10);
-  const b = parseInt(m[2], 10);
+  const a = Number.parseInt(m[1], 10);
+  const b = Number.parseInt(m[2], 10);
   const [cx, cy] = a > b ? [a, b] : [b, a];
   return { cx, cy };
 }
@@ -145,15 +145,15 @@ function extractShapeHotspots(slideXml, rels, slideSize) {
       inner,
     );
     if (!xfrmMatch) continue;
-    const x = parseInt(xfrmMatch[1], 10);
-    const y = parseInt(xfrmMatch[2], 10);
-    const w = parseInt(xfrmMatch[3], 10);
-    const h = parseInt(xfrmMatch[4], 10);
+    const x = Number.parseInt(xfrmMatch[1], 10);
+    const y = Number.parseInt(xfrmMatch[2], 10);
+    const w = Number.parseInt(xfrmMatch[3], 10);
+    const h = Number.parseInt(xfrmMatch[4], 10);
 
     // Use the LAST link in document order — that's the LinkedIn target on
     // each contact-card row, the trailing source citation on the market
     // slide, etc.
-    const primaryRId = hlinks[hlinks.length - 1];
+    const primaryRId = hlinks.at(-1);
     const href = resolveHref(rels, primaryRId);
     if (!href) continue;
 
