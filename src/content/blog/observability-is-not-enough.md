@@ -100,7 +100,7 @@ But if your reasoning is *"we have observability, so we don't need Traigent,"* y
 
 ## The cost of stopping at observability
 
-For a modest agent doing 1M calls/month, the gap between *current configuration* and *optimal configuration* is typically **30–60% in cost** at comparable accuracy, or several accuracy points at comparable cost. On a $20k/month bill, that's $6,000–$12,000/month — every month, indefinitely — flowing to a frontier-model provider when a cheaper configuration would have served the same workload.
+For a modest agent doing 1M calls/month, the gap between *current configuration* and *optimal configuration* can be **20–60% in cost** at comparable accuracy, or several accuracy points at comparable cost. On a $20k/month bill, that's $4,000–$12,000/month — every month, indefinitely — flowing to a frontier-model provider when a cheaper configuration would have served the same workload. The actual number still needs pilot validation against your workload.
 
 Observability tells you exactly how that money is being spent. It doesn't recover any of it. Recovery requires the optimization loop.
 

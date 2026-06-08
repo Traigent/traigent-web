@@ -38,11 +38,11 @@ For ~3–5 dimensions, yes — slowly. The full configuration space has 10+ dime
 
 **Q: How much can teams typically save?**
 
-30–60% LLM cost reduction at the same accuracy. On a representative $20k/month agent, that's **$6–12k/month — $72k–$144k/year — recurring.** Plus reclaimed engineer time. → [See the math ↓](#the-math) · Or plug your own numbers into the [ROI Calculator →](/roi)
+20–60% potential LLM cost reduction at the same accuracy, subject to pilot validation. On a representative $20k/month agent, that's **$4–12k/month — $48k–$144k/year — recurring.** Plus reclaimed engineer time. → [See the math ↓](#the-math) · Or plug your own numbers into the [ROI Calculator →](/roi)
 
 **Q: Does this make sense for a small team or low monthly spend?**
 
-Yes, in most cases. With Traigent Starter at **$99/month flat**, the breakeven on Traigent cost alone is roughly **$330/month** of LLM spend (at the conservative 30% savings rate). Below that, the **Free POC** is the right starting point — zero risk, no Traigent investment, and even reaching a better accuracy/latency point without spending more is a net engineering win. → [When this pays off ↓](#when-this-pays-off)
+Yes, in most cases. With Traigent Starter at **$99/month flat**, the breakeven on Traigent cost alone is roughly **$495/month** of LLM spend (at the conservative 20% savings rate). Below that, the **Free POC** is the right starting point — zero risk, no Traigent investment, and even reaching a better accuracy/latency point without spending more is a net engineering win. → [When this pays off ↓](#when-this-pays-off)
 
 **Q: We already use Langfuse / Arize / Helicone for observability. Isn't that enough?**
 
@@ -74,8 +74,8 @@ This is the heart of the **model myth**: the assumption that picking a better mo
 
 | Outcome | Monthly savings | Annual savings |
 |---|---|---|
-| 30% reduction (conservative) | $6,000 | **$72,000** |
-| 45% reduction (typical) | $9,000 | **$108,000** |
+| 20% reduction (conservative) | $4,000 | **$48,000** |
+| 40% reduction (typical) | $8,000 | **$96,000** |
 | 60% reduction (achievable) | $12,000 | **$144,000** |
 
 Recurring — every month, indefinitely. A two-year deployment captures 24× the annualized number.
@@ -83,7 +83,7 @@ Recurring — every month, indefinitely. A two-year deployment captures 24× the
 Add engineering time savings (senior ML engineer hours freed from tuning):
 - 4 hours/week × $150/hr × 52 weeks ≈ **$31k/year per agent** in reclaimed time
 
-**Total economic value on a single $20k/month agent: $100k–$175k per year.** For multi-agent teams, multiply by the agent count.
+**Total economic value on a single $20k/month agent: $79k–$175k per year.** For multi-agent teams, multiply by the agent count.
 
 → **Plug your own numbers in**: the [ROI Calculator](/roi) lets you dial in your monthly spend, engineer hourly rate, and Traigent tier to see your projected 12-month savings (net of Traigent cost).
 
@@ -105,7 +105,7 @@ The economics of that workflow are bad on two axes:
 
 → **Quantify it on your own search space**: the [TTM Calculator](/ttm) shows the FTE weeks and dollars Traigent saves per optimization pass, given your dimensions and engineering parameters.
 
-**Axis 2: Inference cost.** Because manual tuning explores 5–20 configurations out of millions, the shipped configuration is almost certainly **30–60% more expensive than the optimum** for the same accuracy. That delta then runs in production forever — multiplied by every query, every customer, every month.
+**Axis 2: Inference cost.** Because manual tuning explores 5–20 configurations out of millions, the shipped configuration can be **20–60% more expensive than the optimum** for the same accuracy. That delta then runs in production forever — multiplied by every query, every customer, every month.
 
 The status quo isn't free. It's a recurring tax. Most teams don't see it because there's no line item called *"cost of un-optimized configuration."* The cost is invisible — but it shows up monthly.
 
@@ -113,7 +113,7 @@ The status quo isn't free. It's a recurring tax. Most teams don't see it because
 
 Across early Traigent deployments and the published literature on configuration optimization, typical outcomes look like:
 
-- **30–60% cost reduction** at the same accuracy
+- **20–60% potential cost reduction** at the same accuracy, confirmed by pilot
 - **OR** several accuracy points of lift at the same cost
 - **OR** a meaningful latency improvement (relevant for real-time agents)
 
@@ -149,7 +149,7 @@ A modern agent has 10–15+ tunable dimensions: model, temperature, top-p, max t
 
 A senior engineer can hold 3–5 dimensions in working memory simultaneously. The other 7–10 dimensions get fixed at defaults and ignored.
 
-This is why manual *"tuning sprints"* produce small improvements (10–15%) instead of large ones (30–60%) — the engineer is searching one slice of the space, not the space. → [See the FTE-weeks math on your own space ↗](/ttm)
+This is why manual *"tuning sprints"* produce small improvements (10–15%) instead of larger 20–60% opportunities — the engineer is searching one slice of the space, not the space. → [See the FTE-weeks math on your own space ↗](/ttm)
 
 And even if a semi-annual sprint catches some drift, **9–10 months out of every 12 are spent overpaying** for a configuration that was selected against an obsolete environment.
 
@@ -169,11 +169,11 @@ The pivot is from *"optimization as a project"* (multi-week, expensive, infreque
 
 Automated cost-performance optimization makes economic sense any time the recurring LLM spend exceeds the Traigent tier cost — which, at current pricing, is a low bar:
 
-| Traigent tier | Annual cost | Breakeven LLM spend (at 30% conservative savings) |
+| Traigent tier | Annual cost | Breakeven LLM spend (at 20% conservative savings) |
 |---|---|---|
 | **Free POC** | $0 | Any production agent — even zero-cost savings + engineering time saved is net positive |
-| **Starter** ($99/mo) | $1,188 | ~$330/month of LLM spend |
-| **Pro** ($249/mo) | $2,988 | ~$830/month of LLM spend |
+| **Starter** ($99/mo) | $1,188 | ~$495/month of LLM spend |
+| **Pro** ($249/mo) | $2,988 | ~$1,245/month of LLM spend |
 | **Enterprise** | Custom | Negotiated against your specific spend profile |
 
 The investment is **less compelling** for:
@@ -189,7 +189,7 @@ Production AI agents are recurring-cost products. Their configuration is the sin
 
 The dominant assumption that makes this acceptable is the **model myth**: the belief that "pick a better model" is the answer. It isn't. Configuration choices across prompt, retrieval, tokens, and sampling routinely move cost and accuracy more than the model itself does.
 
-Automated cost-performance optimization replaces the one-shot guess with a system that **searches the full configuration space, converges fast, and re-optimizes as the world moves**. The first capture is typically 30–60% cost reduction. The compounding capture is keeping the agent near the optimum for its entire production lifetime.
+Automated cost-performance optimization replaces the one-shot guess with a system that **searches the full configuration space, converges fast, and re-optimizes as the world moves**. The modeled first capture is typically in the 20–60% potential cost-reduction range, with the actual number confirmed by pilot. The compounding capture is keeping the agent near the optimum for its entire production lifetime.
 
 The cost of automation is small. The savings are recurring. The math is mechanical.
 
