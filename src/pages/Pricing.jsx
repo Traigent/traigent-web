@@ -558,7 +558,7 @@ export default function Pricing() {
               },
               {
                 q: "What if I outgrow Pro's 10 users?",
-                a: "Talk to sales. Enterprise has unlimited users and a few features Pro doesn't (SSO, audit logs, SLA). Pricing is negotiated.",
+                a: "Talk to sales. Enterprise has custom user limits and a few features Pro doesn't (SSO, audit logs, SLA). Pricing is negotiated against your usage, retention, and deployment requirements.",
               },
               {
                 q: "Do you offer outcome-based pricing?",

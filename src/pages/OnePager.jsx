@@ -234,7 +234,7 @@ function SlideSolution() {
         <div className="grid grid-cols-3 gap-4">
           <SolutionStat value="1 hr" label="One-time setup effort" color={BLUE_LIGHT} />
           <SolutionStat value="up to 8 wks" label="Engineering time reclaimed per pass" color={BLUE_LIGHT} />
-          <SolutionStat value="20%+" label="LLM cost reduction at same accuracy" color={AMBER} />
+          <SolutionStat value="20–60%" label="Potential LLM cost reduction at same accuracy" color={AMBER} />
         </div>
 
         {/* Two audience columns */}
@@ -275,7 +275,7 @@ function SlideSolution() {
               </h3>
             </div>
             <ul className="space-y-2.5">
-              <BenefitItem><span className="text-white font-semibold">20%+ LLM cost reduction</span> at the same accuracy</BenefitItem>
+              <BenefitItem><span className="text-white font-semibold">20–60% potential LLM cost reduction</span> at the same accuracy, confirmed by pilot</BenefitItem>
               <BenefitItem><span className="text-white font-semibold">ROI is almost immediate</span></BenefitItem>
               <BenefitItem>Recurring savings <span className="text-white font-semibold">for the agent's lifetime</span></BenefitItem>
               <BenefitItem>Tier-based pricing <span className="text-white font-semibold">scales with agent volume</span></BenefitItem>

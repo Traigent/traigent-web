@@ -151,7 +151,7 @@ export default function ROICalculator() {
       annualEngineerHoursSaved,
       derivedMonthlyHours,
       grossChosen,
-      // Kept for the floor-vs-bonus block which still anchors on the typical 45%.
+      // Kept for older references; typical now follows the published 40% midpoint.
       grossTypical: llm.typical + engineering,
       traigentAnnual,
       netChosen,
@@ -613,14 +613,14 @@ export default function ROICalculator() {
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Stat
-                label="Conservative · 30% [1]"
+                label="Conservative · 20% [1]"
                 value={formatUSD(results.llm.conservative)}
                 sublabel="matches prompt-compression studies"
                 icon={TrendingDown}
                 accent="#94a3b8"
               />
               <Stat
-                label="Typical · 45% [2]"
+                label="Typical · 40% [2]"
                 value={formatUSD(results.llm.typical)}
                 sublabel="in line with model-routing results"
                 icon={TrendingDown}
