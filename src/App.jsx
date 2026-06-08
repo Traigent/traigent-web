@@ -9,6 +9,7 @@ import Pitch from './pages/Pitch'
 import PitchFull from './pages/PitchFull'
 import PitchShort from './pages/PitchShort'
 import PitchShort2 from './pages/PitchShort2'
+import PitchInvestor from './pages/PitchInvestor'
 import Blog from './pages/Blog'
 import BlogPost from './pages/BlogPost'
 import Research from './pages/Research'
@@ -47,6 +48,7 @@ export default function App() {
       <Route path="extended-product-presentation" element={<PitchShort2 forcedPreset="extended-product-presentation" />} />
       <Route path="short-summary" element={<PitchShort2 forcedPreset="short-summary" />} />
       <Route path="market-opportunity" element={<PitchShort2 forcedPreset="market-opportunity" />} />
+      <Route path="investor-pitch" element={<PitchInvestor />} />
       <Route path="knob-explorer" element={<KnobExplorer />} />
       <Route path="demo" element={<OptimizationDemo />} />
       <Route path="story" element={<StoryMovie />} />

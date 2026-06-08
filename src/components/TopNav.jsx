@@ -38,6 +38,11 @@ const PITCH_DECK_OPTIONS = [
     href: "/#/market-opportunity",
   },
   {
+    label: "Investor presentation",
+    desc: "Seed-round narrative · problem → solution → market → team",
+    href: "/#/investor-pitch",
+  },
+  {
     label: "Knob explorer",
     desc: "Configure a search space — knobs, values, combinatorics",
     href: "/#/knob-explorer",
