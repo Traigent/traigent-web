@@ -55,20 +55,74 @@ function readSourceXml(...segments) {
   return readFileSync(path, "utf-8");
 }
 
+function isXmlWhitespace(char) {
+  return char === " " || char === "\n" || char === "\r" || char === "\t";
+}
+
+function parseAttributes(source) {
+  const attrs = {};
+  let index = 0;
+
+  while (index < source.length) {
+    while (index < source.length && isXmlWhitespace(source[index])) index++;
+
+    const nameStart = index;
+    while (
+      index < source.length &&
+      source[index] !== "=" &&
+      !isXmlWhitespace(source[index])
+    ) {
+      index++;
+    }
+    const name = source.slice(nameStart, index);
+    while (index < source.length && isXmlWhitespace(source[index])) index++;
+    if (!name || source[index] !== "=") {
+      index++;
+      continue;
+    }
+
+    index++;
+    while (index < source.length && isXmlWhitespace(source[index])) index++;
+    const quote = source[index];
+    if (quote !== '"' && quote !== "'") {
+      index++;
+      continue;
+    }
+
+    const valueStart = index + 1;
+    const valueEnd = source.indexOf(quote, valueStart);
+    if (valueEnd === -1) break;
+    attrs[name] = source.slice(valueStart, valueEnd);
+    index = valueEnd + 1;
+  }
+
+  return attrs;
+}
+
 // Parse the <Relationships> file for a slide → { rId: { type, target } }.
 function parseRels(xml) {
   const rels = {};
-  // Note: `[^/>]+` would stop at the first `/` inside URLs like
-  // Target="https://..." — match everything up to the self-closing `/>`
-  // instead.
-  const re = /<Relationship\s+([^>]*?)\s*\/>/g;
-  let m;
-  while ((m = re.exec(xml)) !== null) {
-    const attrs = {};
-    for (const attr of m[1].matchAll(/(\w+)="([^"]*)"/g)) {
-      attrs[attr[1]] = attr[2];
+  let index = 0;
+
+  while (index < xml.length) {
+    const start = xml.indexOf("<Relationship", index);
+    if (start === -1) break;
+
+    const tagNameEnd = start + "<Relationship".length;
+    if (!isXmlWhitespace(xml[tagNameEnd]) && xml[tagNameEnd] !== ">") {
+      index = tagNameEnd;
+      continue;
     }
+
+    const openEnd = xml.indexOf(">", tagNameEnd);
+    if (openEnd === -1) break;
+    const rawAttributes = xml.slice(tagNameEnd, openEnd).trimEnd();
+    const attributeSource = rawAttributes.endsWith("/")
+      ? rawAttributes.slice(0, -1)
+      : rawAttributes;
+    const attrs = parseAttributes(attributeSource);
     if (attrs.Id) rels[attrs.Id] = { type: attrs.Type, target: attrs.Target };
+    index = openEnd + 1;
   }
   return rels;
 }
@@ -95,22 +149,101 @@ function normalizeHref(target) {
 function resolveHref(rels, rId) {
   const rel = rels[rId];
   if (!rel) return null;
-  if (!rel.type.endsWith("/hyperlink")) return null;
+  if (!rel.type?.endsWith("/hyperlink")) return null;
   return normalizeHref(rel.target);
 }
 
 // Read the slide-size from presentation.xml (EMUs).
 function getSlideSize() {
   const presXml = readSourceXml("presentation.xml");
-  const m = /<p:sldSz\s+cy="(\d+)"\s+cx="(\d+)"\/>/.exec(presXml) ||
-            /<p:sldSz\s+cx="(\d+)"\s+cy="(\d+)"\/>/.exec(presXml);
-  if (!m) throw new Error("Could not find <p:sldSz> in presentation.xml");
-  // PPTX is cy-first when CX/CY order varies; both regexes try both orders.
+  const sizeStart = presXml.indexOf("<p:sldSz");
+  if (sizeStart === -1) {
+    throw new Error("Could not find <p:sldSz> in presentation.xml");
+  }
+  const sizeEnd = presXml.indexOf(">", sizeStart);
+  if (sizeEnd === -1) {
+    throw new Error("Could not parse <p:sldSz> in presentation.xml");
+  }
+  const attrs = parseAttributes(presXml.slice(sizeStart + "<p:sldSz".length, sizeEnd));
   // Standard 16:9 is cx=12192000 cy=6858000.
-  const a = Number.parseInt(m[1], 10);
-  const b = Number.parseInt(m[2], 10);
-  const [cx, cy] = a > b ? [a, b] : [b, a];
+  const cx = Number.parseInt(attrs.cx, 10);
+  const cy = Number.parseInt(attrs.cy, 10);
+  if (!Number.isFinite(cx) || !Number.isFinite(cy)) {
+    throw new Error("Could not parse slide dimensions in presentation.xml");
+  }
   return { cx, cy };
+}
+
+function shapeBlocks(slideXml) {
+  const tags = ["sp", "pic", "graphicFrame"];
+  const blocks = [];
+  let index = 0;
+
+  while (index < slideXml.length) {
+    let next = null;
+    for (const tag of tags) {
+      const start = slideXml.indexOf(`<p:${tag}`, index);
+      if (start !== -1 && (next === null || start < next.start)) {
+        next = { tag, start };
+      }
+    }
+    if (next === null) break;
+
+    const openEnd = slideXml.indexOf(">", next.start);
+    if (openEnd === -1) break;
+    const closeTag = `</p:${next.tag}>`;
+    const closeStart = slideXml.indexOf(closeTag, openEnd + 1);
+    if (closeStart === -1) {
+      index = openEnd + 1;
+      continue;
+    }
+    blocks.push(slideXml.slice(openEnd + 1, closeStart));
+    index = closeStart + closeTag.length;
+  }
+
+  return blocks;
+}
+
+function hyperlinkIds(innerXml) {
+  const ids = [];
+  let index = 0;
+
+  while (index < innerXml.length) {
+    const start = innerXml.indexOf("<a:hlinkClick", index);
+    if (start === -1) break;
+    const openEnd = innerXml.indexOf(">", start);
+    if (openEnd === -1) break;
+    const attrs = parseAttributes(
+      innerXml.slice(start + "<a:hlinkClick".length, openEnd),
+    );
+    if (attrs["r:id"]) ids.push(attrs["r:id"]);
+    index = openEnd + 1;
+  }
+
+  return ids;
+}
+
+function firstTransform(innerXml) {
+  const xfrmStart = innerXml.indexOf("<a:xfrm");
+  if (xfrmStart === -1) return null;
+  const xfrmEnd = innerXml.indexOf("</a:xfrm>", xfrmStart);
+  if (xfrmEnd === -1) return null;
+  const xfrmXml = innerXml.slice(xfrmStart, xfrmEnd);
+
+  const offStart = xfrmXml.indexOf("<a:off");
+  const offEnd = offStart === -1 ? -1 : xfrmXml.indexOf(">", offStart);
+  const extStart = xfrmXml.indexOf("<a:ext", offEnd);
+  const extEnd = extStart === -1 ? -1 : xfrmXml.indexOf(">", extStart);
+  if (offEnd === -1 || extEnd === -1) return null;
+
+  const off = parseAttributes(xfrmXml.slice(offStart + "<a:off".length, offEnd));
+  const ext = parseAttributes(xfrmXml.slice(extStart + "<a:ext".length, extEnd));
+  const x = Number.parseInt(off.x, 10);
+  const y = Number.parseInt(off.y, 10);
+  const w = Number.parseInt(ext.cx, 10);
+  const h = Number.parseInt(ext.cy, 10);
+  if (![x, y, w, h].every(Number.isFinite)) return null;
+  return { x, y, w, h };
 }
 
 // Walk shapes (<p:sp>, <p:pic>, <p:graphicFrame>) in a slide and pull out
@@ -118,37 +251,21 @@ function getSlideSize() {
 function extractShapeHotspots(slideXml, rels, slideSize) {
   const hotspots = [];
 
-  // Match each top-level shape-ish element. We're tolerant about which tag
-  // (sp/pic/graphicFrame) since position + hyperlinks live the same way in
-  // all of them. Using a non-greedy match between open and close.
-  //
   // PPTX shapes can nest inside <p:grpSp> — we'd descend into those too,
   // but the investor deck doesn't use grouped shapes for hyperlinked text
   // so we keep this flat for now.
-  const shapeRe = /<p:(sp|pic|graphicFrame)\b[^>]*>([\s\S]*?)<\/p:\1>/g;
-  let m;
-  while ((m = shapeRe.exec(slideXml)) !== null) {
-    const inner = m[2];
-
+  for (const inner of shapeBlocks(slideXml)) {
     // Hyperlinks inside this shape, in document order. Both shape-level
     // (in <p:nvSpPr><p:cNvPr>) and text-run-level (<a:rPr>) link refs
     // share the same <a:hlinkClick r:id="rIdN" ...> form.
-    const hlinks = [...inner.matchAll(/<a:hlinkClick\s+[^>]*?r:id="([^"]+)"/g)].map(
-      (h) => h[1],
-    );
+    const hlinks = hyperlinkIds(inner);
     if (hlinks.length === 0) continue;
 
     // First <a:xfrm><a:off/><a:ext/> inside the shape is the shape's bbox.
     // <a:bodyPr> may also contain offsets but we want spPr's xfrm — that's
     // the one that appears first inside each <p:sp>/<p:pic>/<p:graphicFrame>.
-    const xfrmMatch = /<a:xfrm[^>]*>\s*<a:off\s+x="(\d+)"\s+y="(\d+)"\/>\s*<a:ext\s+cx="(\d+)"\s+cy="(\d+)"\/>\s*<\/a:xfrm>/.exec(
-      inner,
-    );
-    if (!xfrmMatch) continue;
-    const x = Number.parseInt(xfrmMatch[1], 10);
-    const y = Number.parseInt(xfrmMatch[2], 10);
-    const w = Number.parseInt(xfrmMatch[3], 10);
-    const h = Number.parseInt(xfrmMatch[4], 10);
+    const transform = firstTransform(inner);
+    if (!transform) continue;
 
     // Use the LAST link in document order — that's the LinkedIn target on
     // each contact-card row, the trailing source citation on the market
@@ -159,10 +276,10 @@ function extractShapeHotspots(slideXml, rels, slideSize) {
 
     hotspots.push({
       href,
-      x: +(x / slideSize.cx).toFixed(5),
-      y: +(y / slideSize.cy).toFixed(5),
-      w: +(w / slideSize.cx).toFixed(5),
-      h: +(h / slideSize.cy).toFixed(5),
+      x: +(transform.x / slideSize.cx).toFixed(5),
+      y: +(transform.y / slideSize.cy).toFixed(5),
+      w: +(transform.w / slideSize.cx).toFixed(5),
+      h: +(transform.h / slideSize.cy).toFixed(5),
     });
   }
 
