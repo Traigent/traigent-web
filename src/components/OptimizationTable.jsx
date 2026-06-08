@@ -1,3 +1,7 @@
+/* eslint-disable react/prop-types --
+ * This marketing animation component accepts shaped replay artifacts validated
+ * by scripts/validate_replay.mjs; the repo does not use PropTypes elsewhere.
+ */
 import { useState, useEffect, useRef } from 'react';
 import './OptimizationTable.css';
 
@@ -86,7 +90,7 @@ const FRAMES = {
 const summaryRowIds = [16, 15, 8, 9];
 const baselineRow = keyRows.find(r => r.id === 16);
 
-export default function OptimizationTable({ autoPlay = true, embedded = false }) {
+function LegacyOptimizationTable({ autoPlay = true, embedded = false }) {
   const [frame, setFrame] = useState(autoPlay ? FRAMES.INTRO : FRAMES.HIGHLIGHT_16);
   const [isPlaying, setIsPlaying] = useState(autoPlay);
   const [showPauseIndicator, setShowPauseIndicator] = useState(false);
@@ -456,4 +460,289 @@ export default function OptimizationTable({ autoPlay = true, embedded = false })
       )}
     </div>
   );
+}
+
+const REAL_FRAMES = {
+  OPTIMIZATION: 0,
+  HELDOUT: 1,
+  ISOLATION: 2,
+};
+
+const realFrameMeta = [
+  { id: REAL_FRAMES.OPTIMIZATION, label: 'Search' },
+  { id: REAL_FRAMES.HELDOUT, label: 'Held-out' },
+  { id: REAL_FRAMES.ISOLATION, label: 'Isolation' },
+];
+
+export const deriveReplayColumns = (dataset) => dataset?.knobs?.map((knob) => knob.key) ?? [];
+
+const demoLabels = {
+  'bird-sql-optimizer': 'BIRD mini-dev',
+  'text2sql-sota-optimizer': 'Spider',
+  'hotpotqa-rag-optimizer': 'HotpotQA',
+};
+
+const formatPercent = (value, maximumFractionDigits = 1) => {
+  const percentage = Number(value) * 100;
+  return `${new Intl.NumberFormat('en-US', {
+    maximumFractionDigits,
+  }).format(percentage)}%`;
+};
+
+const formatPp = (value) => new Intl.NumberFormat('en-US', {
+  maximumFractionDigits: 1,
+}).format(Number(value));
+
+const formatCost = (value) => `$${Number(value).toLocaleString('en-US', {
+  minimumFractionDigits: 6,
+  maximumFractionDigits: 6,
+})}`;
+
+const formatValue = (value) => String(value);
+
+const formatLimitation = (limitation) => limitation.replaceAll('_', ' ');
+
+function OptimizationReplay({ dataset, columns, autoPlay = true, embedded = false, demoLabel }) {
+  const [frame, setFrame] = useState(REAL_FRAMES.OPTIMIZATION);
+  const [isPlaying, setIsPlaying] = useState(autoPlay);
+  const [showPauseIndicator, setShowPauseIndicator] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const containerRef = useRef(null);
+
+  const replayColumns = columns?.length ? columns : deriveReplayColumns(dataset);
+  const optimization = dataset.frames.optimization;
+  const heldout = dataset.frames.heldout;
+  const isolation = dataset.frames.isolation;
+  const label = demoLabel || demoLabels[dataset.run.demo] || dataset.run.demo;
+  const banner = `${label} · fixed slice · real Bedrock Haiku · not a SOTA claim`;
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
+  useEffect(() => {
+    if (!isPlaying) return;
+
+    const timer = setTimeout(() => {
+      setFrame((currentFrame) => {
+        if (currentFrame >= REAL_FRAMES.ISOLATION) {
+          setIsPlaying(false);
+          return currentFrame;
+        }
+        return currentFrame + 1;
+      });
+    }, frame === REAL_FRAMES.OPTIMIZATION ? 3600 : 3200);
+
+    return () => clearTimeout(timer);
+  }, [frame, isPlaying]);
+
+  const toggleFullscreen = (e) => {
+    e.stopPropagation();
+    if (!containerRef.current) return;
+
+    if (!document.fullscreenElement) {
+      containerRef.current.requestFullscreen?.() ||
+        containerRef.current.webkitRequestFullscreen?.() ||
+        containerRef.current.msRequestFullscreen?.();
+    } else {
+      document.exitFullscreen?.() ||
+        document.webkitExitFullscreen?.() ||
+        document.msExitFullscreen?.();
+    }
+  };
+
+  const restart = (e) => {
+    e?.stopPropagation();
+    setFrame(REAL_FRAMES.OPTIMIZATION);
+    setIsPlaying(true);
+  };
+
+  const showFrame = (nextFrame, e) => {
+    e.stopPropagation();
+    setFrame(nextFrame);
+    setIsPlaying(false);
+  };
+
+  const togglePause = () => {
+    setIsPlaying((playing) => !playing);
+    setShowPauseIndicator(true);
+    setTimeout(() => setShowPauseIndicator(false), 600);
+  };
+
+  const FullscreenButton = () => (
+    embedded && (
+      <button
+        className="fullscreen-btn"
+        onClick={toggleFullscreen}
+        title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
+      >
+        {isFullscreen ? '⤫' : '⤢'}
+      </button>
+    )
+  );
+
+  const PauseIndicator = () => (
+    showPauseIndicator && (
+      <div className="pause-indicator">
+        {isPlaying ? '▶' : '⏸'}
+      </div>
+    )
+  );
+
+  const containerClass = embedded && !isFullscreen
+    ? 'opt-container opt-real opt-embedded clickable'
+    : 'opt-container opt-real clickable';
+
+  const renderOptimizationFrame = () => (
+    <section className="real-frame-panel">
+      <div className="real-frame-heading">
+        <p className="real-frame-kicker">Optimization search · {optimization.trial_count} trials · n={optimization.n} · selection only</p>
+        <h3>Configuration search history</h3>
+      </div>
+      <div className="real-table-wrapper">
+        <table className="opt-table real-replay-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              {replayColumns.map((column) => (
+                <th key={column}>{column}</th>
+              ))}
+              <th>accuracy</th>
+              <th>selected</th>
+            </tr>
+          </thead>
+          <tbody>
+            {optimization.rows.map((row) => (
+              <tr key={row.trial_index} className={row.is_best ? 'overview-highlight' : ''}>
+                <td className="row-id">{row.trial_index}</td>
+                {replayColumns.map((column) => (
+                  <td key={column}>{formatValue(row.config[column])}</td>
+                ))}
+                <td className={row.is_best ? 'highlight-green' : ''}>{formatPercent(row.accuracy)}</td>
+                <td>{row.is_best ? 'best' : 'candidate'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+
+  const renderHeldoutFrame = () => (
+    <section className="real-frame-panel">
+      <div className="real-frame-heading">
+        <p className="real-frame-kicker">Held-out check · n={heldout.n} · real Bedrock Haiku</p>
+        <h3>Baseline versus optimized on held-out examples</h3>
+      </div>
+      <div className="heldout-grid">
+        {[
+          ['Baseline', heldout.baseline],
+          ['Optimized', heldout.optimized],
+        ].map(([name, result]) => (
+          <div key={name} className={`heldout-card ${name === 'Optimized' ? 'heldout-card-best' : ''}`}>
+            <span className="heldout-label">{name}</span>
+            <strong>{result.correct}/{result.total} = {formatPercent(result.accuracy)}</strong>
+            <span>held-out cost {formatCost(result.cost_usd)}</span>
+          </div>
+        ))}
+        <div className="heldout-card heldout-delta">
+          <span className="heldout-label">Delta</span>
+          <strong>Δ{formatPp(heldout.delta.accuracy_pp)}pp</strong>
+          <span>{heldout.delta.correct} more correct</span>
+        </div>
+      </div>
+    </section>
+  );
+
+  const renderIsolationFrame = () => (
+    <section className="real-frame-panel">
+      <div className="real-frame-heading">
+        <p className="real-frame-kicker">Isolation levers · n={isolation.n} · not joint causality</p>
+        <h3>Single-lever isolation checks</h3>
+      </div>
+      <div className="isolation-grid">
+        {isolation.cards.map((card) => (
+          <div key={card.knob} className="isolation-card">
+            <span className="isolation-knob">{card.knob}</span>
+            <strong>{formatValue(card.baseline_value)} → {formatValue(card.best_value)}</strong>
+            <span>{formatPercent(card.baseline_accuracy)} → {formatPercent(card.best_accuracy)}</span>
+            <em>Δ{formatPp(card.delta_pp)}pp</em>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+
+  return (
+    <div ref={containerRef} className={containerClass} onClick={togglePause}>
+      <FullscreenButton />
+      <PauseIndicator />
+
+      <div className="real-replay-header">
+        <div>
+          <p className="real-honest-banner">{banner}</p>
+          <h2>
+            {heldout.baseline.correct}/{heldout.baseline.total} = {formatPercent(heldout.baseline.accuracy)}
+            <span> → </span>
+            {heldout.optimized.correct}/{heldout.optimized.total} = {formatPercent(heldout.optimized.accuracy)}
+          </h2>
+        </div>
+        <div className="real-delta-pill">+{formatPp(heldout.delta.accuracy_pp)}pp</div>
+      </div>
+
+      <div className="real-frame-tabs" role="tablist" aria-label="Replay frames">
+        {realFrameMeta.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            role="tab"
+            aria-selected={frame === item.id}
+            className={frame === item.id ? 'active' : ''}
+            onClick={(e) => showFrame(item.id, e)}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+
+      {frame === REAL_FRAMES.OPTIMIZATION && renderOptimizationFrame()}
+      {frame === REAL_FRAMES.HELDOUT && renderHeldoutFrame()}
+      {frame === REAL_FRAMES.ISOLATION && renderIsolationFrame()}
+
+      <div className="real-replay-footer">
+        <ul className="real-limitations">
+          {dataset.limitations.map((limitation) => (
+            <li key={limitation}>{formatLimitation(limitation)}</li>
+          ))}
+        </ul>
+        <div className="controls">
+          <button type="button" onClick={restart} className="opt-btn primary">
+            ↻ Replay
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export { OptimizationReplay };
+
+export default function OptimizationTable({ autoPlay = true, embedded = false, dataset, columns, demoLabel }) {
+  if (dataset) {
+    return (
+      <OptimizationReplay
+        dataset={dataset}
+        columns={columns}
+        autoPlay={autoPlay}
+        embedded={embedded}
+        demoLabel={demoLabel}
+      />
+    );
+  }
+
+  return <LegacyOptimizationTable autoPlay={autoPlay} embedded={embedded} />;
 }
