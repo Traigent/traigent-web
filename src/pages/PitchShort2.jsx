@@ -23,6 +23,10 @@ const PRESETS = {
   "extended-product-presentation": { exclude: "24-26" },
   "short-summary":                 { range:   "1-5,27" },
   "market-opportunity":            { range:   "24-27" },
+  // Same slide range as market-opportunity for now — kept as a separate
+  // preset so /investor-pitch can diverge later without touching the
+  // /market-opportunity preset.
+  "investor-pitch":                { range:   "24-27" },
 };
 
 const SLIDE_W = 1280;
