@@ -180,14 +180,14 @@ const AGENT_KNOB_GROUPS = [
     defaultOpen: false,
     knobs: [
       { id: "retrieval-top-k",    name: "Retrieval top-k",                 values: [0, 1, 3, 5, 10, 20],                                        impact: { a: 3, c: 2, l: 1 } },
-      { id: "chunk-size",         name: "Chunk size (tokens)",             values: [256, 512, 1024, 2048],                                      impact: { a: 3, c: 1, l: 0 } },
-      { id: "chunk-overlap",      name: "Chunk overlap (%)",               values: [0, 10, 20],                                                 impact: { a: 2, c: 1, l: 0 } },
-      { id: "embedding-model",    name: "Embedding model",                 values: ["text-embedding-3-small", "text-embedding-3-large", "ada-002", "bge-large"], impact: { a: 3, c: 2, l: 0 } },
+      { id: "chunk-size",         name: "Chunk size (tokens)",             values: [256, 512, 1024, 2048],                                      impact: { a: 3, c: 1, l: 0 }, requiresReindex: true },
+      { id: "chunk-overlap",      name: "Chunk overlap (%)",               values: [0, 10, 20],                                                 impact: { a: 2, c: 1, l: 0 }, requiresReindex: true },
+      { id: "embedding-model",    name: "Embedding model",                 values: ["text-embedding-3-small", "text-embedding-3-large", "ada-002", "bge-large"], impact: { a: 3, c: 2, l: 0 }, requiresReindex: true },
       { id: "reranker",           name: "Reranker",                        values: ["none", "cross-encoder", "LLM-rerank"],                     impact: { a: 3, c: 2, l: 2 } },
       { id: "hybrid-search",      name: "Hybrid search (BM25 + dense)",    values: ["dense-only", "BM25-only", "30/70", "50/50", "70/30"],      impact: { a: 2, c: 1, l: 0 } },
       { id: "query-rewriting",    name: "Query rewriting / HyDE",          values: ["off", "query-expansion", "multi-query", "HyDE"],           impact: { a: 3, c: 1, l: 1 } },
-      { id: "chunking-strategy",  name: "Chunking strategy",               values: ["fixed-token", "sentence-boundary", "semantic", "recursive"], impact: { a: 2, c: 0, l: 0 } },
-      { id: "vector-db",          name: "Vector DB / index",               values: ["pgvector", "Pinecone", "Weaviate", "FAISS", "Qdrant"],     impact: { a: 1, c: 2, l: 3 } },
+      { id: "chunking-strategy",  name: "Chunking strategy",               values: ["fixed-token", "sentence-boundary", "semantic", "recursive"], impact: { a: 2, c: 0, l: 0 }, requiresReindex: true },
+      { id: "vector-db",          name: "Vector DB / index",               values: ["pgvector", "Pinecone", "Weaviate", "FAISS", "Qdrant"],     impact: { a: 1, c: 2, l: 3 }, requiresReindex: true },
       { id: "distance-metric",    name: "Distance metric",                 values: ["cosine", "dot", "L2"],                                     impact: { a: 1, c: 0, l: 0 } },
     ],
   },
@@ -202,29 +202,19 @@ const AGENT_KNOB_GROUPS = [
   },
   {
     id: "cost",
-    title: "Cost & caching",
+    title: "Cost",
     defaultOpen: false,
     knobs: [
-      { id: "cache",              name: "Semantic / prompt cache",         values: ["none", "exact-match", "semantic-cache", "prompt-cache"],   impact: { a: 0, c: 3, l: 3 } },
       { id: "token-budget",       name: "Token budget cap",                values: ["none", "soft-cap", "hard-cap"],                            impact: { a: 1, c: 3, l: 0 } },
     ],
   },
   {
     id: "reliability",
-    title: "Reliability & safety",
+    title: "Reliability",
     defaultOpen: false,
     knobs: [
       { id: "fallback-chain",     name: "Fallback model chain",            values: ["none", "single-fallback", "multi-tier"],                   impact: { a: 2, c: 3, l: 1 } },
       { id: "output-validation",  name: "Output validation",               values: ["none", "JSON-schema", "Pydantic", "regex-postfilter"],     impact: { a: 1, c: 0, l: 0 } },
-      { id: "guardrails",         name: "Guardrails",                      values: ["off", "content-mod", "PII-redact", "jailbreak-detect", "all"], impact: { a: 1, c: 1, l: 1 } },
-    ],
-  },
-  {
-    id: "ux",
-    title: "Latency / UX",
-    defaultOpen: false,
-    knobs: [
-      { id: "streaming",          name: "Streaming output",                values: ["off", "on"],                                               impact: { a: 0, c: 0, l: 3 } },
     ],
   },
   {
@@ -238,6 +228,24 @@ const AGENT_KNOB_GROUPS = [
 ];
 
 const AGENT_KNOBS = AGENT_KNOB_GROUPS.flatMap((g) => g.knobs);
+
+// Deployment-only settings — these LOOK like knobs but aren't worth
+// optimizing in Traigent's eval+sweep loop:
+//   - streaming output: doesn't change accuracy or total cost, only
+//     delivery pattern. Set once at deployment time.
+//   - guardrails: a binary compliance choice; you need PII redaction or
+//     you don't, by policy. Eval can't reward it appropriately.
+//   - semantic / prompt cache: cost impact is real but only on REPEATED
+//     queries. Eval suites use fresh queries, so the optimizer never
+//     sees the benefit.
+// They're listed here so visitors who know about them aren't confused
+// by their absence, but they don't contribute to the combinatorics
+// multiplier and aren't counted in the Agent-knobs total.
+const DEPLOYMENT_KNOBS = [
+  { id: "streaming",  name: "Streaming output",        values: ["off", "on"],                                               impact: { a: 0, c: 0, l: 3 } },
+  { id: "guardrails", name: "Guardrails",              values: ["off", "content-mod", "PII-redact", "jailbreak-detect", "all"], impact: { a: 1, c: 1, l: 1 } },
+  { id: "cache",      name: "Semantic / prompt cache", values: ["none", "exact-match", "semantic-cache", "prompt-cache"],   impact: { a: 0, c: 3, l: 3 } },
+];
 
 const COMMON_MODEL_KNOBS = [
   { id: "temperature",       name: "Temperature",                values: [0.0, 0.2, 0.5, 0.7, 1.0], impact: { a: 2, c: 0, l: 0 } },
@@ -464,6 +472,14 @@ function KnobRow({ knob, selectedValues, onToggleValue, onToggleEnabled, enabled
                 {knob.name}
               </span>
               <ImpactBlock impact={knob.impact} />
+              {knob.requiresReindex && (
+                <span
+                  className="text-[9px] md:text-[10px] font-mono uppercase tracking-wider text-amber-300 px-1.5 py-0.5 rounded border border-amber-500/40 bg-amber-500/10"
+                  title="Sweeping this knob requires rebuilding the retrieval index per trial — accuracy lever, infra cost."
+                >
+                  ⚠ requires re-indexing
+                </span>
+              )}
             </div>
           </div>
         </label>
@@ -1193,6 +1209,29 @@ export default function KnobExplorer() {
                 </div>
               )}
               </Section>
+            </Section>
+
+            {/* Deployment settings — not part of the optimization sweep.
+                Visible so visitors who go looking for streaming / cache /
+                guardrails see they exist, but the muted style + label
+                make it clear Traigent doesn't tune them. Excluded from
+                the combinatorics multiplier and the Agent-knobs total. */}
+            <Section
+              title="Deployment settings (not optimized)"
+              variant="super"
+              defaultOpen={false}
+            >
+              <p className="text-xs text-slate-500 mb-3 italic">
+                These behave like knobs but don't fit Traigent's eval+sweep loop —
+                they're set once at deployment, not optimized. Listed for completeness.
+              </p>
+              <KnobList
+                knobs={DEPLOYMENT_KNOBS}
+                sortBy={sortBy}
+                knobValues={knobValues}
+                onToggleEnabled={toggleKnobEnabled}
+                onToggleValue={toggleKnobValue}
+              />
             </Section>
 
           </motion.div>
