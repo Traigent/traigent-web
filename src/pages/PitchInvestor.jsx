@@ -36,6 +36,11 @@ import {
   useRemoveHubSpotChatWidget,
   useScrollDeckScale,
 } from "./pitch/scrollCanvas";
+// Hotspot manifest — invisible <a> rectangles overlaid on each flattened
+// slide PNG so the source deck's hyperlinks (LinkedIn, mailto, scholar,
+// source citations, demo video) survive the PowerPoint -> PNG export.
+// Regenerate with: node scripts/extract-investor-deck-hotspots.mjs
+import HOTSPOTS from "./pitch/investor-hotspots.json";
 
 // Slide order is intentionally identical to the source deck.
 // Titles are used only for alt text / aria labels — visible content
@@ -75,25 +80,46 @@ export default function PitchInvestor() {
       </Helmet>
       <style>{SCROLL_DECK_GLOBAL_CSS}</style>
       <div className="bg-[#080808] text-white">
-        {INVESTOR_SLIDES.map((slide, i) => (
-          <ScrollCanvasFrame
-            key={slide.file}
-            index={i}
-            total={INVESTOR_SLIDES.length}
-            scale={scale}
-          >
-            <img
-              src={`${import.meta.env.BASE_URL}investor-deck/slides/${slide.file}`}
-              alt={slide.title}
-              width={SLIDE_W}
-              height={SLIDE_H}
-              loading={i < 2 ? "eager" : "lazy"}
-              decoding="async"
-              className="absolute inset-0 w-full h-full object-contain"
-              draggable={false}
-            />
-          </ScrollCanvasFrame>
-        ))}
+        {INVESTOR_SLIDES.map((slide, i) => {
+          const hotspots = HOTSPOTS[slide.file] || [];
+          return (
+            <ScrollCanvasFrame
+              key={slide.file}
+              index={i}
+              total={INVESTOR_SLIDES.length}
+              scale={scale}
+            >
+              <img
+                src={`${import.meta.env.BASE_URL}investor-deck/slides/${slide.file}`}
+                alt={slide.title}
+                width={SLIDE_W}
+                height={SLIDE_H}
+                loading={i < 2 ? "eager" : "lazy"}
+                decoding="async"
+                className="absolute inset-0 w-full h-full object-contain"
+                draggable={false}
+              />
+              {/* Transparent <a> rectangles overlaid at the source-deck shape
+                  coordinates. Same href targets as the PPTX. */}
+              {hotspots.map((h, hi) => (
+                <a
+                  key={hi}
+                  href={h.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={h.href}
+                  className="absolute z-20 cursor-pointer"
+                  style={{
+                    left: `${h.x * 100}%`,
+                    top: `${h.y * 100}%`,
+                    width: `${h.w * 100}%`,
+                    height: `${h.h * 100}%`,
+                  }}
+                />
+              ))}
+            </ScrollCanvasFrame>
+          );
+        })}
       </div>
     </>
   );
