@@ -1,0 +1,83 @@
+{
+  "installPresets": {
+    "all": {
+      "label": "Install all Traigent skills",
+      "command": "npx skills add Traigent/traigent-skills --skill '*'",
+      "secondary": "Installs all published user-facing Traigent SDK skills from the dedicated public repo."
+    },
+    "entrypoints": {
+      "label": "Entry points only",
+      "command": "npx skills add Traigent/traigent-skills --skill traigent --skill traigent-quickstart",
+      "secondary": "Useful only when you want the shortest local skill footprint."
+    }
+  },
+  "goals": [
+    {
+      "id": "integrate-decorator",
+      "label": "Integrate the decorator",
+      "skills": ["traigent-decorator-setup"],
+      "promptSteps": [
+        "Inspect my target function and add the @traigent.optimize decorator without changing behavior.",
+        "Define the inputs, objective, and eval data needed for a safe optimization run."
+      ]
+    },
+    {
+      "id": "find-knobs",
+      "label": "Find the knobs that matter",
+      "skills": [
+        "traigent-configuration-space",
+        "traigent-composite-knobs",
+        "show-significant-tuned-variables"
+      ],
+      "promptSteps": [
+        "Map the tunable variables and constraints before running optimization.",
+        "After the run, identify the significant tuned variables and explain which config changed the outcome."
+      ]
+    },
+    {
+      "id": "setup-evaluation",
+      "label": "Set up evaluation",
+      "skills": ["traigent-decorator-setup"],
+      "promptSteps": [
+        "Build or validate an eval dataset and scoring function before any paid run.",
+        "Show me the pass/fail criteria that make the optimization result trustworthy."
+      ]
+    },
+    {
+      "id": "run-optimization",
+      "label": "Run optimization",
+      "skills": ["traigent-run-optimization"],
+      "promptSteps": [
+        "Run the full flow in mock or dry-run mode first, with no API keys and no LLM cost.",
+        "Only after the dry run passes, run the real optimization and track cost, trials, and final score."
+      ]
+    },
+    {
+      "id": "apply-results",
+      "label": "Analyze and apply results",
+      "skills": ["traigent-analyze-results"],
+      "promptSteps": [
+        "Read the optimization results, compare the winning config against baseline, and explain the tradeoffs.",
+        "Apply the selected config as a small code change and add a regression check."
+      ]
+    },
+    {
+      "id": "debug-run",
+      "label": "Debug a run",
+      "skills": ["traigent-debugging"],
+      "promptSteps": [
+        "Inspect the failed run, logs, traces, and config space before changing code.",
+        "Fix the smallest root cause, then rerun the mock path before retrying a real run."
+      ]
+    },
+    {
+      "id": "integrate-framework",
+      "label": "Integrate a framework",
+      "skills": ["traigent-integrations"],
+      "promptSteps": [
+        "Adapt the setup for my framework, such as LangChain, LiteLLM, DSPy, or a direct SDK call.",
+        "Keep the framework wrapper testable so optimization can be validated locally before deployment."
+      ]
+    }
+  ]
+}
