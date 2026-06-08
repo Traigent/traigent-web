@@ -16,15 +16,8 @@ import { trackEvent } from "../lib/analytics";
 
 const createPageUrl = (path) => path;
 const SDK_SKILL_INSTALL_COMMAND = [
-  "npx skills add Traigent/agents-skills",
-  "--skill traigent",
-  "--skill traigent-quickstart",
-  "--skill traigent-configuration-space",
-  "--skill traigent-decorator-setup",
-  "--skill traigent-run-optimization",
-  "--skill traigent-analyze-results",
-  "--skill traigent-debugging",
-  "--skill traigent-integrations",
+  "npx skills add Traigent/traigent-skills",
+  "--skill '*'",
 ].join(" ");
 const TERMINAL_INSTALL_COMMAND = "curl -fsSL https://traigent.ai/install.sh | sh";
 // Switch these defaults to traigent[recommended] once that extras bundle ships.
@@ -203,7 +196,7 @@ export default function GetStarted() {
           {unlocked && (
             <InstallCommand
               command={SDK_SKILL_INSTALL_COMMAND}
-              secondary="Installs only the user-facing Traigent SDK skills. Internal review, PR, and security tools stay out of the bundle."
+              secondary="Installs all published user-facing Traigent SDK skills from the dedicated public repo."
             />
           )}
         </div>
