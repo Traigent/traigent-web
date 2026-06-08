@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Send } from "lucide-react";
 import { trackEvent } from "../lib/analytics";
+import ConsentGate from "./ConsentGate";
+import ConsentCheckbox from "./ConsentCheckbox";
 
 // HubSpot Forms API config — values from the embed snippet in HubSpot.
 // These are PUBLIC (already in the public embed code), so it's fine to inline.
@@ -62,6 +64,7 @@ function validateBusinessEmail(email) {
 export default function ContactSection() {
   const sectionRef = useRef(null);
   const [form, setForm] = useState({ firstname: "", lastname: "", email: "", message: "" });
+  const [agreed, setAgreed] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [submitError, setSubmitError] = useState("");
   const [sending, setSending] = useState(false);
@@ -87,6 +90,13 @@ export default function ContactSection() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Belt-and-suspenders: the GDPR checkbox already disables the submit
+    // button, but reject any submit that slips through (autofill, JS poke,
+    // browser extension) so we never POST a lead without consent on file.
+    if (!agreed) {
+      trackEvent("contact_form_validation_failed", { reason: "no_consent" });
+      return;
+    }
     const err = validateBusinessEmail(form.email);
     if (err) {
       setEmailError(err);
@@ -181,6 +191,7 @@ export default function ContactSection() {
             </button>
           </motion.div>
         ) : (
+          <ConsentGate>
           <motion.form
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -263,13 +274,19 @@ export default function ContactSection() {
               </div>
             )}
 
+            <ConsentCheckbox
+              id="contact-consent"
+              checked={agreed}
+              onChange={setAgreed}
+            />
+
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
               <p className="text-xs text-slate-500">
                 {sending ? "Sending..." : "Submissions land in our HubSpot CRM."}
               </p>
               <button
                 type="submit"
-                disabled={sending}
+                disabled={sending || !agreed}
                 className="inline-flex items-center justify-center bg-[#1A6BF5] hover:bg-[#4D8EF8] disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-medium px-6 py-2.5 rounded-lg text-sm transition-colors whitespace-nowrap"
               >
                 <Send className="w-4 h-4 mr-2" />
@@ -277,6 +294,7 @@ export default function ContactSection() {
               </button>
             </div>
           </motion.form>
+          </ConsentGate>
         )}
       </div>
     </section>
