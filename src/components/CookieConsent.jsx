@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getConsentRecord, setConsent } from '../lib/consent';
+import { getConsentRecord, setConsent, OPEN_BANNER_EVENT } from '../lib/consent';
 
 export default function CookieConsent() {
   const [showBanner, setShowBanner] = useState(false);
@@ -12,6 +12,16 @@ export default function CookieConsent() {
         setShowBanner(true);
       }
     }
+  }, []);
+
+  // Any other UI surface (e.g. a gated form's "Cookies required" block) can
+  // re-open the banner by dispatching OPEN_BANNER_EVENT — see
+  // openCookieBanner() in src/lib/consent.js.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const onOpen = () => setShowBanner(true);
+    window.addEventListener(OPEN_BANNER_EVENT, onOpen);
+    return () => window.removeEventListener(OPEN_BANNER_EVENT, onOpen);
   }, []);
 
   const handleAccept = () => {

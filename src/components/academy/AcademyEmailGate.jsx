@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { trackEvent } from "../../lib/analytics";
 import { checkKnownContact } from "../../lib/hubspotIdentify";
+import ConsentGate from "../ConsentGate";
+import ConsentCheckbox from "../ConsentCheckbox";
 
 // One notification per visitor per course per hour. Matches the global
 // gate's throttle window so the inbox volume stays sane in prod.
@@ -182,6 +184,7 @@ export default function AcademyEmailGate({ courseSlug, courseTitle, formId, chil
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const [email, setEmail] = useState("");
+  const [agreed, setAgreed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
@@ -235,28 +238,35 @@ export default function AcademyEmailGate({ courseSlug, courseTitle, formId, chil
           Drop your work email below to get the access link. We'll send it to
           your inbox right away — no spam, just the link back to this course.
         </p>
-        <form onSubmit={onSubmit} className="space-y-3">
-          <label htmlFor={`academy-email-${courseSlug}`} className="sr-only">
-            Email address
-          </label>
-          <input
-            id={`academy-email-${courseSlug}`}
-            type="email"
-            required
-            placeholder="you@yourcompany.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            disabled={submitting}
-            className="w-full px-4 py-3 rounded-lg bg-slate-950/60 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-[#4D8EF8] transition-colors"
-          />
-          <button
-            type="submit"
-            disabled={submitting || !email}
-            className="w-full bg-[#1A6BF5] hover:bg-[#4D8EF8] disabled:opacity-60 disabled:cursor-not-allowed text-white px-5 py-3 rounded-lg font-medium transition-colors"
-          >
-            {submitting ? "Sending…" : "Send me the access link"}
-          </button>
-        </form>
+        <ConsentGate>
+          <form onSubmit={onSubmit} className="space-y-3">
+            <label htmlFor={`academy-email-${courseSlug}`} className="sr-only">
+              Email address
+            </label>
+            <input
+              id={`academy-email-${courseSlug}`}
+              type="email"
+              required
+              placeholder="you@yourcompany.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={submitting}
+              className="w-full px-4 py-3 rounded-lg bg-slate-950/60 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-[#4D8EF8] transition-colors"
+            />
+            <ConsentCheckbox
+              id={`academy-consent-${courseSlug}`}
+              checked={agreed}
+              onChange={setAgreed}
+            />
+            <button
+              type="submit"
+              disabled={submitting || !email || !agreed}
+              className="w-full bg-[#1A6BF5] hover:bg-[#4D8EF8] disabled:opacity-60 disabled:cursor-not-allowed text-white px-5 py-3 rounded-lg font-medium transition-colors"
+            >
+              {submitting ? "Sending…" : "Send me the access link"}
+            </button>
+          </form>
+        </ConsentGate>
         {error === "business_email" && (
           <p className="text-amber-400 text-sm mt-4" role="alert">
             Please enter your <u>business</u> email
