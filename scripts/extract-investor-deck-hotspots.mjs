@@ -28,13 +28,29 @@
 //   node scripts/extract-investor-deck-hotspots.mjs
 // ---------------------------------------------------------------------------
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
-import { resolve, join } from "node:path";
+import { isAbsolute, relative, resolve } from "node:path";
 
 const SOURCE_ROOT = "C:/Users/amirb/Documents/Kingston D drive/2026 job search/TRAIGENT-AI/investor-deck-source/pptx-unpacked/ppt";
 const SLIDE_COUNT = 11;
 const OUT_PATH = resolve(import.meta.dirname, "..", "src", "pages", "pitch", "investor-hotspots.json");
 
-function readXml(path) {
+function sourcePath(...segments) {
+  for (const segment of segments) {
+    if (segment.includes("..") || isAbsolute(segment)) {
+      throw new Error(`Invalid source path segment: ${segment}`);
+    }
+  }
+
+  const path = resolve(SOURCE_ROOT, ...segments);
+  const withinSourceRoot = relative(SOURCE_ROOT, path);
+  if (withinSourceRoot.startsWith("..") || isAbsolute(withinSourceRoot)) {
+    throw new Error(`Refusing to read outside source deck root: ${path}`);
+  }
+  return path;
+}
+
+function readSourceXml(...segments) {
+  const path = sourcePath(...segments);
   if (!existsSync(path)) throw new Error(`Missing: ${path}`);
   return readFileSync(path, "utf-8");
 }
@@ -63,23 +79,29 @@ function parseRels(xml) {
 // the rel type is hyperlink.
 function decodeXmlEntities(s) {
   return s
-    .replace(/&amp;/g, "&")
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">")
     .replace(/&quot;/g, '"')
-    .replace(/&apos;/g, "'");
+    .replace(/&apos;/g, "'")
+    .replace(/&amp;/g, "&");
+}
+
+function normalizeHref(target) {
+  const href = decodeXmlEntities(target.trim());
+  if (!/^(https?:\/\/|mailto:)/i.test(href)) return null;
+  return href;
 }
 
 function resolveHref(rels, rId) {
   const rel = rels[rId];
   if (!rel) return null;
   if (!rel.type.endsWith("/hyperlink")) return null;
-  return decodeXmlEntities(rel.target);
+  return normalizeHref(rel.target);
 }
 
 // Read the slide-size from presentation.xml (EMUs).
 function getSlideSize() {
-  const presXml = readXml(join(SOURCE_ROOT, "presentation.xml"));
+  const presXml = readSourceXml("presentation.xml");
   const m = /<p:sldSz\s+cy="(\d+)"\s+cx="(\d+)"\/>/.exec(presXml) ||
             /<p:sldSz\s+cx="(\d+)"\s+cy="(\d+)"\/>/.exec(presXml);
   if (!m) throw new Error("Could not find <p:sldSz> in presentation.xml");
@@ -153,8 +175,8 @@ function main() {
 
   const manifest = {};
   for (let i = 1; i <= SLIDE_COUNT; i++) {
-    const slideXml = readXml(join(SOURCE_ROOT, "slides", `slide${i}.xml`));
-    const relsXml = readXml(join(SOURCE_ROOT, "slides", "_rels", `slide${i}.xml.rels`));
+    const slideXml = readSourceXml("slides", `slide${i}.xml`);
+    const relsXml = readSourceXml("slides", "_rels", `slide${i}.xml.rels`);
     const rels = parseRels(relsXml);
     const hotspots = extractShapeHotspots(slideXml, rels, slideSize);
     if (hotspots.length > 0) {
