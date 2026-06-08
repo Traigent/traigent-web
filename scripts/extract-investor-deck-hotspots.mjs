@@ -223,6 +223,106 @@ function hyperlinkIds(innerXml) {
   return ids;
 }
 
+// Pull the rId from a shape-level <a:hlinkClick> on <p:cNvPr>, if any.
+// Shape-level links cover the whole shape (e.g. wrapping an image).
+function shapeLevelLinkRId(innerXml) {
+  const cnvStart = innerXml.indexOf("<p:cNvPr");
+  if (cnvStart === -1) return null;
+  const cnvClose = innerXml.indexOf("</p:cNvPr>", cnvStart);
+  // Self-closing <p:cNvPr .../> has no children, so no shape-level link.
+  if (cnvClose === -1) return null;
+  const inside = innerXml.slice(cnvStart, cnvClose);
+  const ids = hyperlinkIds(inside);
+  return ids[0] ?? null;
+}
+
+// Return the inner XML of <p:txBody>, or null if there is none.
+function txBodyContents(innerXml) {
+  const start = innerXml.indexOf("<p:txBody");
+  if (start === -1) return null;
+  const openEnd = innerXml.indexOf(">", start);
+  if (openEnd === -1) return null;
+  const closeStart = innerXml.indexOf("</p:txBody>", openEnd);
+  if (closeStart === -1) return null;
+  return innerXml.slice(openEnd + 1, closeStart);
+}
+
+// Split a <p:txBody> body into paragraph inner-XML strings, in document
+// order. Handles both <a:p>...</a:p> and the rare <a:p/> (empty paragraph).
+function paragraphBlocks(txBodyXml) {
+  const blocks = [];
+  let index = 0;
+  while (index < txBodyXml.length) {
+    const start = txBodyXml.indexOf("<a:p", index);
+    if (start === -1) break;
+    const afterTag = start + "<a:p".length;
+    // Empty <a:p/> contributes an empty paragraph block (preserves vertical
+    // spacing so the per-row split tracks the source layout).
+    if (txBodyXml[afterTag] === "/" && txBodyXml[afterTag + 1] === ">") {
+      blocks.push("");
+      index = afterTag + 2;
+      continue;
+    }
+    const openEnd = txBodyXml.indexOf(">", afterTag);
+    if (openEnd === -1) break;
+    const closeStart = txBodyXml.indexOf("</a:p>", openEnd);
+    if (closeStart === -1) break;
+    blocks.push(txBodyXml.slice(openEnd + 1, closeStart));
+    index = closeStart + "</a:p>".length;
+  }
+  return blocks;
+}
+
+// Extract the text runs of a paragraph as { text, rId } in document order.
+// rId is null when the run is not hyperlinked. Text is XML-entity-decoded.
+function paragraphRuns(paraXml) {
+  const runs = [];
+  let index = 0;
+  while (index < paraXml.length) {
+    const start = paraXml.indexOf("<a:r", index);
+    if (start === -1) break;
+    const afterTag = start + "<a:r".length;
+    // Only match the <a:r> run element, not e.g. <a:rPr>. Next char must
+    // be whitespace (attributes) or > (no attributes).
+    if (
+      paraXml[afterTag] !== ">" &&
+      paraXml[afterTag] !== " " &&
+      paraXml[afterTag] !== "\n" &&
+      paraXml[afterTag] !== "\r" &&
+      paraXml[afterTag] !== "\t"
+    ) {
+      index = afterTag;
+      continue;
+    }
+    const openEnd = paraXml.indexOf(">", afterTag);
+    if (openEnd === -1) break;
+    const closeStart = paraXml.indexOf("</a:r>", openEnd);
+    if (closeStart === -1) break;
+    const runInner = paraXml.slice(openEnd + 1, closeStart);
+
+    // Collect every <a:t>...</a:t> text fragment in the run (usually one).
+    let text = "";
+    let ti = 0;
+    while (ti < runInner.length) {
+      const tStart = runInner.indexOf("<a:t", ti);
+      if (tStart === -1) break;
+      const tOpenEnd = runInner.indexOf(">", tStart);
+      if (tOpenEnd === -1) break;
+      const tCloseStart = runInner.indexOf("</a:t>", tOpenEnd);
+      if (tCloseStart === -1) break;
+      text += decodeXmlEntities(runInner.slice(tOpenEnd + 1, tCloseStart));
+      ti = tCloseStart + "</a:t>".length;
+    }
+
+    // First hyperlinkClick in the run (lives inside <a:rPr>) defines this
+    // run's link target. Runs without one are plain text.
+    const rId = hyperlinkIds(runInner)[0] ?? null;
+    runs.push({ text, rId });
+    index = closeStart + "</a:r>".length;
+  }
+  return runs;
+}
+
 function firstTransform(innerXml) {
   const xfrmStart = innerXml.indexOf("<a:xfrm");
   if (xfrmStart === -1) return null;
@@ -247,43 +347,83 @@ function firstTransform(innerXml) {
 }
 
 // Walk shapes (<p:sp>, <p:pic>, <p:graphicFrame>) in a slide and pull out
-// each one's bounding box + the hyperlinks referenced inside it.
+// every hyperlinked region. Two link kinds are emitted:
+//
+//   - Shape-level <a:hlinkClick> on <p:cNvPr>: a hotspot covering the whole
+//     shape bounding box (e.g. an image-wrapping link on slide 6).
+//   - Text-run-level <a:hlinkClick> inside <a:r><a:rPr>: a hotspot
+//     positioned at the cumulative character offset of that run within its
+//     paragraph, with width proportional to its character count, and
+//     height equal to one paragraph row of the shape. Character widths are
+//     approximated as uniform — not pixel-perfect, but on the short
+//     single-line shapes on slides 7 and 11 it lands within a few percent
+//     of the visible link text.
+//
+// PPTX shapes can nest inside <p:grpSp> — we don't descend into those.
+// The investor deck doesn't use grouped hyperlinked shapes.
 function extractShapeHotspots(slideXml, rels, slideSize) {
   const hotspots = [];
 
-  // PPTX shapes can nest inside <p:grpSp> — we'd descend into those too,
-  // but the investor deck doesn't use grouped shapes for hyperlinked text
-  // so we keep this flat for now.
   for (const inner of shapeBlocks(slideXml)) {
-    // Hyperlinks inside this shape, in document order. Both shape-level
-    // (in <p:nvSpPr><p:cNvPr>) and text-run-level (<a:rPr>) link refs
-    // share the same <a:hlinkClick r:id="rIdN" ...> form.
-    const hlinks = hyperlinkIds(inner);
-    if (hlinks.length === 0) continue;
-
-    // First <a:xfrm><a:off/><a:ext/> inside the shape is the shape's bbox.
-    // <a:bodyPr> may also contain offsets but we want spPr's xfrm — that's
-    // the one that appears first inside each <p:sp>/<p:pic>/<p:graphicFrame>.
+    if (hyperlinkIds(inner).length === 0) continue;
     const transform = firstTransform(inner);
     if (!transform) continue;
 
-    // Use the LAST link in document order — that's the LinkedIn target on
-    // each contact-card row, the trailing source citation on the market
-    // slide, etc.
-    const primaryRId = hlinks.at(-1);
-    const href = resolveHref(rels, primaryRId);
-    if (!href) continue;
-
-    hotspots.push({
+    const toFraction = (xEmu, yEmu, wEmu, hEmu, href) => ({
       href,
-      x: +(transform.x / slideSize.cx).toFixed(5),
-      y: +(transform.y / slideSize.cy).toFixed(5),
-      w: +(transform.w / slideSize.cx).toFixed(5),
-      h: +(transform.h / slideSize.cy).toFixed(5),
+      x: +(xEmu / slideSize.cx).toFixed(5),
+      y: +(yEmu / slideSize.cy).toFixed(5),
+      w: +(wEmu / slideSize.cx).toFixed(5),
+      h: +(hEmu / slideSize.cy).toFixed(5),
+    });
+
+    // Shape-level link: covers the whole bbox.
+    const shapeRId = shapeLevelLinkRId(inner);
+    if (shapeRId) {
+      const href = resolveHref(rels, shapeRId);
+      if (href) {
+        hotspots.push(
+          toFraction(transform.x, transform.y, transform.w, transform.h, href),
+        );
+      }
+    }
+
+    // Text-run links: chop the bbox into one row per paragraph, then size
+    // each linked run inside its row by character count.
+    const txBody = txBodyContents(inner);
+    if (!txBody) continue;
+    const paragraphs = paragraphBlocks(txBody).map(paragraphRuns);
+    if (paragraphs.length === 0) continue;
+    const rowH = transform.h / paragraphs.length;
+
+    paragraphs.forEach((runs, pi) => {
+      const totalChars = runs.reduce((sum, r) => sum + r.text.length, 0) || 1;
+      let cumulative = 0;
+      for (const run of runs) {
+        const runChars = run.text.length;
+        if (run.rId) {
+          const href = resolveHref(rels, run.rId);
+          if (href) {
+            const xEmu = transform.x + (transform.w * cumulative) / totalChars;
+            const wEmu = (transform.w * runChars) / totalChars;
+            const yEmu = transform.y + rowH * pi;
+            hotspots.push(toFraction(xEmu, yEmu, wEmu, rowH, href));
+          }
+        }
+        cumulative += runChars;
+      }
     });
   }
 
-  return hotspots;
+  // Dedupe identical hotspots (a shape-level link plus a single-run text
+  // link in the same shape can collide).
+  const seen = new Set();
+  return hotspots.filter((h) => {
+    const k = `${h.href}|${h.x}|${h.y}|${h.w}|${h.h}`;
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
 }
 
 function main() {
