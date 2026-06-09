@@ -46,6 +46,12 @@ jobs:
           VITE_POSTHOG_HOST: ${{ vars.VITE_POSTHOG_HOST }}
           VITE_GA4_ID: ${{ vars.VITE_GA4_ID }}
           VITE_CLARITY_ID: ${{ vars.VITE_CLARITY_ID }}
+          # Per-recipient pitch-package registry. JSON blob baked into the
+          # bundle at build time (visible in the deployed JS, like every
+          # other VITE_* above). Kept in Actions Variables — not Secrets —
+          # because there's no server-side benefit to masking a value that
+          # ships to every visitor's browser. Schema: src/lib/recipientPackages.js
+          VITE_RECIPIENT_PACKAGES_JSON: ${{ vars.VITE_RECIPIENT_PACKAGES_JSON }}
         run: npm run build
 
       - name: Deploy

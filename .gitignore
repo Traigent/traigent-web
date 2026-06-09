@@ -42,3 +42,13 @@ venv.bak/
 # Workspace-specific GitHub CLI config
 .gh/
 .envrc
+
+# Local override for recipient-package registry. The file holds real recipient
+# names / slugs / cover copy for local dev; the public repo never sees it.
+# Prod uses VITE_RECIPIENT_PACKAGES_JSON via GitHub Actions Variables instead.
+src/lib/recipientPackages.local.js
+
+# Per-recipient logo assets (Bosch, etc.). The folder is tracked via .gitkeep
+# so the path exists, but its contents stay out of the public repo.
+public/recipient-assets/*
+!public/recipient-assets/.gitkeep
