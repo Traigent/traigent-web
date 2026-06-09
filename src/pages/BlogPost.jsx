@@ -109,6 +109,15 @@ export default function BlogPost({ forcedSlug } = {}) {
 
   if (!post) return <Navigate to="/blog" replace />;
 
+  // The two reading-primers (agent-knobs-101, implementing-agent-knobs) are
+  // reached only via the outbound presentations triangle's top-level aliases,
+  // which mount BlogPost with `forcedSlug`. Those entries book on the outbound
+  // /out scheduling page; genuinely inbound /blog/:slug reads keep the base
+  // link so organic blog readers stay attributed to inbound.
+  const bookingHref = forcedSlug
+    ? "https://meetings-eu1.hubspot.com/amir8/out"
+    : "https://meetings-eu1.hubspot.com/amir8";
+
   const ogDescription = post.summary || "";
 
   return (
@@ -183,7 +192,7 @@ export default function BlogPost({ forcedSlug } = {}) {
           <div className="mt-16 pt-8 border-t border-slate-800 text-center">
             <p className="text-slate-400 mb-4">Ready to see Traigent in action?</p>
             <a
-              href="https://meetings-eu1.hubspot.com/amir8"
+              href={bookingHref}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white font-medium px-6 py-3 rounded-lg transition-colors"

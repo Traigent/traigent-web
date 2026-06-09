@@ -23,8 +23,10 @@ import { notifyStoryWatched } from "../lib/hubspotForms";
 import { useKnownContactNotify } from "../lib/useKnownContactNotify";
 import { usePageView } from "../lib/usePageView";
 
-// Same CTA URL as the homepage TopNav — HubSpot meeting booking.
-const DEMO_BOOKING_URL = "https://meetings-eu1.hubspot.com/amir8";
+// Outbound HubSpot meeting booking. /story is a deck/presentation surface
+// reached via the presentations triangle, so it uses the /out scheduling page
+// (distinct from the inbound site link) to attribute these bookings to outbound.
+const DEMO_BOOKING_URL = "https://meetings-eu1.hubspot.com/amir8/out";
 
 // =============================================================================
 // Narration component — flattens every sentence into a single list of rows

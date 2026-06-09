@@ -477,7 +477,7 @@ function SlideSweepThePack() {
 // Uses the same StartNowModal mounting pattern as TopNav and StoryMovie.
 function SlideInvestorCTA() {
   const [showStartNow, setShowStartNow] = useState(false);
-  const bookingHref = "https://meetings-eu1.hubspot.com/amir8";
+  const bookingHref = "https://meetings-eu1.hubspot.com/amir8/out";
   return (
     <>
       <div className="w-full max-w-[1080px] mx-auto self-stretch flex flex-col items-center justify-center min-h-[600px] text-center">
