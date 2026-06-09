@@ -14,12 +14,10 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import versionInfo from "../version.json";
 import { Helmet } from "react-helmet-async";
-import OptimizationTable from "../components/OptimizationTable";
 import StartNowModal from "../components/StartNowModal";
 import ContactSection from "../components/ContactSection";
 import BlogHighlights from "../components/BlogHighlights";
 import { trackEvent } from "../lib/analytics";
-import { birdDemo, replayColumns } from "../data/demoArtifacts/replays";
 
 // Placeholder for the Button component
 const Button = ({ children, className, onClick, size }) => (
@@ -265,22 +263,6 @@ export default function Homepage() {
                 </ul>
               </div>
             </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.24 }}
-              className="mt-8 mb-8"
-            >
-              <OptimizationTable
-                dataset={birdDemo.dataset}
-                columns={replayColumns(birdDemo.dataset)}
-                demoLabel={birdDemo.label}
-                autoPlay={true}
-                embedded={true}
-              />
-            </motion.div>
-
 
             {/* Design Partners & Early Adopters */}
             <motion.div
