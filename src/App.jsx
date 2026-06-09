@@ -51,9 +51,14 @@ export default function App() {
       <Route path="short-summary" element={<PitchShort2 forcedPreset="short-summary" />} />
       <Route path="market-opportunity" element={<PitchShort2 forcedPreset="market-opportunity" />} />
       <Route path="investor-pitch" element={<PitchShort2 forcedPreset="investor-pitch" />} />
-      {/* Per-recipient package routes. The `/:type` (no slug) routes render a
-          bland page so URL-guessers learn nothing about other recipients;
-          `/:type/:slug` resolves the slug via the env-driven registry. */}
+      {/* Per-recipient package routes. The category-free `/:slug` form is the
+          one we hand out now — it carries no VC/Channel/Customer signal (the
+          recipient's name already lives in the slug). The `/vc|/channel|
+          /customer/:slug` routes are kept as working aliases so links already
+          sent out (e.g. Bosch's /vc/... link) never break; the admin menu in
+          TopNav still groups by category from the registry, independent of the
+          URL. The `/:type` (no slug) routes render a bland page so URL-guessers
+          learn nothing about other recipients. */}
       <Route path="vc" element={<RecipientPackageBlankPage />} />
       <Route path="vc/:slug" element={<RecipientPackagePage type="vc" />} />
       <Route path="channel" element={<RecipientPackageBlankPage />} />
@@ -102,6 +107,13 @@ export default function App() {
         <Route path="academy/agents-in-production" element={<AgentsInProduction />} />
         <Route path="academy/statistical-se-workshop" element={<StatisticalSEWorkshop />} />
       </Route>
+
+      {/* Category-free recipient package route. Kept LAST so every static
+          route above wins by specificity; this only catches single-segment
+          paths that match nothing else. A registered slug renders the package;
+          anything unknown falls through to the bland page inside
+          RecipientPackagePage, revealing nothing. */}
+      <Route path=":slug" element={<RecipientPackagePage />} />
     </Routes>
     </>
   )
