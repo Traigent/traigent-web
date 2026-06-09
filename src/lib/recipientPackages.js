@@ -100,6 +100,30 @@ export function getPackage(type, slug) {
   return REGISTRY[type]?.[slug] || null;
 }
 
+// Category-free resolution: look a slug up across every type bucket. This
+// powers the bare `/:slug` route so outward-facing links carry no VC/Channel/
+// Customer signal (the recipient's name is already in the slug). Slugs are
+// expected to be globally unique; if the same slug somehow appears under two
+// types we warn and return the first match in VALID_TYPES order.
+export function getPackageBySlug(slug) {
+  if (!slug) return null;
+  let found = null;
+  for (const type of VALID_TYPES) {
+    const pkg = REGISTRY[type]?.[slug];
+    if (pkg) {
+      if (found) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `[recipientPackages] slug "${slug}" is registered under multiple types; using the first match.`,
+        );
+        break;
+      }
+      found = pkg;
+    }
+  }
+  return found;
+}
+
 // For the admin nav: returns all three sections in render order, each with
 // its packages sorted by dateSent (newest first; missing dates sink). Empty
 // sections are returned with an empty `items` array — the nav renders the

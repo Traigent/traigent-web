@@ -12,7 +12,7 @@ import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 import PitchShort2 from "./PitchShort2";
 import RecipientPackageBlankPage from "./RecipientPackageBlankPage";
-import { getPackage, isValidType } from "../lib/recipientPackages";
+import { getPackage, getPackageBySlug, isValidType } from "../lib/recipientPackages";
 
 function CoverSlide({ cover, displayName }) {
   const {
@@ -84,8 +84,12 @@ function CoverSlide({ cover, displayName }) {
 
 export default function RecipientPackagePage({ type }) {
   const { slug } = useParams();
-  const valid = isValidType(type);
-  const pkg = valid ? getPackage(type, slug) : null;
+  // Two entry points resolve to this page:
+  //  - bare `/:slug` (no `type` prop) → look the slug up across all buckets so
+  //    the URL leaks no VC/Channel/Customer category.
+  //  - legacy `/vc|/channel|/customer/:slug` (with `type`) → kept as working
+  //    aliases so links already sent out (e.g. Bosch) never break.
+  const pkg = type ? (isValidType(type) ? getPackage(type, slug) : null) : getPackageBySlug(slug);
 
   if (!pkg) {
     // Unknown slug under a valid type, or invalid type entirely — render the

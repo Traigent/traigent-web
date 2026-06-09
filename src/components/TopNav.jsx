@@ -503,7 +503,7 @@ export default function TopNav() {
                             section.items.map((item) => (
                               <a
                                 key={item.slug}
-                                href={`/#/${section.type}/${item.slug}`}
+                                href={`/#/${item.slug}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 role="menuitem"
@@ -515,7 +515,7 @@ export default function TopNav() {
                                 </div>
                                 <div className="text-xs text-slate-400 mt-0.5 flex justify-between gap-2">
                                   <span className="truncate">
-                                    {item.internalLabel || `/${section.type}/${item.slug}`}
+                                    {item.internalLabel || `/${item.slug}`}
                                   </span>
                                   {item.dateSent && (
                                     <span className="font-mono text-slate-500 shrink-0">
