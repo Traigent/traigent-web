@@ -5,6 +5,7 @@ import StartNowModal from "./StartNowModal";
 import PortalGateModal from "./PortalGateModal";
 import BrandMark from "./BrandMark";
 import { trackEvent } from "../lib/analytics";
+import { listAllForAdmin } from "../lib/recipientPackages";
 import {
   isUnlocked,
   markUnlocked,
@@ -241,6 +242,9 @@ export default function TopNav() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [pitchMenuOpen, setPitchMenuOpen] = useState(false);
   const pitchMenuRef = useRef(null);
+  const [recipientMenuOpen, setRecipientMenuOpen] = useState(false);
+  const recipientMenuRef = useRef(null);
+  const recipientSections = listAllForAdmin();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -262,6 +266,25 @@ export default function TopNav() {
       document.removeEventListener("keydown", onKey);
     };
   }, [pitchMenuOpen]);
+
+  // Same outside-click + Escape behavior for the recipient-packages menu.
+  useEffect(() => {
+    if (!recipientMenuOpen) return;
+    const onDocClick = (e) => {
+      if (recipientMenuRef.current && !recipientMenuRef.current.contains(e.target)) {
+        setRecipientMenuOpen(false);
+      }
+    };
+    const onKey = (e) => {
+      if (e.key === "Escape") setRecipientMenuOpen(false);
+    };
+    document.addEventListener("mousedown", onDocClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDocClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [recipientMenuOpen]);
 
   // Click handler for in-page anchor scrolling.
   // If we're on the homepage, scrollIntoView directly.
@@ -400,44 +423,114 @@ export default function TopNav() {
                   trigger; right-click toggles a small dropdown of decks, each
                   opening in a new tab. Left-click is intentionally a no-op
                   so the surface stays obscure. */}
-              <div className="relative" ref={pitchMenuRef}>
-                <button
-                  type="button"
-                  onClick={(e) => e.preventDefault()}
-                  onContextMenu={(e) => {
-                    e.preventDefault();
-                    setPitchMenuOpen((v) => !v);
-                  }}
-                  aria-label="Presentations menu"
-                  aria-haspopup="menu"
-                  aria-expanded={pitchMenuOpen}
-                  title="Presentations"
-                  className="text-slate-700 hover:text-slate-200 transition-colors text-base leading-none select-none px-1"
-                >
-                  ▸
-                </button>
-                {pitchMenuOpen && (
-                  <div
-                    role="menu"
-                    aria-label="Presentations"
-                    className="absolute top-full right-0 mt-2 w-72 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl p-2 z-[60]"
+              <div className="flex flex-col items-center gap-0 leading-none">
+                <div className="relative" ref={pitchMenuRef}>
+                  <button
+                    type="button"
+                    onClick={(e) => e.preventDefault()}
+                    onContextMenu={(e) => {
+                      e.preventDefault();
+                      setPitchMenuOpen((v) => !v);
+                    }}
+                    aria-label="Presentations menu"
+                    aria-haspopup="menu"
+                    aria-expanded={pitchMenuOpen}
+                    title="Presentations"
+                    className="text-slate-700 hover:text-slate-200 transition-colors text-base leading-none select-none px-1"
                   >
-                    {PITCH_DECK_OPTIONS.map((item) => (
-                      <a
-                        key={item.href}
-                        href={item.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        role="menuitem"
-                        onClick={() => setPitchMenuOpen(false)}
-                        className="block px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors"
-                      >
-                        <div className="text-sm text-white font-medium">{item.label}</div>
-                        <div className="text-xs text-slate-400 mt-0.5">{item.desc}</div>
-                      </a>
-                    ))}
-                  </div>
-                )}
+                    ▸
+                  </button>
+                  {pitchMenuOpen && (
+                    <div
+                      role="menu"
+                      aria-label="Presentations"
+                      className="absolute top-full right-0 mt-2 w-72 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl p-2 z-[60]"
+                    >
+                      {PITCH_DECK_OPTIONS.map((item) => (
+                        <a
+                          key={item.href}
+                          href={item.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          role="menuitem"
+                          onClick={() => setPitchMenuOpen(false)}
+                          className="block px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors"
+                        >
+                          <div className="text-sm text-white font-medium">{item.label}</div>
+                          <div className="text-xs text-slate-400 mt-0.5">{item.desc}</div>
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {/* Second triangle, directly below the first — recipient
+                    packages (VC / Channel / Customer). Same right-click
+                    gesture, same obscure styling. The dropdown only renders
+                    sections that have at least one package in the registry,
+                    so empty sections never advertise their existence. */}
+                <div className="relative" ref={recipientMenuRef}>
+                  <button
+                    type="button"
+                    onClick={(e) => e.preventDefault()}
+                    onContextMenu={(e) => {
+                      e.preventDefault();
+                      setRecipientMenuOpen((v) => !v);
+                    }}
+                    aria-label="Recipient packages menu"
+                    aria-haspopup="menu"
+                    aria-expanded={recipientMenuOpen}
+                    title="Recipient packages"
+                    className="text-slate-700 hover:text-slate-200 transition-colors text-base leading-none select-none px-1"
+                  >
+                    ▸
+                  </button>
+                  {recipientMenuOpen && (
+                    <div
+                      role="menu"
+                      aria-label="Recipient packages"
+                      className="absolute top-full right-0 mt-2 w-80 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl p-2 z-[60]"
+                    >
+                      {recipientSections.map((section) => (
+                        <div key={section.type} className="mb-2 last:mb-0">
+                          <div className="px-3 pt-2 pb-1 text-[10px] font-mono uppercase tracking-widest text-slate-500">
+                            {section.label}
+                          </div>
+                          {section.items.length === 0 ? (
+                            <div className="px-3 py-2 text-xs text-slate-600 italic">
+                              No packages yet.
+                            </div>
+                          ) : (
+                            section.items.map((item) => (
+                              <a
+                                key={item.slug}
+                                href={`/#/${section.type}/${item.slug}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                role="menuitem"
+                                onClick={() => setRecipientMenuOpen(false)}
+                                className="block px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors"
+                              >
+                                <div className="text-sm text-white font-medium">
+                                  {item.displayName || item.slug}
+                                </div>
+                                <div className="text-xs text-slate-400 mt-0.5 flex justify-between gap-2">
+                                  <span className="truncate">
+                                    {item.internalLabel || `/${section.type}/${item.slug}`}
+                                  </span>
+                                  {item.dateSent && (
+                                    <span className="font-mono text-slate-500 shrink-0">
+                                      {item.dateSent}
+                                    </span>
+                                  )}
+                                </div>
+                              </a>
+                            ))
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 

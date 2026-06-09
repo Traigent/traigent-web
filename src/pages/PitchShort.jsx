@@ -4,13 +4,19 @@
 // rendered through PitchFull's originals with override props for the
 // subtitle / footer; everything else is imported directly. No structural
 // JSX is duplicated from PitchFull.
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import { ArrowRight, ArrowDown, ArrowUp, ChevronsDown, DollarSign, Check, Clock, ShieldCheck, TrendingDown, TrendingUp, X } from "lucide-react";
+import StartNowModal from "../components/StartNowModal";
 
-// Shared optimizer ring — clockwise Learn → Deduce → Test → Repeat loop.
-// Used by slide 1, slide 2 (BEFORE/TRAIGENT/AFTER middle panel), and slide 24
-// (Market Opportunity THE PLAY). Gradient id is parameterized so multiple
-// instances on the same page don't collide.
-function OptimizerRing({ size = 190, gradientId = "ringGrad" }) {
+// Shared optimizer ring — clockwise Learn → Deduce → <thirdLabel> → Repeat
+// loop. Used by slide 1, slide 2 (BEFORE/TRAIGENT/AFTER middle panel — also
+// rendered on the homepage hero), and slide 24 (Market Opportunity THE
+// CURE). `thirdLabel` defaults to "TEST" so the homepage stays unchanged;
+// the /investor-pitch slide 1 passes "EVALUATE" explicitly.
+// Gradient id is parameterized so multiple instances on the same page
+// don't collide.
+function OptimizerRing({ size = 190, gradientId = "ringGrad", thirdLabel = "TEST" }) {
   return (
     <svg viewBox="0 0 240 240" className="flex-shrink-0" style={{ width: size, height: size }} xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -31,7 +37,7 @@ function OptimizerRing({ size = 190, gradientId = "ringGrad" }) {
       <circle cx="120" cy="120" r="58" fill="#020617" stroke="#334155" strokeWidth="1"/>
       <text x="120" y="101" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">LEARN</text>
       <text x="120" y="119" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">DEDUCE</text>
-      <text x="120" y="137" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">TEST</text>
+      <text x="120" y="137" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">{thirdLabel}</text>
       <text x="120" y="155" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">REPEAT</text>
     </svg>
   );
@@ -466,13 +472,149 @@ function SlideSweepThePack() {
 // Top section: 3 stat tiles (TAM today, addressable LLM bill 2026, 2030).
 // Middle section: penetration → revenue cascade table.
 // Bottom: comparable-ramp sanity check.
+// Slide: dual-CTA closer for /investor-pitch — Start Now (opens the full
+// HubSpot-gated SDK install modal) + Book a demo (HubSpot meeting link).
+// Uses the same StartNowModal mounting pattern as TopNav and StoryMovie.
+function SlideInvestorCTA() {
+  const [showStartNow, setShowStartNow] = useState(false);
+  const bookingHref = "https://meetings-eu1.hubspot.com/amir8";
+  return (
+    <>
+      <div className="w-full max-w-[1080px] mx-auto self-stretch flex flex-col items-center justify-center min-h-[600px] text-center">
+        <div className="text-xs md:text-sm font-mono uppercase tracking-[0.3em] text-slate-500 mb-6">
+          Pick your path
+        </div>
+        <h2 className="text-4xl md:text-6xl font-bold text-white leading-tight tracking-tight mb-4">
+          Try it. Or talk to us.
+        </h2>
+        <p className="text-lg md:text-xl text-slate-300 max-w-2xl leading-snug mb-12">
+          Both paths land in the same place &mdash; you running Traigent on a
+          real agent of yours.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl mb-6">
+          {/* Option 1 — Start Now (opens the gated modal) */}
+          <div
+            className="bg-slate-900/60 border-2 rounded-2xl p-7 text-left flex flex-col"
+            style={{ borderColor: "#4D8EF8" }}
+          >
+            <div className="text-xs font-mono uppercase tracking-widest mb-3" style={{ color: "#4D8EF8" }}>
+              Option 1 &mdash; Free
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-2">Start Now</h3>
+            <p className="text-slate-300 text-base mb-6 leading-snug">
+              Keyless demo on your laptop in <span className="font-semibold text-white">under a minute</span>. No
+              API keys, no spend, no setup call.
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowStartNow(true)}
+              className="mt-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-lg font-bold text-white shadow-xl transition-transform hover:scale-105 active:scale-100"
+              style={{
+                background: "linear-gradient(135deg, #4D8EF8 0%, #1A6BF5 100%)",
+                boxShadow: "0 10px 30px rgba(77, 142, 248, 0.30)",
+              }}
+            >
+              <span className="text-xl leading-none">&#9654;</span>
+              Start Now &mdash; Free
+            </button>
+          </div>
+
+          {/* Option 2 — Book a demo */}
+          <div
+            className="bg-slate-900/60 border-2 rounded-2xl p-7 text-left flex flex-col"
+            style={{ borderColor: "#f59e0b" }}
+          >
+            <div className="text-xs font-mono uppercase tracking-widest mb-3" style={{ color: "#f59e0b" }}>
+              Option 2 &mdash; 15 min
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-2">Book a demo</h3>
+            <p className="text-slate-300 text-base mb-6 leading-snug">
+              We pick one of your agents, run the optimizer live, walk you
+              through the trial table and the convergence.
+            </p>
+            <a
+              href={bookingHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-lg font-bold text-white shadow-xl transition-transform hover:scale-105 active:scale-100"
+              style={{
+                background: "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
+                boxShadow: "0 10px 30px rgba(245, 158, 11, 0.30)",
+              }}
+            >
+              <span className="text-xl leading-none">&#128197;</span>
+              Book a 15-min call
+            </a>
+          </div>
+        </div>
+
+        <div className="text-sm text-slate-400">
+          <span className="font-mono text-slate-300">amir@traigent.ai</span> &middot;{" "}
+          <span className="font-mono text-slate-300">nimrod@traigent.ai</span>
+        </div>
+      </div>
+      {showStartNow && (
+        <StartNowModal
+          onClose={() => setShowStartNow(false)}
+          location="investor_pitch_cta"
+        />
+      )}
+    </>
+  );
+}
+
+// Slide: CTA pointing to /story — the 1-minute narrated agent-optimization
+// arc. Lives near the end of the investor-pitch range so the audience leaves
+// the deck on a "go watch the story" beat. Opens in a new tab so the deck
+// stays where it was.
+function SlideStoryCTA() {
+  return (
+    <div className="w-full max-w-[1080px] mx-auto self-stretch flex flex-col items-center justify-center min-h-[600px] text-center">
+      <div className="text-xs md:text-sm font-mono uppercase tracking-[0.3em] text-slate-500 mb-6">
+        The 1-minute story
+      </div>
+      <h2 className="text-4xl md:text-6xl font-bold text-white leading-tight tracking-tight mb-4">
+        Problem &rarr;{" "}
+        <span style={{ color: "#4D8EF8" }}>Optimizer</span>
+        {" "}&rarr;{" "}
+        <span style={{ color: "#4ade80" }}>The win</span>
+      </h2>
+      <p className="text-lg md:text-xl text-slate-300 max-w-2xl leading-snug mb-12">
+        Narrated walkthrough &mdash; the 25-knob configuration problem, the
+        Traigent loop, and the converged result, all under a minute.
+      </p>
+      <a
+        href="/#/story"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-3 px-9 py-4 rounded-xl text-xl md:text-2xl font-bold text-white shadow-2xl transition-transform hover:scale-105 active:scale-100"
+        style={{
+          background: "linear-gradient(135deg, #4D8EF8 0%, #1A6BF5 100%)",
+          boxShadow: "0 10px 40px rgba(77, 142, 248, 0.35)",
+        }}
+      >
+        <span className="text-2xl md:text-3xl leading-none">&#9654;</span>
+        Watch the 1-minute story
+      </a>
+      <div className="mt-8 text-sm text-slate-400">
+        opens at <span className="font-mono text-slate-300">traigent.ai/#/story</span> in a new tab
+      </div>
+    </div>
+  );
+}
+
 function SlideMarketAndRevenue() {
+  // Customer savings split per Assumption #3:
+  //   Eng saved  = penetrated bill × $0.30   (foundation, accuracy phase, day-1)
+  //   LLM saved  = penetrated bill × $0.50   (scale, cost phase, later)
+  //   ARR        = (eng + LLM) × 5% take rate
   const rows = [
-    { year: "2026", phase: "POCs",          bill: "$21B",  pen: "0.03%", save: "$5M",   rev: "~$0.25M" },
-    { year: "2027", phase: "Early adopt",   bill: "$36B",  pen: "0.3%",  save: "$86M",  rev: "~$4M" },
-    { year: "2028", phase: "Channel + ent", bill: "$56B",  pen: "1.5%",  save: "$672M", rev: "~$34M" },
-    { year: "2029", phase: "Mainstream",    bill: "$86B",  pen: "4%",    save: "$2.8B", rev: "~$138M" },
-    { year: "2030", phase: "Category",      bill: "$128B", pen: "8%",    save: "$8.2B", rev: "~$410M" },
+    { year: "2026", phase: "POCs",          bill: "$21B",  pen: "0.03%", engSave: "$1.9M", llmSave: "$3.2M", rev: "~$0.25M" },
+    { year: "2027", phase: "Early adopt",   bill: "$36B",  pen: "0.3%",  engSave: "$32M",  llmSave: "$54M",  rev: "~$4M" },
+    { year: "2028", phase: "Channel + ent", bill: "$56B",  pen: "1.5%",  engSave: "$252M", llmSave: "$420M", rev: "~$34M" },
+    { year: "2029", phase: "Mainstream",    bill: "$86B",  pen: "4%",    engSave: "$1.0B", llmSave: "$1.7B", rev: "~$138M" },
+    { year: "2030", phase: "Category",      bill: "$128B", pen: "8%",    engSave: "$3.1B", llmSave: "$5.1B", rev: "~$410M" },
   ];
   return (
     <div className="w-full max-w-[1180px] mx-auto text-center self-stretch flex flex-col min-h-[600px]">
@@ -482,7 +624,7 @@ function SlideMarketAndRevenue() {
           Market &amp; Revenue &mdash; <span style={{ color: "#4D8EF8" }}>Non-Vendor Agents</span>
         </h2>
         <p className="text-sm md:text-base text-slate-300 leading-snug">
-          Revenue grounded in <span className="font-bold text-[#4ade80]">5% of customer savings actually delivered</span> &mdash; not a TAM percentage. Customer keeps ~95&cent; of every saved dollar.
+          Revenue grounded in <span className="font-bold text-[#4ade80]">5% of customer savings actually delivered</span> &mdash; not a TAM percentage. <span className="font-bold text-[#4D8EF8]">Engineering savings unlock adoption first</span>; <span className="font-bold text-[#f59e0b]">LLM cost savings drive expansion</span> as production bills grow.
         </p>
       </div>
 
@@ -492,7 +634,13 @@ function SlideMarketAndRevenue() {
         <ol className="text-[12.5px] text-slate-300 leading-snug space-y-1 list-decimal pl-5">
           <li><span className="font-bold text-white">Customers:</span> non-vendor agent companies + enterprise teams on third-party LLM APIs. Excludes foundation-model-vendor agents.</li>
           <li><span className="font-bold text-white">Cost structure:</span> every $1 of customer LLM bill is matched by ~$0.50 of engineering on tuning (6–10 FTE on a $3–5M LLM bill).</li>
-          <li><span className="font-bold text-white">Savings Traigent delivers</span> per $1 of LLM bill: <span className="text-[#f59e0b] font-semibold">50% LLM</span> + <span className="text-[#4D8EF8] font-semibold">60% eng</span> = <span className="text-white font-bold">$0.80 total customer savings</span>.</li>
+          <li><span className="font-bold text-white">Savings Traigent delivers</span> per $1 of LLM bill, <span className="italic">sequenced over the SDLC</span>:
+            <ul className="list-disc pl-5 mt-0.5 space-y-0.5">
+              <li><span className="text-[#4D8EF8] font-semibold">Foundation</span> (accuracy phase, day-1): <span className="text-[#4D8EF8] font-semibold">60% eng saved</span> = <span className="text-white font-bold">$0.30</span> &mdash; adopted before the LLM bill is large enough to optimize.</li>
+              <li><span className="text-[#f59e0b] font-semibold">Scale</span> (cost phase, later): <span className="text-[#f59e0b] font-semibold">50% LLM saved</span> = <span className="text-white font-bold">$0.50</span>.</li>
+              <li>Total: <span className="text-white font-bold">$0.80 customer savings</span>.</li>
+            </ul>
+          </li>
           <li><span className="font-bold text-white">Take rate:</span> <span className="text-[#4ade80] font-bold">5%</span> of total savings &mdash; effective <span className="text-white font-bold">$0.04 of ARR per $1 of penetrated customer LLM bill</span>.</li>
           <li><span className="font-bold text-white">Penetration:</span> share of the non-vendor LLM bill reached by Traigent customers. Revenue is calculated on savings achieved <em>within penetrated markets only</em>.</li>
         </ol>
@@ -510,7 +658,8 @@ function SlideMarketAndRevenue() {
               <th className="py-1.5">Phase</th>
               <th className="py-1.5 text-right">Addressable bill</th>
               <th className="py-1.5 text-right">Penetration</th>
-              <th className="py-1.5 text-right">Total customer savings</th>
+              <th className="py-1.5 text-right" style={{ color: "#4D8EF8" }}>Eng saved</th>
+              <th className="py-1.5 text-right" style={{ color: "#f59e0b" }}>LLM saved</th>
               <th className="py-1.5 text-right">Traigent ARR (5%)</th>
             </tr>
           </thead>
@@ -521,7 +670,8 @@ function SlideMarketAndRevenue() {
                 <td className="py-1.5 text-slate-300">{r.phase}</td>
                 <td className="py-1.5 text-right font-mono text-slate-200">{r.bill}</td>
                 <td className="py-1.5 text-right font-mono text-slate-200">{r.pen}</td>
-                <td className="py-1.5 text-right font-mono text-slate-200">{r.save}</td>
+                <td className="py-1.5 text-right font-mono font-semibold" style={{ color: "#4D8EF8" }}>{r.engSave}</td>
+                <td className="py-1.5 text-right font-mono font-semibold" style={{ color: "#f59e0b" }}>{r.llmSave}</td>
                 <td className="py-1.5 text-right font-mono font-bold" style={{ color: "#4ade80" }}>{r.rev}</td>
               </tr>
             ))}
@@ -557,64 +707,87 @@ function SlideMarketOpportunity() {
         {/* COL 1 — THE WAVE (hockey-stick) */}
         <div className="bg-slate-900/70 border-2 rounded-xl p-5 text-left flex flex-col" style={{ borderColor: "#4D8EF866" }}>
           <div className="text-2xl font-mono font-bold uppercase tracking-widest mb-3 text-center" style={{ color: "#4D8EF8" }}>The Wave</div>
-          <h3 className="text-2xl font-bold text-white leading-tight mb-3">Exponential adoption ahead</h3>
+          <h3 className="text-2xl font-bold text-white leading-tight mb-3">
+            Exponential adoption ahead
+            <span className="block">LLM costs set to explode</span>
+          </h3>
 
           {/* Hockey-stick chart */}
           <svg viewBox="0 0 280 130" className="w-full mb-4 flex-1" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
             <line x1="30" y1="110" x2="270" y2="110" stroke="#475569" strokeWidth="1"/>
-            <line x1="30" y1="20"  x2="30"  y2="110" stroke="#475569" strokeWidth="1"/>
-            <text x="4" y="16" fill="#94a3b8" fontSize="11" fontFamily="ui-sans-serif, system-ui" fontWeight="600">Agent $</text>
-            <text x="50"  y="122" textAnchor="middle" fill="#64748b" fontSize="10" fontFamily="ui-sans-serif, system-ui">2024</text>
-            <text x="110" y="122" textAnchor="middle" fill="#64748b" fontSize="10" fontFamily="ui-sans-serif, system-ui">2025</text>
-            <text x="170" y="122" textAnchor="middle" fill="#64748b" fontSize="10" fontFamily="ui-sans-serif, system-ui">2026</text>
-            <text x="230" y="122" textAnchor="middle" fill="#64748b" fontSize="10" fontFamily="ui-sans-serif, system-ui">2028</text>
-            <line x1="135" y1="20" x2="135" y2="110" stroke="#f59e0b" strokeWidth="1" strokeDasharray="3,2" strokeOpacity="0.7"/>
-            <text x="135" y="34" textAnchor="middle" fill="#f59e0b" fontSize="11" fontFamily="ui-sans-serif, system-ui" fontWeight="700">TODAY</text>
-            <path d="M 30 105 C 70 102, 110 100, 135 95 S 180 75, 210 50 S 255 25, 270 22" stroke="#4D8EF8" strokeWidth="2.5" fill="none"/>
-            <circle cx="50"  cy="104" r="2.5" fill="#475569"/>
-            <circle cx="80"  cy="103" r="2.5" fill="#475569"/>
-            <circle cx="110" cy="101" r="2.5" fill="#475569"/>
-            <circle cx="135" cy="95"  r="4"   fill="#f59e0b"/>
-            <circle cx="180" cy="73"  r="3.5" fill="#4D8EF8"/>
-            <circle cx="230" cy="40"  r="4"   fill="#4D8EF8"/>
-            <circle cx="265" cy="24"  r="4.5" fill="#4D8EF8"/>
+            <line x1="30" y1="14"  x2="30"  y2="110" stroke="#475569" strokeWidth="1"/>
+            {/* Y-axis label — rotated 90° so "Agent LLM costs" fits the narrow gutter. */}
+            <text x="14" y="62" textAnchor="middle" transform="rotate(-90 14 62)" fill="#94a3b8" fontSize="11" fontFamily="ui-sans-serif, system-ui" fontWeight="600">Agent LLM costs</text>
+            {/* X-axis labels — uniform 40px/year so TODAY (mid-2026) lands on the
+                1/3 mark of the plot, leaving 2× the room for the future. */}
+            <text x="40"  y="122" textAnchor="middle" fill="#64748b" fontSize="10" fontFamily="ui-sans-serif, system-ui">2024</text>
+            <text x="110" y="122" textAnchor="middle" fill="#64748b" fontSize="10" fontFamily="ui-sans-serif, system-ui">2026</text>
+            <text x="190" y="122" textAnchor="middle" fill="#64748b" fontSize="10" fontFamily="ui-sans-serif, system-ui">2028</text>
+            <text x="263" y="122" textAnchor="middle" fill="#64748b" fontSize="10" fontFamily="ui-sans-serif, system-ui">2030</text>
+            {/* TODAY marker — mid-2026, sits at the 1/3 mark of the plot. */}
+            <line x1="110" y1="14" x2="110" y2="110" stroke="#f59e0b" strokeWidth="1" strokeDasharray="3,2" strokeOpacity="0.7"/>
+            <text x="110" y="28" textAnchor="middle" fill="#f59e0b" fontSize="11" fontFamily="ui-sans-serif, system-ui" fontWeight="700">TODAY</text>
+            {/* Curve: nearly flat 2024-2026 (left third), inflects at 2026-2027,
+                steep through 2028, plateaus 2028-2030 — classic hockey stick. */}
+            <path d="M 30 108 C 70 107, 95 105, 110 100 C 135 92, 160 75, 180 45 C 205 20, 235 14, 270 13" stroke="#4D8EF8" strokeWidth="2.5" fill="none"/>
+            <circle cx="55"  cy="107" r="2.5" fill="#475569"/>
+            <circle cx="85"  cy="105" r="2.5" fill="#475569"/>
+            <circle cx="110" cy="100" r="4"   fill="#f59e0b"/>
+            <circle cx="150" cy="83"  r="3.5" fill="#4D8EF8"/>
+            <circle cx="185" cy="40"  r="3.5" fill="#4D8EF8"/>
+            <circle cx="225" cy="17"  r="4"   fill="#4D8EF8"/>
+            <circle cx="265" cy="13"  r="4.5" fill="#4D8EF8"/>
           </svg>
 
           <p className="text-lg text-slate-300 leading-snug mt-auto">
-            Few in production today.<br /><span className="font-bold text-white">Massive rollouts 2026–2028.</span>
+            Few in production today.<br /><span className="font-bold text-white">Massive rollouts 2026–2030.</span>
           </p>
         </div>
 
         {/* COL 2 — THE PAIN */}
         <div className="bg-slate-900/70 border-2 rounded-xl p-5 text-left flex flex-col" style={{ borderColor: "#f59e0b66" }}>
           <div className="text-2xl font-mono font-bold uppercase tracking-widest mb-3 text-center" style={{ color: "#f59e0b" }}>The Pain</div>
-          <h3 className="text-2xl font-bold text-white leading-tight mb-4">Sticker shock.<br />Brutal re-tuning cycles.</h3>
-          <ul className="text-lg text-slate-300 leading-snug space-y-4 flex-1 flex flex-col justify-center">
-            <li>
-              <span className="font-bold text-amber-400">Compounding LLM bills</span>
-            </li>
-            <li>
-              <span className="font-bold text-amber-400">Ongoing dev costs</span> every release
-            </li>
-            <li>
-              <span className="font-bold text-[#4D8EF8]">Quality bar keeps rising</span>
-            </li>
-            <li>
-              25+ knob manual re-tune = <span className="font-bold text-red-400">BRUTAL</span>
-            </li>
+          <h3 className="text-2xl font-bold text-white leading-tight mb-6">
+            <span className="text-amber-400">Exponential LLM costs</span><br />
+            Brutal re-tuning cycles
+            <Link
+              to="/knob-explorer"
+              className="block text-base font-medium text-slate-400 hover:text-slate-200 underline underline-offset-4 decoration-slate-500/50 hover:decoration-slate-200 mt-1 transition-colors"
+            >
+              (among thousands of config combos)
+            </Link>
+          </h3>
+          <div className="text-lg leading-snug mb-3">
+            <p className="text-slate-300">
+              Constant re-tuning efforts for cost and accuracy as conditions change:
+            </p>
+          </div>
+          <ul className="text-base text-slate-300 leading-snug space-y-1.5 flex-1 list-disc pl-5">
+            <li>New models drop</li>
+            <li>Prices shift</li>
+            <li>Domain data drifts</li>
+            <li>Latency / SLA tightens</li>
+            <li>New use cases land</li>
+            <li>Failures surface in prod</li>
           </ul>
         </div>
 
-        {/* COL 3 — THE PLAY (Traigent) */}
+        {/* COL 3 — THE CURE (Traigent) */}
         <div className="bg-slate-950 border-2 rounded-xl p-5 text-center flex flex-col" style={{ borderColor: "#4D8EF8" }}>
-          <div className="text-2xl font-mono font-bold uppercase tracking-widest mb-2 text-center" style={{ color: "#4D8EF8" }}>The Play</div>
-          <h3 className="text-2xl font-bold leading-tight mb-2">
-            <span style={{ color: "#4D8EF8" }}>Traigent.ai</span>
+          <div className="text-2xl font-mono font-bold uppercase tracking-widest mb-2 text-center" style={{ color: "#4D8EF8" }}>The Cure</div>
+          <h3 className="text-2xl font-bold leading-tight mb-2 text-white">
+            Automated Optimization
           </h3>
 
-          {/* Optimizer ring */}
-          <div className="flex justify-center mb-2 flex-1 items-center">
-            <OptimizerRing size={170} gradientId="ringGradMarket" />
+          {/* Optimizer ring with Traigent.ai brand to the right */}
+          <div className="flex justify-center mb-2 flex-1 items-center gap-3">
+            <OptimizerRing size={170} gradientId="ringGradMarket" thirdLabel="EVALUATE" />
+            <div
+              className="text-xl font-bold leading-tight tracking-tight whitespace-nowrap"
+              style={{ color: "#4D8EF8" }}
+            >
+              Traigent.ai
+            </div>
           </div>
 
           {/* 3 stacked benefit boxes (matches slide 1, with arrows) */}
@@ -638,7 +811,7 @@ function SlideMarketOpportunity() {
                 <ArrowUp className="w-6 h-6" strokeWidth={3} />
                 <span className="text-2xl font-extrabold tracking-tight leading-none">100%</span>
               </div>
-              <div className="text-xs font-mono uppercase tracking-wider text-slate-300 mt-1">shipment confidence</div>
+              <div className="text-xs font-mono uppercase tracking-wider text-slate-300 mt-1">confidence in what you ship</div>
             </div>
           </div>
         </div>
@@ -843,6 +1016,10 @@ export const SHORT_SLIDES = [
   { title: "Market & Revenue — Non-Vendor Agents", section: "Appendix", component: SlideMarketAndRevenue },
   // ----- LIVE DEMO — appears as last slide of every filtered deck via URL ranges -----
   { title: "Optimization in Action (Video Demo)", section: "Demo", component: SlideOptimizationInActionDemo },
+  // ----- 1-MIN STORY CTA — slide 5 of /investor-pitch (range 24-29) -----
+  { title: "Watch the 1-minute story", section: "Demo", component: SlideStoryCTA },
+  // ----- DUAL-CTA CLOSER — slide 6 of /investor-pitch (Start Now + Book a demo) -----
+  { title: "Investor CTA — Start Now + Book a Demo", section: "Demo", component: SlideInvestorCTA },
 ];
 
 export default function PitchShort() {

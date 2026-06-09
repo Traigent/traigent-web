@@ -28,6 +28,8 @@ import KnobExplorer from './pages/KnobExplorer'
 import OptimizationDemo from './pages/OptimizationDemo'
 import StoryMovie from './pages/StoryMovie'
 import DemoGallery from './pages/DemoGallery'
+import RecipientPackagePage from './pages/RecipientPackagePage'
+import RecipientPackageBlankPage from './pages/RecipientPackageBlankPage'
 import Layout from './layout'
 import ExternalRedirect from './components/ExternalRedirect'
 import CookieConsent from './components/CookieConsent'
@@ -49,6 +51,15 @@ export default function App() {
       <Route path="short-summary" element={<PitchShort2 forcedPreset="short-summary" />} />
       <Route path="market-opportunity" element={<PitchShort2 forcedPreset="market-opportunity" />} />
       <Route path="investor-pitch" element={<PitchShort2 forcedPreset="investor-pitch" />} />
+      {/* Per-recipient package routes. The `/:type` (no slug) routes render a
+          bland page so URL-guessers learn nothing about other recipients;
+          `/:type/:slug` resolves the slug via the env-driven registry. */}
+      <Route path="vc" element={<RecipientPackageBlankPage />} />
+      <Route path="vc/:slug" element={<RecipientPackagePage type="vc" />} />
+      <Route path="channel" element={<RecipientPackageBlankPage />} />
+      <Route path="channel/:slug" element={<RecipientPackagePage type="channel" />} />
+      <Route path="customer" element={<RecipientPackageBlankPage />} />
+      <Route path="customer/:slug" element={<RecipientPackagePage type="customer" />} />
       <Route path="knob-explorer" element={<KnobExplorer />} />
       <Route path="demo" element={<OptimizationDemo />} />
       <Route path="story" element={<StoryMovie />} />

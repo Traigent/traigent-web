@@ -20,13 +20,16 @@ import { usePageView } from "../lib/usePageView";
 // matching its menu label. Update both this map and src/components/TopNav.jsx
 // PITCH_DECK_OPTIONS when adding a new preset.
 const PRESETS = {
-  "extended-product-presentation": { exclude: "24-26" },
-  "short-summary":                 { range:   "1-5,27" },
+  // Slide 24 of SHORT_SLIDES (SlideMarketOpportunity — Wave / Pain / Play)
+  // leads every product + investor deck. It's the highest-signal opener and
+  // the slide that immediately frames the market + Traigent's play.
+  "extended-product-presentation": { range:   "24,1-23,27-29" },
+  "short-summary":                 { range:   "24,1-5,27" },
   "market-opportunity":            { range:   "24-27" },
   // Same slide range as market-opportunity for now — kept as a separate
   // preset so /investor-pitch can diverge later without touching the
   // /market-opportunity preset.
-  "investor-pitch":                { range:   "24-27" },
+  "investor-pitch":                { range:   "24-29" },
 };
 
 const SLIDE_W = 1280;
@@ -194,7 +197,7 @@ function resolveSlides(rangeParam, excludeParam, allSlides) {
   return allSlides;
 }
 
-export default function PitchShort2({ forcedPreset } = {}) {
+export default function PitchShort2({ forcedPreset, forcedRange, prependSlides } = {}) {
   usePageView();
   useKnownContactNotify({
     notify: notifyPitchDeckViewed,
@@ -206,23 +209,28 @@ export default function PitchShort2({ forcedPreset } = {}) {
   useRemoveChatWidget();
   // forcedPreset lets App.jsx mount this deck at a short top-level route
   // (e.g. /extended-product-presentation) without the /pitch-short-2/ prefix.
+  // forcedRange + prependSlides are used by RecipientPackagePage to mount a
+  // per-recipient deck (cover slide + a fixed SHORT_SLIDES range) without
+  // having to register a public preset name.
   const { preset: urlPreset } = useParams();
   const preset = forcedPreset || urlPreset;
   const [searchParams] = useSearchParams();
   const slidesToRender = useMemo(() => {
-    // Named preset on the URL path (e.g. /pitch-short-2/short-summary) wins
-    // over raw ?range= / ?exclude= query params. Unknown preset names fall
-    // through to whatever the query params (or full deck) say.
-    if (preset && PRESETS[preset]) {
+    let body;
+    if (forcedRange) {
+      body = resolveSlides(forcedRange, null, SCROLL_SLIDES);
+    } else if (preset && PRESETS[preset]) {
       const { range, exclude } = PRESETS[preset];
-      return resolveSlides(range, exclude, SCROLL_SLIDES);
+      body = resolveSlides(range, exclude, SCROLL_SLIDES);
+    } else {
+      body = resolveSlides(
+        searchParams.get("range"),
+        searchParams.get("exclude"),
+        SCROLL_SLIDES,
+      );
     }
-    return resolveSlides(
-      searchParams.get("range"),
-      searchParams.get("exclude"),
-      SCROLL_SLIDES,
-    );
-  }, [preset, searchParams]);
+    return prependSlides && prependSlides.length ? [...prependSlides, ...body] : body;
+  }, [preset, searchParams, forcedRange, prependSlides]);
 
   return (
     <>

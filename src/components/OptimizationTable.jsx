@@ -182,11 +182,37 @@ function LegacyOptimizationTable({ autoPlay = true, embedded = false }) {
     )
   );
 
+  // Always-visible transport button (embedded mode only). Sits to the left
+  // of the Fullscreen button and morphs based on state:
+  //   - at SUMMARY frame  -> ↻ Replay  (restarts animation)
+  //   - while playing     -> ⏸ Pause   (calls togglePause)
+  //   - while paused      -> ▶ Play    (calls togglePause)
+  const TransportButton = () => {
+    if (!embedded) return null;
+    const atSummary = frame === FRAMES.SUMMARY;
+    const icon = atSummary ? '↻' : isPlaying ? '⏸' : '▶';
+    const title = atSummary ? 'Replay' : isPlaying ? 'Pause' : 'Play';
+    return (
+      <button
+        className="play-pause-btn"
+        onClick={(e) => {
+          e.stopPropagation();
+          if (atSummary) restart();
+          else togglePause();
+        }}
+        title={title}
+        aria-label={title}
+      >
+        {icon}
+      </button>
+    );
+  };
+
   // Frame 0: Intro - "Most people guess..."
   if (frame === FRAMES.INTRO) {
     return (
       <div ref={containerRef} className={containerClass} onClick={togglePause}>
-        <FullscreenButton />
+        <FullscreenButton /><TransportButton />
         <PauseIndicator />
         <div className="opt-headline">
           <span className="headline-main">Most people guess their</span>
@@ -223,7 +249,7 @@ function LegacyOptimizationTable({ autoPlay = true, embedded = false }) {
   if (frame === FRAMES.STRUGGLE) {
     return (
       <div ref={containerRef} className={containerClass} onClick={togglePause}>
-        <FullscreenButton />
+        <FullscreenButton /><TransportButton />
         <PauseIndicator />
         <div className="opt-headline">
           <span className="headline-main">Then struggle with</span>
@@ -266,7 +292,7 @@ function LegacyOptimizationTable({ autoPlay = true, embedded = false }) {
   if (frame === FRAMES.TABLE_OVERVIEW) {
     return (
       <div ref={containerRef} className={containerClass} onClick={togglePause}>
-        <FullscreenButton />
+        <FullscreenButton /><TransportButton />
         <PauseIndicator />
         <div className="opt-headline">
           <span className="headline-main">There are too many configurations</span>
@@ -315,7 +341,7 @@ function LegacyOptimizationTable({ autoPlay = true, embedded = false }) {
 
     return (
       <div ref={containerRef} className={summaryContainerClass}>
-        <FullscreenButton />
+        <FullscreenButton /><TransportButton />
         <div className="opt-headline">
           <span className="headline-main">Improves AI agent's accuracy, response time, cost,</span>
           <span className="headline-main">or any important business KPI.</span>
@@ -383,7 +409,7 @@ function LegacyOptimizationTable({ autoPlay = true, embedded = false }) {
 
   return (
     <div ref={containerRef} className={containerClass} onClick={togglePause}>
-      <FullscreenButton />
+      <FullscreenButton /><TransportButton />
       <PauseIndicator />
       {/* Animation status message */}
       {frameData && (
