@@ -23,8 +23,10 @@ const PRESETS = {
   // Slide 24 of SHORT_SLIDES (SlideMarketOpportunity — Wave / Pain / Play)
   // leads every product + investor deck. It's the highest-signal opener and
   // the slide that immediately frames the market + Traigent's play.
-  "extended-product-presentation": { range:   "24,1-23,27-29" },
-  "short-summary":                 { range:   "24,1-5,27" },
+  // Position 1 (SlideOnePagerTextTestV2) is dropped — it's redundant with the
+  // redesigned SlideParetoFrontier at position 2.
+  "extended-product-presentation": { range:   "24,2-23,27-29" },
+  "short-summary":                 { range:   "24,2-5,27" },
   "market-opportunity":            { range:   "24-27" },
   // Same slide range as market-opportunity for now — kept as a separate
   // preset so /investor-pitch can diverge later without touching the
@@ -223,11 +225,13 @@ export default function PitchShort2({ forcedPreset, forcedRange, prependSlides }
       const { range, exclude } = PRESETS[preset];
       body = resolveSlides(range, exclude, SCROLL_SLIDES);
     } else {
+      // Raw full-deck fallback: drop the deprecated one-pager opener (redundant
+      // with SlideParetoFrontier). Presets/recipient ranges already exclude it.
       body = resolveSlides(
         searchParams.get("range"),
         searchParams.get("exclude"),
         SCROLL_SLIDES,
-      );
+      ).filter((s) => s.title !== "One-Pager Test — Text Only (V2)");
     }
     return prependSlides && prependSlides.length ? [...prependSlides, ...body] : body;
   }, [preset, searchParams, forcedRange, prependSlides]);
