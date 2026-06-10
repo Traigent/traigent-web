@@ -16,9 +16,11 @@ import StartNowModal from "../components/StartNowModal";
 // the /investor-pitch slide 1 passes "EVALUATE" explicitly.
 // Gradient id is parameterized so multiple instances on the same page
 // don't collide.
-function OptimizerRing({ size = 190, gradientId = "ringGrad", thirdLabel = "TEST" }) {
+export function OptimizerRing({ size = 190, gradientId = "ringGrad", thirdLabel = "TEST", className = "flex-shrink-0", style }) {
+  // Pass a className (e.g. "h-full w-auto") + style={{}} to make the ring fill
+  // its container instead of using the fixed `size`.
   return (
-    <svg viewBox="0 0 240 240" className="flex-shrink-0" style={{ width: size, height: size }} xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 240 240" className={className} style={style ?? { width: size, height: size }} xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#4D8EF8"/>

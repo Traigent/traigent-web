@@ -8,7 +8,7 @@ import {
   BenchmarkCardBody,
   ObservabilityCardBody,
 } from "../components/PlatformShowcase";
-import { SlideParetoFrontier } from "./PitchShort";
+import { SlideParetoFrontier, OptimizerRing } from "./PitchShort";
 import { Link } from "react-router-dom";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -175,7 +175,7 @@ export default function Homepage() {
                   <Play className="w-4 h-4 text-white fill-white ml-0.5" />
                 </span>
                 <span className="text-base md:text-lg font-medium text-slate-100">
-                  Agent Optimization Demo <span className="text-slate-500 mx-1">·</span> <span className="text-slate-400 font-normal">1-min</span>
+                  Agent Optimization Demo
                 </span>
               </Link>
             </motion.div>
@@ -187,7 +187,7 @@ export default function Homepage() {
               className="grid md:grid-cols-2 gap-5 md:gap-6 max-w-4xl mx-auto mb-6 text-left"
             >
               {/* Left — how Traigent finds the optimum */}
-              <div className="bg-slate-900/50 border-2 rounded-2xl p-6 md:p-7" style={{ borderColor: "rgba(26, 107, 245, 0.35)" }}>
+              <div className="bg-slate-900/50 border-2 rounded-2xl px-6 md:px-7 py-4" style={{ borderColor: "rgba(26, 107, 245, 0.35)" }}>
                 <a
                   href="#product"
                   onClick={(e) => {
@@ -195,7 +195,7 @@ export default function Homepage() {
                     document.getElementById("product")?.scrollIntoView({ behavior: "smooth", block: "start" });
                     trackEvent("hero_aop_chip_clicked", { destination: "product" });
                   }}
-                  className="inline-block px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-[10px] md:text-[11px] font-mono tracking-widest hover:bg-blue-500/20 hover:border-blue-500/60 transition-colors mb-4"
+                  className="block w-fit mx-auto px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-[10px] md:text-[11px] font-mono tracking-widest hover:bg-blue-500/20 hover:border-blue-500/60 transition-colors mb-4"
                   style={{ color: "#4D8EF8" }}
                 >
                   AGENT OPTIMIZATION PLATFORM
@@ -215,52 +215,34 @@ export default function Homepage() {
                 </ul>
               </div>
 
-              {/* Right — what you get out of it */}
-              <div className="bg-gradient-to-br from-blue-500/10 to-slate-900/0 border-2 rounded-2xl p-6 md:p-7" style={{ borderColor: "#1A6BF5" }}>
+              {/* Right — EXPERIMENT: the optimization-loop circle in place of
+                  the Benefits box (benefits are also listed further down). */}
+              <div className="bg-gradient-to-br from-blue-500/10 to-slate-900/0 border-2 rounded-2xl px-6 md:px-7 py-4 flex flex-col" style={{ borderColor: "#1A6BF5" }}>
                 <span
-                  className="inline-block px-3 py-1 rounded-full bg-blue-500/15 border border-blue-500/40 text-[10px] md:text-[11px] font-mono tracking-widest mb-4"
+                  className="inline-block self-center px-3 py-1 rounded-full bg-blue-500/15 border border-blue-500/40 text-[10px] md:text-[11px] font-mono tracking-widest mb-2"
                   style={{ color: "#4D8EF8" }}
                 >
-                  TRAIGENT BENEFITS
+                  AUTOMATIC OPTIMIZATION
                 </span>
-                <ul className="space-y-3">
-                  {[
-                    {
-                      content: <><span className="text-white font-semibold">Reduce engineering costs.</span></>,
-                      to: "/ttm",
-                      linkLabel: "TTM calc",
-                    },
-                    {
-                      content: <><span className="text-white font-semibold">Save LLM costs</span> over the lifecycle.</>,
-                      to: "/roi",
-                      linkLabel: "ROI calc",
-                    },
-                    {
-                      content: <><span className="text-white font-semibold">Shorten time to market.</span></>,
-                    },
-                    {
-                      content: <>Ship with <span className="text-white font-semibold">100% confidence</span>.</>,
-                    },
-                  ].map((b, i) => (
-                    <li key={i} className="flex items-start gap-2.5 text-slate-300 leading-snug">
-                      <Check className="w-5 h-5 mt-0.5 flex-shrink-0 text-[#4D8EF8]" strokeWidth={3} />
-                      <span className="flex-1">
-                        {b.content}
-                        {b.to && (
-                          <>
-                            {" "}
-                            <Link
-                              to={b.to}
-                              className="inline-flex items-center gap-0.5 text-[#4D8EF8] hover:text-white underline underline-offset-2 decoration-[#4D8EF8]/50 hover:decoration-white font-medium whitespace-nowrap"
-                            >
-                              {b.linkLabel} →
-                            </Link>
-                          </>
-                        )}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+                <div className="flex-1 min-h-0 relative">
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <OptimizerRing gradientId="ringGradHero" thirdLabel="EVALUATE" className="h-full w-auto max-w-full" style={{}} />
+                  </div>
+                  {/* Tucked into the bottom-right corner (overlay), so it never
+                      changes the ring size and the circle stays as big as the box allows */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      document.getElementById("benefits")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                      trackEvent("hero_benefits_clicked", { destination: "benefits" });
+                    }}
+                    className="absolute bottom-0 right-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-blue-500/40 bg-blue-500/10 text-sm font-medium text-slate-100 hover:bg-blue-500/20 hover:border-blue-500/60 transition-colors"
+                    aria-label="See the benefits below"
+                  >
+                    Benefits
+                    <ChevronDown className="w-4 h-4 animate-bounce" style={{ color: "#4D8EF8" }} strokeWidth={3} />
+                  </button>
+                </div>
               </div>
             </motion.div>
 
@@ -307,7 +289,7 @@ export default function Homepage() {
       {/* How It Works — three-panel BEFORE / TRAIGENT / AFTER story.
           Component is shared with /pitch-short(-2) slide 21 so the visual
           stays identical between the homepage and the deck. */}
-      <section className="pt-2 md:pt-4 pb-16 md:pb-20 bg-[#080808]">
+      <section id="benefits" className="pt-2 md:pt-4 pb-16 md:pb-20 bg-[#080808] scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <SlideParetoFrontier />
         </div>
