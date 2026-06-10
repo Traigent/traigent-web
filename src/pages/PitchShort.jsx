@@ -1021,5 +1021,7 @@ export const SHORT_SLIDES = [
 ];
 
 export default function PitchShort() {
-  return <PitchDeck slides={SHORT_SLIDES} />;
+  // Drop the deprecated one-pager opener (redundant with SlideParetoFrontier).
+  // It stays in SHORT_SLIDES at index 0 to keep 1-based range indices stable.
+  return <PitchDeck slides={SHORT_SLIDES.filter((s) => s.component !== SlideOnePagerTextTestV2)} />;
 }
