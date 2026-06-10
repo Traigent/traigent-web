@@ -205,15 +205,22 @@ function CategoryLegendDot({ category, label }) {
 // audience-outcome tiles on slide 2 (SlideOnePagerTextTestV2): bg-slate-900/70
 // with a 2px accent border, a big accent metric next to an up/down arrow, and
 // a small mono caption. `accent` is a 6-digit hex (66 suffix → ~40% border).
-function BenefitBox({ icon: Icon, accent, metric, label }) {
+function BenefitBox({ icon: Icon, accent, metric, label, href }) {
+  // When `href` is set the tile becomes a new-tab link with a hover lift.
+  const Tag = href ? "a" : "div";
+  const linkProps = href ? { href, target: "_blank", rel: "noopener noreferrer" } : {};
   return (
-    <div className="bg-slate-900/70 border-2 rounded-xl px-4 py-3 text-center" style={{ borderColor: `${accent}66` }}>
+    <Tag
+      {...linkProps}
+      className={`block bg-slate-900/70 border-2 rounded-xl px-4 py-3 text-center${href ? " transition hover:brightness-125 hover:-translate-y-0.5" : ""}`}
+      style={{ borderColor: `${accent}66` }}
+    >
       <div className="flex items-center justify-center gap-2" style={{ color: accent }}>
         <Icon className="w-7 h-7" strokeWidth={3} />
         <span className="text-2xl font-extrabold tracking-tight leading-none">{metric}</span>
       </div>
       <div className="text-[11px] font-mono uppercase tracking-wider text-slate-300 mt-1">{label}</div>
-    </div>
+    </Tag>
   );
 }
 
@@ -367,8 +374,8 @@ export function SlideParetoFrontier() {
           </div>
           <h3 className="text-[20px] font-bold text-white leading-tight mb-3 text-center">Best config possible — Always</h3>
           <div className="space-y-2.5">
-            <BenefitBox icon={ArrowDown} accent="#34d399" metric="up to 60%"  label="LLM cost reduction" />
-            <BenefitBox icon={ArrowDown} accent="#34d399" metric="up to 8 wks" label="Engineering time reclaimed" />
+            <BenefitBox icon={ArrowDown} accent="#34d399" metric="up to 60%"  label="LLM cost reduction" href="https://www.traigent.ai/#/roi" />
+            <BenefitBox icon={ArrowDown} accent="#34d399" metric="up to 8 wks" label="Engineering time reclaimed" href="https://www.traigent.ai/#/ttm" />
             <BenefitBox icon={ArrowUp}   accent="#34d399" metric="100%"        label="confidence in what you ship" />
             <BenefitBox icon={ArrowDown} accent="#34d399" metric="TTM"         label="Shortens time to market" />
           </div>
