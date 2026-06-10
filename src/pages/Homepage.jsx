@@ -175,7 +175,7 @@ export default function Homepage() {
                   <Play className="w-4 h-4 text-white fill-white ml-0.5" />
                 </span>
                 <span className="text-base md:text-lg font-medium text-slate-100">
-                  Agent Optimization Demo <span className="text-slate-500 mx-1">·</span> <span className="text-slate-400 font-normal">1-min</span>
+                  Agent Optimization Demo
                 </span>
               </Link>
             </motion.div>
@@ -195,7 +195,7 @@ export default function Homepage() {
                     document.getElementById("product")?.scrollIntoView({ behavior: "smooth", block: "start" });
                     trackEvent("hero_aop_chip_clicked", { destination: "product" });
                   }}
-                  className="inline-block px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-[10px] md:text-[11px] font-mono tracking-widest hover:bg-blue-500/20 hover:border-blue-500/60 transition-colors mb-4"
+                  className="block w-fit mx-auto px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-[10px] md:text-[11px] font-mono tracking-widest hover:bg-blue-500/20 hover:border-blue-500/60 transition-colors mb-4"
                   style={{ color: "#4D8EF8" }}
                 >
                   AGENT OPTIMIZATION PLATFORM
@@ -218,7 +218,7 @@ export default function Homepage() {
               {/* Right — what you get out of it */}
               <div className="bg-gradient-to-br from-blue-500/10 to-slate-900/0 border-2 rounded-2xl p-6 md:p-7" style={{ borderColor: "#1A6BF5" }}>
                 <span
-                  className="inline-block px-3 py-1 rounded-full bg-blue-500/15 border border-blue-500/40 text-[10px] md:text-[11px] font-mono tracking-widest mb-4"
+                  className="block w-fit mx-auto px-3 py-1 rounded-full bg-blue-500/15 border border-blue-500/40 text-[10px] md:text-[11px] font-mono tracking-widest mb-4"
                   style={{ color: "#4D8EF8" }}
                 >
                   TRAIGENT BENEFITS
