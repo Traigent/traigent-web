@@ -205,7 +205,7 @@ export default function Homepage() {
                     <><span className="text-white font-semibold underline underline-offset-4 decoration-2 decoration-[#4D8EF8]/70">Finds the optimal model and configuration combo</span> in <span className="text-white font-semibold">hours, not weeks</span>.</>,
                     <><span className="text-white font-semibold">Automatically</span>, not manually.</>,
                     <>With <span className="text-white font-semibold">confidence</span>, not guesswork.</>,
-                    <><span className="font-semibold" style={{ color: "#4D8EF8" }}>High Accuracy</span>, <span className="font-semibold" style={{ color: "#f59e0b" }}>Low Cost</span> — <span className="text-white font-semibold">Always</span>.</>,
+                    <><span className="font-semibold" style={{ color: "#4D8EF8" }}>High Accuracy</span>, <span className="font-semibold" style={{ color: "#f59e0b" }}>Low Cost</span> — <span className="text-white font-semibold">Continuously</span>.</>,
                   ].map((item, i) => (
                     <li key={i} className="flex items-start gap-2.5 text-slate-300 leading-snug">
                       <Check className="w-5 h-5 mt-0.5 flex-shrink-0 text-[#4D8EF8]" strokeWidth={3} />
