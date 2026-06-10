@@ -82,14 +82,14 @@ export function getUnlockedEmail() {
  *   shouldNotifyForGate("startnow")  // → true (independent of portal)
  *   shouldNotifyForGate("portal")    // → false (within the portal throttle)
  */
-export function shouldNotifyForGate(gateKey) {
+export function shouldNotifyForGate(gateKey, throttleMs = REPEAT_NOTIFY_THROTTLE_MS) {
   if (!gateKey) return false;
   const entry = readEntry();
   if (!entry || !entry.email) return false;
   const now = Date.now();
   const stamps = entry.lastNotifiedByGate || {};
   const lastTs = Number(stamps[gateKey]) || 0;
-  if (now - lastTs < REPEAT_NOTIFY_THROTTLE_MS) return false;
+  if (now - lastTs < throttleMs) return false;
   writeEntry({
     ...entry,
     lastNotifiedByGate: { ...stamps, [gateKey]: now },
