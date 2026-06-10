@@ -26,7 +26,8 @@ const PRESETS = {
   // Position 1 (SlideOnePagerTextTestV2) is dropped — it's redundant with the
   // redesigned SlideParetoFrontier at position 2.
   "extended-product-presentation": { range:   "24,2-23,27-29" },
-  "short-summary":                 { range:   "24,2-5,27" },
+  // Mirrors the Ness recipient deck's slide range (minus its cover slide).
+  "short-summary":                 { range:   "24,2,4-5,20,28,27,29" },
   "market-opportunity":            { range:   "24-27" },
   // Same slide range as market-opportunity for now — kept as a separate
   // preset so /investor-pitch can diverge later without touching the
