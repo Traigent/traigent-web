@@ -164,17 +164,18 @@ function SlideBeyondBoxes() {
 // Per-category color palette for the knob bars.
 const KNOB_COLOR = {
   model: { bar: "#4D8EF8", dot: "#1A6BF5", track: "rgba(77,142,248,0.18)" }, // blue   — model selection
-  llm:   { bar: "#f59e0b", dot: "#b45309", track: "rgba(245,158,11,0.18)" }, // amber  — LLM inference
+  llm:   { bar: "#f59e0b", dot: "#b45309", track: "rgba(245,158,11,0.18)" }, // amber  — LLM inference (legacy / slide 3)
+  inference: { bar: "#22d3ee", dot: "#0891b2", track: "rgba(34,211,238,0.18)" }, // cyan — LLM inference (slide 4; orange reserved for "the problem")
   agent: { bar: "#a78bfa", dot: "#7c3aed", track: "rgba(167,139,250,0.18)" }, // violet — agent orchestration
 };
 
-function KnobRow({ name, fill, value, category = "model" }) {
+function KnobRow({ name, fill, value, category = "model", nowrap = false }) {
   const c = KNOB_COLOR[category];
   return (
     <div>
-      <div className="flex items-center justify-between text-[12px] mb-1">
-        <span className="text-slate-200 font-semibold">{name}</span>
-        <span className="text-slate-400 font-mono">{value}</span>
+      <div className="flex items-center justify-between gap-2 text-[12px] mb-1">
+        <span className={`text-slate-200 font-semibold${nowrap ? " whitespace-nowrap" : ""}`}>{name}</span>
+        <span className={`text-slate-400 font-mono${nowrap ? " shrink-0 whitespace-nowrap" : ""}`}>{value}</span>
       </div>
       <div className="relative h-1.5 rounded-full" style={{ backgroundColor: c.track }}>
         <div
@@ -200,78 +201,95 @@ function CategoryLegendDot({ category, label }) {
   );
 }
 
-function OutcomeCard({ icon: Icon, iconColor, iconBg, title, body }) {
+// Benefit tile for SlideParetoFrontier's right column — styled to match the
+// audience-outcome tiles on slide 2 (SlideOnePagerTextTestV2): bg-slate-900/70
+// with a 2px accent border, a big accent metric next to an up/down arrow, and
+// a small mono caption. `accent` is a 6-digit hex (66 suffix → ~40% border).
+function BenefitBox({ icon: Icon, accent, metric, label }) {
   return (
-    <div className="bg-slate-950/60 border border-slate-700/60 rounded-lg p-3">
-      <div className="flex items-center gap-2 mb-1">
-        <div className="w-7 h-7 rounded-md flex items-center justify-center" style={{ backgroundColor: iconBg, color: iconColor }}>
-          <Icon className="w-4 h-4" strokeWidth={2.5} />
-        </div>
-        <h4 className="text-[15px] font-bold text-white">{title}</h4>
+    <div className="bg-slate-900/70 border-2 rounded-xl px-4 py-3 text-center" style={{ borderColor: `${accent}66` }}>
+      <div className="flex items-center justify-center gap-2" style={{ color: accent }}>
+        <Icon className="w-7 h-7" strokeWidth={3} />
+        <span className="text-2xl font-extrabold tracking-tight leading-none">{metric}</span>
       </div>
-      <p className="text-[12px] text-slate-400 leading-snug">{body}</p>
+      <div className="text-[11px] font-mono uppercase tracking-wider text-slate-300 mt-1">{label}</div>
     </div>
   );
 }
 
+// Slide: BEFORE → OPTIMIZER → AFTER three-panel story (The Problem / The
+// Solution / The Benefits). Canonical version — shared by the homepage hero,
+// /pitch-short(-2), the short-summary preset, and the per-recipient packages.
+//   LEFT  — the 25+ knob search space, classified per /knob-explorer:
+//           Model / LLM inference / Agent. Deployment-only settings (streaming,
+//           guardrails, caching) are excluded — they aren't tuned.
+//   MIDDLE — the autonomous Learn → Deduce → Evaluate → Repeat loop.
+//   RIGHT  — business outcomes as tappable tiles. Orange is reserved for "the
+//            problem"; LLM-inference knobs are cyan; benefits are green.
 export function SlideParetoFrontier() {
-  // Knobs grouped by category — Model / LLM / Agent. Each column keeps its
-  // categories contiguous so the colors read as bands top-to-bottom.
+  // Categories kept contiguous so the colour bands read top-to-bottom: the
+  // left column walks Model → LLM → Agent, the right column is all-Agent —
+  // visually making the point that agent knobs dominate the search space.
+  // Values kept short (counts / compact ranges) so each name + value fits on a
+  // single line in the narrow 2-column cell — paired with nowrap on KnobRow.
   const knobsLeft = [
     // Model
-    { name: 'Model',       fill: 65, value: '7 candidates', category: 'model' },
-    { name: 'Routing',     fill: 45, value: '5',            category: 'model' },
-    // LLM (per-call inference)
-    { name: 'Prompt',      fill: 90, value: '18 variants',  category: 'llm' },
-    { name: 'Reasoning',   fill: 60, value: 'low/med/high', category: 'llm' },
-    { name: 'Context',     fill: 70, value: '32k',          category: 'llm' },
-    { name: 'CoT / SC',    fill: 50, value: '4',            category: 'llm' },
-    { name: 'Caching',     fill: 75, value: 'on / off',     category: 'llm' },
+    { name: 'Model',            fill: 70, value: '25',           category: 'model' },
+    { name: 'Fallback chain',   fill: 40, value: '3',            category: 'model' },
+    // LLM (per-call inference params) — cyan 'inference' so orange stays "the problem"
+    { name: 'Temperature',      fill: 45, value: '0–1.0',        category: 'inference' },
+    { name: 'Reasoning',        fill: 65, value: 'low/med/high', category: 'inference' },
+    { name: 'Max tokens',       fill: 40, value: '256–2048',     category: 'inference' },
+    // Agent (behaviour / orchestration)
+    { name: 'System prompt',    fill: 80, value: '4',            category: 'agent' },
+    { name: 'Few-shot (k)',     fill: 75, value: '0–10 ex',      category: 'agent' },
+    { name: 'Example selection',fill: 70, value: '4',            category: 'agent' },
   ];
   const knobsRight = [
-    // LLM continued
-    { name: 'Few-shot',     fill: 70, value: '0–32 ex',       category: 'llm' },
-    { name: 'Output schema',fill: 50, value: 'free/JSON/fn',  category: 'llm' },
-    // Agent (orchestration)
-    { name: 'Tools',        fill: 50, value: '9',             category: 'agent' },
-    { name: 'RAG strategy', fill: 80, value: '12',            category: 'agent' },
-    { name: 'Re-ranker',    fill: 55, value: '5',             category: 'agent' },
-    { name: 'Chunking',     fill: 40, value: '4 sizes',       category: 'agent' },
-    { name: 'Guardrails',   fill: 60, value: '6',             category: 'agent' },
+    // Agent continued
+    { name: 'Chain-of-thought', fill: 85, value: '3',            category: 'agent' },
+    { name: 'Self-consistency', fill: 75, value: '1/3/5',        category: 'agent' },
+    { name: 'Self-correction',  fill: 65, value: '0–2',          category: 'agent' },
+    { name: 'Decomposition',    fill: 60, value: '3',            category: 'agent' },
+    { name: 'Tool selection',   fill: 55, value: '3',            category: 'agent' },
+    { name: 'RAG top-k',        fill: 80, value: '0–20',         category: 'agent' },
+    { name: 'Reranker',         fill: 70, value: '3',            category: 'agent' },
+    { name: 'Embedding model',  fill: 65, value: '4',            category: 'agent' },
   ];
   return (
     <div className="w-full max-w-[1240px] mx-auto">
-      <div className="text-center mb-3">
-        <p className="text-[18px] md:text-[22px] font-bold text-amber-400 mb-1.5 tracking-tight">
-          Literally millions of configuration options to contemplate.
-        </p>
+      <div className="text-center mb-8">
         <h2 className="text-3xl md:text-4xl font-bold text-white mb-1">
-          Agent performance is a <span className="text-[#4D8EF8]">25+ knob</span> optimization problem
+          Agent performance is a <span className="text-amber-500">25+ knob</span> optimization problem
         </h2>
-        <p className="text-base md:text-lg text-slate-400">
-          Traigent intelligently finds the <span className="font-bold text-[#f59e0b]">lowest-cost</span>, <span className="font-bold text-[#4D8EF8]">highest-quality</span> setup for each AI agent, rapidly.
-        </p>
       </div>
 
       <div className="grid grid-cols-[1fr_28px_1fr_28px_1fr] items-stretch gap-0">
-        {/* LEFT: 25+ knobs */}
+        {/* LEFT: 25+ knobs, reclassified per /knob-explorer */}
         <div className="bg-slate-900/70 border border-slate-700/60 rounded-xl p-4">
-          <div className="text-[10px] font-mono uppercase tracking-widest text-amber-400 mb-1">Before Traigent</div>
-          <h3 className="text-[20px] font-bold text-white leading-tight mb-1">25+ configuration knobs</h3>
+          <div className="text-center mb-3">
+            <a href="https://www.traigent.ai/#/knob-explorer" target="_blank" rel="noopener noreferrer" className="inline-block rounded-lg px-4 py-1.5 text-2xl font-mono font-bold uppercase tracking-wide transition hover:brightness-110" style={{ backgroundColor: '#f59e0b', color: '#0f172a' }}>The Problem</a>
+            <div className="text-[11px] text-slate-500 italic mt-1">Click for details</div>
+          </div>
+          <h3 className="text-[20px] font-bold text-white leading-tight mb-1 text-center">25+ configuration knobs</h3>
           <p className="text-[12px] text-slate-400 leading-snug mb-2">
-            Too many choices to test manually, and every workload behaves differently.
+            Literally millions of possible combinations to evaluate manually.
           </p>
           <div className="flex items-center justify-center gap-3 mb-3">
-            <CategoryLegendDot category="model" label="Model" />
-            <CategoryLegendDot category="llm"   label="LLM" />
-            <CategoryLegendDot category="agent" label="Agent" />
+            <CategoryLegendDot category="model"     label="Model" />
+            <CategoryLegendDot category="inference" label="LLM" />
+            <CategoryLegendDot category="agent"     label="Agent" />
           </div>
           <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">
             {[...knobsLeft, ...knobsRight].map((k, i) => (
-              <KnobRow key={i} {...k} />
+              <KnobRow key={i} {...k} nowrap />
             ))}
           </div>
-          <div className="text-[11px] text-slate-500 mt-3 italic text-center">…and 11 more knobs (eval threshold, concurrency, streaming, …)</div>
+          <div className="text-[11px] text-slate-500 mt-3 leading-snug text-center">
+            …plus more retrieval, memory and orchestration knobs.
+            <br />
+            <span className="text-slate-600">Streaming · guardrails · caching are deploy-time settings — set once, not tuned.</span>
+          </div>
         </div>
 
         {/* Arrow */}
@@ -281,47 +299,51 @@ export function SlideParetoFrontier() {
 
         {/* MIDDLE: Optimizer */}
         <div className="bg-slate-900/70 border-2 rounded-xl p-4 flex flex-col" style={{ borderColor: '#1A6BF5' }}>
-          <div className="text-[10px] font-mono uppercase tracking-widest mb-1" style={{ color: '#4D8EF8' }}>Traigent</div>
-          <h3 className="text-[20px] font-bold text-white leading-tight mb-1">Automatic Optimization</h3>
-          <p className="text-[12px] text-slate-400 leading-snug mb-2">
-            Contemplates 1,000s of options. Converges to <span className="text-white font-semibold">THE</span> optimum. Re-runs every time conditions change.
+          <div className="text-center mb-3">
+            <a href="https://www.traigent.ai/#/story" target="_blank" rel="noopener noreferrer" className="inline-block rounded-lg px-4 py-1.5 text-2xl font-mono font-bold uppercase tracking-wide transition hover:brightness-110" style={{ backgroundColor: '#4D8EF8', color: '#0f172a' }}>The Solution</a>
+            <div className="text-[11px] text-slate-500 italic mt-1">Click for details</div>
+          </div>
+          <h3 className="text-[20px] font-bold text-white leading-tight mb-1 text-center">Automatic Optimization</h3>
+          <p className="text-[12px] text-slate-400 leading-snug mb-2 text-center">
+            Contemplates all the options. Converges to <span className="text-white font-semibold">THE</span> optimum.<br />Re-runs every time conditions change.
           </p>
 
-          {/* Loop SVG */}
-          <div className="flex-1 flex items-center justify-center">
+          {/* Loop SVG — note the unique gradient id (ringGradV2) so it doesn't
+              collide with SlideParetoFrontier's ringGrad on the same deck.
+              Traigent.ai is grouped in this centered column so it sits right
+              under the circle. */}
+          <div className="flex-1 flex flex-col items-center justify-center">
             <svg viewBox="0 0 240 240" className="w-full max-w-[240px]" xmlns="http://www.w3.org/2000/svg">
               <defs>
-                <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <linearGradient id="ringGradV2" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" stopColor="#4D8EF8"/>
                   <stop offset="100%" stopColor="#1A6BF5"/>
                 </linearGradient>
               </defs>
-              {/* Background full ring */}
               <circle cx="120" cy="120" r="82" fill="none" stroke="#1e293b" strokeWidth="14"/>
-              {/* Clockwise progress arc — starts at 12 o'clock, sweeps 270° clockwise,
-                  ends at 9 o'clock. Path "A 82 82 0 1 1 ..." uses sweep-flag=1 (clockwise). */}
               <path
                 d="M 120 38 A 82 82 0 1 1 38 120"
                 fill="none"
-                stroke="url(#ringGrad)"
+                stroke="url(#ringGradV2)"
                 strokeWidth="14"
                 strokeLinecap="round"
               />
-              {/* Arrowhead at 9 o'clock pointing UP — the tangent direction of
-                  clockwise motion at the left side of the circle. */}
               <polygon points="38,96 22,128 54,128" fill="#1A6BF5"/>
 
               <circle cx="120" cy="120" r="58" fill="#020617" stroke="#334155" strokeWidth="1"/>
               <text x="120" y="101" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">LEARN</text>
               <text x="120" y="119" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">DEDUCE</text>
-              <text x="120" y="137" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">TEST</text>
+              <text x="120" y="137" textAnchor="middle" fill="#cbd5e1" fontSize="12" fontFamily="ui-sans-serif, system-ui" fontWeight="700">EVALUATE</text>
               <text x="120" y="155" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">REPEAT</text>
             </svg>
+            {/* Traigent.ai brand — directly under the loop circle (negative
+                margin eats the SVG's built-in bottom padding). */}
+            <div className="text-[18px] font-extrabold -mt-6" style={{ color: '#4D8EF8' }}>Traigent.ai</div>
           </div>
 
           {/* Bottom step pills */}
           <div className="grid grid-cols-4 gap-1.5 mt-2">
-            {['Learn', 'Deduce', 'Test', 'Repeat'].map((label) => (
+            {['Learn', 'Deduce', 'Evaluate', 'Repeat'].map((label) => (
               <div
                 key={label}
                 className="text-[11px] font-mono text-center py-1 rounded border border-slate-700 text-slate-300"
@@ -337,42 +359,18 @@ export function SlideParetoFrontier() {
           <ArrowRight className="w-7 h-7" style={{ color: '#1A6BF5' }} />
         </div>
 
-        {/* RIGHT: Outcomes */}
+        {/* RIGHT: Outcomes — updated to the homepage "Traigent Benefits" set */}
         <div className="bg-slate-950 border border-slate-700/60 rounded-xl p-4">
-          <div className="text-[10px] font-mono uppercase tracking-widest mb-1" style={{ color: '#4D8EF8' }}>After Traigent</div>
-          <h3 className="text-[20px] font-bold text-white leading-tight mb-1">Best agent config</h3>
-          <p className="text-[12px] text-slate-400 leading-snug mb-3">
-            Rapidly finds <span className="text-white font-semibold">THE</span> optimal business option — vs. weeks of laborious guesswork.
-          </p>
+          <div className="text-center mb-3">
+            <a href="https://www.traigent.ai/#/roi" target="_blank" rel="noopener noreferrer" className="inline-block rounded-lg px-4 py-1.5 text-2xl font-mono font-bold uppercase tracking-wide transition hover:brightness-110" style={{ backgroundColor: '#34d399', color: '#0f172a' }}>The Benefits</a>
+            <div className="text-[11px] text-slate-500 italic mt-1">Click for details</div>
+          </div>
+          <h3 className="text-[20px] font-bold text-white leading-tight mb-3 text-center">Best config possible — Always</h3>
           <div className="space-y-2.5">
-            <OutcomeCard
-              icon={DollarSign}
-              iconColor="#f59e0b"
-              iconBg="rgba(245,158,11,0.15)"
-              title="Lower LLM cost"
-              body="Finds cheaper combination that still hits accuracy."
-            />
-            <OutcomeCard
-              icon={Check}
-              iconColor="#4D8EF8"
-              iconBg="rgba(77,142,248,0.15)"
-              title="Higher accuracy"
-              body="Scores output quality against the benchmark."
-            />
-            <OutcomeCard
-              icon={Clock}
-              iconColor="#cbd5e1"
-              iconBg="rgba(148,163,184,0.15)"
-              title="Weeks saved"
-              body="Replaces exhaustive trial-and-error with automated deductive optimization."
-            />
-            <OutcomeCard
-              icon={ShieldCheck}
-              iconColor="#a78bfa"
-              iconBg="rgba(167,139,250,0.15)"
-              title="100% Confidence"
-              body="You know it's THE optimum."
-            />
+            <BenefitBox icon={ArrowDown} accent="#34d399" metric="up to 60%"  label="LLM cost reduction" />
+            <BenefitBox icon={ArrowDown} accent="#34d399" metric="up to 8 wks" label="Engineering time reclaimed" />
+            <BenefitBox icon={ArrowUp}   accent="#34d399" metric="100%"        label="confidence in what you ship" />
+            <BenefitBox icon={ArrowDown} accent="#34d399" metric="TTM"         label="Shortens time to market" />
           </div>
         </div>
       </div>
@@ -397,7 +395,7 @@ function SlideSweepThePack() {
   ];
   const CheckCell = () => (
     <td className="py-2.5 text-center">
-      <Check className="w-6 h-6 inline" strokeWidth={3} style={{ color: "#4ade80" }} />
+      <Check className="w-6 h-6 inline" strokeWidth={3} style={{ color: "#34d399" }} />
     </td>
   );
   const XCell = () => (
@@ -450,7 +448,7 @@ function SlideSweepThePack() {
               <CheckCell />
               <CheckCell />
               <td className="py-2 text-center">
-                <Check className="w-7 h-7 inline" strokeWidth={3.5} style={{ color: "#4ade80" }} />
+                <Check className="w-7 h-7 inline" strokeWidth={3.5} style={{ color: "#34d399" }} />
               </td>
               <td className="py-2 text-right font-bold text-white text-[12px]">3 platforms in 1</td>
             </tr>
@@ -578,7 +576,7 @@ function SlideStoryCTA() {
         Problem &rarr;{" "}
         <span style={{ color: "#4D8EF8" }}>Optimizer</span>
         {" "}&rarr;{" "}
-        <span style={{ color: "#4ade80" }}>The win</span>
+        <span style={{ color: "#34d399" }}>The win</span>
       </h2>
       <p className="text-lg md:text-xl text-slate-300 max-w-2xl leading-snug mb-12">
         Narrated walkthrough &mdash; the 25-knob configuration problem, the
@@ -624,7 +622,7 @@ function SlideMarketAndRevenue() {
           Market &amp; Revenue &mdash; <span style={{ color: "#4D8EF8" }}>Non-Vendor Agents</span>
         </h2>
         <p className="text-sm md:text-base text-slate-300 leading-snug">
-          Revenue grounded in <span className="font-bold text-[#4ade80]">5% of customer savings actually delivered</span> &mdash; not a TAM percentage. <span className="font-bold text-[#4D8EF8]">Engineering savings unlock adoption first</span>; <span className="font-bold text-[#f59e0b]">LLM cost savings drive expansion</span> as production bills grow.
+          Revenue grounded in <span className="font-bold text-[#34d399]">5% of customer savings actually delivered</span> &mdash; not a TAM percentage. <span className="font-bold text-[#4D8EF8]">Engineering savings unlock adoption first</span>; <span className="font-bold text-[#f59e0b]">LLM cost savings drive expansion</span> as production bills grow.
         </p>
       </div>
 
@@ -641,7 +639,7 @@ function SlideMarketAndRevenue() {
               <li>Total: <span className="text-white font-bold">$0.80 customer savings</span>.</li>
             </ul>
           </li>
-          <li><span className="font-bold text-white">Take rate:</span> <span className="text-[#4ade80] font-bold">5%</span> of total savings &mdash; effective <span className="text-white font-bold">$0.04 of ARR per $1 of penetrated customer LLM bill</span>.</li>
+          <li><span className="font-bold text-white">Take rate:</span> <span className="text-[#34d399] font-bold">5%</span> of total savings &mdash; effective <span className="text-white font-bold">$0.04 of ARR per $1 of penetrated customer LLM bill</span>.</li>
           <li><span className="font-bold text-white">Penetration:</span> share of the non-vendor LLM bill reached by Traigent customers. Revenue is calculated on savings achieved <em>within penetrated markets only</em>.</li>
         </ol>
       </div>
@@ -672,13 +670,13 @@ function SlideMarketAndRevenue() {
                 <td className="py-1.5 text-right font-mono text-slate-200">{r.pen}</td>
                 <td className="py-1.5 text-right font-mono font-semibold" style={{ color: "#4D8EF8" }}>{r.engSave}</td>
                 <td className="py-1.5 text-right font-mono font-semibold" style={{ color: "#f59e0b" }}>{r.llmSave}</td>
-                <td className="py-1.5 text-right font-mono font-bold" style={{ color: "#4ade80" }}>{r.rev}</td>
+                <td className="py-1.5 text-right font-mono font-bold" style={{ color: "#34d399" }}>{r.rev}</td>
               </tr>
             ))}
           </tbody>
         </table>
         <div className="text-[11px] text-slate-400 mt-2 text-left">
-          <span className="font-bold text-white">Bear / Base / Bull at 2030</span> (penetration) = 4% / 8% / 12% → <span className="font-bold text-[#4ade80]">~$205M / ~$410M / ~$615M</span> ARR. Sierra hit $150M ARR 24 mo from launch; Decagon $35M+ in 9 mo. Traigent is the picks-and-shovels every agent company needs to survive its COGS curve.
+          <span className="font-bold text-white">Bear / Base / Bull at 2030</span> (penetration) = 4% / 8% / 12% → <span className="font-bold text-[#34d399]">~$205M / ~$410M / ~$615M</span> ARR. Sierra hit $150M ARR 24 mo from launch; Decagon $35M+ in 9 mo. Traigent is the picks-and-shovels every agent company needs to survive its COGS curve.
         </div>
       </div>
     </div>
