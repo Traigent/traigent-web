@@ -14,7 +14,12 @@
 // employer); use restricted to the signee alone on a personal computer
 // under their sole control; no disclosure to anyone (employee/advisor
 // exception removed). Version bump re-prompts all v1.0 acceptors.
-export const AGREEMENT_VERSION = "1.1";
+// 1.2 (2026-06-13): SDK-specific terms — install/use on the signee's own
+// PC only; no copying/installing/distributing the SDK (or derivatives) to
+// other computers; reverse-engineering clause covers the SDK as provided;
+// explicit PERMISSION to demonstrate the SDK and share Traigent's results/
+// demos (not the SDK itself). Open-source carve-out reworded to dual-track.
+export const AGREEMENT_VERSION = "1.2";
 export const AGREEMENT_PATH = "/access-agreement";
 
 const STORAGE_KEY = "traigent_access_agreement";

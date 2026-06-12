@@ -48,25 +48,34 @@ export default function AgreementText({ compact = false }) {
         any non-public information disclosed to You.
       </p>
       <p className={p}>
-        <strong className="text-white">Open-source carve-out.</strong> Components of the Traigent
-        SDK published under an open-source license (e.g., AGPL-3.0) are governed solely by that
-        license, and nothing in this Agreement limits the rights that license grants You for those
-        components. This Agreement governs everything else.
+        <strong className="text-white">Open-source note.</strong> If You separately obtain SDK
+        components from Traigent&apos;s public repositories under their open-source license, that
+        copy is governed by that license. Everything provided to You under this Agreement —
+        including the SDK as made available to You through Start Now — is governed by this
+        Agreement, including the SDK terms in Section 2.
       </p>
 
       <h2 className={h}>2. Your license</h2>
       <p className={p}>
         Traigent grants You a <strong className="text-white">limited, personal, non-exclusive,
-        non-transferable, revocable</strong> right to access and use the Materials solely for
-        (a) Your own evaluation of Traigent&apos;s products and services, and (b) Your own
-        learning through Traigent Academy — in each case{" "}
-        <strong className="text-white">by You alone, on a personal computer under Your sole
-        control</strong>. Your access may not be shared with, transferred to, or exercised on
-        behalf of anyone else, and the Materials may not be placed on shared, public, or
-        third-party systems. No other rights are granted. All right, title, and interest in the
-        Materials — including all intellectual-property rights — remain exclusively with Traigent.
-        You acknowledge the Materials embody Traigent&apos;s valuable proprietary technology and
-        trade secrets.
+        non-transferable, revocable</strong> right to (a){" "}
+        <strong className="text-white">install and use the Traigent SDK on a single personal
+        computer under Your sole control — Your own PC only</strong>, (b) access and use the other
+        Materials for Your own evaluation of Traigent&apos;s products and services, and (c) Your
+        own learning through Traigent Academy — in each case by You alone. Your access may not be
+        shared with, transferred to, or exercised on behalf of anyone else; the SDK may not be
+        copied, installed, or transferred onto any other computer; and the Materials may not be
+        placed on shared, public, or third-party systems. No other rights are granted. All right,
+        title, and interest in the Materials — including all intellectual-property rights —
+        remain exclusively with Traigent. You acknowledge the Materials embody Traigent&apos;s
+        valuable proprietary technology and trade secrets.
+      </p>
+      <p className={p}>
+        <strong className="text-white">What You MAY share.</strong> You may demonstrate the SDK in
+        operation to others and show them the demonstrations, outputs, and results that Traigent
+        delivers (including screenshots, recordings, and result summaries) — provided You do not
+        share the SDK itself, Your access credentials or codes, or any non-public Materials, and
+        subject to Section 3.6 for formal published benchmarks.
       </p>
 
       <h2 className={h}>3. What You agree not to do</h2>
@@ -82,23 +91,29 @@ export default function AgreementText({ compact = false }) {
           individual; each person must register and accept this Agreement themselves);
         </li>
         <li>
-          <strong className="text-white">Copy, republish, or redistribute</strong> the Materials,
-          in whole or part, in any medium;
+          <strong className="text-white">Copy, republish, redistribute, or transfer</strong> the
+          Materials, in whole or part, in any medium — including{" "}
+          <strong className="text-white">installing, copying, or distributing the SDK or any
+          derivative of it onto any other computer</strong> or making it available to anyone else;
         </li>
         <li>
           <strong className="text-white">Reverse engineer, decompile, or disassemble</strong> any
-          non-open-source software, service, or model made available to You, or attempt to derive
-          its source code, architecture, prompts, weights, scoring logic, or underlying methods,
-          except to the extent this restriction is prohibited by applicable law;
+          software, service, or model made available to You under this Agreement —{" "}
+          <strong className="text-white">including the Traigent SDK as provided to You</strong> —
+          or attempt to derive its source code, architecture, prompts, weights, scoring logic, or
+          underlying methods, except to the extent this restriction is prohibited by applicable
+          law;
         </li>
         <li>
           <strong className="text-white">Build, train, or improve a competing product or
-          service</strong> using the Materials — including, without limitation, by (i) using the
-          Materials as specifications, prompts, context, or reference for any software
-          development, (ii) <strong className="text-white">providing any Materials to an AI
-          system, LLM, or coding assistant</strong> to generate, assist, or accelerate the
-          development of functionality that competes with Traigent, or (iii) using the Materials
-          to train, fine-tune, or evaluate any machine-learning model;
+          service</strong> using the Materials (<strong className="text-white">including the
+          SDK</strong>) — including, without limitation, by (i) using the Materials as
+          specifications, prompts, context, or reference for any software development, (ii){" "}
+          <strong className="text-white">providing any Materials to an AI system, LLM, or coding
+          assistant</strong> to generate, assist, or accelerate the development of functionality
+          that competes with Traigent, or (iii) using the Materials to train, fine-tune, or
+          evaluate any machine-learning model — nor distribute any such derivative work to any
+          other computer or person;
         </li>
         <li>
           <strong className="text-white">Scrape, crawl, or systematically extract</strong> content
