@@ -10,7 +10,11 @@
 // whose pageName records the version + surface — a per-contact, timestamped
 // acceptance record on the CRM side.
 
-export const AGREEMENT_VERSION = "1.0";
+// 1.1 (2026-06-13): personal-capacity acceptance only (no binding the
+// employer); use restricted to the signee alone on a personal computer
+// under their sole control; no disclosure to anyone (employee/advisor
+// exception removed). Version bump re-prompts all v1.0 acceptors.
+export const AGREEMENT_VERSION = "1.1";
 export const AGREEMENT_PATH = "/access-agreement";
 
 const STORAGE_KEY = "traigent_access_agreement";
