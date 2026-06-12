@@ -663,9 +663,18 @@ def answer_question(question: str) -> str:
                   </a>
                 </li>
                 <li>
-                  <a href="https://github.com/Traigent/Traigent" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">
+                  {/* Email-gated: opens the Start Now modal (repo + install
+                      command unlock after the visitor leaves an email). */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      trackEvent("github_gate_opened", { location: "homepage_footer" });
+                      setShowStartNow(true);
+                    }}
+                    className="text-slate-400 hover:text-white transition-colors"
+                  >
                     Try out our SDK - it's free!
-                  </a>
+                  </button>
                 </li>
                 <li>
                   <Link to="/one-pager" className="text-slate-400 hover:text-white transition-colors">

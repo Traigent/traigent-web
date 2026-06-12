@@ -6,6 +6,7 @@ import { Helmet } from "react-helmet-async";
 import { ConvergenceDiagram, KillerStatsGrid, ThreeProductsGrid } from "./pitch/shared";
 import { OnePager2Slide } from "./OnePager2";
 import BrandMark from "../components/BrandMark";
+import StartNowModal from "../components/StartNowModal";
 import { useKnownContactNotify } from "../lib/useKnownContactNotify";
 import { notifyPitchDeckViewed } from "../lib/hubspotForms";
 import { usePageView } from "../lib/usePageView";
@@ -930,8 +931,14 @@ export function Slide19EngineerFirst() {
 // 20 — Get Started
 // ===================================================================
 export function Slide20GetStarted({ bookingHref = "https://meetings-eu1.hubspot.com/amir8" } = {}) {
+  // Code/SDK access is email-gated: the install command is revealed via the
+  // Start Now modal (form first for unknown visitors; instant for known ones).
+  const [showStartNow, setShowStartNow] = useState(false);
   return (
     <div className="text-center max-w-5xl mx-auto">
+      {showStartNow && (
+        <StartNowModal onClose={() => setShowStartNow(false)} location="pitch_slide20" />
+      )}
       <h2 className="text-5xl md:text-6xl font-bold text-white mb-4">Get Started</h2>
       <p className="text-xl text-slate-400 mb-12">Low risk. Fast result. Pick your path.</p>
       <div className="grid md:grid-cols-2 gap-6 mb-12">
@@ -939,9 +946,14 @@ export function Slide20GetStarted({ bookingHref = "https://meetings-eu1.hubspot.
           <div className="text-sm font-mono text-slate-500 mb-3">OPTION 1</div>
           <h3 className="text-2xl font-bold text-white mb-3">Run the keyless demo</h3>
           <p className="text-slate-400 mb-5 text-sm">No API keys. No spend. ~6 seconds to a real result on your laptop.</p>
-          <div className="bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 font-mono text-sm text-slate-200 break-all">
-            <span className="text-slate-500">$ </span>uv tool install <span style={{ color: AMBER }}>"traigent[recommended]"</span> && traigent quickstart
-          </div>
+          <button
+            type="button"
+            onClick={() => setShowStartNow(true)}
+            className="w-full bg-slate-950 border border-slate-700 hover:border-blue-500/60 rounded-lg px-4 py-3 font-mono text-sm text-slate-200 text-left transition-colors"
+          >
+            <span className="text-slate-500">$ </span>uv tool install <span style={{ color: AMBER }}>"traigent[…]"</span>
+            <span className="block mt-1 text-xs text-slate-500 font-sans">Click to get the full command →</span>
+          </button>
         </div>
         <div className="bg-slate-900/60 border-2 rounded-2xl p-8 text-left" style={{ borderColor: BLUE }}>
           <div className="text-sm font-mono mb-3" style={{ color: BLUE }}>OPTION 2</div>
