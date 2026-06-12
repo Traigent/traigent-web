@@ -4,6 +4,7 @@ import { Mail, ShieldCheck } from "lucide-react";
 import ConsentGate from "./ConsentGate";
 import ConsentCheckbox from "./ConsentCheckbox";
 import AgreementCheckbox from "./AgreementCheckbox";
+import AgreementText from "./AgreementText";
 import { requestCode, verifyCode, otpErrorMessage } from "../lib/otpAccess";
 import { getUnlockedEmail } from "../lib/startNowGate";
 import { trackEvent } from "../lib/analytics";
@@ -143,6 +144,11 @@ export default function OtpGate({ surface = "start_now", onVerified }) {
     <ConsentGate>
       <div className="mb-3">
         <ConsentCheckbox id={`${surface}-consent`} checked={consent} onChange={setConsent} />
+      </div>
+      {/* The full agreement, scrollable in-place so acceptance is informed
+          without leaving the gate — same presentation as AgreementGate. */}
+      <div className="max-h-60 overflow-y-auto rounded-lg border border-slate-700/60 bg-slate-950/60 p-4 mb-3">
+        <AgreementText compact />
       </div>
       <div className="mb-4">
         <AgreementCheckbox id={`${surface}-agreement`} checked={agreed} onChange={setAgreed} />
