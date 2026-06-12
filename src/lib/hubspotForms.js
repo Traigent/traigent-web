@@ -91,4 +91,18 @@ export function notifyPitchDeckViewed({ email, location }) {
   return notifyRepeatVisit({ email, formId: PITCH_DECK_FORM_ID, location, label: "Slide deck viewed" });
 }
 
+/**
+ * Acceptance-evidence record for the Access & Evaluation Agreement: fires a
+ * silent submission whose pageName carries the version + surface, giving the
+ * contact a timestamped acceptance entry in HubSpot.
+ */
+export function notifyAgreementAccepted({ email, location, version }) {
+  return notifyRepeatVisit({
+    email,
+    formId: STARTNOW_FORM_ID,
+    location,
+    label: `Access Agreement v${version} accepted`,
+  });
+}
+
 export { PORTAL_FORM_ID };

@@ -11,9 +11,12 @@ import {
   getUnlockedEmail,
   shouldNotifyForGate,
 } from "../lib/startNowGate";
-import { notifyStartNowRepeat } from "../lib/hubspotForms";
+import { notifyStartNowRepeat, notifyAgreementAccepted } from "../lib/hubspotForms";
 import { checkKnownContact } from "../lib/hubspotIdentify";
 import { trackEvent } from "../lib/analytics";
+import { hasAcceptedCurrent, markAccepted, AGREEMENT_VERSION } from "../lib/accessAgreement";
+import AgreementCheckbox from "../components/AgreementCheckbox";
+import AgreementGate from "../components/AgreementGate";
 
 const createPageUrl = (path) => path;
 const { installPresets, goals: AGENT_GOALS } = skillOnboarding;
@@ -57,6 +60,9 @@ export default function GetStarted() {
   // Same 90-day localStorage memory as the Start Now modal so a visitor
   // who unlocked there doesn't see the form again here, and vice versa.
   const [unlocked, setUnlocked] = useState(() => isUnlocked());
+  // Access & Evaluation Agreement acceptance (site-wide, versioned).
+  const [accepted, setAccepted] = useState(() => hasAcceptedCurrent());
+  const [agreedTerms, setAgreedTerms] = useState(false);
   const [selectedGoalIds, setSelectedGoalIds] = useState(DEFAULT_AGENT_GOAL_IDS);
   const [copiedPrompt, setCopiedPrompt] = useState(false);
 
@@ -90,6 +96,10 @@ export default function GetStarted() {
 
   const handleSubmitted = (email) => {
     markUnlocked(email);
+    // The agreement checkbox is required before the form mounts — record it.
+    markAccepted(email);
+    if (email) notifyAgreementAccepted({ email, location: "get_started_page", version: AGREEMENT_VERSION });
+    setAccepted(true);
     setUnlocked(true);
     trackEvent("start_now_form_submitted", { location: "get_started_page" });
   };
@@ -157,7 +167,29 @@ export default function GetStarted() {
               email you more than once a month, and you can unsubscribe with one
               click.
             </p>
-            <HubSpotStartNowForm onSuccess={handleSubmitted} targetId="hs-form-getstarted" />
+            <div className="mb-4 max-w-3xl">
+              <AgreementCheckbox
+                id="get-started-agreement"
+                checked={agreedTerms}
+                onChange={setAgreedTerms}
+              />
+            </div>
+            {agreedTerms ? (
+              <HubSpotStartNowForm onSuccess={handleSubmitted} targetId="hs-form-getstarted" />
+            ) : (
+              <p className="text-xs text-slate-500">
+                Accept the agreement above to load the form.
+              </p>
+            )}
+          </div>
+        )}
+        {unlocked && !accepted && (
+          <div className="mb-10 p-6 rounded-xl bg-slate-900/60 border border-slate-800 max-w-2xl">
+            <AgreementGate
+              email={getUnlockedEmail()}
+              surface="get_started_page"
+              onAccepted={() => setAccepted(true)}
+            />
           </div>
         )}
 
@@ -185,7 +217,7 @@ export default function GetStarted() {
             <p className="text-slate-300 mb-4">
               Install the published Python SDK from your terminal. The bootstrap is a thin shell script that installs <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">traigent[recommended]</code>, verifies <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">traigent info</code>, refuses root/container installs unless <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">TRAIGENT_ALLOW_ROOT=1</code> is explicitly set, and never prompts for or reads credentials. The installer detects <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">traigent onboard</code> (included in the published SDK) and suggests it next — it sets up device login against <a href="https://portal.traigent.ai" target="_blank" rel="noopener noreferrer" className="text-blue-300 hover:text-blue-200 underline underline-offset-4">portal.traigent.ai</a> and your coding agent.
             </p>
-            {unlocked && (
+            {unlocked && accepted && (
               <>
                 <InstallCommand
                   command={TERMINAL_INSTALL_COMMAND}
@@ -252,7 +284,7 @@ export default function GetStarted() {
           <p className="text-slate-300 mb-4 max-w-3xl">
             Claude Code, Cursor, Codex, Gemini CLI and 30+ other agents pick up the Traigent skill bundle automatically. They&apos;ll guide you through dry-run-first setup, generate the eval dataset, and apply the best config — without you leaving your editor. Coding agent? Point it at <a href="/agent.md" className="text-blue-300 hover:text-blue-200 underline underline-offset-4">traigent.ai/agent.md</a>.
           </p>
-          {unlocked && (
+          {unlocked && accepted && (
             <InstallCommand
               command={SDK_SKILL_INSTALL_PRESET.command}
               label={SDK_SKILL_INSTALL_PRESET.label}
