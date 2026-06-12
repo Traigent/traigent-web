@@ -24,7 +24,14 @@
 // authority needed; plain-language summary of the three restrictions);
 // sec. 2 explicitly allows evaluating for team/employer use; MAY-share
 // paragraph now says demos to colleagues are encouraged.
-export const AGREEMENT_VERSION = "1.3";
+// 1.4 (2026-06-12): purpose-first restructure, same substance — opens with
+// WHY access is granted, then "What we encourage You to do" bullets (use it
+// for real / show it to others / learn and ask), then the single ask
+// (access is personal: don't pass it on, no reverse-engineering, no
+// competing product — but demonstrating to others is encouraged). Formal
+// acceptance line moved to the end of the preamble. Sec. 2 retitled
+// "Your license — what You may do".
+export const AGREEMENT_VERSION = "1.4";
 export const AGREEMENT_PATH = "/access-agreement";
 
 const STORAGE_KEY = "traigent_access_agreement";

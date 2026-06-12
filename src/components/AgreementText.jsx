@@ -18,28 +18,63 @@ export default function AgreementText({ compact = false }) {
   const ol = compact
     ? "list-decimal list-outside ml-5 space-y-1.5 text-xs text-slate-300 leading-relaxed mb-2.5"
     : "list-decimal list-outside ml-6 space-y-3 text-slate-300 leading-relaxed mb-4";
+  const ul = compact
+    ? "list-disc list-outside ml-5 space-y-1.5 text-xs text-slate-300 leading-relaxed mb-2.5"
+    : "list-disc list-outside ml-6 space-y-2 text-slate-300 leading-relaxed mb-4";
 
   return (
     <div>
       <p className={`${compact ? "text-[10px]" : "text-sm"} text-slate-500 mb-3 font-mono`}>
-        Version {AGREEMENT_VERSION} · Effective upon acceptance · Last updated June 13, 2026
+        Version {AGREEMENT_VERSION} · Effective upon acceptance · Last updated June 12, 2026
       </p>
 
       <p className={p}>
-        <strong className="text-white">Welcome — and thanks for trying Traigent.</strong>{" "}
+        <strong className="text-white">Welcome — and thanks for trying Traigent.</strong>
+      </p>
+      <p className={p}>
+        <strong className="text-white">Why You have access.</strong> Traigent automatically finds
+        the configuration that makes AI agents perform at their best — higher accuracy at lower
+        cost. The best way to understand that value is to experience it first-hand, and that is
+        exactly why we&apos;re giving You this access: install the SDK on Your computer, run it on
+        Your own use cases, explore the Portal, and take the Academy courses.
+      </p>
+      <p className={p}>
+        <strong className="text-white">What we encourage You to do:</strong>
+      </p>
+      <ul className={ul}>
+        <li>
+          <strong className="text-white">Use it for real.</strong> Install and run the Traigent
+          SDK on Your own computer and evaluate it on Your actual work — including for potential
+          use by Your team or employer.
+        </li>
+        <li>
+          <strong className="text-white">Show it to others.</strong> Demonstrate Traigent live to
+          Your colleagues, team, and management, and share the outputs and results it delivers —
+          screenshots, recordings, result summaries. We want You to.
+        </li>
+        <li>
+          <strong className="text-white">Learn and ask.</strong> Take the Academy courses, explore
+          the Portal, and bring any question straight to{" "}
+          <a href="mailto:amir@traigent.ai" className="text-blue-300 underline underline-offset-2">
+            amir@traigent.ai
+          </a>
+          .
+        </li>
+      </ul>
+      <p className={p}>
+        <strong className="text-white">The one thing we ask: Your access is personal.</strong>{" "}
+        Don&apos;t pass the SDK, Your credentials, or non-public materials on to anyone else —
+        colleagues who want hands-on access can register themselves in seconds. And please
+        don&apos;t reverse-engineer the SDK or use it to build something that competes with
+        Traigent. That&apos;s the heart of it — the sections below say the same things in legal
+        language.
+      </p>
+      <p className={p}>
         By checking the acceptance box and continuing, you (&quot;<strong className="text-white">You</strong>&quot;)
         agree to these terms with <strong className="text-white">Traigent Ltd.</strong>{" "}
         (&quot;<strong className="text-white">Traigent</strong>&quot;, &quot;we&quot;). You agree
         personally, as an individual — you don&apos;t need authority from your employer, and this
-        Agreement doesn&apos;t bind your company. Evaluating Traigent in the context of your job,
-        and showing your team what it can do, is exactly what this access is for. In short:{" "}
-        <strong className="text-white">keep the SDK on your own computer, don&apos;t pass it on,
-        and don&apos;t reverse-engineer it or use it to build a competing product</strong>. The
-        full terms follow — questions are always welcome at{" "}
-        <a href="mailto:amir@traigent.ai" className="text-blue-300 underline underline-offset-2">
-          amir@traigent.ai
-        </a>
-        .
+        Agreement doesn&apos;t bind your company.
       </p>
 
       <h2 className={h}>1. What this covers (&quot;Materials&quot;)</h2>
@@ -62,7 +97,7 @@ export default function AgreementText({ compact = false }) {
         Agreement, including the SDK terms in Section 2.
       </p>
 
-      <h2 className={h}>2. Your license</h2>
+      <h2 className={h}>2. Your license — what You may do</h2>
       <p className={p}>
         Traigent grants You a <strong className="text-white">limited, personal, non-exclusive,
         non-transferable, revocable</strong> right to (a){" "}
