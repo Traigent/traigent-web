@@ -19,7 +19,12 @@
 // other computers; reverse-engineering clause covers the SDK as provided;
 // explicit PERMISSION to demonstrate the SDK and share Traigent's results/
 // demos (not the SDK itself). Open-source carve-out reworded to dual-track.
-export const AGREEMENT_VERSION = "1.2";
+// 1.3 (2026-06-13): friendlier framing, same substance — welcoming preamble
+// (employee evaluating for their team is the intended use; no employer
+// authority needed; plain-language summary of the three restrictions);
+// sec. 2 explicitly allows evaluating for team/employer use; MAY-share
+// paragraph now says demos to colleagues are encouraged.
+export const AGREEMENT_VERSION = "1.3";
 export const AGREEMENT_PATH = "/access-agreement";
 
 const STORAGE_KEY = "traigent_access_agreement";
