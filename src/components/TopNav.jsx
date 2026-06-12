@@ -17,7 +17,6 @@ import { checkKnownContact } from "../lib/hubspotIdentify";
 
 const PORTAL_URL = "https://portal.traigent.ai";
 const DEMO_URL = "https://meetings-eu1.hubspot.com/amir8";
-const GITHUB_URL = "https://github.com/Traigent/Traigent";
 
 // Hidden access point: presentations menu behind the obscure ▸ glyph in the
 // far-right of the nav. Each item opens the scroll-mode deck in a new tab
@@ -84,7 +83,9 @@ const resourcesItems = [
   { label: "Compare", href: "/compare", desc: "vs. Langfuse · Arize · Helicone · Braintrust" },
   { label: "FAQ", href: "/faq", desc: "Common questions" },
   { label: "Research", href: "/research", desc: "CAIN 2026 paper, TVL, and governed optimization" },
-  { label: "Docs", href: "https://github.com/Traigent/Traigent", external: true, desc: "SDK on GitHub" },
+  // Code access is email-gated: Docs routes through /get-started (unlocks the
+  // GitHub repo + install command after the visitor leaves an email).
+  { label: "Docs", href: "/get-started", desc: "SDK install + GitHub — unlocks with your email" },
   { label: "Academy", href: "/academy", desc: "Short courses for teams shipping AI agents" },
   { label: "About", href: "/about", desc: "Team, mission, values" },
   { label: "Get Started", href: "/get-started" },
@@ -383,17 +384,21 @@ export default function TopNav() {
 
             {/* Desktop CTAs */}
             <div className="hidden lg:flex items-center gap-3 sm:gap-4">
-              <a
-                href={GITHUB_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => trackEvent("github_clicked", { location: "topnav" })}
+              {/* Code access is email-gated: the GitHub icon opens the Start
+                  Now modal (unlocked visitors see the repo + install command
+                  immediately; unknown visitors leave an email first). */}
+              <button
+                type="button"
+                onClick={() => {
+                  trackEvent("github_gate_opened", { location: "topnav" });
+                  setShowStartNow(true);
+                }}
                 className="text-slate-400 hover:text-white transition-colors"
-                title="GitHub"
-                aria-label="GitHub"
+                title="Get the SDK (GitHub)"
+                aria-label="Get the SDK (GitHub)"
               >
                 <Github className="w-5 h-5" />
-              </a>
+              </button>
               <button
                 type="button"
                 onClick={() => handleOpenPortal("topnav")}
@@ -649,16 +654,14 @@ export default function TopNav() {
               >
                 Book a demo
               </a>
-              <a
-                href={GITHUB_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => { trackEvent("github_clicked", { location: "topnav_mobile" }); closeMobile(); }}
+              <button
+                type="button"
+                onClick={() => { trackEvent("github_gate_opened", { location: "topnav_mobile" }); closeMobile(); setShowStartNow(true); }}
                 className="inline-flex items-center justify-center gap-2 text-xs text-slate-500 hover:text-white pt-2 transition-colors"
               >
                 <Github className="w-4 h-4" />
-                <span>View on GitHub</span>
-              </a>
+                <span>Get the SDK (GitHub)</span>
+              </button>
             </div>
           </div>
         </div>

@@ -4,9 +4,9 @@ import { checkKnownContact } from "../../lib/hubspotIdentify";
 import ConsentGate from "../ConsentGate";
 import ConsentCheckbox from "../ConsentCheckbox";
 
-// One notification per visitor per course per hour. Matches the global
+// One notification per visitor per course per 24h. Matches the global
 // gate's throttle window so the inbox volume stays sane in prod.
-const REPEAT_NOTIFY_THROTTLE_MS = 60 * 60 * 1000;
+const REPEAT_NOTIFY_THROTTLE_MS = 24 * 60 * 60 * 1000;
 
 // Configuration read at build time. The Forms API is CORS-enabled and our
 // CSP already allows api.hsforms.com via the *.hsforms.com entry.
@@ -128,8 +128,15 @@ function isBlockedEmailDomainError(status, body) {
  *     <CourseContent />
  *   </AcademyEmailGate>
  */
+// Final fallback: the Start Now form (always configured, always notifies).
+// Guarantees a course page can never ship "dead-bolted" (gate shown but
+// submissions failing) if neither a per-course formId nor the academy env
+// var is set. The submission's pageName carries the course title, so
+// attribution survives even on the shared form.
+const STARTNOW_FALLBACK_FORM_ID = "35384a3e-7386-45b0-924e-84e5d6f637e4";
+
 export default function AcademyEmailGate({ courseSlug, courseTitle, formId, children }) {
-  const effectiveFormId = formId || ACADEMY_FORM_ID;
+  const effectiveFormId = formId || ACADEMY_FORM_ID || STARTNOW_FALLBACK_FORM_ID;
   const [unlocked, setUnlocked] = useState(() => !!readUnlockEntry(courseSlug));
 
   // When an already-unlocked visitor reopens a course, silently re-submit

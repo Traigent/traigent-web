@@ -2,6 +2,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Home, Maximize2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import StartNowModal from "../components/StartNowModal";
 import { Helmet } from "react-helmet-async";
 import { ConvergenceDiagram, KillerStatsGrid, ThreeProductsGrid } from "./pitch/shared";
 import { useKnownContactNotify } from "../lib/useKnownContactNotify";
@@ -143,8 +144,14 @@ function SlideThreeProducts() {
 // Slide 6 — CTA / Next step
 // ===================================================================
 function SlideCTA() {
+  // Code/SDK access is email-gated: the install command is revealed via the
+  // Start Now modal (form first for unknown visitors; instant for known ones).
+  const [showStartNow, setShowStartNow] = useState(false);
   return (
     <div className="text-center max-w-5xl mx-auto">
+      {showStartNow && (
+        <StartNowModal onClose={() => setShowStartNow(false)} location="pitch_cta" />
+      )}
       <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
         Two Ways to See It in 15 Minutes
       </h2>
@@ -155,11 +162,14 @@ function SlideCTA() {
           <div className="text-sm font-mono text-slate-500 mb-3">OPTION 1</div>
           <h3 className="text-2xl font-bold text-white mb-4">Run the keyless demo</h3>
           <p className="text-slate-400 mb-5 text-sm">No API keys. No spend. ~6 seconds to a real result.</p>
-          <div className="bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 font-mono text-sm text-slate-200 break-all">
-            <span className="text-slate-500">$ </span>
-            uv tool install "traigent[recommended]" &&<br/>
-            <span className="ml-4">traigent quickstart</span>
-          </div>
+          <button
+            type="button"
+            onClick={() => setShowStartNow(true)}
+            className="w-full bg-slate-950 border border-slate-700 hover:border-blue-500/60 rounded-lg px-4 py-3 font-mono text-sm text-slate-200 text-left transition-colors"
+          >
+            <span className="text-slate-500">$ </span>uv tool install "traigent[…]"
+            <span className="block mt-1 text-xs text-slate-500 font-sans">Click to get the full command →</span>
+          </button>
         </div>
         <div className="bg-slate-900/60 border-2 rounded-2xl p-8 text-left" style={{ borderColor: BLUE }}>
           <div className="text-sm font-mono mb-3" style={{ color: BLUE }}>OPTION 2</div>
