@@ -92,6 +92,21 @@ export function notifyPitchDeckViewed({ email, location }) {
 }
 
 /**
+ * OTP success record: the visitor entered the code sent to their mailbox, so
+ * this email is VERIFIED (not just claimed). Creates/updates the HubSpot
+ * contact and fires the founder notification. The authoritative receipt
+ * lives server-side in the access-otp Worker's KV; this is the CRM echo.
+ */
+export function notifyOtpVerified({ email, location }) {
+  return notifyRepeatVisit({
+    email,
+    formId: STARTNOW_FORM_ID,
+    location,
+    label: "Start Now email VERIFIED (OTP)",
+  });
+}
+
+/**
  * Acceptance-evidence record for the Access & Evaluation Agreement: fires a
  * silent submission whose pageName carries the version + surface, giving the
  * contact a timestamped acceptance entry in HubSpot.

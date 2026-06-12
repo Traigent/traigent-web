@@ -11,12 +11,14 @@ import {
   getUnlockedEmail,
   shouldNotifyForGate,
 } from "../lib/startNowGate";
-import { notifyStartNowRepeat, notifyAgreementAccepted } from "../lib/hubspotForms";
+import { notifyStartNowRepeat, notifyAgreementAccepted, notifyOtpVerified } from "../lib/hubspotForms";
 import { checkKnownContact } from "../lib/hubspotIdentify";
 import { trackEvent } from "../lib/analytics";
 import { hasAcceptedCurrent, markAccepted, AGREEMENT_VERSION } from "../lib/accessAgreement";
 import AgreementCheckbox from "../components/AgreementCheckbox";
 import AgreementGate from "../components/AgreementGate";
+import OtpGate from "../components/OtpGate";
+import { isOtpEnabled, isVerified } from "../lib/otpAccess";
 
 const createPageUrl = (path) => path;
 const { installPresets, goals: AGENT_GOALS } = skillOnboarding;
@@ -56,6 +58,10 @@ function composeAgentPrompt(goals) {
 }
 
 export default function GetStarted() {
+  // When the OTP Worker is configured, SDK access requires the stronger
+  // verified-email stamp (code entered on this browser) — see StartNowModal.
+  const otpMode = isOtpEnabled();
+  const [verified, setVerified] = useState(() => isVerified());
   // Gate the install commands behind the HubSpot form on first visit.
   // Same 90-day localStorage memory as the Start Now modal so a visitor
   // who unlocked there doesn't see the form again here, and vice versa.
@@ -65,10 +71,12 @@ export default function GetStarted() {
   const [agreedTerms, setAgreedTerms] = useState(false);
   const [selectedGoalIds, setSelectedGoalIds] = useState(DEFAULT_AGENT_GOAL_IDS);
   const [copiedPrompt, setCopiedPrompt] = useState(false);
+  // Install commands render only behind the active gate's success state.
+  const hasAccess = otpMode ? verified : unlocked && accepted;
 
   // Repeat-visit notification — see StartNowModal for the rationale.
   useEffect(() => {
-    if (!unlocked) return;
+    if (otpMode ? !verified : !unlocked) return;
     if (!shouldNotifyForGate("get_started_page")) return;
     const email = getUnlockedEmail();
     if (!email) return;
@@ -78,8 +86,9 @@ export default function GetStarted() {
   }, []);
 
   // Identity check via the hsutk Worker — auto-unlock known contacts.
+  // Skipped in OTP mode: recognition can't substitute for mailbox proof.
   useEffect(() => {
-    if (unlocked) return;
+    if (otpMode || unlocked) return;
     let cancelled = false;
     checkKnownContact().then((result) => {
       if (cancelled) return;
@@ -102,6 +111,17 @@ export default function GetStarted() {
     setAccepted(true);
     setUnlocked(true);
     trackEvent("start_now_form_submitted", { location: "get_started_page" });
+  };
+
+  // OTP path: Worker has verified the mailbox + written the receipt already.
+  const handleVerified = (email) => {
+    markUnlocked(email);
+    markAccepted(email);
+    notifyOtpVerified({ email, location: "get_started_page" });
+    notifyAgreementAccepted({ email, location: "get_started_page", version: AGREEMENT_VERSION });
+    setAccepted(true);
+    setUnlocked(true);
+    setVerified(true);
   };
 
   const selectedGoals = useMemo(
@@ -159,7 +179,17 @@ export default function GetStarted() {
           Start bottom-up with the SDK, or start foundational with TVL. Either way: specify, evaluate, optimize, and apply—like software.
         </p>
 
-        {!unlocked && (
+        {otpMode && !verified && (
+          <div className="mb-10 p-6 rounded-xl bg-slate-900/60 border border-slate-800 max-w-2xl">
+            <h2 className="text-xl font-semibold mb-2">First, verify your work email</h2>
+            <p className="text-slate-300 mb-4 max-w-3xl">
+              We&apos;ll send a 6-digit code to confirm the address is yours — the
+              install commands below appear as soon as you enter it.
+            </p>
+            <OtpGate surface="get_started_page" onVerified={handleVerified} />
+          </div>
+        )}
+        {!otpMode && !unlocked && (
           <div className="mb-10 p-6 rounded-xl bg-slate-900/60 border border-slate-800">
             <h2 className="text-xl font-semibold mb-2">First, tell us where to send setup tips</h2>
             <p className="text-slate-300 mb-4 max-w-3xl">
@@ -183,7 +213,7 @@ export default function GetStarted() {
             )}
           </div>
         )}
-        {unlocked && !accepted && (
+        {!otpMode && unlocked && !accepted && (
           <div className="mb-10 p-6 rounded-xl bg-slate-900/60 border border-slate-800 max-w-2xl">
             <AgreementGate
               email={getUnlockedEmail()}
@@ -217,7 +247,7 @@ export default function GetStarted() {
             <p className="text-slate-300 mb-4">
               Install the published Python SDK from your terminal. The bootstrap is a thin shell script that installs <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">traigent[recommended]</code>, verifies <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">traigent info</code>, refuses root/container installs unless <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">TRAIGENT_ALLOW_ROOT=1</code> is explicitly set, and never prompts for or reads credentials. The installer detects <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">traigent onboard</code> (included in the published SDK) and suggests it next — it sets up device login against <a href="https://portal.traigent.ai" target="_blank" rel="noopener noreferrer" className="text-blue-300 hover:text-blue-200 underline underline-offset-4">portal.traigent.ai</a> and your coding agent.
             </p>
-            {unlocked && accepted && (
+            {hasAccess && (
               <>
                 <InstallCommand
                   command={TERMINAL_INSTALL_COMMAND}
@@ -284,7 +314,7 @@ export default function GetStarted() {
           <p className="text-slate-300 mb-4 max-w-3xl">
             Claude Code, Cursor, Codex, Gemini CLI and 30+ other agents pick up the Traigent skill bundle automatically. They&apos;ll guide you through dry-run-first setup, generate the eval dataset, and apply the best config — without you leaving your editor. Coding agent? Point it at <a href="/agent.md" className="text-blue-300 hover:text-blue-200 underline underline-offset-4">traigent.ai/agent.md</a>.
           </p>
-          {unlocked && accepted && (
+          {hasAccess && (
             <InstallCommand
               command={SDK_SKILL_INSTALL_PRESET.command}
               label={SDK_SKILL_INSTALL_PRESET.label}

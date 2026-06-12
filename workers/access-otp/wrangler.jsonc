@@ -1,0 +1,25 @@
+// Cloudflare Worker: OTP email verification + acceptance receipts for the
+// Start Now gate. Deploy from this directory:
+//   npx wrangler deploy
+// Secrets (set once via `npx wrangler secret put <NAME>`):
+//   RESEND_API_KEY — Resend.com API key for sending the code emails
+//   OTP_PEPPER     — random string mixed into the stored code hashes
+//   ADMIN_KEY      — bearer token for GET /receipts (founder audit)
+{
+  "name": "traigent-access-otp",
+  "main": "src/index.js",
+  "compatibility_date": "2026-05-01",
+  "kv_namespaces": [
+    // id is created with: npx wrangler kv namespace create ACCESS_KV
+    { "binding": "ACCESS_KV", "id": "REPLACE_AFTER_CREATE" }
+  ],
+  "vars": {
+    // Sender must be on a Resend-verified domain before real sends work.
+    "FROM_EMAIL": "Traigent Access <access@traigent.ai>",
+    "ALLOWED_ORIGINS": "https://traigent.ai,https://www.traigent.ai,http://localhost:5173",
+    // SHA-256 of src/components/AgreementText.jsx at deploy time — pins the
+    // exact agreement text each receipt was issued against. Update on
+    // AGREEMENT_VERSION bumps (see workers/access-otp/README.md).
+    "AGREEMENT_SHA": ""
+  }
+}
