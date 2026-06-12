@@ -9,9 +9,15 @@
   "name": "traigent-access-otp",
   "main": "src/index.js",
   "compatibility_date": "2026-05-01",
+  // First-party endpoint — Cloudflare provisions DNS + TLS for the custom
+  // domain automatically on deploy (zone must live in the same account).
+  "routes": [{ "pattern": "otp.traigent.ai", "custom_domain": true }],
   "kv_namespaces": [
-    // id is created with: npx wrangler kv namespace create ACCESS_KV
-    { "binding": "ACCESS_KV", "id": "REPLACE_AFTER_CREATE" }
+    // id created 2026-06-12 via: npx wrangler kv namespace create ACCESS_KV
+    // Account: Achi@traigent.ai / 900455ef4f4ae8c6c7b764678c686585 — that
+    // account owns the traigent.ai zone, so worker + KV live there.
+    // (An orphaned namespace f332c896… exists in Amir's account — unused.)
+    { "binding": "ACCESS_KV", "id": "32ec71b9066d4d72ab3ba1b2fd999aa0" }
   ],
   "vars": {
     // Sender must be on a Resend-verified domain before real sends work.
@@ -20,6 +26,7 @@
     // SHA-256 of src/components/AgreementText.jsx at deploy time — pins the
     // exact agreement text each receipt was issued against. Update on
     // AGREEMENT_VERSION bumps (see workers/access-otp/README.md).
-    "AGREEMENT_SHA": ""
+    // Current: v1.4 text (sha256sum src/components/AgreementText.jsx).
+    "AGREEMENT_SHA": "362cf04776d7969679e3f5537f8dfe9cf1820eb6d0e0046410bf887c2ee58c2c"
   }
 }
