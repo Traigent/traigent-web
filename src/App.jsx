@@ -29,6 +29,7 @@ import OptimizationDemo from './pages/OptimizationDemo'
 import StoryMovie from './pages/StoryMovie'
 import DemoGallery from './pages/DemoGallery'
 import RecipientPackagePage from './pages/RecipientPackagePage'
+import AccessAgreement from './pages/AccessAgreement'
 import RecipientPackageBlankPage from './pages/RecipientPackageBlankPage'
 import Layout from './layout'
 import ExternalRedirect from './components/ExternalRedirect'
@@ -106,6 +107,7 @@ export default function App() {
         <Route path="academy" element={<AcademyIndex />} />
         <Route path="academy/agents-in-production" element={<AgentsInProduction />} />
         <Route path="academy/statistical-se-workshop" element={<StatisticalSEWorkshop />} />
+        <Route path="access-agreement" element={<AccessAgreement />} />
       </Route>
 
       {/* Category-free recipient package route. Kept LAST so every static

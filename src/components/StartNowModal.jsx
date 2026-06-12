@@ -11,9 +11,12 @@ import {
   getUnlockedEmail,
   shouldNotifyForGate,
 } from "../lib/startNowGate";
-import { notifyStartNowRepeat } from "../lib/hubspotForms";
+import { notifyStartNowRepeat, notifyAgreementAccepted } from "../lib/hubspotForms";
 import { checkKnownContact } from "../lib/hubspotIdentify";
 import { trackEvent } from "../lib/analytics";
+import { hasAcceptedCurrent, markAccepted, AGREEMENT_VERSION } from "../lib/accessAgreement";
+import AgreementCheckbox from "./AgreementCheckbox";
+import AgreementGate from "./AgreementGate";
 
 /**
  * Two-state modal:
@@ -28,6 +31,8 @@ import { trackEvent } from "../lib/analytics";
 export default function StartNowModal({ onClose, location = "unknown" }) {
   // Initialize from localStorage so repeat visitors skip the form.
   const [unlocked, setUnlocked] = useState(() => isUnlocked());
+  // Access & Evaluation Agreement acceptance (versioned; re-prompts on bump).
+  const [accepted, setAccepted] = useState(() => hasAcceptedCurrent());
   // Briefly check whether the hubspotutk cookie maps to a known HubSpot
   // contact (Contact Us submitter, meeting booker, BCC'd lead, etc.). If
   // it does, auto-unlock without showing the form.
@@ -84,6 +89,11 @@ export default function StartNowModal({ onClose, location = "unknown" }) {
 
   const handleSubmitted = (email) => {
     markUnlocked(email);
+    // The agreement checkbox is required before the form mounts, so the
+    // submission itself evidences acceptance — record it.
+    markAccepted(email);
+    if (email) notifyAgreementAccepted({ email, location, version: AGREEMENT_VERSION });
+    setAccepted(true);
     setUnlocked(true);
     trackEvent("start_now_form_submitted", { location });
   };
@@ -112,7 +122,15 @@ export default function StartNowModal({ onClose, location = "unknown" }) {
         {checkingIdentity ? (
           <CheckingView />
         ) : unlocked ? (
-          <UnlockedView />
+          accepted ? (
+            <UnlockedView />
+          ) : (
+            <AgreementGate
+              email={getUnlockedEmail()}
+              surface={`start_now_${location}`}
+              onAccepted={() => setAccepted(true)}
+            />
+          )
         ) : (
           <LockedView onSubmitted={handleSubmitted} />
         )}
@@ -134,6 +152,7 @@ function CheckingView() {
 
 function LockedView({ onSubmitted }) {
   const [agreed, setAgreed] = useState(false);
+  const [agreedTerms, setAgreedTerms] = useState(false);
   return (
     <>
       <h2 id="start-now-title" className="text-2xl font-bold text-white mb-2">
@@ -144,18 +163,25 @@ function LockedView({ onSubmitted }) {
         send setup tips — the install command unlocks as soon as you submit.
       </p>
       <ConsentGate>
-        <div className="mb-4">
+        <div className="mb-3">
           <ConsentCheckbox
             id="start-now-consent"
             checked={agreed}
             onChange={setAgreed}
           />
         </div>
-        {agreed ? (
+        <div className="mb-4">
+          <AgreementCheckbox
+            id="start-now-agreement"
+            checked={agreedTerms}
+            onChange={setAgreedTerms}
+          />
+        </div>
+        {agreed && agreedTerms ? (
           <HubSpotStartNowForm onSuccess={onSubmitted} />
         ) : (
           <p className="text-xs text-slate-500">
-            Tick the box above to load the form.
+            Tick both boxes above to load the form.
           </p>
         )}
       </ConsentGate>

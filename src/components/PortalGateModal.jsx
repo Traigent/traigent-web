@@ -10,9 +10,12 @@ import {
   getUnlockedEmail,
   shouldNotifyForGate,
 } from "../lib/startNowGate";
-import { notifyPortalRepeat, PORTAL_FORM_ID } from "../lib/hubspotForms";
+import { notifyPortalRepeat, notifyAgreementAccepted, PORTAL_FORM_ID } from "../lib/hubspotForms";
 import { checkKnownContact } from "../lib/hubspotIdentify";
 import { trackEvent } from "../lib/analytics";
+import { hasAcceptedCurrent, markAccepted, AGREEMENT_VERSION } from "../lib/accessAgreement";
+import AgreementCheckbox from "./AgreementCheckbox";
+import AgreementGate from "./AgreementGate";
 
 const PORTAL_URL = "https://portal.traigent.ai";
 
@@ -32,6 +35,7 @@ const PORTAL_URL = "https://portal.traigent.ai";
  */
 export default function PortalGateModal({ onClose, location = "unknown" }) {
   const [unlocked, setUnlocked] = useState(() => isUnlocked());
+  const [accepted, setAccepted] = useState(() => hasAcceptedCurrent());
   const [checkingIdentity, setCheckingIdentity] = useState(() => !isUnlocked());
 
   useEffect(() => {
@@ -78,6 +82,10 @@ export default function PortalGateModal({ onClose, location = "unknown" }) {
 
   const handleSubmitted = (email) => {
     markUnlocked(email);
+    // The agreement checkbox is required before the form mounts — record it.
+    markAccepted(email);
+    if (email) notifyAgreementAccepted({ email, location: `portal_${location}`, version: AGREEMENT_VERSION });
+    setAccepted(true);
     setUnlocked(true);
     trackEvent("portal_form_submitted", { location });
   };
@@ -112,7 +120,15 @@ export default function PortalGateModal({ onClose, location = "unknown" }) {
         {checkingIdentity ? (
           <CheckingView />
         ) : unlocked ? (
-          <UnlockedView onOpenPortal={handleOpenPortal} />
+          accepted ? (
+            <UnlockedView onOpenPortal={handleOpenPortal} />
+          ) : (
+            <AgreementGate
+              email={getUnlockedEmail()}
+              surface={`portal_${location}`}
+              onAccepted={() => setAccepted(true)}
+            />
+          )
         ) : (
           <LockedView onSubmitted={handleSubmitted} />
         )}
@@ -134,6 +150,7 @@ function CheckingView() {
 
 function LockedView({ onSubmitted }) {
   const [agreed, setAgreed] = useState(false);
+  const [agreedTerms, setAgreedTerms] = useState(false);
   return (
     <>
       <h2 id="portal-gate-title" className="text-2xl font-bold text-white mb-2">
@@ -144,14 +161,21 @@ function LockedView({ onSubmitted }) {
         submit.
       </p>
       <ConsentGate>
-        <div className="mb-4">
+        <div className="mb-3">
           <ConsentCheckbox
             id="portal-gate-consent"
             checked={agreed}
             onChange={setAgreed}
           />
         </div>
-        {agreed ? (
+        <div className="mb-4">
+          <AgreementCheckbox
+            id="portal-gate-agreement"
+            checked={agreedTerms}
+            onChange={setAgreedTerms}
+          />
+        </div>
+        {agreed && agreedTerms ? (
           <HubSpotStartNowForm
             formId={PORTAL_FORM_ID}
             onSuccess={onSubmitted}
@@ -159,7 +183,7 @@ function LockedView({ onSubmitted }) {
           />
         ) : (
           <p className="text-xs text-slate-500">
-            Tick the box above to load the form.
+            Tick both boxes above to load the form.
           </p>
         )}
       </ConsentGate>
