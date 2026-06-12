@@ -26,13 +26,20 @@ export default function AgreementText({ compact = false }) {
       </p>
 
       <p className={p}>
-        <strong className="text-white">IMPORTANT — READ BEFORE PROCEEDING.</strong>{" "}
+        <strong className="text-white">Welcome — and thanks for trying Traigent.</strong>{" "}
         By checking the acceptance box and continuing, you (&quot;<strong className="text-white">You</strong>&quot;)
-        enter into this binding agreement with <strong className="text-white">Traigent Ltd.</strong>{" "}
-        (&quot;<strong className="text-white">Traigent</strong>&quot;, &quot;we&quot;).{" "}
-        <strong className="text-white">You accept this Agreement in Your personal, individual
-        capacity</strong>: it binds You personally, and access is granted to You alone — not to
-        Your employer or any other person or company. If you do not agree, do not proceed.
+        agree to these terms with <strong className="text-white">Traigent Ltd.</strong>{" "}
+        (&quot;<strong className="text-white">Traigent</strong>&quot;, &quot;we&quot;). You agree
+        personally, as an individual — you don&apos;t need authority from your employer, and this
+        Agreement doesn&apos;t bind your company. Evaluating Traigent in the context of your job,
+        and showing your team what it can do, is exactly what this access is for. In short:{" "}
+        <strong className="text-white">keep the SDK on your own computer, don&apos;t pass it on,
+        and don&apos;t reverse-engineer it or use it to build a competing product</strong>. The
+        full terms follow — questions are always welcome at{" "}
+        <a href="mailto:amir@traigent.ai" className="text-blue-300 underline underline-offset-2">
+          amir@traigent.ai
+        </a>
+        .
       </p>
 
       <h2 className={h}>1. What this covers (&quot;Materials&quot;)</h2>
@@ -61,9 +68,10 @@ export default function AgreementText({ compact = false }) {
         non-transferable, revocable</strong> right to (a){" "}
         <strong className="text-white">install and use the Traigent SDK on a single personal
         computer under Your sole control — Your own PC only</strong>, (b) access and use the other
-        Materials for Your own evaluation of Traigent&apos;s products and services, and (c) Your
-        own learning through Traigent Academy — in each case by You alone. Your access may not be
-        shared with, transferred to, or exercised on behalf of anyone else; the SDK may not be
+        Materials to evaluate Traigent&apos;s products and services — including evaluating them
+        for potential use by Your team or employer — and (c) Your own learning through Traigent
+        Academy, in each case operated by You alone. Your access may not be
+        shared with or transferred to anyone else; the SDK may not be
         copied, installed, or transferred onto any other computer; and the Materials may not be
         placed on shared, public, or third-party systems. No other rights are granted. All right,
         title, and interest in the Materials — including all intellectual-property rights —
@@ -71,11 +79,13 @@ export default function AgreementText({ compact = false }) {
         valuable proprietary technology and trade secrets.
       </p>
       <p className={p}>
-        <strong className="text-white">What You MAY share.</strong> You may demonstrate the SDK in
-        operation to others and show them the demonstrations, outputs, and results that Traigent
-        delivers (including screenshots, recordings, and result summaries) — provided You do not
-        share the SDK itself, Your access credentials or codes, or any non-public Materials, and
-        subject to Section 3.6 for formal published benchmarks.
+        <strong className="text-white">What You MAY share — encouraged.</strong> Showing Your
+        colleagues, team, and management what Traigent can do is exactly what we hope You&apos;ll
+        do. You may demonstrate the SDK in operation and share the demonstrations, outputs, and
+        results that Traigent delivers (including screenshots, recordings, and result summaries) —
+        just don&apos;t share the SDK itself, Your access credentials or codes, or any non-public
+        Materials (and see Section 3.6 for formal published benchmarks). Colleagues who want
+        hands-on access can register themselves in seconds.
       </p>
 
       <h2 className={h}>3. What You agree not to do</h2>
