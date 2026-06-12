@@ -11,12 +11,14 @@ import {
   getUnlockedEmail,
   shouldNotifyForGate,
 } from "../lib/startNowGate";
-import { notifyStartNowRepeat, notifyAgreementAccepted } from "../lib/hubspotForms";
+import { notifyStartNowRepeat, notifyAgreementAccepted, notifyOtpVerified } from "../lib/hubspotForms";
 import { checkKnownContact } from "../lib/hubspotIdentify";
 import { trackEvent } from "../lib/analytics";
 import { hasAcceptedCurrent, markAccepted, AGREEMENT_VERSION } from "../lib/accessAgreement";
 import AgreementCheckbox from "./AgreementCheckbox";
 import AgreementGate from "./AgreementGate";
+import OtpGate from "./OtpGate";
+import { isOtpEnabled, isVerified } from "../lib/otpAccess";
 
 /**
  * Two-state modal:
@@ -29,14 +31,20 @@ import AgreementGate from "./AgreementGate";
  * straight to the analytics event so we can see which surfaces convert.
  */
 export default function StartNowModal({ onClose, location = "unknown" }) {
+  // When the OTP Worker is configured, Start Now requires its own stronger
+  // stamp: email verified by code on THIS browser. Prior unlocks from other
+  // gates (or HubSpot recognition) deliberately do NOT satisfy it.
+  const otpMode = isOtpEnabled();
+  const [verified, setVerified] = useState(() => isVerified());
   // Initialize from localStorage so repeat visitors skip the form.
   const [unlocked, setUnlocked] = useState(() => isUnlocked());
   // Access & Evaluation Agreement acceptance (versioned; re-prompts on bump).
   const [accepted, setAccepted] = useState(() => hasAcceptedCurrent());
   // Briefly check whether the hubspotutk cookie maps to a known HubSpot
   // contact (Contact Us submitter, meeting booker, BCC'd lead, etc.). If
-  // it does, auto-unlock without showing the form.
-  const [checkingIdentity, setCheckingIdentity] = useState(() => !isUnlocked());
+  // it does, auto-unlock without showing the form. Skipped in OTP mode —
+  // recognition can't substitute for mailbox proof.
+  const [checkingIdentity, setCheckingIdentity] = useState(() => !otpMode && !isUnlocked());
 
   useEffect(() => {
     const onKey = (e) => {
@@ -55,7 +63,7 @@ export default function StartNowModal({ onClose, location = "unknown" }) {
   // they came back. Throttled by shouldNotifyRepeatVisit so the inbox
   // stays sane.
   useEffect(() => {
-    if (!unlocked) return;
+    if (otpMode ? !verified : !unlocked) return;
     if (!shouldNotifyForGate("startnow")) return;
     const email = getUnlockedEmail();
     if (!email) return;
@@ -71,7 +79,7 @@ export default function StartNowModal({ onClose, location = "unknown" }) {
   // HubSpot contact, auto-unlock + fire the re-notify to this gate's
   // form. Falls through to the form on any failure / timeout / no match.
   useEffect(() => {
-    if (unlocked) return;
+    if (otpMode || unlocked) return;
     let cancelled = false;
     checkKnownContact().then((result) => {
       if (cancelled) return;
@@ -98,6 +106,19 @@ export default function StartNowModal({ onClose, location = "unknown" }) {
     trackEvent("start_now_form_submitted", { location });
   };
 
+  // OTP path: by the time this fires, the Worker has verified the mailbox
+  // and written the permanent acceptance receipt. The client-side stamps
+  // and HubSpot notifications are the convenience layer on top.
+  const handleVerified = (email) => {
+    markUnlocked(email);
+    markAccepted(email);
+    notifyOtpVerified({ email, location });
+    notifyAgreementAccepted({ email, location, version: AGREEMENT_VERSION });
+    setAccepted(true);
+    setUnlocked(true);
+    setVerified(true);
+  };
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div
@@ -119,7 +140,13 @@ export default function StartNowModal({ onClose, location = "unknown" }) {
           <X className="w-5 h-5" />
         </button>
 
-        {checkingIdentity ? (
+        {otpMode ? (
+          verified ? (
+            <UnlockedView />
+          ) : (
+            <OtpLockedView surface={`start_now_${location}`} onVerified={handleVerified} />
+          )
+        ) : checkingIdentity ? (
           <CheckingView />
         ) : unlocked ? (
           accepted ? (
@@ -146,6 +173,21 @@ function CheckingView() {
         Start Now — Free
       </h2>
       <p className="text-slate-400 mb-6 animate-pulse">Checking your access…</p>
+    </>
+  );
+}
+
+function OtpLockedView({ surface, onVerified }) {
+  return (
+    <>
+      <h2 id="start-now-title" className="text-2xl font-bold text-white mb-2">
+        Start Now — Free
+      </h2>
+      <p className="text-slate-400 mb-6">
+        Run the keyless demo on your laptop in under a minute. Verify your work
+        email with a one-time code — the install command unlocks right after.
+      </p>
+      <OtpGate surface={surface} onVerified={onVerified} />
     </>
   );
 }
