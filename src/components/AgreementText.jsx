@@ -29,9 +29,10 @@ export default function AgreementText({ compact = false }) {
         <strong className="text-white">IMPORTANT — READ BEFORE PROCEEDING.</strong>{" "}
         By checking the acceptance box and continuing, you (&quot;<strong className="text-white">You</strong>&quot;)
         enter into this binding agreement with <strong className="text-white">Traigent Ltd.</strong>{" "}
-        (&quot;<strong className="text-white">Traigent</strong>&quot;, &quot;we&quot;). If you are accessing on
-        behalf of a company, you represent that you are authorized to bind that company, and
-        &quot;You&quot; includes it. If you do not agree, do not proceed.
+        (&quot;<strong className="text-white">Traigent</strong>&quot;, &quot;we&quot;).{" "}
+        <strong className="text-white">You accept this Agreement in Your personal, individual
+        capacity</strong>: it binds You personally, and access is granted to You alone — not to
+        Your employer or any other person or company. If you do not agree, do not proceed.
       </p>
 
       <h2 className={h}>1. What this covers (&quot;Materials&quot;)</h2>
@@ -54,11 +55,15 @@ export default function AgreementText({ compact = false }) {
       <p className={p}>
         Traigent grants You a <strong className="text-white">limited, personal, non-exclusive,
         non-transferable, revocable</strong> right to access and use the Materials solely for
-        (a) evaluating Traigent&apos;s products and services for Your internal business purposes,
-        and (b) Your own learning through Traigent Academy. No other rights are granted. All
-        right, title, and interest in the Materials — including all intellectual-property rights —
-        remain exclusively with Traigent. You acknowledge the Materials embody Traigent&apos;s
-        valuable proprietary technology and trade secrets.
+        (a) Your own evaluation of Traigent&apos;s products and services, and (b) Your own
+        learning through Traigent Academy — in each case{" "}
+        <strong className="text-white">by You alone, on a personal computer under Your sole
+        control</strong>. Your access may not be shared with, transferred to, or exercised on
+        behalf of anyone else, and the Materials may not be placed on shared, public, or
+        third-party systems. No other rights are granted. All right, title, and interest in the
+        Materials — including all intellectual-property rights — remain exclusively with Traigent.
+        You acknowledge the Materials embody Traigent&apos;s valuable proprietary technology and
+        trade secrets.
       </p>
 
       <h2 className={h}>3. What You agree not to do</h2>
@@ -69,8 +74,9 @@ export default function AgreementText({ compact = false }) {
       <ol className={ol}>
         <li>
           <strong className="text-white">Share or disclose</strong> the Materials, access links,
-          credentials, or access codes with or to any third party (access is individual;
-          colleagues should register themselves);
+          credentials, or access codes with or to <strong className="text-white">anyone
+          else</strong> — colleagues, employers, or any third party (access is strictly
+          individual; each person must register and accept this Agreement themselves);
         </li>
         <li>
           <strong className="text-white">Copy, republish, or redistribute</strong> the Materials,
@@ -115,18 +121,19 @@ export default function AgreementText({ compact = false }) {
         Materials that are not publicly available are Traigent&apos;s{" "}
         <strong className="text-white">Confidential Information</strong>. You will protect them
         with at least the care You use for Your own confidential information (and no less than
-        reasonable care), use them only as permitted here, and not disclose them to anyone except
-        Your employees or advisors who need them for the permitted purpose and are bound by
-        obligations at least as protective. These obligations continue for five (5) years from
-        disclosure; for trade secrets, for as long as they remain trade secrets.
+        reasonable care), use them only as permitted here, and{" "}
+        <strong className="text-white">not disclose them to anyone</strong>. These obligations
+        continue for five (5) years from disclosure; for trade secrets, for as long as they
+        remain trade secrets.
       </p>
 
       <h2 className={h}>5. Access codes and accounts</h2>
       <p className={p}>
         Access codes and links are generated for, and personal to, the business email You
-        register. You are responsible for activity under Your access. Traigent may revoke,
-        suspend, or condition access at any time, with or without notice, including for suspected
-        breach.
+        register, and may be used <strong className="text-white">only by You, on Your own
+        computer</strong>. You are responsible for activity under Your access. Traigent may
+        revoke, suspend, or condition access at any time, with or without notice, including for
+        suspected breach.
       </p>
 
       <h2 className={h}>6. Feedback</h2>

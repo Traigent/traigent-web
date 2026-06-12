@@ -13,7 +13,6 @@ import {
   shouldNotifyForGate,
 } from "../lib/startNowGate";
 import { notifyPortalRepeat } from "../lib/hubspotForms";
-import { hasAcceptedCurrent } from "../lib/accessAgreement";
 import { checkKnownContact } from "../lib/hubspotIdentify";
 
 const PORTAL_URL = "https://portal.traigent.ai";
@@ -220,10 +219,7 @@ export default function TopNav() {
   // The Worker check is cached for 1h in localStorage so repeat clicks are
   // instant after the first.
   const handleOpenPortal = async (loc) => {
-    // Direct open requires BOTH an email unlock AND acceptance of the
-    // current Access & Evaluation Agreement; otherwise the gate modal
-    // handles whichever step is missing.
-    if (isUnlocked() && hasAcceptedCurrent()) {
+    if (isUnlocked()) {
       const email = getUnlockedEmail();
       if (email && shouldNotifyForGate("portal")) {
         notifyPortalRepeat({ email, location: loc });
@@ -232,19 +228,14 @@ export default function TopNav() {
       window.open(PORTAL_URL, "_blank", "noopener,noreferrer");
       return;
     }
-    if (!isUnlocked()) {
-      const result = await checkKnownContact();
-      if (result && result.known && result.email) {
-        markUnlocked(result.email);
-        if (shouldNotifyForGate("portal")) notifyPortalRepeat({ email: result.email, location: loc });
-        trackEvent("portal_auto_unlocked", { location: loc });
-        // Fall through to the gate modal if the agreement is still pending.
-        if (hasAcceptedCurrent()) {
-          trackEvent("portal_opened", { location: loc });
-          window.open(PORTAL_URL, "_blank", "noopener,noreferrer");
-          return;
-        }
-      }
+    const result = await checkKnownContact();
+    if (result && result.known && result.email) {
+      markUnlocked(result.email);
+      if (shouldNotifyForGate("portal")) notifyPortalRepeat({ email: result.email, location: loc });
+      trackEvent("portal_opened", { location: loc });
+      trackEvent("portal_auto_unlocked", { location: loc });
+      window.open(PORTAL_URL, "_blank", "noopener,noreferrer");
+      return;
     }
     trackEvent("portal_clicked_gated", { location: loc });
     setShowPortalGate(true);

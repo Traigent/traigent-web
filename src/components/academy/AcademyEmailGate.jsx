@@ -3,9 +3,6 @@ import { trackEvent } from "../../lib/analytics";
 import { checkKnownContact } from "../../lib/hubspotIdentify";
 import ConsentGate from "../ConsentGate";
 import ConsentCheckbox from "../ConsentCheckbox";
-import AgreementCheckbox from "../AgreementCheckbox";
-import AgreementGate from "../AgreementGate";
-import { hasAcceptedCurrent, markAccepted, AGREEMENT_VERSION } from "../../lib/accessAgreement";
 
 // One notification per visitor per course per 24h. Matches the global
 // gate's throttle window so the inbox volume stays sane in prod.
@@ -141,8 +138,6 @@ const STARTNOW_FALLBACK_FORM_ID = "35384a3e-7386-45b0-924e-84e5d6f637e4";
 export default function AcademyEmailGate({ courseSlug, courseTitle, formId, children }) {
   const effectiveFormId = formId || ACADEMY_FORM_ID || STARTNOW_FALLBACK_FORM_ID;
   const [unlocked, setUnlocked] = useState(() => !!readUnlockEntry(courseSlug));
-  // Access & Evaluation Agreement acceptance (site-wide, versioned).
-  const [acceptedAgreement, setAcceptedAgreement] = useState(() => hasAcceptedCurrent());
 
   // When an already-unlocked visitor reopens a course, silently re-submit
   // their stored email to HubSpot — gives the founder a notification that
@@ -197,28 +192,10 @@ export default function AcademyEmailGate({ courseSlug, courseTitle, formId, chil
   }, []);
   const [email, setEmail] = useState("");
   const [agreed, setAgreed] = useState(false);
-  const [agreedTerms, setAgreedTerms] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
-  if (unlocked && acceptedAgreement) return <>{children}</>;
-
-  // Email-unlocked (returning / auto-recognized) but the current agreement
-  // version hasn't been accepted yet — agreement-only step, no email re-entry.
-  if (unlocked && !acceptedAgreement) {
-    const entry = readUnlockEntry(courseSlug);
-    return (
-      <div className="max-w-2xl mx-auto py-12">
-        <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-8 md:p-10">
-          <AgreementGate
-            email={(entry && entry.email) || ""}
-            surface={`academy_${courseSlug}`}
-            onAccepted={() => setAcceptedAgreement(true)}
-          />
-        </div>
-      </div>
-    );
-  }
+  if (unlocked) return <>{children}</>;
 
   // The form is always shown. If HubSpot env vars / form id are missing in
   // this environment, submissions will surface a friendly error via setError
@@ -234,13 +211,7 @@ export default function AcademyEmailGate({ courseSlug, courseTitle, formId, chil
       if (!isConfigured) {
         throw new Error("HubSpot form not configured");
       }
-      // pageName carries the acceptance record: the agreement checkbox is
-      // required before submit, so this submission evidences acceptance.
-      await submitToHubSpot({
-        email,
-        courseTitle: `${courseTitle} · Access Agreement v${AGREEMENT_VERSION} accepted`,
-        formId: effectiveFormId,
-      });
+      await submitToHubSpot({ email, courseTitle, formId: effectiveFormId });
       writeUnlockEntry(courseSlug, {
         email,
         ts: Date.now(),
@@ -248,8 +219,6 @@ export default function AcademyEmailGate({ courseSlug, courseTitle, formId, chil
         // useEffect doesn't immediately re-fire on the same render cycle.
         lastNotifiedTs: Date.now(),
       });
-      markAccepted(email);
-      setAcceptedAgreement(true);
       trackEvent("academy_email_submitted", { course: courseSlug });
       setUnlocked(true);
     } catch (err) {
@@ -296,14 +265,9 @@ export default function AcademyEmailGate({ courseSlug, courseTitle, formId, chil
               checked={agreed}
               onChange={setAgreed}
             />
-            <AgreementCheckbox
-              id={`academy-agreement-${courseSlug}`}
-              checked={agreedTerms}
-              onChange={setAgreedTerms}
-            />
             <button
               type="submit"
-              disabled={submitting || !email || !agreed || !agreedTerms}
+              disabled={submitting || !email || !agreed}
               className="w-full bg-[#1A6BF5] hover:bg-[#4D8EF8] disabled:opacity-60 disabled:cursor-not-allowed text-white px-5 py-3 rounded-lg font-medium transition-colors"
             >
               {submitting ? "Sending…" : "Send me the access link"}
