@@ -37,11 +37,14 @@ export default function AgreementText({ compact = false }) {
 
       <h2 className={h}>1. What this covers (&quot;Materials&quot;)</h2>
       <p className={p}>
-        &quot;<strong className="text-white">Materials</strong>&quot; means everything Traigent makes
-        available through its gated surfaces: the Traigent Portal and its features, outputs, and
-        interfaces; Traigent Academy courses and workshop content; demos, videos, slides,
-        documentation, datasets, benchmarks, prompts, configuration spaces, evaluation
-        methodologies, and quickstart resources; access links, credentials, and access codes; and
+        &quot;<strong className="text-white">Materials</strong>&quot; means{" "}
+        <strong className="text-white">all Traigent intellectual property and information made
+        available to You, or to which You become exposed</strong> — including, without limitation:
+        the Traigent Portal and its features, outputs, and interfaces; Traigent Academy courses
+        and workshop content; demos, videos, slides, documentation, datasets, benchmarks, prompts,
+        configuration spaces, evaluation methodologies, and quickstart resources; access links,
+        credentials, and access codes; <strong className="text-white">any other aspect of
+        Traigent&apos;s products, services, or technology that You access or observe</strong>; and
         any non-public information disclosed to You.
       </p>
       <p className={p}>
