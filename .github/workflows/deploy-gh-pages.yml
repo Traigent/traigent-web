@@ -42,6 +42,9 @@ jobs:
           VITE_HUBSPOT_ACADEMY_FORM_ID: ${{ vars.VITE_HUBSPOT_ACADEMY_FORM_ID }}
           VITE_HSUTK_CHECK_URL: ${{ vars.VITE_HSUTK_CHECK_URL }}
           VITE_HSUTK_IDENTIFY_ENABLED: ${{ vars.VITE_HSUTK_IDENTIFY_ENABLED }}
+          # Start Now OTP gate — public Worker endpoint (workers/access-otp).
+          # Empty = OTP dormant, legacy email-form gate.
+          VITE_OTP_WORKER_URL: ${{ vars.VITE_OTP_WORKER_URL }}
           VITE_POSTHOG_KEY: ${{ vars.VITE_POSTHOG_KEY }}
           VITE_POSTHOG_HOST: ${{ vars.VITE_POSTHOG_HOST }}
           VITE_GA4_ID: ${{ vars.VITE_GA4_ID }}
