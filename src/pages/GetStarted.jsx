@@ -11,12 +11,9 @@ import {
   getUnlockedEmail,
   shouldNotifyForGate,
 } from "../lib/startNowGate";
-import { notifyStartNowRepeat, notifyAgreementAccepted, notifyOtpVerified } from "../lib/hubspotForms";
+import { notifyStartNowRepeat, notifyOtpVerified } from "../lib/hubspotForms";
 import { checkKnownContact } from "../lib/hubspotIdentify";
 import { trackEvent } from "../lib/analytics";
-import { hasAcceptedCurrent, markAccepted, AGREEMENT_VERSION } from "../lib/accessAgreement";
-import AgreementCheckbox from "../components/AgreementCheckbox";
-import AgreementGate from "../components/AgreementGate";
 import OtpGate from "../components/OtpGate";
 import { isOtpEnabled, isVerified } from "../lib/otpAccess";
 
@@ -66,13 +63,10 @@ export default function GetStarted() {
   // Same 90-day localStorage memory as the Start Now modal so a visitor
   // who unlocked there doesn't see the form again here, and vice versa.
   const [unlocked, setUnlocked] = useState(() => isUnlocked());
-  // Access & Evaluation Agreement acceptance (site-wide, versioned).
-  const [accepted, setAccepted] = useState(() => hasAcceptedCurrent());
-  const [agreedTerms, setAgreedTerms] = useState(false);
   const [selectedGoalIds, setSelectedGoalIds] = useState(DEFAULT_AGENT_GOAL_IDS);
   const [copiedPrompt, setCopiedPrompt] = useState(false);
   // Install commands render only behind the active gate's success state.
-  const hasAccess = otpMode ? verified : unlocked && accepted;
+  const hasAccess = otpMode ? verified : unlocked;
 
   // Repeat-visit notification — see StartNowModal for the rationale.
   useEffect(() => {
@@ -105,22 +99,14 @@ export default function GetStarted() {
 
   const handleSubmitted = (email) => {
     markUnlocked(email);
-    // The agreement checkbox is required before the form mounts — record it.
-    markAccepted(email);
-    if (email) notifyAgreementAccepted({ email, location: "get_started_page", version: AGREEMENT_VERSION });
-    setAccepted(true);
     setUnlocked(true);
     trackEvent("start_now_form_submitted", { location: "get_started_page" });
   };
 
-  // OTP path: Worker has verified the mailbox + written the receipt already.
+  // OTP path: Worker has verified the mailbox + written the access receipt.
   const handleVerified = (email) => {
     markUnlocked(email);
-    markAccepted(email);
     notifyOtpVerified({ email, location: "get_started_page" });
-    notifyAgreementAccepted({ email, location: "get_started_page", version: AGREEMENT_VERSION });
-    setAccepted(true);
-    setUnlocked(true);
     setVerified(true);
   };
 
@@ -197,29 +183,7 @@ export default function GetStarted() {
               email you more than once a month, and you can unsubscribe with one
               click.
             </p>
-            <div className="mb-4 max-w-3xl">
-              <AgreementCheckbox
-                id="get-started-agreement"
-                checked={agreedTerms}
-                onChange={setAgreedTerms}
-              />
-            </div>
-            {agreedTerms ? (
-              <HubSpotStartNowForm onSuccess={handleSubmitted} targetId="hs-form-getstarted" />
-            ) : (
-              <p className="text-xs text-slate-500">
-                Accept the agreement above to load the form.
-              </p>
-            )}
-          </div>
-        )}
-        {!otpMode && unlocked && !accepted && (
-          <div className="mb-10 p-6 rounded-xl bg-slate-900/60 border border-slate-800 max-w-2xl">
-            <AgreementGate
-              email={getUnlockedEmail()}
-              surface="get_started_page"
-              onAccepted={() => setAccepted(true)}
-            />
+            <HubSpotStartNowForm onSuccess={handleSubmitted} targetId="hs-form-getstarted" />
           </div>
         )}
 

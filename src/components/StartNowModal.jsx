@@ -11,12 +11,9 @@ import {
   getUnlockedEmail,
   shouldNotifyForGate,
 } from "../lib/startNowGate";
-import { notifyStartNowRepeat, notifyAgreementAccepted, notifyOtpVerified } from "../lib/hubspotForms";
+import { notifyStartNowRepeat, notifyOtpVerified } from "../lib/hubspotForms";
 import { checkKnownContact } from "../lib/hubspotIdentify";
 import { trackEvent } from "../lib/analytics";
-import { hasAcceptedCurrent, markAccepted, AGREEMENT_VERSION } from "../lib/accessAgreement";
-import AgreementCheckbox from "./AgreementCheckbox";
-import AgreementGate from "./AgreementGate";
 import OtpGate from "./OtpGate";
 import { isOtpEnabled, isVerified } from "../lib/otpAccess";
 
@@ -38,8 +35,6 @@ export default function StartNowModal({ onClose, location = "unknown" }) {
   const [verified, setVerified] = useState(() => isVerified());
   // Initialize from localStorage so repeat visitors skip the form.
   const [unlocked, setUnlocked] = useState(() => isUnlocked());
-  // Access & Evaluation Agreement acceptance (versioned; re-prompts on bump).
-  const [accepted, setAccepted] = useState(() => hasAcceptedCurrent());
   // Briefly check whether the hubspotutk cookie maps to a known HubSpot
   // contact (Contact Us submitter, meeting booker, BCC'd lead, etc.). If
   // it does, auto-unlock without showing the form. Skipped in OTP mode —
@@ -97,25 +92,16 @@ export default function StartNowModal({ onClose, location = "unknown" }) {
 
   const handleSubmitted = (email) => {
     markUnlocked(email);
-    // The agreement checkbox is required before the form mounts, so the
-    // submission itself evidences acceptance — record it.
-    markAccepted(email);
-    if (email) notifyAgreementAccepted({ email, location, version: AGREEMENT_VERSION });
-    setAccepted(true);
     setUnlocked(true);
     trackEvent("start_now_form_submitted", { location });
   };
 
-  // OTP path: by the time this fires, the Worker has verified the mailbox
-  // and written the permanent acceptance receipt. The client-side stamps
-  // and HubSpot notifications are the convenience layer on top.
+  // OTP path: by the time this fires, the Worker has verified the mailbox and
+  // written the server-side access receipt (verified email, IP, time, device).
+  // The client-side stamp + HubSpot notification are the convenience layer.
   const handleVerified = (email) => {
     markUnlocked(email);
-    markAccepted(email);
     notifyOtpVerified({ email, location });
-    notifyAgreementAccepted({ email, location, version: AGREEMENT_VERSION });
-    setAccepted(true);
-    setUnlocked(true);
     setVerified(true);
   };
 
@@ -149,15 +135,7 @@ export default function StartNowModal({ onClose, location = "unknown" }) {
         ) : checkingIdentity ? (
           <CheckingView />
         ) : unlocked ? (
-          accepted ? (
-            <UnlockedView />
-          ) : (
-            <AgreementGate
-              email={getUnlockedEmail()}
-              surface={`start_now_${location}`}
-              onAccepted={() => setAccepted(true)}
-            />
-          )
+          <UnlockedView />
         ) : (
           <LockedView onSubmitted={handleSubmitted} />
         )}
@@ -194,7 +172,6 @@ function OtpLockedView({ surface, onVerified }) {
 
 function LockedView({ onSubmitted }) {
   const [agreed, setAgreed] = useState(false);
-  const [agreedTerms, setAgreedTerms] = useState(false);
   return (
     <>
       <h2 id="start-now-title" className="text-2xl font-bold text-white mb-2">
@@ -205,25 +182,18 @@ function LockedView({ onSubmitted }) {
         send setup tips — the install command unlocks as soon as you submit.
       </p>
       <ConsentGate>
-        <div className="mb-3">
+        <div className="mb-4">
           <ConsentCheckbox
             id="start-now-consent"
             checked={agreed}
             onChange={setAgreed}
           />
         </div>
-        <div className="mb-4">
-          <AgreementCheckbox
-            id="start-now-agreement"
-            checked={agreedTerms}
-            onChange={setAgreedTerms}
-          />
-        </div>
-        {agreed && agreedTerms ? (
+        {agreed ? (
           <HubSpotStartNowForm onSuccess={onSubmitted} />
         ) : (
           <p className="text-xs text-slate-500">
-            Tick both boxes above to load the form.
+            Tick the box above to load the form.
           </p>
         )}
       </ConsentGate>
