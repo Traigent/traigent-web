@@ -133,7 +133,7 @@ export default function Homepage() {
               className="text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.55] tracking-tight mb-6"
               style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.03em' }}
             >
-              AI Agent Optimization —<br />
+              AI Agent Optimization<br />
               <span className="text-[#4D8EF8]">Fully Automated</span>
             </motion.h1>
             <motion.p
