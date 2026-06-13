@@ -3,8 +3,6 @@ import { useEffect, useRef, useState } from "react";
 import { Mail, ShieldCheck } from "lucide-react";
 import ConsentGate from "./ConsentGate";
 import ConsentCheckbox from "./ConsentCheckbox";
-import AgreementCheckbox from "./AgreementCheckbox";
-import AgreementText from "./AgreementText";
 import { requestCode, verifyCode, otpErrorMessage } from "../lib/otpAccess";
 import { getUnlockedEmail } from "../lib/startNowGate";
 import { trackEvent } from "../lib/analytics";
@@ -13,19 +11,18 @@ const RESEND_COOLDOWN_S = 30;
 
 /**
  * Email + one-time-code gate for Start Now. Two steps:
- *   1. email + consent + agreement tick → "Email me a code"
+ *   1. email + consent tick → "Email me a code"
  *   2. 6-digit code entry → verify → onVerified(email)
  *
- * Verification writes the server-side acceptance receipt in the Worker —
- * by the time onVerified fires, the evidence record already exists.
- * The email field prefills from the legacy unlock stamp when present:
+ * Verification writes the server-side receipt in the Worker (verified email,
+ * IP, time, device) — by the time onVerified fires, the access record already
+ * exists. The email field prefills from the legacy unlock stamp when present:
  * returning visitors are asked to verify, not to start from scratch.
  */
 export default function OtpGate({ surface = "start_now", onVerified }) {
   const [step, setStep] = useState("email"); // email | code
   const [email, setEmail] = useState(() => getUnlockedEmail());
   const [consent, setConsent] = useState(false);
-  const [agreed, setAgreed] = useState(false);
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -142,18 +139,10 @@ export default function OtpGate({ surface = "start_now", onVerified }) {
 
   return (
     <ConsentGate>
-      <div className="mb-3">
+      <div className="mb-4">
         <ConsentCheckbox id={`${surface}-consent`} checked={consent} onChange={setConsent} />
       </div>
-      {/* The full agreement, scrollable in-place so acceptance is informed
-          without leaving the gate — same presentation as AgreementGate. */}
-      <div className="max-h-60 overflow-y-auto rounded-lg border border-slate-700/60 bg-slate-950/60 p-4 mb-3">
-        <AgreementText compact />
-      </div>
-      <div className="mb-4">
-        <AgreementCheckbox id={`${surface}-agreement`} checked={agreed} onChange={setAgreed} />
-      </div>
-      {consent && agreed ? (
+      {consent ? (
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -184,7 +173,7 @@ export default function OtpGate({ surface = "start_now", onVerified }) {
           </button>
         </form>
       ) : (
-        <p className="text-xs text-slate-500">Tick both boxes above to continue.</p>
+        <p className="text-xs text-slate-500">Tick the box above to continue.</p>
       )}
     </ConsentGate>
   );
