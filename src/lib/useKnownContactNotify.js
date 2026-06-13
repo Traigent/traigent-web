@@ -28,10 +28,16 @@ import { trackEvent } from "./analytics";
  *     eventName: "pricing_viewed_known",
  *     gateKey: "pricing",         // required — used for the per-gate throttle
  *   });
+ *
+ * `enabled` (default true) lets a caller suppress the notification without
+ * breaking the rules of hooks — e.g. the Knob Explorer passes `enabled:
+ * !embedded` so the /story embed doesn't double-notify (the story page fires
+ * its own notifyStoryWatched).
  */
-export function useKnownContactNotify({ notify, location, eventName, gateKey }) {
+export function useKnownContactNotify({ notify, location, eventName, gateKey, enabled = true }) {
   const firedRef = useRef(false);
   useEffect(() => {
+    if (!enabled) return;
     if (firedRef.current) return;
     const key = gateKey || location || "unknown_gate";
 

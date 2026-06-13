@@ -5,7 +5,7 @@
 // color-coded pills so the user can see which knobs are worth tuning.
 //
 // Reachable via the hidden ▸ menu in TopNav.
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
@@ -13,10 +13,7 @@ import { ArrowLeft, ArrowRight, ChevronDown, ChevronUp, Clock, DollarSign, Spark
 import { useSharedSetting } from "../lib/useSharedSetting";
 import { useCustomSearchSpace } from "../lib/useCustomSearchSpace";
 import { useRemoveChatWidget } from "../lib/useRemoveChatWidget";
-import { isUnlocked, markUnlocked, getUnlockedEmail, shouldNotifyForGate } from "../lib/startNowGate";
-import { checkKnownContact } from "../lib/hubspotIdentify";
-import { trackEvent } from "../lib/analytics";
-import KnobExplorerGate from "../components/KnobExplorerGate";
+import { useKnownContactNotify } from "../lib/useKnownContactNotify";
 import { notifyKnobExplorerViewed } from "../lib/hubspotForms";
 import { usePageView } from "../lib/usePageView";
 import ChatKillerStyle from "../lib/ChatKillerStyle";
@@ -743,10 +740,6 @@ function sortKnobsByImpact(knobs, metric) {
   });
 }
 
-// Founder notification throttle for the knob explorer — at most once per
-// visitor per 24h, so repeat loads don't spam the inbox.
-const KNOB_NOTIFY_THROTTLE_MS = 24 * 60 * 60 * 1000;
-
 export default function KnobExplorer() {
   usePageView();
   // Persist selections + sort preference across reloads / tabs so the user
@@ -776,62 +769,24 @@ export default function KnobExplorer() {
   const showFinal = searchParams.get("final") === "1";
   useRemoveChatWidget();
 
-  // ---- Access gate -------------------------------------------------------
-  // Standalone /knob-explorer requires a (work) email before use, and fires a
-  // notification on EVERY visit for a known/unlocked contact. The story embeds
-  // this page with ?chrome=hidden — that surface is intentionally NOT gated
-  // and does not notify here (the story has its own tracking).
+  // ---- Open page, silent known-contact notify ----------------------------
+  // The Knob Explorer is NOT gated — any visitor sees it without an email
+  // (same posture as the pitch decks). When a contact we ALREADY know lands
+  // here (localStorage email, or hubspotutk → known HubSpot contact), we fire
+  // one silent founder notification, throttled per-gate. The /story embed
+  // (?chrome=hidden) opts out so it doesn't double-notify — the story page
+  // fires its own notifyStoryWatched.
   const embedded = chromeHidden;
-  const [unlocked, setUnlocked] = useState(() => embedded || isUnlocked());
-  const [checkingAccess, setCheckingAccess] = useState(
-    () => !(embedded || isUnlocked()),
-  );
-  const notifiedRef = useRef(false);
+  useKnownContactNotify({
+    notify: notifyKnobExplorerViewed,
+    location: "knob_explorer_page",
+    eventName: "knob_explorer_viewed_known",
+    gateKey: "knob_explorer",
+    enabled: !embedded,
+  });
   // Collapse everything on a normal visit; the guided tour (story) keeps its
   // expanded defaults so the walkthrough still works.
   const startCollapsed = !guided;
-
-  useEffect(() => {
-    if (embedded) return; // story embed: never gated, never notified here
-    if (notifiedRef.current) return;
-    // Notify the founder when a known/unlocked contact opens the explorer,
-    // throttled to once per visitor per 24h so repeat loads don't spam.
-    const maybeNotify = (email) => {
-      trackEvent("knob_explorer_viewed", { location: "knob_explorer_page" });
-      if (shouldNotifyForGate("knob_explorer", KNOB_NOTIFY_THROTTLE_MS)) {
-        notifyKnobExplorerViewed({ email, location: "knob_explorer_page" });
-      }
-    };
-    const local = getUnlockedEmail();
-    if (local) {
-      notifiedRef.current = true;
-      maybeNotify(local);
-      return;
-    }
-    // Not unlocked on this browser — see if the hubspotutk cookie maps to a
-    // known HubSpot contact; if so, auto-unlock + notify.
-    let cancelled = false;
-    checkKnownContact().then((res) => {
-      if (cancelled) return;
-      if (res && res.known && res.email) {
-        markUnlocked(res.email);
-        setUnlocked(true);
-        notifiedRef.current = true;
-        maybeNotify(res.email);
-      }
-      setCheckingAccess(false);
-    });
-    return () => { cancelled = true; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handleUnlock = useCallback(() => {
-    notifiedRef.current = true;
-    setUnlocked(true);
-    // The gate's form submission already notified HubSpot; stamp the 24h
-    // throttle so the next load within 24h doesn't double-notify.
-    shouldNotifyForGate("knob_explorer", KNOB_NOTIFY_THROTTLE_MS);
-  }, []);
 
   // STABLE callback for GuidedTour — an inline arrow here would change every
   // render. GuidedTour's effect depends on onComplete identity, and the tour
@@ -952,18 +907,6 @@ export default function KnobExplorer() {
   const specificTotal = selectedModels.reduce((sum, m) => {
     return sum + (SPECIFIC_MODEL_KNOBS[m] || []).length;
   }, 0);
-
-  // Gate: unknown visitors must provide a work email before the explorer
-  // renders. Embedded (story) and already-unlocked/known visitors pass through.
-  if (!embedded && !unlocked) {
-    return checkingAccess ? (
-      <div className="min-h-[100svh] bg-[#080808] text-white flex items-center justify-center">
-        <p className="text-slate-400 animate-pulse">Checking access…</p>
-      </div>
-    ) : (
-      <KnobExplorerGate onUnlock={handleUnlock} />
-    );
-  }
 
   return (
     <>
