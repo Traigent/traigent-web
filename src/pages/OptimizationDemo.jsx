@@ -933,7 +933,7 @@ export default function OptimizationDemo() {
           {/* Scene 5 — Phase 2 trials + winner card */}
           {scene === 5 && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
-              <SceneHeader scene={5} title="High accuracy. 1/10 the cost. Many ways to get there." subtitle="Phase 2 · live" />
+              <SceneHeader scene={5} title="Run #2 — Keep the accuracy, Cut the Cost." subtitle="Phase 2 · live" />
               <div className="flex items-center justify-between gap-4 flex-wrap mb-4">
                 <div className="text-sm font-mono text-slate-400">
                   Evaluated:{" "}
