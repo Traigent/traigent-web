@@ -27,7 +27,9 @@ const PRESETS = {
   // redesigned SlideParetoFrontier at position 2.
   "extended-product-presentation": { range:   "24,2-23,27-29" },
   // Mirrors the Ness recipient deck's slide range (minus its cover slide).
-  "short-summary":                 { range:   "24,2,4-5,20,28,27,29" },
+  // Lifecycle close: moving-target (30) + continuous-optimization (31) land
+  // right before the final CTA (29) — the lifecycle argument sets up the ask.
+  "short-summary":                 { range:   "24,2,4-5,20,28,27,30,31,32,29" },
   "market-opportunity":            { range:   "24-27" },
   // Same slide range as market-opportunity for now — kept as a separate
   // preset so /investor-pitch can diverge later without touching the
