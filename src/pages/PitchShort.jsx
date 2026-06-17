@@ -978,6 +978,177 @@ function SlideHowWeConverge() {
   );
 }
 
+// ---------------------------------------------------------------------------
+// LIFECYCLE CLOSE — appended to the /short-summary preset. Two slides:
+// (1) an agent's lifecycle is a moving target; (2) running optimization
+// continuously and compounding the results holds the agent at high accuracy and
+// low cost, cradle to grave. Audience-neutral — true whether the customer runs
+// Traigent themselves or someone runs it for them.
+// ---------------------------------------------------------------------------
+function SlideAgentLifecycle() {
+  return (
+    <div className="w-full max-w-[1080px] mx-auto self-stretch flex flex-col justify-center min-h-[600px]">
+      <div className="text-center mb-8">
+        <div className="text-xs md:text-sm font-mono uppercase tracking-[0.3em] text-slate-500 mb-4">
+          The agent lifecycle · cradle to grave
+        </div>
+        <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight tracking-tight mb-3">
+          Every agent is a moving target
+        </h2>
+        <p className="text-lg md:text-xl text-slate-300 max-w-3xl mx-auto leading-snug">
+          Teams launch with 1–2 models, 1–2 knobs, and barely a scored test set.
+          Then reality piles on — and it never stops.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Where teams start */}
+        <div className="bg-slate-900/60 border border-slate-700/60 rounded-2xl p-7">
+          <div className="text-sm font-mono uppercase tracking-widest mb-4 text-slate-400">
+            Day one · by hand
+          </div>
+          <ul className="space-y-2.5 text-slate-300 text-base">
+            <li className="flex items-start gap-2.5"><span className="mt-2 w-1.5 h-1.5 rounded-full bg-slate-500 shrink-0" />1–2 models, picked on a hunch</li>
+            <li className="flex items-start gap-2.5"><span className="mt-2 w-1.5 h-1.5 rounded-full bg-slate-500 shrink-0" />1–2 knobs, tuned by hand</li>
+            <li className="flex items-start gap-2.5"><span className="mt-2 w-1.5 h-1.5 rounded-full bg-slate-500 shrink-0" />trial-and-error, no convergence</li>
+            <li className="flex items-start gap-2.5"><span className="mt-2 w-1.5 h-1.5 rounded-full bg-slate-500 shrink-0" />a thin test set with no objective accuracy score</li>
+          </ul>
+        </div>
+
+        {/* What never stops changing */}
+        <div className="bg-slate-900/60 border-2 rounded-2xl p-7" style={{ borderColor: "#f59e0b" }}>
+          <div className="text-sm font-mono uppercase tracking-widest mb-4" style={{ color: "#f59e0b" }}>
+            What never stops evolving
+          </div>
+          <ul className="space-y-2.5 text-slate-200 text-base">
+            <li className="flex items-start gap-2.5"><TrendingUp className="w-5 h-5 mt-0.5 shrink-0" style={{ color: "#34d399" }} />More knobs to add — and a growing, sharper eval set</li>
+            <li className="flex items-start gap-2.5"><TrendingUp className="w-5 h-5 mt-0.5 shrink-0" style={{ color: "#34d399" }} />Push accuracy — plus new KPIs the business starts to care about</li>
+            <li className="flex items-start gap-2.5"><TrendingDown className="w-5 h-5 mt-0.5 shrink-0" style={{ color: "#4D8EF8" }} />Drive cost down — lower-tier models + knobs that recover the accuracy</li>
+            <li className="flex items-start gap-2.5"><Clock className="w-5 h-5 mt-0.5 shrink-0" style={{ color: "#a78bfa" }} />Production surfaces new questions and scope creep</li>
+            <li className="flex items-start gap-2.5"><ArrowRight className="w-5 h-5 mt-0.5 shrink-0" style={{ color: "#a78bfa" }} />Business goals and agent requirements shift</li>
+          </ul>
+        </div>
+      </div>
+
+      <p className="text-center text-base md:text-lg text-slate-400 mt-8 max-w-3xl mx-auto leading-snug">
+        A one-time, by-hand tune doesn’t hold. The target keeps moving —
+        <span className="text-slate-200 font-semibold"> before and after launch.</span>
+      </p>
+    </div>
+  );
+}
+
+function SlideContinuousOptimization() {
+  return (
+    <div className="w-full max-w-[1080px] mx-auto self-stretch flex flex-col justify-center min-h-[600px]">
+      <div className="text-center mb-8">
+        <div className="text-xs md:text-sm font-mono uppercase tracking-[0.3em] text-slate-500 mb-4">
+          Continuous optimization → Continuous Evolution
+        </div>
+        <h2 className="text-3xl md:text-5xl font-bold text-white leading-tight tracking-tight mb-3">
+          Run it continuously. Accumulate every result.
+        </h2>
+        <p className="text-2xl md:text-4xl font-semibold text-slate-300 max-w-3xl mx-auto leading-snug">
+          <span style={{ color: "#4D8EF8" }}>→ constant agent evolution, <span className="whitespace-nowrap">cradle to grave.</span></span>
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="bg-slate-900/60 border rounded-2xl p-7" style={{ borderColor: "#1A6BF566" }}>
+          <div className="text-sm font-mono mb-3" style={{ color: "#4D8EF8" }}>● ALWAYS OPTIMIZING</div>
+          <p className="text-slate-300 text-base leading-snug">
+            Every change is a fresh sweep, not a fire drill — new knobs, new data,
+            new models, new KPIs, new pricing.
+          </p>
+        </div>
+        <div className="bg-slate-900/60 border rounded-2xl p-7" style={{ borderColor: "#a78bfa66" }}>
+          <div className="text-sm font-mono mb-3" style={{ color: "#a78bfa" }}>● EMPIRICAL DATA COMPOUNDS</div>
+          <p className="text-slate-300 text-base leading-snug">
+            Results accumulate. Traigent learns from the whole history to deduce
+            the next configs — and the recommended next moves to evolve the agent.
+          </p>
+        </div>
+        <div className="bg-slate-900/60 border rounded-2xl p-7" style={{ borderColor: "#34d39966" }}>
+          <div className="text-sm font-mono mb-3" style={{ color: "#34d399" }}>● HELD AT THE FRONTIER</div>
+          <p className="text-slate-300 text-base leading-snug">
+            Continuously near max accuracy <span className="text-white font-semibold">and</span> min
+            cost — cheaper models + the right knobs, not a one-and-done tune.
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-8 rounded-2xl p-6 text-center border" style={{ borderColor: "#1A6BF566", background: "rgba(26,107,245,0.08)" }}>
+        <p className="text-lg md:text-2xl text-white font-semibold leading-snug">
+          Continuous Optimization cycles → every iteration evolves the agent and keeps it optimal
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// The core claim, with a proof-by-divergence chart: the optimal config is a
+// moving target; a tuned-once agent drifts off it and decays, while the
+// continuous loop re-converges to the moving optimum after every change — so
+// the loop is what actually keeps the agent evolving.
+function SlideLoopProof() {
+  return (
+    <div className="w-full max-w-[1080px] mx-auto self-stretch flex flex-col justify-center min-h-[600px]">
+      <div className="text-center mb-4">
+        <div className="text-xs md:text-sm font-mono uppercase tracking-[0.3em] text-slate-500 mb-4">
+          The core claim
+        </div>
+        <h2 className="text-3xl md:text-5xl font-bold text-white leading-tight tracking-tight mb-3">
+          The feedback loop is how the agent evolves
+        </h2>
+        <p className="text-base md:text-lg text-slate-300 max-w-3xl mx-auto leading-snug">
+          The best configuration is a moving target — data, models, prices, questions
+          and goals all shift. Tune once and the agent silently drifts off the
+          frontier; keep the loop running and it tracks the moving optimum — it evolves.
+        </p>
+      </div>
+
+      <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm mb-1">
+        <span className="flex items-center gap-2"><span className="inline-block w-6 h-[3px] rounded" style={{ background: "#1A6BF5" }} /><span className="text-slate-200">continuously optimized</span></span>
+        <span className="flex items-center gap-2"><span className="inline-block w-6 h-[3px] rounded" style={{ background: "#64748b" }} /><span className="text-slate-400">tuned once</span></span>
+        <span className="flex items-center gap-2"><span className="inline-block w-6 border-t-2 border-dashed align-middle" style={{ borderColor: "#4ade80" }} /><span className="text-slate-400">the optimum (keeps moving)</span></span>
+      </div>
+
+      <svg viewBox="0 0 1000 300" className="w-full max-w-5xl mx-auto">
+        <line x1="70" y1="40" x2="70" y2="250" stroke="#334155" strokeWidth="1" />
+        <line x1="70" y1="250" x2="950" y2="250" stroke="#334155" strokeWidth="1" />
+        <text x="58" y="50" textAnchor="end" fill="#4ade80" fontSize="12" fontFamily="monospace">optimal</text>
+        <text x="58" y="246" textAnchor="end" fill="#64748b" fontSize="12" fontFamily="monospace">worse</text>
+        <text x="510" y="286" textAnchor="middle" fill="#475569" fontSize="13" fontFamily="monospace">agent lifetime →  every change is a new optimization</text>
+
+        {[[260, "+ data"], [450, "+ cheaper model"], [640, "price shift"], [830, "new questions"]].map(([x, label], i) => (
+          <g key={i}>
+            <line x1={x} y1="40" x2={x} y2="250" stroke="#334155" strokeWidth="0.8" strokeDasharray="3,4" opacity="0.6" />
+            <text x={x} y="268" textAnchor="middle" fill="#64748b" fontSize="11" fontFamily="monospace">{label}</text>
+          </g>
+        ))}
+
+        {/* the moving optimum / frontier */}
+        <line x1="70" y1="95" x2="950" y2="55" stroke="#4ade80" strokeWidth="1.5" strokeDasharray="5,4" opacity="0.75" />
+
+        {/* tuned once — drifts off as the optimum moves away */}
+        <path d="M 70 95 L 260 95 L 260 122 L 450 122 L 450 152 L 640 152 L 640 188 L 830 188 L 830 216 L 950 216" stroke="#64748b" strokeWidth="2.5" fill="none" />
+
+        {/* continuously optimized — re-converges to the frontier after each change */}
+        <path d="M 70 95 L 255 86 L 290 101 L 450 76 L 480 92 L 640 68 L 670 84 L 830 61 L 860 77 L 950 56" stroke="#1A6BF5" strokeWidth="2.5" fill="none" />
+        {[[70, 95], [450, 76], [640, 68], [830, 61], [950, 56]].map(([cx, cy], i) => (
+          <circle key={i} cx={cx} cy={cy} r="4" fill="#1A6BF5" />
+        ))}
+      </svg>
+
+      <p className="text-center text-sm md:text-base text-slate-400 mt-4 max-w-3xl mx-auto leading-snug">
+        And it’s cheap enough to mean it: Traigent converges in
+        <span className="text-slate-200 font-semibold"> &lt;10% of the search space, in hours</span> —
+        so you re-optimize every time something changes. <span className="text-white font-semibold">Continuous is the point.</span>
+      </p>
+    </div>
+  );
+}
+
 export const SHORT_SLIDES = [
   // ----- TEXT-ONLY ONE-PAGER (opener — swapped in from slot 22) -----
   { title: "One-Pager Test — Text Only (V2)", section: "Traigent intro", component: SlideOnePagerTextTestV2 },
@@ -1025,6 +1196,10 @@ export const SHORT_SLIDES = [
   { title: "Watch the 1-minute story", section: "Demo", component: SlideStoryCTA },
   // ----- DUAL-CTA CLOSER — slide 6 of /investor-pitch (Start Now + Book a demo) -----
   { title: "Investor CTA — Start Now + Book a Demo", section: "Demo", component: SlideInvestorCTA },
+  // ----- LIFECYCLE CLOSE — appended to /short-summary (slides 30–32) -----
+  { title: "Every Agent Is a Moving Target (agent lifecycle)", section: "Lifecycle", component: SlideAgentLifecycle },
+  { title: "Run It Continuously — Accumulate Every Result", section: "Lifecycle", component: SlideContinuousOptimization },
+  { title: "The Feedback Loop Is How the Agent Evolves", section: "Lifecycle", component: SlideLoopProof },
 ];
 
 export default function PitchShort() {
