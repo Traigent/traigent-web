@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   security-checks:
-    runs-on: ubuntu-latest
+    runs-on: light
 
     steps:
     - uses: actions/checkout@v6

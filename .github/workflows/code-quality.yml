@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   code-quality:
-    runs-on: ubuntu-latest
+    runs-on: medium
 
     steps:
     - uses: actions/checkout@v6
