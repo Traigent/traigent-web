@@ -6,7 +6,7 @@
 // JSX is duplicated from PitchFull.
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, ArrowDown, ArrowUp, ChevronsDown, DollarSign, Check, Clock, ShieldCheck, TrendingDown, TrendingUp, X } from "lucide-react";
+import { ArrowRight, ArrowDown, ArrowUp, Brain, ChevronsDown, Database, DollarSign, Check, Clock, MessageSquare, RefreshCw, ShieldCheck, Sparkles, TrendingDown, TrendingUp, Users, X, Zap } from "lucide-react";
 import StartNowModal from "../components/StartNowModal";
 
 // Shared optimizer ring — clockwise Learn → Deduce → <thirdLabel> → Repeat
@@ -1149,6 +1149,376 @@ function SlideLoopProof() {
   );
 }
 
+// ── CUSTOMER DECK ───────────────────────────────────────────────────────────
+// THE OBJECTIVE — a real, measured Traigent campaign on SPIDER text2SQL.
+// Built for laypeople: show the end result first (the accuracy↔cost frontier),
+// explain that every knob combination is a new "agent variant", and be honest
+// about the premium models we tested and discarded. Every number here is
+// measured (customer-demo-simulation#2 writeup: SPIDER execution-match,
+// bayesian/cost-capped/portal-tracked search, leave-one-out few-shot, validated
+// on the full 1,034-question dev set). Do NOT round these away.
+function SlideCustomerObjectiveSpider() {
+  const FRONTIER = [
+    {
+      v: <><span className="text-slate-400">gpt‑4o‑mini · ddl_fk · k2 · fixed</span> <span className="text-slate-600">(no sql_guidance)</span></>,
+      acc: "72.0%", accColor: "#f59e0b", cost: "$0.000063",
+      note: "naïve “best” — what you’d ship without Traigent", dim: true,
+    },
+    {
+      v: <>gpt‑4o‑mini · <span className="text-white">compact</span> · k2 · <span className="text-white">sql_guidance</span></>,
+      acc: "86.0%", cost: "$0.000074", note: "+14 pts at ~the OLD price",
+    },
+    {
+      v: <>gpt‑4o‑mini · <span className="text-white">m_schema · k4</span> · sql_guidance</>,
+      acc: "87.0%", cost: "$0.000101", note: "best value — ~½ the winner’s cost",
+    },
+    {
+      v: <>deepseek · compact · k2 · sql_guidance</>,
+      acc: "87.7%", cost: "$0.000131", note: "cross‑vendor, still cheap",
+    },
+    {
+      v: <span className="text-white font-semibold">deepseek · m_schema · k4 · sql_guidance</span>,
+      acc: "90.7%", accColor: "#34d399", cost: "$0.000179",
+      note: "most accurate · 89.6% on the full 1,034‑dev", win: true,
+    },
+  ];
+  return (
+    <div className="w-full max-w-[1180px] mx-auto self-stretch flex flex-col min-h-[600px]">
+      {/* SPIDER explainer — top, for the uninitiated */}
+      <div className="text-xs md:text-sm font-mono uppercase tracking-[0.3em] text-slate-500 mb-2">
+        The Objective is Demonstrated
+      </div>
+      <div className="bg-slate-900/50 border border-slate-700/50 rounded-xl px-4 py-2.5 text-[12.5px] md:text-sm text-slate-300 leading-snug mb-3">
+        <span className="text-slate-100 font-semibold">SPIDER</span> is the academic benchmark for{" "}
+        <span className="text-white font-semibold">text‑to‑SQL</span> — turning a plain‑English question into a correct
+        database query. ~1,034 dev questions across 20 different databases; an answer only counts if the generated SQL,
+        when <span className="italic">executed</span>, returns the same rows as the human “gold” query{" "}
+        <span className="text-slate-400">(execution match)</span>.
+      </div>
+
+      {/* The objective, stated for laypeople */}
+      <h2 className="text-2xl md:text-[2.6rem] font-bold text-white leading-[1.1] tracking-tight mb-1">
+        Traigent Results — Demonstrated on <span style={{ color: "#34d399" }}>SPIDER text2SQL</span>
+      </h2>
+      <p className="text-[13px] md:text-base text-slate-400 leading-snug mb-3">
+        <span className="text-slate-200 font-semibold">Traigent finds them.</span> You pick the agent variant that fits your budget.
+      </p>
+
+      {/* The frontier — the end result, shown first */}
+      <div className="rounded-xl border border-slate-700/60 overflow-hidden">
+        <table className="w-full text-left text-[12.5px] md:text-sm">
+          <thead className="bg-slate-800/70 text-slate-400 text-[10px] md:text-[11px] uppercase tracking-wider">
+            <tr>
+              <th className="px-3 py-2 font-semibold">Agent variants recommended and developed by Traigent</th>
+              <th className="px-3 py-2 font-semibold text-right whitespace-nowrap">Accuracy</th>
+              <th className="px-3 py-2 font-semibold text-right whitespace-nowrap">$/query</th>
+              <th className="px-3 py-2 font-semibold">What it is</th>
+            </tr>
+          </thead>
+          <tbody>
+            {FRONTIER.map((r, i) => (
+              <tr
+                key={i}
+                className="border-t border-slate-800"
+                style={r.win ? { background: "rgba(52,211,153,0.10)" } : undefined}
+              >
+                <td className={"px-3 py-2 " + (r.dim ? "text-slate-400" : "text-slate-200")}>
+                  {r.win ? <span style={{ color: "#34d399" }}>★ </span> : null}
+                  {r.v}
+                </td>
+                <td className="px-3 py-2 text-right font-mono font-semibold whitespace-nowrap" style={{ color: r.accColor || "#e2e8f0" }}>
+                  {r.acc}
+                </td>
+                <td className="px-3 py-2 text-right font-mono text-slate-300 whitespace-nowrap">{r.cost}</td>
+                <td className="px-3 py-2 text-slate-400">{r.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] md:text-xs text-slate-400 mt-2 mb-3">
+        <span className="text-slate-200 font-semibold">Millions</span>
+        <span>possible</span>
+        <span className="text-slate-600">·</span>
+        <span className="text-slate-200 font-semibold">~5,200</span>
+        <span>variants considered</span>
+        <span className="text-slate-600">·</span>
+        <span className="text-slate-200 font-semibold">~420</span>
+        <span>evaluated</span>
+        <span className="text-slate-600">·</span>
+        <span className="font-semibold" style={{ color: "#34d399" }}>frontier found</span>
+        <span className="text-slate-500">— smart search, not brute force</span>
+      </div>
+
+      {/* How we got there + what we discarded */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-3.5">
+          <div className="text-[10px] md:text-xs font-mono uppercase tracking-widest mb-1.5" style={{ color: "#4D8EF8" }}>
+            How the ~90% was found
+          </div>
+          <p className="text-[12px] md:text-[13.5px] text-slate-300 leading-snug">
+            Three broad searches all plateaued at an apparent <span className="text-white font-semibold">82.5%</span> — it
+            looked like a ceiling. It wasn’t: it was an <span className="text-white font-semibold">under‑explored region</span>.
+            Diagnosing the misses (group‑by aggregation) and adding one new knob —{" "}
+            <span className="text-white font-semibold">sql_guidance</span> — broke it →{" "}
+            <span className="font-semibold" style={{ color: "#34d399" }}>89.6% on the full 1,034‑dev set</span>.{" "}
+            <span className="text-slate-200 font-semibold">Knobs beat the model.</span>
+          </p>
+        </div>
+        <div className="bg-slate-900/50 border-2 rounded-xl p-3.5" style={{ borderColor: "rgba(245,158,11,0.4)" }}>
+          <div className="text-[10px] md:text-xs font-mono uppercase tracking-widest mb-1.5" style={{ color: "#f59e0b" }}>
+            Premium models tested → discarded
+          </div>
+          <ul className="text-[12px] md:text-[13.5px] text-slate-300 leading-snug space-y-1">
+            <li className="flex items-start gap-1.5">
+              <X className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: "#f59e0b" }} />
+              <span><span className="text-slate-100">gpt‑4o</span> (premium): 72.5% at ~17× the cost</span>
+            </li>
+            <li className="flex items-start gap-1.5">
+              <X className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: "#f59e0b" }} />
+              <span><span className="text-slate-100">Claude Sonnet‑4</span> / <span className="text-slate-100">DeepSeek R1</span> (reasoning): 72.5% — below the cheap model</span>
+            </li>
+          </ul>
+          <p className="text-[11px] md:text-[12.5px] text-slate-400 leading-snug mt-1.5">
+            <span className="text-slate-300 font-semibold">Why:</span> strong models write valid‑but‑<span className="italic">different</span>{" "}
+            SQL (LEFT joins, verbose forms, different column order) that mismatches SPIDER’s quirky gold, so execution‑match
+            scores them <span className="italic">down</span>. Capability isn’t the bottleneck; gold‑conformance is.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── CUSTOMER DECK ───────────────────────────────────────────────────────────
+// "Appreciating Traigent's immense accomplishment" — the impact/why-it-matters
+// slide that follows the frontier. Funnel: millions of possible variants →
+// ~5,200 considered → ~420 evaluated → 1 frontier. Numbers are defensible:
+// 5,198 = sum of the 18 sweep search-spaces (overlapping); ~420 = summed
+// MAX_CONFIGS trial budget (actual evaluated fewer due to plateau stopping);
+// "millions" = the full knob×model union. Claims kept to what we can stand
+// behind (Pareto dominance, not "global-optimum / no doubts").
+function SlideCustomerImmenseAccomplishment() {
+  const funnel = [
+    { big: "Millions", small: "possible agent variants", color: "#64748b" },
+    { big: "~5,200", small: "permutations considered", color: "#4D8EF8" },
+    { big: "~420", small: "actually evaluated", color: "#a78bfa" },
+    { big: "1", small: "Pareto frontier (5 variants)", color: "#34d399" },
+  ];
+  const cards = [
+    { icon: Zap, c: "#f59e0b", big: "~5 hours, autonomously", sub: "Whole search across 18 runs — longest just 48 min, no human in the loop" },
+    { icon: TrendingDown, c: "#34d399", big: "Up to ~90% lower cost", sub: "Winner ≈ $0.00018/query vs premium models at ~10–17×" },
+    { icon: Users, c: "#4D8EF8", big: "Dozens of man‑days saved", sub: "vs hand‑sweeping the configuration space" },
+    { icon: ShieldCheck, c: "#a78bfa", big: "Complete confidence", sub: "Pareto‑proven — every variant provably non‑dominated" },
+  ];
+  return (
+    <div className="w-full max-w-[1180px] mx-auto self-stretch flex flex-col min-h-[600px]">
+      <div className="text-xs md:text-sm font-mono uppercase tracking-[0.3em] text-slate-500 mb-2">Why this matters</div>
+      <h2 className="text-2xl md:text-[2.6rem] font-bold text-white leading-[1.1] tracking-tight mb-3">
+        Appreciating Traigent’s <span style={{ color: "#34d399" }}>Immense Accomplishment</span>
+      </h2>
+
+      {/* Start with the before → after: a naive agent, developed single-handedly.
+          ~70% = measured naive run (fewshot_k=0, just model+temperature; floor 62%,
+          even premium gpt-4o = 70%). 90.7% / 89.6% = the developed winner. */}
+      <div className="flex items-stretch gap-3 md:gap-4 mb-4">
+        <div className="flex-1 bg-slate-900/60 border border-slate-700/50 rounded-2xl p-4 flex flex-col justify-center">
+          <div className="text-[11px] md:text-xs text-slate-400 leading-snug mb-1.5">
+            Traigent was given a <span className="text-slate-200 font-semibold">naive agent</span> — just model + temperature
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className="text-3xl md:text-[2.5rem] font-bold leading-none" style={{ color: "#f59e0b" }}>~70%</span>
+            <span className="text-[11px] text-slate-500">(as low as 62%)</span>
+          </div>
+        </div>
+        <div className="flex items-center"><ArrowRight className="w-7 h-7 text-slate-500 shrink-0" /></div>
+        <div className="flex-1 bg-slate-900/60 border-2 rounded-2xl p-4 flex flex-col justify-center" style={{ borderColor: "rgba(52,211,153,0.4)" }}>
+          <div className="text-[11px] md:text-xs text-slate-400 leading-snug mb-1.5">
+            It developed the most efficient agent — <span className="text-slate-200 font-semibold">single‑handedly</span>
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className="text-3xl md:text-[2.5rem] font-bold leading-none" style={{ color: "#34d399" }}>90.7%</span>
+            <span className="text-[11px] text-slate-500">89.6% on full dev</span>
+          </div>
+        </div>
+      </div>
+
+      <p className="text-[13px] md:text-base text-slate-400 leading-snug mb-3">
+        The full space spans <span className="text-slate-200 font-semibold">millions</span> of possible agent variants, each
+        scored against the <span className="text-slate-200 font-semibold">1,034‑question</span> SPIDER benchmark —
+        brute‑force would mean <span className="text-slate-200 font-semibold">billions</span> of evaluations.
+      </p>
+
+      {/* The funnel: millions → 5,200 → 420 → 1 */}
+      <div className="flex items-stretch gap-2 md:gap-3 mb-3">
+        {funnel.map((f, i) => (
+          <div key={i} className="contents">
+            <div className="flex-1 bg-slate-900/60 border border-slate-700/50 rounded-2xl px-3 py-4 text-center flex flex-col justify-center">
+              <div className="text-2xl md:text-4xl font-bold leading-none" style={{ color: f.color }}>{f.big}</div>
+              <div className="text-[11px] md:text-xs text-slate-400 mt-1.5 leading-tight">{f.small}</div>
+            </div>
+            {i < funnel.length - 1 && (
+              <div className="flex items-center"><ArrowRight className="w-5 h-5 text-slate-600 shrink-0" /></div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* The punch line */}
+      <div
+        className="rounded-xl border-2 px-4 py-2.5 mb-4 text-center text-[13px] md:text-base text-slate-200"
+        style={{ borderColor: "rgba(52,211,153,0.35)", background: "rgba(52,211,153,0.06)" }}
+      >
+        Traigent skipped <span className="font-semibold" style={{ color: "#34d399" }}>more than 99.9%</span> of the possible
+        variants — developed the <span className="font-semibold text-white">best agent variants for the job</span>.
+      </div>
+
+      {/* Outcome cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {cards.map((c, i) => {
+          const Icon = c.icon;
+          return (
+            <div key={i} className="bg-slate-900/50 border border-slate-700/50 rounded-2xl p-3.5">
+              <Icon className="w-6 h-6 mb-2" style={{ color: c.c }} />
+              <div className="text-[15px] md:text-lg font-bold text-white leading-tight">{c.big}</div>
+              <div className="text-[11px] md:text-xs text-slate-400 mt-1 leading-snug">{c.sub}</div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ── CUSTOMER DECK ───────────────────────────────────────────────────────────
+// Opening hook (slide 1 of the customer deck): the positioning claim. Others
+// "help"; Traigent develops THE BEST agent and arrives at THE optimum. NOTE:
+// "the optimum" is founder-approved positioning — technically Traigent runs
+// systematic (bayesian) optimization and returns a provably non-dominated
+// (Pareto-optimal) frontier among everything it evaluated, not a global-optimum
+// proof. Kept as written per Amir; see chat for the defensible alternatives.
+function SlideCustomerHook() {
+  return (
+    <div className="w-full max-w-[1080px] mx-auto self-stretch flex flex-col justify-center min-h-[600px]">
+      <div className="text-xs md:text-sm font-mono uppercase tracking-[0.3em] text-slate-500 mb-7">Why Traigent</div>
+
+      {/* The foil — what everyone else can only claim */}
+      <p className="text-lg md:text-2xl text-slate-400 leading-snug mb-7 max-w-[880px]">
+        Many may claim they <span className="italic text-slate-300">help</span> reduce agent costs — but they can’t{" "}
+        <span className="italic text-slate-300">prove</span> they’ve found the best possible result.
+      </p>
+
+      <div className="h-px w-20 bg-slate-700 mb-7" />
+
+      {/* Traigent's answer */}
+      <div className="space-y-10">
+        <p className="text-3xl md:text-5xl font-bold text-white leading-[1.12] tracking-tight">
+          Traigent doesn’t just help. It instructs your coding agent how to develop <span style={{ color: "#34d399" }}>THE BEST</span> agent.
+        </p>
+        <p className="text-3xl md:text-5xl font-bold text-white leading-[1.12] tracking-tight">
+          Traigent doesn’t guess. It mathematically arrives at <span style={{ color: "#34d399" }}>THE optimum</span>.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ── CUSTOMER DECK ───────────────────────────────────────────────────────────
+// Slide 4: the dataset + continuous-optimization argument. SPIDER was the rare
+// case (a ready, proven 1,034-Q benchmark). Most teams start from a few I/O
+// logs and must evolve a dataset — which never stops evolving (unexpected
+// questions; models/prices/requirements change). So agents must re-optimize
+// continuously. Traigent helps on both: dataset quality + re-finding the optimum.
+function SlideCustomerContinuous() {
+  return (
+    <div className="w-full max-w-[1100px] mx-auto self-stretch flex flex-col justify-center min-h-[600px]">
+      <div className="text-xs md:text-sm font-mono uppercase tracking-[0.3em] text-slate-500 mb-2">Continuous optimization</div>
+      <h2 className="text-2xl md:text-[2.6rem] font-bold text-white leading-[1.1] tracking-tight mb-4">
+        The optimum is a <span style={{ color: "#34d399" }}>moving target</span>
+      </h2>
+
+      {/* The data reality: SPIDER had it; you build it */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div className="bg-slate-900/50 border border-slate-700/50 rounded-2xl p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <Database className="w-5 h-5 shrink-0" style={{ color: "#4D8EF8" }} />
+            <span className="text-[10px] md:text-xs font-mono uppercase tracking-widest text-slate-400">SPIDER — the exception</span>
+          </div>
+          <p className="text-[13px] md:text-[15px] text-slate-300 leading-snug">
+            Came with <span className="text-white font-semibold">1,034 strong, proven examples</span> — a ready‑made benchmark to optimize against.
+          </p>
+        </div>
+        <div className="bg-slate-900/50 border border-slate-700/50 rounded-2xl p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <Database className="w-5 h-5 shrink-0" style={{ color: "#f59e0b" }} />
+            <span className="text-[10px] md:text-xs font-mono uppercase tracking-widest text-slate-400">Most teams — the reality</span>
+          </div>
+          <p className="text-[13px] md:text-[15px] text-slate-300 leading-snug">
+            Start with <span className="text-white font-semibold">a few input/output logs</span> — Traigent helps evolve them into a full‑blown dataset.
+          </p>
+        </div>
+      </div>
+
+      {/* Why it never ends */}
+      <div className="bg-slate-900/40 border border-slate-700/40 rounded-2xl p-4 mb-4">
+        <div className="flex items-center gap-2 mb-2.5">
+          <RefreshCw className="w-5 h-5 shrink-0" style={{ color: "#a78bfa" }} />
+          <span className="text-[15px] md:text-base font-semibold text-white">Evolving the dataset is a never‑ending story</span>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-[12.5px] md:text-sm text-slate-300">
+          <div className="flex items-start gap-2"><MessageSquare className="w-4 h-4 mt-0.5 shrink-0 text-slate-500" />Users ask questions you never expected</div>
+          <div className="flex items-start gap-2"><TrendingUp className="w-4 h-4 mt-0.5 shrink-0 text-slate-500" />Models evolve · prices change</div>
+          <div className="flex items-start gap-2"><ArrowUp className="w-4 h-4 mt-0.5 shrink-0 text-slate-500" />Business requirements shift</div>
+        </div>
+        <div className="text-[13px] md:text-[15px] text-slate-200 mt-2.5">
+          → agents must evolve <span className="font-semibold" style={{ color: "#34d399" }}>continuously</span>
+        </div>
+      </div>
+
+      {/* The Traigent payoff */}
+      <div
+        className="rounded-xl border-2 px-4 py-3 text-center text-[14px] md:text-lg text-slate-100"
+        style={{ borderColor: "rgba(52,211,153,0.35)", background: "rgba(52,211,153,0.06)" }}
+      >
+        Traigent evolves your dataset’s <span className="font-semibold text-white">quality</span> — and re‑finds{" "}
+        <span className="font-semibold" style={{ color: "#34d399" }}>the optimum</span> every time things change.
+      </div>
+    </div>
+  );
+}
+
+// ── CUSTOMER DECK ───────────────────────────────────────────────────────────
+// Slide 5: credibility + IP. Built by ML/AI experts; the algorithms are the
+// secret sauce. The supporting line grounds the claim in the demonstrated
+// efficiency (a few hundred trials out of millions — ties back to slide 3).
+function SlideCustomerTeam() {
+  return (
+    <div className="w-full max-w-[1040px] mx-auto self-stretch flex flex-col justify-center min-h-[600px]">
+      <div className="text-xs md:text-sm font-mono uppercase tracking-[0.3em] text-slate-500 mb-8">Under the hood</div>
+
+      <div className="space-y-8">
+        <div className="flex items-start gap-4">
+          <Brain className="w-9 h-9 md:w-11 md:h-11 shrink-0 mt-1" style={{ color: "#4D8EF8" }} />
+          <p className="text-3xl md:text-5xl font-bold text-white leading-[1.12] tracking-tight">
+            Traigent was built by <span style={{ color: "#4D8EF8" }}>Mathematicians &amp; AI experts</span>.
+          </p>
+        </div>
+        <div className="flex items-start gap-4">
+          <Sparkles className="w-9 h-9 md:w-11 md:h-11 shrink-0 mt-1" style={{ color: "#34d399" }} />
+          <p className="text-3xl md:text-5xl font-bold text-white leading-[1.12] tracking-tight">
+            Traigent’s algorithms are its <span style={{ color: "#34d399" }}>secret sauce</span>.
+          </p>
+        </div>
+      </div>
+
+      <p className="text-base md:text-xl text-slate-400 leading-snug mt-9 max-w-[920px]">
+        Smart search, not brute force: the algorithms zero in on the best agent variants in a fraction of the time it
+        would have taken otherwise.
+      </p>
+    </div>
+  );
+}
+
 export const SHORT_SLIDES = [
   // ----- TEXT-ONLY ONE-PAGER (opener — swapped in from slot 22) -----
   { title: "One-Pager Test — Text Only (V2)", section: "Traigent intro", component: SlideOnePagerTextTestV2 },
@@ -1200,6 +1570,16 @@ export const SHORT_SLIDES = [
   { title: "Every Agent Is a Moving Target (agent lifecycle)", section: "Lifecycle", component: SlideAgentLifecycle },
   { title: "Run It Continuously — Accumulate Every Result", section: "Lifecycle", component: SlideContinuousOptimization },
   { title: "The Feedback Loop Is How the Agent Evolves", section: "Lifecycle", component: SlideLoopProof },
+  // ----- CUSTOMER DECK — THE OBJECTIVE (real, measured SPIDER text2SQL frontier) -----
+  { title: "The Objective — text2SQL on SPIDER (real frontier)", section: "Customer", component: SlideCustomerObjectiveSpider },
+  // ----- CUSTOMER DECK — IMMENSE ACCOMPLISHMENT (impact / why it matters) -----
+  { title: "Appreciating Traigent's Immense Accomplishment", section: "Customer", component: SlideCustomerImmenseAccomplishment },
+  // ----- CUSTOMER DECK — OPENING HOOK (proof, not promises) -----
+  { title: "Traigent Develops THE BEST Agent (opening hook)", section: "Customer", component: SlideCustomerHook },
+  // ----- CUSTOMER DECK — CONTINUOUS (dataset evolves; re-find the optimum) -----
+  { title: "The Optimum Is a Moving Target (dataset + continuous)", section: "Customer", component: SlideCustomerContinuous },
+  // ----- CUSTOMER DECK — TEAM & IP (experts + secret-sauce algorithms) -----
+  { title: "Built by ML & AI Experts — The Algorithms Are the Secret Sauce", section: "Customer", component: SlideCustomerTeam },
 ];
 
 export default function PitchShort() {

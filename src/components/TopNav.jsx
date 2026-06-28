@@ -43,6 +43,11 @@ const PITCH_DECK_OPTIONS = [
     href: "/#/investor-pitch",
   },
   {
+    label: "Customer",
+    desc: "For customers — the objective, via a real SPIDER text2SQL frontier",
+    href: "/#/customer-deck",
+  },
+  {
     label: "Knob explorer",
     desc: "Configure a search space — knobs, values, combinatorics",
     href: "/#/knob-explorer",

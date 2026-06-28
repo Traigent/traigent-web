@@ -52,6 +52,7 @@ export default function App() {
       <Route path="short-summary" element={<PitchShort2 forcedPreset="short-summary" />} />
       <Route path="market-opportunity" element={<PitchShort2 forcedPreset="market-opportunity" />} />
       <Route path="investor-pitch" element={<PitchShort2 forcedPreset="investor-pitch" />} />
+      <Route path="customer-deck" element={<PitchShort2 forcedPreset="customer-deck" />} />
       {/* Per-recipient package routes. The category-free `/:slug` form is the
           one we hand out now — it carries no VC/Channel/Customer signal (the
           recipient's name already lives in the slug). The `/vc|/channel|
