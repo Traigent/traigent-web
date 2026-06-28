@@ -1321,7 +1321,7 @@ function SlideCustomerImmenseAccomplishment() {
       {/* Start with the before → after: a naive agent, developed single-handedly.
           ~70% = measured naive run (fewshot_k=0, just model+temperature; floor 62%,
           even premium gpt-4o = 70%). 90.7% / 89.6% = the developed winner. */}
-      <div className="flex items-stretch gap-3 md:gap-4 mb-4">
+      <div className="flex items-stretch gap-3 md:gap-4 mb-2">
         <div className="flex-1 bg-slate-900/60 border border-slate-700/50 rounded-2xl p-4 flex flex-col justify-center">
           <div className="text-[11px] md:text-xs text-slate-400 leading-snug mb-1.5">
             Traigent was given a <span className="text-slate-200 font-semibold">naive agent</span> — just model + temperature
@@ -1330,6 +1330,7 @@ function SlideCustomerImmenseAccomplishment() {
             <span className="text-3xl md:text-[2.5rem] font-bold leading-none" style={{ color: "#f59e0b" }}>~70%</span>
             <span className="text-[11px] text-slate-500">(as low as 62%)</span>
           </div>
+          <div className="text-[12px] md:text-[13px] font-mono text-slate-400 mt-1.5">~$0.0010<span className="text-slate-600"> / query</span></div>
         </div>
         <div className="flex items-center"><ArrowRight className="w-7 h-7 text-slate-500 shrink-0" /></div>
         <div className="flex-1 bg-slate-900/60 border-2 rounded-2xl p-4 flex flex-col justify-center" style={{ borderColor: "rgba(52,211,153,0.4)" }}>
@@ -1340,7 +1341,12 @@ function SlideCustomerImmenseAccomplishment() {
             <span className="text-3xl md:text-[2.5rem] font-bold leading-none" style={{ color: "#34d399" }}>90.7%</span>
             <span className="text-[11px] text-slate-500">89.6% on full dev</span>
           </div>
+          <div className="text-[12px] md:text-[13px] font-mono mt-1.5" style={{ color: "#34d399" }}>~$0.00018<span className="text-slate-600"> / query</span></div>
         </div>
+      </div>
+      <div className="text-center text-[12.5px] md:text-sm text-slate-300 mb-4">
+        → the developed optimum is <span className="font-semibold" style={{ color: "#34d399" }}>~82% cheaper</span> and{" "}
+        <span className="font-semibold text-white">~20 points more accurate</span>
       </div>
 
       <p className="text-[13px] md:text-base text-slate-400 leading-snug mb-3">
