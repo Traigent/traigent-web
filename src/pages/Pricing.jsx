@@ -129,7 +129,7 @@ function FeatureList({ items, highlight }) {
       {items.map((f, i) => (
         <li key={i} className="flex items-start gap-2 text-sm text-slate-300 min-h-[3.25rem]">
           <Check className={`w-4 h-4 mt-0.5 flex-shrink-0 ${highlight ? "text-[#4D8EF8]" : "text-slate-500"}`} />
-          <span dangerouslySetInnerHTML={{ __html: f }} />
+          <span>{f}</span>
         </li>
       ))}
     </ul>
@@ -324,16 +324,16 @@ export default function Pricing() {
                 observability={[
                   "Full trace tree · spans · tokens · costs",
                   "Eval framework",
-                  "<strong>10K observations / month</strong>",
+                  <><strong>10K observations / month</strong></>,
                   "7-day data retention",
                   "1 project · 1 user · non-production",
                   "Community support",
                 ]}
                 optimization={[
-                  "<strong class=\"text-white\">Scoped POC · 1 agent · 1 team</strong>",
+                  <><strong className="text-white">Scoped POC · 1 agent · 1 team</strong></>,
                   "Full optimization suite (time-boxed pilot)",
                   "Multi-KPI weighted optimization",
-                  "Drift detection &amp; re-optimization",
+                  "Drift detection & re-optimization",
                   "Benchmark insights",
                 ]}
                 cta={
@@ -360,17 +360,17 @@ export default function Pricing() {
                 priceSuffix="per month"
                 summary="For one team optimizing one agent. Plus observability volumes as defined."
                 observability={[
-                  "<strong>100K observations / month</strong>",
+                  <><strong>100K observations / month</strong></>,
                   "30-day retention",
                   "3 projects · up to 3 users",
                   "Eval framework",
                   "Email support",
                 ]}
                 optimization={[
-                  "<strong class=\"text-white\">Ongoing · 1 agent · 1 team</strong> (post-POC, no time limit)",
+                  <><strong className="text-white">Ongoing · 1 agent · 1 team</strong> (post-POC, no time limit)</>,
                   "Full optimization suite (unlimited runs)",
                   "Multi-KPI weighted optimization",
-                  "Drift detection &amp; re-optimization",
+                  "Drift detection & re-optimization",
                   "Benchmark insights · saved run history",
                 ]}
                 cta={
@@ -398,18 +398,18 @@ export default function Pricing() {
                 badge="Most popular"
                 highlight
                 observability={[
-                  "<strong>1M observations / month</strong> (org-wide; overages billed)",
+                  <><strong>1M observations / month</strong> (org-wide; overages billed)</>,
                   "90-day retention",
                   "Unlimited projects · up to 10 users",
                   "Eval framework",
                   "Email + Slack support",
                 ]}
                 optimization={[
-                  "<strong class=\"text-white\">Up to 5 agents · 5 teams</strong>",
+                  <><strong className="text-white">Up to 5 agents · 5 teams</strong></>,
                   "Full optimization suite + priority compute",
                   "Multi-KPI weighted optimization",
-                  "Drift detection &amp; re-optimization (continuous, automated)",
-                  "<strong class=\"text-[#4D8EF8]\">Premium benchmark insights</strong> (flag easy/fail/redundant)",
+                  "Drift detection & re-optimization (continuous, automated)",
+                  <><strong className="text-[#4D8EF8]">Premium benchmark insights</strong> (flag easy/fail/redundant)</>,
                 ]}
                 cta={
                   <a
@@ -433,18 +433,18 @@ export default function Pricing() {
                 price="Let's talk."
                 summary="For high-volume, regulated, or on-prem deployments. Custom terms."
                 observability={[
-                  "<strong>Custom observation volume</strong> (org-wide)",
+                  <><strong>Custom observation volume</strong> (org-wide)</>,
                   "Custom retention",
                   "Custom projects · custom users",
                   "Eval framework",
                   "Dedicated solutions engineer",
                 ]}
                 optimization={[
-                  "<strong class=\"text-white\">Custom agents · custom teams</strong>",
+                  <><strong className="text-white">Custom agents · custom teams</strong></>,
                   "Full optimization suite + priority compute",
                   "Multi-KPI weighted optimization",
-                  "Drift detection &amp; re-optimization (continuous, automated)",
-                  "<strong class=\"text-[#4D8EF8]\">Premium benchmark insights</strong> (flag easy/fail/redundant)",
+                  "Drift detection & re-optimization (continuous, automated)",
+                  <><strong className="text-[#4D8EF8]">Premium benchmark insights</strong> (flag easy/fail/redundant)</>,
                 ]}
                 cta={
                   <a
@@ -550,7 +550,7 @@ export default function Pricing() {
             {[
               {
                 q: "How is this different from Langfuse, Arize, Helicone, LangSmith, or Braintrust?",
-                a: "Those tools cover the observability and eval layer. Some now include prompt-version comparison or single-axis tuning. <em>None</em> of them automate the full multi-variable cost-quality search across <strong>model · prompt · retrieval · tools · constraints · drift</strong> — that's Traigent's optimization loop. The Pro tier roughly matches what you'd pay them for observability alone, applied to a platform that also runs the optimization on top.",
+                a: <>Those tools cover the observability and eval layer. Some now include prompt-version comparison or single-axis tuning. <em>None</em> of them automate the full multi-variable cost-quality search across <strong>model · prompt · retrieval · tools · constraints · drift</strong> — that&apos;s Traigent&apos;s optimization loop. The Pro tier roughly matches what you&apos;d pay them for observability alone, applied to a platform that also runs the optimization on top.</>,
               },
               {
                 q: "How are optimization runs metered?",
@@ -576,10 +576,7 @@ export default function Pricing() {
               <FadeIn key={i} delay={0.05 * i}>
                 <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-6">
                   <h3 className="text-white font-semibold mb-2">{item.q}</h3>
-                  <p
-                    className="text-slate-400 text-sm leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: item.a }}
-                  />
+                  <p className="text-slate-400 text-sm leading-relaxed">{item.a}</p>
                 </div>
               </FadeIn>
             ))}
