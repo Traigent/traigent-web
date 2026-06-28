@@ -35,6 +35,10 @@ const PRESETS = {
   // preset so /investor-pitch can diverge later without touching the
   // /market-opportunity preset.
   "investor-pitch":                { range:   "24-29" },
+  // Customer deck — THE OBJECTIVE: a real, measured SPIDER text2SQL frontier
+  // (slide 33 of SHORT_SLIDES). One slide for now; this deck grows with more
+  // customer-facing "what we do + how it's unique" slides.
+  "customer-deck":                 { range:   "35,33,34,36,37" },
 };
 
 const SLIDE_W = 1280;
