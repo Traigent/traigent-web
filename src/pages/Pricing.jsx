@@ -554,23 +554,23 @@ export default function Pricing() {
               },
               {
                 q: "How are optimization runs metered?",
-                a: "They're not. The wrapper runs locally in your infrastructure — we don't charge per run. You pay a flat fee, run as much as you want.",
+                a: <>They&apos;re not. The wrapper runs locally in your infrastructure - we don&apos;t charge per run. You pay a flat fee, run as much as you want.</>,
               },
               {
                 q: "What if I outgrow Pro's 10 users?",
-                a: "Talk to sales. Enterprise has custom user limits and a few features Pro doesn't (SSO, audit logs, SLA). Pricing is negotiated against your usage, retention, and deployment requirements.",
+                a: <>Talk to sales. Enterprise has custom user limits and a few features Pro doesn&apos;t (SSO, audit logs, SLA). Pricing is negotiated against your usage, retention, and deployment requirements.</>,
               },
               {
                 q: "Do you offer outcome-based pricing?",
-                a: "Yes, on Enterprise. We can structure a portion of the fee tied to measured LLM cost savings beyond a baseline. This works best when you have a stable baseline to measure against.",
+                a: <>Yes, on Enterprise. We can structure a portion of the fee tied to measured LLM cost savings beyond a baseline. This works best when you have a stable baseline to measure against.</>,
               },
               {
                 q: "Can we self-host?",
-                a: "Yes — Enterprise only. We support VPC peering, private cloud, and on-prem deployment for compliance-sensitive teams.",
+                a: <>Yes - Enterprise only. We support VPC peering, private cloud, and on-prem deployment for compliance-sensitive teams.</>,
               },
               {
                 q: "Is there a free trial of Pro?",
-                a: "We typically offer a 2–4 week scoped pilot for teams evaluating Pro or Enterprise. Book a 15-min call and we'll scope it together.",
+                a: <>We typically offer a 2-4 week scoped pilot for teams evaluating Pro or Enterprise. Book a 15-min call and we&apos;ll scope it together.</>,
               },
             ].map((item, i) => (
               <FadeIn key={i} delay={0.05 * i}>
