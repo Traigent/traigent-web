@@ -109,6 +109,7 @@ function SlideCanvas({ slide, index, total, scale }) {
 
   return (
     <section
+      id={`slide-${index + 1}`}
       className="min-h-[100svh] flex items-center justify-center bg-[#080808] border-b border-slate-900/70 last:border-b-0"
       style={{ padding: `${VIEWPORT_MARGIN / 2}px` }}
     >

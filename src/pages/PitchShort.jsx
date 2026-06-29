@@ -6,7 +6,7 @@
 // JSX is duplicated from PitchFull.
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, ArrowDown, ArrowUp, Brain, ChevronsDown, Database, DollarSign, Check, Clock, MessageSquare, RefreshCw, ShieldCheck, Sparkles, TrendingDown, TrendingUp, Users, X, Zap } from "lucide-react";
+import { ArrowRight, ArrowDown, ArrowUp, ArrowUpRight, Blocks, ChevronsDown, Database, DollarSign, Check, Clock, MessageSquare, RefreshCw, ShieldCheck, Target, TrendingDown, TrendingUp, Users, X, Zap } from "lucide-react";
 import StartNowModal from "../components/StartNowModal";
 
 // Shared optimizer ring — clockwise Learn → Deduce → <thirdLabel> → Repeat
@@ -1186,7 +1186,7 @@ function SlideCustomerObjectiveSpider() {
     <div className="w-full max-w-[1180px] mx-auto self-stretch flex flex-col min-h-[600px]">
       {/* SPIDER explainer — top, for the uninitiated */}
       <div className="text-xs md:text-sm font-mono uppercase tracking-[0.3em] text-slate-500 mb-2">
-        The Objective is Demonstrated
+        Finding the Pareto Optimal Frontier — Demonstrated
       </div>
       <div className="bg-slate-900/50 border border-slate-700/50 rounded-xl px-4 py-2.5 text-[12.5px] md:text-sm text-slate-300 leading-snug mb-3">
         <span className="text-slate-100 font-semibold">SPIDER</span> is the academic benchmark for{" "}
@@ -1248,6 +1248,16 @@ function SlideCustomerObjectiveSpider() {
         <span className="text-slate-600">·</span>
         <span className="font-semibold" style={{ color: "#34d399" }}>frontier found</span>
         <span className="text-slate-500">— smart search, not brute force</span>
+        <span className="text-slate-600">·</span>
+        <a
+          href="/#/knob-explorer"
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-0.5 font-semibold hover:underline"
+          style={{ color: "#4D8EF8" }}
+        >
+          See the building blocks<ArrowUpRight className="w-3 h-3" />
+        </a>
       </div>
 
       {/* How we got there + what we discarded */}
@@ -1352,7 +1362,16 @@ function SlideCustomerImmenseAccomplishment() {
       <p className="text-[13px] md:text-base text-slate-400 leading-snug mb-3">
         The full space spans <span className="text-slate-200 font-semibold">millions</span> of possible agent variants, each
         scored against the <span className="text-slate-200 font-semibold">1,034‑question</span> SPIDER benchmark —
-        brute‑force would mean <span className="text-slate-200 font-semibold">billions</span> of evaluations.
+        brute‑force would mean <span className="text-slate-200 font-semibold">billions</span> of evaluations.{" "}
+        <a
+          href="/#/knob-explorer"
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-0.5 font-semibold hover:underline whitespace-nowrap"
+          style={{ color: "#4D8EF8" }}
+        >
+          Explore the building blocks<ArrowUpRight className="w-3.5 h-3.5" />
+        </a>
       </p>
 
       {/* The funnel: millions → 5,200 → 420 → 1 */}
@@ -1404,6 +1423,11 @@ function SlideCustomerImmenseAccomplishment() {
 // (Pareto-optimal) frontier among everything it evaluated, not a global-optimum
 // proof. Kept as written per Amir; see chat for the defensible alternatives.
 function SlideCustomerHook() {
+  // Intra-deck jump: scroll to slide 2 (the frontier). The deck gives each
+  // section an id="slide-N"; native #anchors would fight the HashRouter, so
+  // we scroll programmatically.
+  const goToSlide2 = () =>
+    document.getElementById("slide-2")?.scrollIntoView({ behavior: "smooth", block: "start" });
   return (
     <div className="w-full max-w-[1080px] mx-auto self-stretch flex flex-col justify-center min-h-[600px]">
       <div className="text-xs md:text-sm font-mono uppercase tracking-[0.3em] text-slate-500 mb-7">Why Traigent</div>
@@ -1419,10 +1443,29 @@ function SlideCustomerHook() {
       {/* Traigent's answer */}
       <div className="space-y-10">
         <p className="text-3xl md:text-5xl font-bold text-white leading-[1.12] tracking-tight">
-          Traigent doesn’t just help. It instructs your coding agent how to develop <span style={{ color: "#34d399" }}>THE BEST</span> agent.
+          Traigent doesn’t just help.{" "}
+          <a
+            href="/#/knob-explorer"
+            target="_blank"
+            rel="noreferrer"
+            className="underline decoration-2 decoration-slate-600 hover:decoration-[#4D8EF8] underline-offset-[6px] transition-colors"
+          >
+            It instructs your coding agent how to build <span style={{ color: "#34d399" }}>THE BEST</span> agent
+            <ArrowUpRight className="inline-block align-middle w-6 h-6 md:w-8 md:h-8 ml-1" style={{ color: "#4D8EF8" }} />
+          </a>.
         </p>
         <p className="text-3xl md:text-5xl font-bold text-white leading-[1.12] tracking-tight">
-          Traigent doesn’t guess. It mathematically arrives at <span style={{ color: "#34d399" }}>THE optimum</span>.
+          Traigent doesn’t guess.{" "}
+          <span
+            role="button"
+            tabIndex={0}
+            onClick={goToSlide2}
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); goToSlide2(); } }}
+            className="cursor-pointer underline decoration-2 decoration-slate-600 hover:decoration-[#34d399] underline-offset-[6px] transition-colors"
+          >
+            It mathematically arrives at <span style={{ color: "#34d399" }}>THE optimum</span>
+            <ArrowDown className="inline-block align-middle w-6 h-6 md:w-8 md:h-8 ml-1" style={{ color: "#34d399" }} />
+          </span>.
         </p>
       </div>
     </div>
@@ -1498,28 +1541,45 @@ function SlideCustomerContinuous() {
 // secret sauce. The supporting line grounds the claim in the demonstrated
 // efficiency (a few hundred trials out of millions — ties back to slide 3).
 function SlideCustomerTeam() {
+  const pillars = [
+    { icon: Blocks,   c: "#4D8EF8", t: "Building the Optimal Agent" },
+    { icon: Target,   c: "#34d399", t: "Converging Mathematically to the Optimal Frontier" },
+    { icon: Database, c: "#a78bfa", t: "Augmenting the Dataset" },
+  ];
   return (
     <div className="w-full max-w-[1040px] mx-auto self-stretch flex flex-col justify-center min-h-[600px]">
-      <div className="text-xs md:text-sm font-mono uppercase tracking-[0.3em] text-slate-500 mb-8">Under the hood</div>
+      <div className="text-xs md:text-sm font-mono uppercase tracking-[0.3em] text-slate-500 mb-3">Under the hood</div>
+      <h2 className="text-3xl md:text-5xl font-bold text-white leading-tight tracking-tight mb-6">
+        Traigent’s <span style={{ color: "#34d399" }}>Unique Capabilities</span>
+      </h2>
 
-      <div className="space-y-8">
-        <div className="flex items-start gap-4">
-          <Brain className="w-9 h-9 md:w-11 md:h-11 shrink-0 mt-1" style={{ color: "#4D8EF8" }} />
-          <p className="text-3xl md:text-5xl font-bold text-white leading-[1.12] tracking-tight">
-            Traigent was built by <span style={{ color: "#4D8EF8" }}>Mathematicians &amp; AI experts</span>.
-          </p>
-        </div>
-        <div className="flex items-start gap-4">
-          <Sparkles className="w-9 h-9 md:w-11 md:h-11 shrink-0 mt-1" style={{ color: "#34d399" }} />
-          <p className="text-3xl md:text-5xl font-bold text-white leading-[1.12] tracking-tight">
-            Traigent’s algorithms are its <span style={{ color: "#34d399" }}>secret sauce</span>.
-          </p>
-        </div>
+      {/* The three pillars of Traigent's secret sauce: build the agent,
+          converge to the optimal frontier, augment the dataset. */}
+      <div className="space-y-3 mb-6">
+        {pillars.map((p, i) => {
+          const Icon = p.icon;
+          return (
+            <div key={i} className="flex items-center gap-4 bg-slate-900/50 border border-slate-700/50 rounded-2xl px-5 py-4">
+              <span className="text-base md:text-lg font-mono text-slate-600 shrink-0 w-5 text-center">{i + 1}</span>
+              <Icon className="w-7 h-7 md:w-8 md:h-8 shrink-0" style={{ color: p.c }} />
+              <span className="text-lg md:text-2xl font-bold text-white leading-tight">{p.t}</span>
+            </div>
+          );
+        })}
       </div>
 
-      <p className="text-base md:text-xl text-slate-400 leading-snug mt-9 max-w-[920px]">
-        Smart search, not brute force: the algorithms zero in on the best agent variants in a fraction of the time it
-        would have taken otherwise.
+      <p className="text-[13px] md:text-base text-slate-400 leading-snug max-w-[960px]">
+        Built by <span className="text-slate-200 font-semibold">Mathematicians &amp; AI experts</span> — smart search, not brute
+        force: the algorithms zero in on the best agent variants in a fraction of the time it would have taken otherwise.{" "}
+        <a
+          href="/#/knob-explorer"
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-1 font-semibold hover:underline whitespace-nowrap"
+          style={{ color: "#4D8EF8" }}
+        >
+          Browse Traigent’s building blocks<ArrowUpRight className="w-4 h-4" />
+        </a>
       </p>
     </div>
   );
