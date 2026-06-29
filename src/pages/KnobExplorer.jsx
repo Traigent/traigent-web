@@ -225,6 +225,55 @@ const AGENT_KNOB_GROUPS = [
       { id: "multi-agent",        name: "Multi-agent orchestration",       values: ["single", "supervisor-workers", "peer-to-peer"],            impact: { a: 3, c: 3, l: 2 } },
     ],
   },
+  {
+    id: "custom",
+    title: "Custom / domain-specific knobs",
+    defaultOpen: false,
+    knobs: [
+      // text2SQL — sql_guidance/schema_context measured in the SPIDER campaign;
+      // generation_path/value_retrieval from the Traigent structural-spine taxonomy
+      { id: "sql_guidance",          name: "SQL idiom hint (sql_guidance)",            values: ["off", "groupby"],                                  impact: { a: 3, c: 1, l: 0 } },
+      { id: "schema_context",        name: "DB schema encoding (schema_context)",      values: ["ddl_fk", "ddl_fk_rows", "compact", "m_schema"],    impact: { a: 3, c: 2, l: 1 } },
+      { id: "generation_path",       name: "SQL generation path (generation_path)",    values: ["direct", "query-plan-CoT", "divide-conquer-CoT"],  impact: { a: 3, c: 2, l: 2 } },
+      { id: "value_retrieval",       name: "DB value retrieval (value_retrieval)",     values: ["off", "cell-values", "schema-profile"],            impact: { a: 3, c: 1, l: 1 } },
+      // RAG / multi-hop QA
+      { id: "query_strategy",        name: "Multi-hop query strategy",                 values: ["single-hop", "decompose-bridge"],                  impact: { a: 3, c: 2, l: 1 } },
+      { id: "context_order",         name: "Evidence ordering (lost-in-the-middle)",   values: ["as-retrieved", "score-desc", "score-asc"],         impact: { a: 2, c: 0, l: 0 } },
+      { id: "answer_path",           name: "Answer strategy (answer_path)",            values: ["direct", "extract-then-answer", "CoT-then-answer"], impact: { a: 3, c: 2, l: 1 } },
+      { id: "grounding_policy",      name: "Grounding / abstention policy",            values: ["off", "cite-or-abstain", "strict-grounding"],      impact: { a: 2, c: 0, l: 0 } },
+      // classification / extraction
+      { id: "rubric_hint",           name: "Rubric / label-definition hint",          values: ["off", "label-defs", "full-rubric"],                impact: { a: 3, c: 1, l: 0 } },
+      { id: "ontology_conformance",  name: "Ontology / taxonomy conformance",         values: ["off", "inject-types", "constrained-decode"],       impact: { a: 3, c: 1, l: 0 } },
+      // code / math
+      { id: "exec_verified_repair",  name: "Execution-verified repair",               values: ["off", "single-pass", "iterative"],                 impact: { a: 3, c: 3, l: 3 } },
+      { id: "program_aided",         name: "Program-aided reasoning (PAL)",           values: ["off", "code-tool", "code+self-check"],             impact: { a: 3, c: 2, l: 2 } },
+      { id: "verifier_critic",       name: "Learned verifier / reward model",         values: ["off", "self-trained", "reward-model"],             impact: { a: 3, c: 2, l: 1 } },
+      // web / GUI agents
+      { id: "observation_modality",  name: "Observation modality (GUI agents)",       values: ["a11y-tree", "screenshot", "both", "set-of-mark"],  impact: { a: 3, c: 3, l: 1 } },
+      { id: "action_space_modality", name: "Action space (GUI agents)",               values: ["api", "gui-browse", "hybrid"],                     impact: { a: 3, c: 2, l: 2 } },
+      // code / writing
+      { id: "idiom_hint",            name: "Domain idiom / style hint",               values: ["off", "style-guide", "idioms+style"],              impact: { a: 2, c: 1, l: 0 } },
+    ],
+  },
+  // Composite / control-flow knobs: NOT atomic value-pick knobs — each wraps the
+  // agent in an orchestration structure carrying its own sub-parameter (an
+  // escalation margin, a sample cardinality, a judge stage). Surfaced here by
+  // their key choice; see the traigent-composite-knobs taxonomy for the full
+  // member set + telemetry. cascade/model_routing is a Grade-A cost-saving lever.
+  {
+    id: "composite",
+    title: "Composite / control-flow knobs",
+    defaultOpen: false,
+    knobs: [
+      { id: "router",             name: "Router (pre-dispatch)",                values: ["off", "signal-route", "judge-route"],   impact: { a: 3, c: 2, l: 1 } },
+      { id: "cascade",            name: "Model cascade (escalate on margin)",   values: ["off", "2-stage", "n-stage"],            impact: { a: 2, c: 3, l: 1 } },
+      { id: "best_of_n",          name: "Best-of-N (sample + select)",          values: ["off", "judge-select", "reward-select"], impact: { a: 3, c: 3, l: 2 } },
+      { id: "self_refine",        name: "Self-refine loop",                     values: ["off", "1-pass", "until-accept"],        impact: { a: 2, c: 3, l: 2 } },
+      { id: "react_tool_loop",    name: "ReAct tool loop",                      values: ["off", "react", "react+reflect"],        impact: { a: 3, c: 2, l: 2 } },
+      { id: "mixture_of_experts", name: "Mixture-of-experts (committee)",       values: ["off", "vote", "judge"],                 impact: { a: 3, c: 3, l: 2 } },
+      { id: "verification_gate",  name: "Verification gate (verify→revise)",    values: ["off", "verify-revise"],                 impact: { a: 3, c: 2, l: 1 } },
+    ],
+  },
 ];
 
 const AGENT_KNOBS = AGENT_KNOB_GROUPS.flatMap((g) => g.knobs);
@@ -965,17 +1014,21 @@ export default function KnobExplorer() {
 
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-xs font-mono tracking-wider mb-3 text-[#4D8EF8]">
               <Sparkles className="w-3.5 h-3.5" />
-              KNOB EXPLORER
+              AGENT BUILDING BLOCKS
             </div>
             <h1 className="text-3xl md:text-5xl font-bold text-white mb-3 tracking-tight">
-              Configure your optimization search space
+              Traigent picks the blocks — then instructs your coding agent how to build it into your agent.
             </h1>
             <p className="text-base md:text-lg text-slate-400 mb-5 max-w-3xl leading-relaxed">
-              Pick models. Pick knobs. Pick values. Watch the combinatorics blow
-              up. Color-coded <span className="text-emerald-300 font-mono">A</span>{" "}
+              This is <span className="text-slate-200 font-semibold">part of</span> the menu Traigent draws from — <span className="italic text-slate-200">you may peruse to understand the magnitude</span>.
+              To optimize, Traigent suggests the right building blocks for your task and{" "}
+              <span className="text-slate-200 font-semibold">instructs your coding agent to implement them</span>. What you see
+              below is a <span className="text-slate-200 font-semibold">representative sample</span>; the counter shows how vast
+              the space already is — and <span className="text-slate-200 font-semibold">Traigent’s full toolkit goes further still</span>.
+              The color‑coded{" "}
+              <span className="text-emerald-300 font-mono">A</span>{" "}
               <span className="text-rose-300 font-mono">C</span>{" "}
-              <span className="text-amber-300 font-mono">L</span> pills tell you how each
-              knob affects Accuracy, Cost, and Latency.
+              <span className="text-amber-300 font-mono">L</span> pills show how each block affects Accuracy, Cost, and Latency.
             </p>
 
             {/* Legend */}
@@ -1101,7 +1154,7 @@ export default function KnobExplorer() {
             </div>
 
             {/* Models — vendors render as a compact grid; click one to expand */}
-            <Section title="Models" count={selectedModels.length} total={MODELS.length} defaultOpen={!startCollapsed}>
+            <Section title="The engine · models" count={selectedModels.length} total={MODELS.length} defaultOpen={!startCollapsed}>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
                 {VENDOR_ORDER.map((vendor) => {
                   const models = MODELS.filter((m) => m.provider === vendor);
@@ -1129,7 +1182,7 @@ export default function KnobExplorer() {
                 the hierarchy is visible at a glance. Collapsing the
                 super hides the whole sub-tree. */}
             <Section
-              title="Agent knobs"
+              title="Behaviors & structure · agent knobs"
               count={enabledAgentCount}
               total={AGENT_KNOBS.length}
               variant="super"
@@ -1145,6 +1198,9 @@ export default function KnobExplorer() {
                     total={group.knobs.length}
                     defaultOpen={startCollapsed ? false : group.defaultOpen}
                   >
+                    {group.blurb && (
+                      <p className="text-xs text-slate-400 leading-snug mb-3">{group.blurb}</p>
+                    )}
                     <KnobList
                       knobs={group.knobs}
                       sortBy={sortBy}
@@ -1161,7 +1217,7 @@ export default function KnobExplorer() {
                 Specific sub-Sections. Mirrors the Agent knobs super
                 above. */}
             <Section
-              title="Model knobs"
+              title="The dials · model knobs"
               count={enabledCommonCount + enabledSpecificCount}
               total={COMMON_MODEL_KNOBS.length + specificTotal}
               variant="super"

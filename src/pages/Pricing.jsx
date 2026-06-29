@@ -550,11 +550,7 @@ export default function Pricing() {
             {[
               {
                 q: "How is this different from Langfuse, Arize, Helicone, LangSmith, or Braintrust?",
-                a: (
-                  <>
-                    Those tools cover the observability and eval layer. Some now include prompt-version comparison or single-axis tuning. <em>None</em> of them automate the full multi-variable cost-quality search across <strong>model · prompt · retrieval · tools · constraints · drift</strong> - that's Traigent&apos;s optimization loop. The Pro tier roughly matches what you&apos;d pay them for observability alone, applied to a platform that also runs the optimization on top.
-                  </>
-                ),
+                a: <>Those tools cover the observability and eval layer. Some now include prompt-version comparison or single-axis tuning. <em>None</em> of them automate the full multi-variable cost-quality search across <strong>model · prompt · retrieval · tools · constraints · drift</strong> — that&apos;s Traigent&apos;s optimization loop. The Pro tier roughly matches what you&apos;d pay them for observability alone, applied to a platform that also runs the optimization on top.</>,
               },
               {
                 q: "How are optimization runs metered?",
