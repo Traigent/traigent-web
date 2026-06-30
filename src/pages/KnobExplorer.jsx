@@ -1017,18 +1017,14 @@ export default function KnobExplorer() {
               AGENT BUILDING BLOCKS
             </div>
             <h1 className="text-3xl md:text-5xl font-bold text-white mb-3 tracking-tight">
-              Traigent picks the blocks — then instructs your coding agent how to build it into your agent.
+              Traigent builds the agent with the dimensions that influence its performance the most.
             </h1>
             <p className="text-base md:text-lg text-slate-400 mb-5 max-w-3xl leading-relaxed">
-              This is <span className="text-slate-200 font-semibold">part of</span> the menu Traigent draws from — <span className="italic text-slate-200">you may peruse to understand the magnitude</span>.
-              To optimize, Traigent suggests the right building blocks for your task and{" "}
-              <span className="text-slate-200 font-semibold">instructs your coding agent to implement them</span>. What you see
-              below is a <span className="text-slate-200 font-semibold">representative sample</span>; the counter shows how vast
-              the space already is — and <span className="text-slate-200 font-semibold">Traigent’s full toolkit goes further still</span>.
+              This is <span className="text-slate-200 font-semibold">part of</span> the menu of possible dimension options Traigent draws from — <span className="italic text-slate-200">you may peruse to understand the magnitude</span>.
               The color‑coded{" "}
               <span className="text-emerald-300 font-mono">A</span>{" "}
               <span className="text-rose-300 font-mono">C</span>{" "}
-              <span className="text-amber-300 font-mono">L</span> pills show how each block affects Accuracy, Cost, and Latency.
+              <span className="text-amber-300 font-mono">L</span> pills show how each dimension affects Accuracy, Cost, and Latency.
             </p>
 
             {/* Legend */}
