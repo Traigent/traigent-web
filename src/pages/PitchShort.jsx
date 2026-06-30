@@ -267,7 +267,7 @@ export function SlideParetoFrontier() {
     <div className="w-full max-w-[1240px] mx-auto">
       <div className="text-center mb-8">
         <h2 className="text-3xl md:text-4xl font-bold text-white mb-1">
-          Agent performance is a <span className="text-amber-500">25+ knob</span> optimization problem
+          Agent performance is a <span className="text-amber-500">multi-dimensional</span> optimization problem
         </h2>
       </div>
 
@@ -278,7 +278,7 @@ export function SlideParetoFrontier() {
             <a href="https://www.traigent.ai/#/knob-explorer" target="_blank" rel="noopener noreferrer" className="inline-block rounded-lg px-4 py-1.5 text-2xl font-mono font-bold uppercase tracking-wide transition hover:brightness-110" style={{ backgroundColor: '#f59e0b', color: '#0f172a' }}>The Problem</a>
             <div className="text-[11px] text-slate-500 italic mt-1">Click for details</div>
           </div>
-          <h3 className="text-[20px] font-bold text-white leading-tight mb-1 text-center">25+ configuration knobs</h3>
+          <h3 className="text-[20px] font-bold text-white leading-tight mb-1 text-center">25+ configuration dimensions</h3>
           <p className="text-[12px] text-slate-400 leading-snug mb-2">
             Literally millions of possible combinations to evaluate manually.
           </p>
@@ -293,7 +293,7 @@ export function SlideParetoFrontier() {
             ))}
           </div>
           <div className="text-[11px] text-slate-500 mt-3 leading-snug text-center">
-            …plus more retrieval, memory and orchestration knobs.
+            …plus more retrieval, memory and orchestration dimensions.
             <br />
             <span className="text-slate-600">Streaming · guardrails · caching are deploy-time settings — set once, not tuned.</span>
           </div>
