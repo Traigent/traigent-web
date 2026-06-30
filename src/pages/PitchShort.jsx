@@ -700,10 +700,10 @@ function SlideMarketOpportunity() {
       {/* Title */}
       <div className="mb-4">
         <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight tracking-tight mb-2">
-          A Market <span className="text-[#4D8EF8]">About to Explode</span>
+          A Problem <span className="text-[#4D8EF8]">About to Explode</span>
         </h2>
         <p className="text-xl md:text-2xl text-slate-300 leading-snug">
-          AI agents are in <span className="font-bold text-white">infancy</span>. The cost crisis is just <span className="font-bold text-white">starting</span>.
+          The cost vs. accuracy tuning crisis is just <span className="font-bold text-white">starting</span>.
         </p>
       </div>
 
