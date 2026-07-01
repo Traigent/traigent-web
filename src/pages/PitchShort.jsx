@@ -271,7 +271,10 @@ export function SlideParetoFrontier() {
         </h2>
       </div>
 
-      <div className="grid grid-cols-[1fr_28px_1fr_28px_1fr] items-stretch gap-0">
+      {/* Mobile: stack the three cards (arrows hidden). md+: restore the
+          canonical 5-col layout (card · arrow · card · arrow · card) used on
+          the homepage hero and in the deck. */}
+      <div className="grid grid-cols-1 gap-5 items-stretch md:grid-cols-[1fr_28px_1fr_28px_1fr] md:gap-0">
         {/* LEFT: 25+ knobs, reclassified per /knob-explorer */}
         <div className="bg-slate-900/70 border border-slate-700/60 rounded-xl p-4">
           <div className="text-center mb-3">
@@ -300,7 +303,7 @@ export function SlideParetoFrontier() {
         </div>
 
         {/* Arrow */}
-        <div className="flex items-center justify-center">
+        <div className="hidden md:flex items-center justify-center">
           <ArrowRight className="w-7 h-7" style={{ color: '#1A6BF5' }} />
         </div>
 
@@ -362,7 +365,7 @@ export function SlideParetoFrontier() {
         </div>
 
         {/* Arrow */}
-        <div className="flex items-center justify-center">
+        <div className="hidden md:flex items-center justify-center">
           <ArrowRight className="w-7 h-7" style={{ color: '#1A6BF5' }} />
         </div>
 
