@@ -13,11 +13,12 @@
   // domain automatically on deploy (zone must live in the same account).
   "routes": [{ "pattern": "otp.traigent.ai", "custom_domain": true }],
   "kv_namespaces": [
-    // id created 2026-06-12 via: npx wrangler kv namespace create ACCESS_KV
-    // Account: Achi@traigent.ai / 900455ef4f4ae8c6c7b764678c686585 — that
-    // account owns the traigent.ai zone, so worker + KV live there.
-    // (An orphaned namespace f332c896… exists in Amir's account — unused.)
-    { "binding": "ACCESS_KV", "id": "32ec71b9066d4d72ab3ba1b2fd999aa0" }
+    // id created 2026-07-14 via: npx wrangler kv namespace create ACCESS_KV
+    // Account: Nimrod@traigent.ai / 7476f63c5d5d4b40efe237c8766cdd7e — this
+    // account now owns the traigent.ai zone, so worker + KV live here.
+    // Migrated 2026-07-14 from the Achi account (900455ef…) after the zone
+    // moved; the old Achi namespace 32ec71b9… is now orphaned/unused.
+    { "binding": "ACCESS_KV", "id": "d1e1e422badf41b29c9f45defcf5bd8b" }
   ],
   "vars": {
     // Sender must be on a Resend-verified domain before real sends work.
@@ -27,6 +28,6 @@
     // exact agreement text each receipt was issued against. Update on
     // AGREEMENT_VERSION bumps (see workers/access-otp/README.md).
     // Current: v1.4 text (sha256sum src/components/AgreementText.jsx).
-    "AGREEMENT_SHA": "362cf04776d7969679e3f5537f8dfe9cf1820eb6d0e0046410bf887c2ee58c2c"
+    "AGREEMENT_SHA": "de2168bcdf2cba048914c65e076878f8971f9fd3846a801319228c653c60899a"
   }
 }
