@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self'; script-src-attr 'none'; style-src 'self' 'sha256-pbaQpt9r+zjalwZqN+KfyP2pHMetu8C7A5Byrk77gFA='; style-src-attr 'none'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; frame-src 'self'; manifest-src 'self'; upgrade-insecure-requests" />
   <title>Research - Traigent</title>
   <meta name="description" content="Traigent research on governed AI configuration, tuned variables, TVL, and CI/CD-oriented optimization for AI-enabled systems." />
   <link rel="canonical" href="https://traigent.ai/research" />
@@ -31,7 +32,7 @@
     .chips{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.25rem 0}
     .chip{border:1px solid #cbd5e1;border-radius:999px;padding:.25rem .75rem;font-size:.85rem;background:#fff;color:#334155}
     .button{display:inline-flex;align-items:center;gap:.5rem;margin-top:1rem;border-radius:.5rem;background:#0f172a;color:#fff;padding:.75rem 1rem;text-decoration:none;font-weight:700;font-size:.9rem}
-    .note{font-size:.85rem;color:#64748b;margin-top:2rem}
+    .note{font-size:.85rem;color:#64748b;margin-top:2rem}.kicker--blue{color:#1d4ed8}.card--no-top-padding{padding-top:0}
     footer{background:#fff;border-top:1px solid #e2e8f0;padding:2rem;text-align:center;color:#64748b;font-size:.875rem}
     footer a{color:#1d4ed8;text-decoration:none}
     @media (max-width:760px){.grid{grid-template-columns:1fr}}
@@ -64,7 +65,7 @@
   <main>
     <div class="wrap grid">
       <article>
-        <p class="kicker" style="color:#1d4ed8">CAIN 2026 paper</p>
+        <p class="kicker kicker--blue">CAIN 2026 paper</p>
         <h2>Governed Configuration for AI-Enabled Systems: Maintaining Tuned Variables in CI/CD</h2>
         <p class="muted">The paper frames tuned variables as governed configuration choices for AI-enabled systems and outlines a CI/CD-oriented lifecycle for evidence, promotion, and rollback.</p>
         <div class="chips">
@@ -82,7 +83,7 @@
       </aside>
     </div>
 
-    <div class="wrap" style="padding-top:0">
+    <div class="wrap card--no-top-padding">
       <div class="card">
         <h2>Trademark-safe attribution</h2>
         <p class="muted">CAIN, ICSE, ACM, and IEEE names are used only for factual identification of venues, programs, and professional service. No sponsorship, endorsement, certification, approval, or partnership is implied.</p>
