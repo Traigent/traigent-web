@@ -9,19 +9,29 @@ short alias `/vibe`).
 **Platform:** LinkedIn (primary), cross-post to X.
 **Voice:** founder, coining the term.
 
-> Vibe coding had a great year. It also shipped a lot of software nobody trusts.
+> Every agent demos well. Ask what it scores, and the room goes quiet.
 >
-> So here's the next term, for agents: **Vibe Agent Building.**
+> Vibe coding made building easy — and made "looks good to me" the entire test suite. Agents
+> raise the stakes: they answer your customers, spend your budget, act in your name.
 >
-> You describe the agent. You define what "good" means — real examples, evaluators you'd trust to
-> grade a human. Then a coding agent and an optimization loop do the repetitive building, testing,
-> and improving until the numbers clear your bar.
+> So here's the practice, named: **Vibe Agent Building.**
 >
-> You bring the taste. The loop brings the proof. → traigent.ai/vibe-agent-building
+> You describe the agent. You define what "good" means — real examples, evaluators you'd trust
+> to grade a person. A coding agent builds; Traigent tests and improves against your evaluation
+> set until the numbers clear your bar — on accuracy *and* cost.
+>
+> You bring the taste. The loop brings the proof.
+>
+> Full definition, and what the loop looks like in practice → traigent.ai/vibe-agent-building
 
-**Why this one:** it's the founder-voice term-coin — the strongest hook for cold reach, and it
-matches the page's own hero promise verbatim, so anyone who clicks through sees exactly what the
-post described.
+**Alternate first line** if the owner wants a softer opener: *"Vibe coding had a great year. It
+also shipped a lot of software nobody trusts."* (the prior hook — proven shape, less tension).
+Everything else stands.
+
+**Why this one:** it stages the exact gap the page resolves (demo ≠ score), it's an observation
+the practitioner audience will self-recognize rather than a fear claim, and it contains no
+number, no vendor disparagement, and no absolute. The CTA promises what the click delivers — a
+definition and a working loop — which matches the page's manifesto-first structure.
 
 ## Variant 1 — contrarian hook (X, quote-tweet bait)
 
@@ -67,6 +77,10 @@ both LinkedIn and X.
 **Required:** screenshot the on-page dictionary card (`§2` of the shipped page, or the miniature
 repeat in the footer) at publish time and attach it as the post's image. This is what makes the
 post visual; do not post without it.
+
+Dismiss the cookie banner before taking the screenshot — on first visit it dims the page and
+covers the card's closing line ("You bring the taste. The loop brings the proof."), which is
+the half of the card the post needs most.
 
 **Alt text:** "Dictionary-style definition card: 'vibe agent building (n.) — Building an AI
 agent by describing what you want and reacting to what you get, while a coding agent and

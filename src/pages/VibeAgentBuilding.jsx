@@ -193,7 +193,7 @@ const LOOP_STEPS = [
     n: "4",
     title: "Test & improve",
     owner: "machine",
-    caption: "Traigent runs every candidate against your evaluation set and converges toward better, and cheaper.",
+    caption: "Traigent scores every candidate on your evaluation set and converges on better — and cheaper.",
   },
   {
     id: "judge",
@@ -314,12 +314,12 @@ function TerminalScene() {
     {
       who: "agent",
       text:
-        "Declaring the search space for Traigent — models, temperature, retrieval depth, and prompt variants — with accuracy and cost as objectives, evaluated against your evaluation set.",
+        "Handing Traigent the search space — models, temperature, retrieval depth, prompt variants — with accuracy and cost as the objectives, scored against your evaluation set.",
     },
     {
       who: "agent",
       text:
-        "Optimization run complete. One configuration scores clearly higher on your evaluation set at meaningfully lower cost than the default. Full breakdown is in the portal — want to look at the cases it still gets wrong?",
+        "Run complete. One configuration scores higher on your evaluation set at lower cost than the default. Full breakdown is in the portal — want to look at the cases it still gets wrong?",
     },
     { who: "you", text: "Yes. And the tone on #2 is too stiff — here's how we'd actually say it…" },
   ];
@@ -330,7 +330,7 @@ function TerminalScene() {
         <div className="w-3 h-3 rounded-full bg-red-500" />
         <div className="w-3 h-3 rounded-full bg-yellow-500" />
         <div className="w-3 h-3 rounded-full bg-green-500" />
-        <span className="ml-2 text-xs font-mono">illustrative session</span>
+        <span className="ml-2 text-xs font-mono">agent session</span>
       </div>
       <div className="p-4 sm:p-5 font-mono text-xs sm:text-sm space-y-3 max-h-[26rem] overflow-y-auto">
         {lines.map((l, i) => (
@@ -448,12 +448,16 @@ const FAQS = [
     a: "Someone on your side runs a coding agent — that can be a developer or, increasingly, you. Your jobs that nothing automates are describing the agent, defining what good means, and judging the results.",
   },
   {
-    q: "Will the agent be perfect?",
-    a: "No — it will be measured. You'll know what it scores, on which cases it fails, and what each improvement cost. That's more than most shipped agents can say.",
+    q: "Will it get everything right?",
+    a: "No agent does. It will be measured: you'll know what it scores, which cases it fails, and what each improvement costs. That's more than most shipped agents can say.",
   },
   {
     q: "What don't you automate?",
     a: "Taste. The evaluation set is yours, the evaluators answer to you, and the ship decision is yours. On purpose.",
+  },
+  {
+    q: "We already write evals.",
+    a: "Then you're most of the way there. Your evaluation set is the asset — Vibe Agent Building is what it's for. Traigent uses it to search configurations no one would test by hand, and every reviewer note keeps growing it.",
   },
 ];
 
@@ -551,13 +555,14 @@ export default function VibeAgentBuilding() {
               The loop does the rest — and proves it.
             </p>
             <p className="text-slate-400 max-w-2xl mx-auto leading-relaxed mb-8">
-              Vibe coding gave everyone the power to make software. It didn't give anyone a reason
-              to trust it. Vibe Agent Building keeps the part everyone loves — you describe, the
-              machines build — and adds the part everyone needs:{" "}
+              Vibe coding made software easy to build and hard to trust. Agents raise the
+              stakes — they answer your customers, spend your budget, and act in your name. Vibe
+              Agent Building keeps the part everyone loves: you describe, the machines build. And
+              it adds the part shipping requires:{" "}
               <span className="text-white font-semibold">
-                trustworthy evaluation sets and evaluators that define what "good" means
+                evaluation sets and evaluators you trust decide what "good" means
               </span>
-              , and an optimization loop that proves your agent meets it.
+              , and an optimization loop proves your agent meets it — at a cost you'd accept.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3 text-sm md:text-base">
               <a
@@ -606,17 +611,17 @@ export default function VibeAgentBuilding() {
                 </h3>
                 <ul className="space-y-4 text-sm md:text-base text-slate-300">
                   <li>
-                    <span className="text-white font-semibold">Describe it.</span> Plain language.
+                    <span className="text-white font-semibold">Describe it.</span> Plain language:
                     "An agent that triages our inbound leads and drafts the first reply in our tone."
                   </li>
                   <li>
-                    <span className="text-white font-semibold">Define good.</span> Hand over real
-                    examples of great and terrible outcomes. Pick evaluators you'd actually trust to
-                    grade a human's work.
+                    <span className="text-white font-semibold">Define good.</span> Real examples of
+                    great and terrible outcomes, graded by evaluators you'd trust to grade a
+                    person.
                   </li>
                   <li>
                     <span className="text-white font-semibold">Judge it.</span> React to real
-                    outputs. Every thumbs-down with a note makes the loop smarter.
+                    outputs. Every note you leave becomes a new test.
                   </li>
                 </ul>
               </div>
@@ -630,13 +635,12 @@ export default function VibeAgentBuilding() {
                     the scaffolding, tools, and glue — in your repo, readable by your team.
                   </li>
                   <li>
-                    <span className="text-white font-semibold">Test.</span> Traigent runs every
-                    candidate against your evaluation set. Accuracy, cost, latency — measured, not
-                    vibes.
+                    <span className="text-white font-semibold">Test.</span> Traigent scores every
+                    candidate against your evaluation set: accuracy, cost, latency.
                   </li>
                   <li>
-                    <span className="text-white font-semibold">Improve.</span> The loop keeps only
-                    what scores better, and keeps going until the numbers say it's done.
+                    <span className="text-white font-semibold">Improve.</span> Only configurations
+                    that score better survive. The loop stops when the numbers clear your bar.
                   </li>
                 </ul>
               </div>
@@ -647,8 +651,8 @@ export default function VibeAgentBuilding() {
             </div>
 
             <p className="text-center text-slate-400 mt-6 max-w-2xl mx-auto text-sm md:text-base">
-              This isn't a magic button. It's a division of labor — and it works with the tools you
-              already have: any coding agent, the Traigent SDK, and your own judgment.
+              This is a division of labor, not a shortcut — and it runs on tools you already have:
+              any coding agent, the Traigent SDK, and your own judgment.
             </p>
           </FadeIn>
 
@@ -657,7 +661,6 @@ export default function VibeAgentBuilding() {
             <h2 className="text-3xl md:text-4xl font-bold mb-3 text-center">What it looks like</h2>
             <p className="text-slate-400 text-center max-w-2xl mx-auto mb-10">
               Two moments from the loop — one from the terminal, one from the product.
-              Illustrative, not a transcript.
             </p>
 
             <div className="mb-4">
@@ -673,7 +676,7 @@ export default function VibeAgentBuilding() {
               </p>
               <FeedbackDemo />
               <p className="text-center text-base md:text-lg font-semibold mt-6 max-w-xl mx-auto">
-                Your feedback isn't a comment. It's a test the agent has to pass again.
+                Your feedback isn't a comment. It's a test the agent has to pass from now on.
               </p>
             </div>
           </FadeIn>
@@ -713,12 +716,19 @@ export default function VibeAgentBuilding() {
             </p>
           </FadeIn>
 
-          {/* Media — existing demos, captioned accurately */}
+          {/* The turn — manifesto to pitch */}
           <FadeIn delay={0.05} className="mb-16 md:mb-20">
-            <h2 className="text-3xl md:text-4xl font-bold mb-3 text-center">Traigent, in the wild</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-3 text-center">The loop needs an engine</h2>
+            <p className="text-slate-400 text-center max-w-2xl mx-auto mb-4">
+              Everything above is a way of working — you can start it today, with any coding
+              agent. But step 4 needs an engine: something has to test every candidate against
+              your evaluation set, score accuracy and cost, and keep only what earns its place.
+            </p>
             <p className="text-slate-400 text-center max-w-2xl mx-auto mb-10">
-              Two existing Traigent demos — the platform that runs the "test &amp; improve" half of
-              the loop above. Not a recording of this workflow specifically.
+              That engine is <span className="text-white font-semibold">Traigent</span>, an agent
+              optimization platform. It picks what to try next from run history, so it tests only
+              a fraction of the thousands of possible combinations — and hands you configurations
+              that score higher and cost less. Two short recordings of it at work:
             </p>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
@@ -735,7 +745,8 @@ export default function VibeAgentBuilding() {
                   </video>
                 </div>
                 <p className="text-xs text-slate-500 mt-2 text-center">
-                  Traigent converging on a configuration — existing product demo.
+                  Traigent converging — candidate configurations scored on accuracy and cost
+                  against an evaluation set until one comes out ahead. Existing product demo.
                 </p>
                 <p id="video-see-it-desc" className="text-xs text-slate-500 mt-2 leading-relaxed">
                   Text alternative: the Traigent portal runs several candidate configurations
@@ -757,7 +768,8 @@ export default function VibeAgentBuilding() {
                   </video>
                 </div>
                 <p className="text-xs text-slate-500 mt-2 text-center">
-                  Traigent's value proposition — existing product demo.
+                  The tradeoff view — accuracy against cost across candidates: the numbers a team
+                  ships on. Existing product demo.
                 </p>
                 <p id="video-value-prop-desc" className="text-xs text-slate-500 mt-2 leading-relaxed">
                   Text alternative: a walkthrough of the Traigent portal covering the optimization
@@ -766,6 +778,18 @@ export default function VibeAgentBuilding() {
                 </p>
               </div>
             </div>
+            <p className="text-center text-slate-400 mt-8 text-sm md:text-base">
+              Want this on your agent?{" "}
+              <a
+                href={DEMO_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackEvent("demo_booking_clicked", { location: "vibe_turn" })}
+                className="text-white font-semibold underline underline-offset-4 decoration-slate-500 hover:decoration-white"
+              >
+                Book a demo →
+              </a>
+            </p>
           </FadeIn>
 
           {/* §8 Honest FAQ */}
@@ -791,7 +815,7 @@ export default function VibeAgentBuilding() {
                 <p className="text-slate-300 mb-8 max-w-xl mx-auto">
                   Describe your first agent this week — and ship it with numbers.
                 </p>
-                <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
+                <div className="flex flex-wrap items-center justify-center gap-3 mb-4">
                   <a
                     href={DEMO_URL}
                     target="_blank"
@@ -807,10 +831,16 @@ export default function VibeAgentBuilding() {
                     onClick={() => trackEvent("vibe_get_started_clicked", { location: "vibe_closing" })}
                     className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full border border-slate-600 hover:border-slate-400 text-slate-200 hover:text-white font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                   >
-                    Start Now
+                    Start with the SDK
                   </Link>
                 </div>
-                <div className="flex justify-center">
+                <p className="text-xs text-slate-500 mb-8">
+                  Bring one use case and a handful of real examples — that's enough to start.
+                </p>
+                <div className="flex flex-col items-center gap-2">
+                  <p className="text-xs text-slate-500">
+                    Not the person who owns agent quality? Send this to whoever is.
+                  </p>
                   <CopyButton
                     text={SHARE_TEXT}
                     label="Copy the shareable line"
