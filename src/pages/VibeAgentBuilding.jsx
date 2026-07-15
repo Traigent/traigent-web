@@ -2,7 +2,16 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
-import { ArrowRight, Check, Copy, ThumbsDown, ThumbsUp, ChevronDown } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  ChevronDown,
+  Copy,
+  Pause,
+  Play,
+  ThumbsDown,
+  ThumbsUp,
+} from "lucide-react";
 import { trackEvent } from "../lib/analytics";
 
 const AMBER = "#f59e0b";
@@ -213,12 +222,13 @@ const LOOP_STEPS = [
 function LoopDiagram() {
   const prefersReducedMotion = useReducedMotion();
   const [active, setActive] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
-    if (prefersReducedMotion) return;
+    if (prefersReducedMotion || isPaused) return;
     const id = setInterval(() => setActive((i) => (i + 1) % LOOP_STEPS.length), 2600);
     return () => clearInterval(id);
-  }, [prefersReducedMotion]);
+  }, [isPaused, prefersReducedMotion]);
 
   return (
     <div>
@@ -275,24 +285,41 @@ function LoopDiagram() {
           ))}
         </ul>
       ) : (
-        <AnimatePresence mode="wait">
-          <motion.p
-            key={LOOP_STEPS[active].id}
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
-            transition={{ duration: 0.3 }}
-            className="text-center text-sm sm:text-base text-slate-300 max-w-xl mx-auto min-h-[3rem]"
-          >
-            <span
-              className="font-semibold"
-              style={{ color: LOOP_STEPS[active].owner === "human" ? AMBER : BLUE }}
+        <div>
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={LOOP_STEPS[active].id}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.3 }}
+              className="text-center text-sm sm:text-base text-slate-300 max-w-xl mx-auto min-h-[3rem]"
             >
-              {LOOP_STEPS[active].title}.
-            </span>{" "}
-            {LOOP_STEPS[active].caption}
-          </motion.p>
-        </AnimatePresence>
+              <span
+                className="font-semibold"
+                style={{ color: LOOP_STEPS[active].owner === "human" ? AMBER : BLUE }}
+              >
+                {LOOP_STEPS[active].title}.
+              </span>{" "}
+              {LOOP_STEPS[active].caption}
+            </motion.p>
+          </AnimatePresence>
+          <div className="flex justify-center mt-2">
+            <button
+              type="button"
+              onClick={() => setIsPaused((paused) => !paused)}
+              aria-pressed={isPaused}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-700 text-xs font-medium text-slate-400 hover:border-slate-500 hover:text-white transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            >
+              {isPaused ? (
+                <Play className="w-3.5 h-3.5" aria-hidden="true" />
+              ) : (
+                <Pause className="w-3.5 h-3.5" aria-hidden="true" />
+              )}
+              {isPaused ? "Resume loop animation" : "Pause loop animation"}
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
@@ -360,12 +387,13 @@ function TerminalScene() {
 function FeedbackDemo() {
   const prefersReducedMotion = useReducedMotion();
   const [phase, setPhase] = useState("before"); // "before" | "after"
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
-    if (prefersReducedMotion) return;
+    if (prefersReducedMotion || isPaused) return;
     const id = setInterval(() => setPhase((p) => (p === "before" ? "after" : "before")), 3600);
     return () => clearInterval(id);
-  }, [prefersReducedMotion]);
+  }, [isPaused, prefersReducedMotion]);
 
   const DraftCard = () => (
     <div className="bg-slate-900/70 border border-slate-800 rounded-xl p-4 text-sm">
@@ -443,6 +471,21 @@ function FeedbackDemo() {
           </motion.div>
         )}
       </AnimatePresence>
+      <div className="flex justify-center mt-3">
+        <button
+          type="button"
+          onClick={() => setIsPaused((paused) => !paused)}
+          aria-pressed={isPaused}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-700 text-xs font-medium text-slate-400 hover:border-slate-500 hover:text-white transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+        >
+          {isPaused ? (
+            <Play className="w-3.5 h-3.5" aria-hidden="true" />
+          ) : (
+            <Pause className="w-3.5 h-3.5" aria-hidden="true" />
+          )}
+          {isPaused ? "Resume feedback animation" : "Pause feedback animation"}
+        </button>
+      </div>
     </div>
   );
 }
@@ -704,7 +747,7 @@ export default function VibeAgentBuilding() {
               <FeedbackDemo />
               <p className="text-center text-base md:text-lg font-semibold mt-6 max-w-xl mx-auto">
                 Your feedback isn't a comment. It's the next test — you approve it into the
-                evaluation set, and every future candidate has to pass it.
+                evaluation set, and every future candidate is graded against it.
               </p>
             </div>
           </FadeIn>
