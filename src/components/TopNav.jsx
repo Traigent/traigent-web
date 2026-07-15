@@ -106,6 +106,7 @@ const mainTabs = [
   { label: "The Problem", href: "/value-proposition" },
   { label: "Why Traigent", href: "/blog" },
   { label: "Pricing", href: "/pricing" },
+  { label: "Vibe Agent Building", href: "/vibe-agent-building" },
 ];
 
 function MenuItem({ item, onScroll }) {
