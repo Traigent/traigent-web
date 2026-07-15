@@ -353,7 +353,7 @@ export default function TopNav() {
             </Link>
 
             {/* Desktop tabs */}
-            <div className="hidden lg:flex items-center gap-7 text-sm">
+            <div className="hidden xl:flex items-center gap-7 text-sm">
               <Dropdown
                 label="Product"
                 items={productItems}
@@ -389,7 +389,7 @@ export default function TopNav() {
             </div>
 
             {/* Desktop CTAs */}
-            <div className="hidden lg:flex items-center gap-3 sm:gap-4">
+            <div className="hidden xl:flex items-center gap-3 sm:gap-4">
               {/* Code access is email-gated: the GitHub icon opens the Start
                   Now modal (unlocked visitors see the repo + install command
                   immediately; unknown visitors leave an email first). */}
@@ -552,7 +552,7 @@ export default function TopNav() {
               aria-label="Open navigation menu"
               aria-expanded={mobileOpen}
               aria-controls="mobile-nav-drawer"
-              className="lg:hidden inline-flex items-center justify-center p-2 -mr-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+              className="xl:hidden inline-flex items-center justify-center p-2 -mr-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
             >
               <Menu className="w-6 h-6" />
             </button>
@@ -567,7 +567,7 @@ export default function TopNav() {
           role="dialog"
           aria-modal="true"
           aria-label="Navigation menu"
-          className="lg:hidden fixed inset-0 z-[60]"
+          className="xl:hidden fixed inset-0 z-[60]"
         >
           {/* Backdrop — button so keyboard users can dismiss via Enter/Space
               in addition to the Escape-to-close handler on the dialog */}

@@ -83,18 +83,30 @@ function CopyButton({ text, label, copiedLabel, errorLabel, trackName, className
   );
 }
 
-const FadeIn = ({ children, delay = 0, className = "", ...rest }) => (
-  <motion.div
-    {...rest}
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, margin: "-80px" }}
-    transition={{ duration: 0.5, delay }}
-    className={className}
-  >
-    {children}
-  </motion.div>
-);
+const FadeIn = ({ children, delay = 0, className = "", ...rest }) => {
+  const prefersReducedMotion = useReducedMotion();
+
+  if (prefersReducedMotion) {
+    return (
+      <div {...rest} className={className}>
+        {children}
+      </div>
+    );
+  }
+
+  return (
+    <motion.div
+      {...rest}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.5, delay }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+};
 
 const scrollToId = (id) => (e) => {
   e.preventDefault();
@@ -711,7 +723,13 @@ export default function VibeAgentBuilding() {
             <div className="grid md:grid-cols-2 gap-6">
               <div>
                 <div className="rounded-xl overflow-hidden border border-slate-800 shadow-2xl bg-slate-900">
-                  <video controls preload="metadata" playsInline className="w-full">
+                  <video
+                    controls
+                    preload="metadata"
+                    playsInline
+                    className="w-full"
+                    aria-describedby="video-see-it-desc"
+                  >
                     <source src="/demos/see_it_in_action.webm" type="video/webm" />
                     <source src="/demos/see_it_in_action.mp4" type="video/mp4" />
                   </video>
@@ -719,16 +737,32 @@ export default function VibeAgentBuilding() {
                 <p className="text-xs text-slate-500 mt-2 text-center">
                   Traigent converging on a configuration — existing product demo.
                 </p>
+                <p id="video-see-it-desc" className="text-xs text-slate-500 mt-2 leading-relaxed">
+                  Text alternative: the Traigent portal runs several candidate configurations
+                  against an evaluation set, showing each one's accuracy and cost as it's scored,
+                  then highlighting the configuration that comes out ahead.
+                </p>
               </div>
               <div>
                 <div className="rounded-xl overflow-hidden border border-slate-800 shadow-2xl bg-slate-900">
-                  <video controls preload="metadata" playsInline className="w-full">
+                  <video
+                    controls
+                    preload="metadata"
+                    playsInline
+                    className="w-full"
+                    aria-describedby="video-value-prop-desc"
+                  >
                     <source src="/demos/value_mov_02.webm" type="video/webm" />
                     <source src="/demos/value_mov_02.mp4" type="video/mp4" />
                   </video>
                 </div>
                 <p className="text-xs text-slate-500 mt-2 text-center">
-                  Traigent's value proposition, narrated — existing product demo.
+                  Traigent's value proposition — existing product demo.
+                </p>
+                <p id="video-value-prop-desc" className="text-xs text-slate-500 mt-2 leading-relaxed">
+                  Text alternative: a walkthrough of the Traigent portal covering the optimization
+                  loop, evaluation-set-driven scoring, and the accuracy/cost tradeoff view teams use
+                  to pick a configuration to ship.
                 </p>
               </div>
             </div>

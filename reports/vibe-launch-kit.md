@@ -1,6 +1,6 @@
 # Vibe Agent Building — launch kit
 
-Companion to [`vibe-fable-concept.md`](vibe-fable-concept.md) and the shipped page,
+Companion to the shipped page,
 [`src/pages/VibeAgentBuilding.jsx`](../src/pages/VibeAgentBuilding.jsx) (`/vibe-agent-building`,
 short alias `/vibe`).
 
@@ -34,38 +34,58 @@ post described.
 >
 > Your thumbs-down is a test now. → traigent.ai/vibe-agent-building
 
-## Variant 2 — practitioner walkthrough (LinkedIn, longer)
+## Variant 2 — process walkthrough (LinkedIn, longer)
 
-> I built an agent last week without tuning a single parameter by hand. Here's the loop:
+> Here's what it looks like to build an agent this way, without tuning a single parameter by hand:
 >
-> 1. Told a coding agent what I wanted, in plain English.
-> 2. Gave it real examples of great (and terrible) outcomes — that became the evaluation set.
-> 3. It scaffolded the agent and declared what's tunable: models, prompts, retrieval depth.
-> 4. Traigent ran the candidates against my evaluation set and converged toward the best
+> 1. Tell a coding agent what you want, in plain English.
+> 2. Give it real examples of great (and terrible) outcomes — that becomes the evaluation set.
+> 3. It scaffolds the agent and declares what's tunable: models, prompts, retrieval depth.
+> 4. Traigent runs the candidates against your evaluation set and converges toward the best
 >    accuracy-for-cost configuration.
-> 5. I reviewed the failures, left notes, and my notes became new tests.
+> 5. You review the failures, leave notes, and your notes become new tests.
 >
 > There's a name for this now: **Vibe Agent Building.** You bring the taste. The loop brings the
 > proof. → traigent.ai/vibe-agent-building
 
-## Image + alt text
+## Image + alt text — attaching the screenshot is mandatory
 
-No new image asset was generated for this launch — none was in the write scope and none exists
-in the repo to reuse honestly. Two options, in order of preference:
+This is a client-rendered SPA on GitHub Pages, using a `HashRouter`. The page's `<Helmet>` tags
+(title, description, `og:*`, Twitter card) are set by JavaScript after the app mounts — social
+crawlers do not execute that JavaScript. In practice:
 
-1. **Screenshot the on-page dictionary card** (`§2` of the shipped page, or the miniature repeat
-   in the footer) at publish time and attach it as the post's image.
-   **Alt text:** "Dictionary-style definition card: 'vibe agent building (n.) — Building an AI
-   agent by describing what you want and reacting to what you get, while a coding agent and
-   Traigent handle the repetitive building, testing, and improving, and trustworthy evaluation
-   sets and evaluators decide what good actually means. You bring the taste. The loop brings the
-   proof.'"
-2. **No image** — LinkedIn/X both render link-preview cards from the page's Open Graph tags
-   (title + description are set in the page's `<Helmet>`), so a text-only post still gets a
-   card; it just won't be the dictionary-card artwork specifically.
+- A crawler fetching the clean path URL (`https://traigent.ai/vibe-agent-building`) gets an HTTP
+  404 and `public/404.html` (the redirect page), which carries no page-specific Open Graph tags.
+- A crawler fetching the hash URL (`https://traigent.ai/#/vibe-agent-building`) gets the same
+  static `index.html` every route ships, whose Open Graph tags are the site's generic
+  homepage ones (no page-specific title/description, and the site has no `og:image` set anywhere).
+
+Either way, the post will **not** get a page-specific link-preview card. There is no "no image"
+fallback that still looks intentional — a bare link renders with a generic or missing preview on
+both LinkedIn and X.
+
+**Required:** screenshot the on-page dictionary card (`§2` of the shipped page, or the miniature
+repeat in the footer) at publish time and attach it as the post's image. This is what makes the
+post visual; do not post without it.
+
+**Alt text:** "Dictionary-style definition card: 'vibe agent building (n.) — Building an AI
+agent by describing what you want and reacting to what you get, while a coding agent and
+Traigent handle the repetitive building, testing, and improving, and trustworthy evaluation
+sets and evaluators decide what good actually means. You bring the taste. The loop brings the
+proof.'"
+
+**Link in post copy:** the clean human-facing URL (`traigent.ai/vibe-agent-building`) is fine to
+use in the visible post text if desired — clicking it works, since `404.html`'s script redirects
+the path to the `/#/vibe-agent-building` route that `HashRouter` resolves. That redirect is what
+makes the clean URL clickable; it is not what a social-media link-preview crawler will follow, per
+the caveat above. If a fallback link is needed anywhere a redirect can't run (e.g. a platform that
+only shows the raw URL), give the direct hash form instead:
+`https://traigent.ai/#/vibe-agent-building`.
 
 Do not use a stock/AI-generated "robot" or abstract-gradient image — it contradicts the page's own
-visual-direction rule (no purple gradients, no robot art) and would undercut the post.
+visual-direction rule (no purple gradients, no robot art) and would undercut the post. Do not
+claim a page-specific Open Graph/Twitter-card preview will render until this page (or the site)
+has a static or pre-rendered social route — it doesn't exist today.
 
 ## Honest notes — no traction guarantee
 
