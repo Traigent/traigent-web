@@ -17,11 +17,37 @@ short alias `/vibe`).
 > So here's the practice, named: **Vibe Agent Building.**
 >
 > You describe the agent. You define what "good" means — real examples, evaluators you'd trust
-> to grade a person. A coding agent builds; Traigent tests every candidate against your evaluation set and shows you exactly where each lands — on accuracy and cost, including whether any clear your bar.
+> to grade a person. A coding agent builds it. Then something has to test every candidate
+> against your evaluation set and show where each lands — on accuracy and cost, including
+> whether any clear your bar.
 >
 > You bring the taste. The loop brings the proof.
 >
+> Four of the five steps run today with any coding agent. Step four needs an engine — that's
+> what we build at Traigent.
+>
 > Full definition, and what the loop looks like in practice → traigent.ai/vibe-agent-building
+
+## First comment
+
+> No signup needed to try the method: the playbook our own coding-agent integration follows is
+> public at traigent.ai/agent.md — the decorator, the eval-set format, the dry-run-first cost
+> rules, and a section on what doesn't work yet. Point your coding agent at it and bring ~10
+> real examples. The first run is a mock; it spends nothing.
+
+## Prepared replies
+
+1. **"How is this not a grid search?"** It picks what to try next from run history, so it tests
+   a fraction of the combinations instead of all of them — and the playbook it follows is
+   public: traigent.ai/agent.md, including the section on what doesn't work yet.
+2. **"Doesn't this overfit the eval set?"** It would if you scored the winner on the examples it
+   was chosen from — that's the oldest trap in model selection. The playbook's answer is the
+   classic one: hold a slice back and judge the finalist on cases it never competed on
+   (agent.md, step 14). A margin that doesn't survive that isn't a win.
+3. **"Where does our data go?"** **Do not improvise.** One agreed sentence must be signed off by
+   the owner before the post goes live (see the pre-post gate in the adjudication); until then
+   the reply is: "fair question — that's exactly what the demo call walks through against your
+   environment," and nothing more.
 
 **Alternate first line** if the owner wants a softer opener: *"Vibe coding had a great year. It
 also shipped a lot of software nobody trusts."* (the prior hook — proven shape, less tension).
@@ -32,27 +58,23 @@ the practitioner audience will self-recognize rather than a fear claim, and it c
 number, no vendor disparagement, and no absolute. The CTA promises what the click delivers — a
 definition and a working loop — which matches the page's manifesto-first structure.
 
-## Variant 1 — contrarian hook (X, quote-tweet bait)
+## Variant 1 — retired
 
-> Unpopular opinion: the problem with vibe coding was never the vibes.
->
-> It was that "looks good to me" was the entire test suite.
->
-> Vibe Agent Building keeps the vibes and fixes the test suite: your feedback becomes evaluation
-> examples, and every candidate agent has to pass them again.
->
-> Your thumbs-down is a test now. → traigent.ai/vibe-agent-building
+Do not publish the former "Unpopular opinion" version. It led with the automatic-feedback claim
+that this revision corrects and used a fatigued contrarian opener.
 
 ## Variant 2 — process walkthrough (LinkedIn, longer)
 
-> Here's what it looks like to build an agent this way, without tuning a single parameter by hand:
+> Here's what it looks like to build an agent this way — the parts you do, and the parts you stop
+> doing:
 >
 > 1. Tell a coding agent what you want, in plain English.
-> 2. Give it real examples of great (and terrible) outcomes — that becomes the evaluation set.
+> 2. Give it real examples of great (and terrible) outcomes — that's the seed of your evaluation
+>    set; you decide what's in it.
 > 3. It scaffolds the agent and declares what's tunable: models, prompts, retrieval depth.
 > 4. Traigent runs the candidates against your evaluation set and surfaces the best
 >    accuracy/cost tradeoff it finds.
-> 5. You review the failures, leave notes, and your notes become new tests.
+> 5. You review the failures, leave notes, and the notes you approve become new tests.
 >
 > There's a name for this now: **Vibe Agent Building.** You bring the taste. The loop brings the
 > proof. → traigent.ai/vibe-agent-building
@@ -83,7 +105,7 @@ the half of the card the post needs most.
 
 **Alt text:** "Dictionary-style definition card: 'vibe agent building (n.) — Building an AI
 agent by describing what you want and reacting to what you get, while a coding agent and
-Traigent handle the repetitive building, testing, and improving, and trustworthy evaluation
+an optimization engine handle the repetitive building, testing, and improving, and trustworthy evaluation
 sets and evaluators decide what good actually means. You bring the taste. The loop brings the
 proof.'"
 
@@ -104,11 +126,13 @@ has a static or pre-rendered social route — it doesn't exist today.
 
 - These are draft copy and a screenshot suggestion, not a media plan or a guaranteed-reach claim.
   Nothing here promises engagement, clicks, or signups.
-- All three variants were checked against the same red lines as the page itself: no planner/
+- The recommended post and live process variant were checked against the same red lines as the
+  page itself: no planner/
   algorithm internals, no invented numbers (no "10x", no unqualified percentages), "evaluation
   set" never "benchmark," and the human's three jobs (describe, define good, judge) stay visible
   in every summary of the loop.
+- Do not add deployment, retention, privacy, compliance, data-egress, or safe-pilot claims to
+  launch copy or comment replies unless sourced from approved security material.
 - Posting cadence, paid boost, and which variant runs first are owner calls — not made here.
-- If the "vibe coding" wave has cooled by the time this posts, Variant 1's contrarian hook leans
-  hardest on the term still being current; the recommended post and Variant 2 age more gracefully
-  since they define the term on its own merits.
+- The recommended post and Variant 2 age gracefully because they define the term on its own
+  merits instead of relying on a contrarian hook.

@@ -11,11 +11,11 @@ const DEMO_URL = "https://meetings-eu1.hubspot.com/amir8";
 
 const DEFINITION_TEXT =
   `vibe agent building (n.)\n` +
-  `Building an AI agent by describing what you want and reacting to what you get — while a coding agent and Traigent handle the repetitive building, testing, and improving, and trustworthy evaluation sets and evaluators decide what "good" actually means.\n\n` +
+  `Building an AI agent by describing what you want and reacting to what you get — while a coding agent and an optimization engine handle the repetitive building, testing, and improving, and trustworthy evaluation sets and evaluators decide what "good" actually means.\n\n` +
   `You bring the taste. The loop brings the proof.`;
 
 const SHARE_TEXT =
-  `Vibe Agent Building: you bring the taste, the loop brings the proof. → https://traigent.ai/vibe-agent-building`;
+  `Vibe coding asks you to trust the developer's vibes. Vibe Agent Building asks the agent to earn your trust — on tests you wrote. → https://traigent.ai/vibe-agent-building`;
 
 // Copies text via the async Clipboard API where available, falling back to a
 // hidden textarea + execCommand for insecure contexts / older browsers.
@@ -144,7 +144,8 @@ function DictionaryCard({ compact = false }) {
       </div>
       <p className={`text-slate-300 leading-relaxed mt-4 ${compact ? "text-sm" : "text-base md:text-lg"}`}>
         Building an AI agent by describing what you want and reacting to what you get — while a
-        coding agent and Traigent handle the repetitive building, testing, and improving, and{" "}
+        coding agent and an optimization engine handle the repetitive building, testing, and
+        improving, and{" "}
         <span className="text-white font-semibold">trustworthy evaluation sets and evaluators</span>{" "}
         decide what "good" actually means.
       </p>
@@ -179,7 +180,8 @@ const LOOP_STEPS = [
     n: "2",
     title: "Define good",
     owner: "human",
-    caption: "Real examples plus evaluators you'd trust to grade a human become your evaluation set.",
+    caption:
+      "Real examples plus evaluators you'd trust to grade a human become your evaluation set — drafted with help if you want it, never without your sign-off.",
   },
   {
     id: "build",
@@ -193,14 +195,15 @@ const LOOP_STEPS = [
     n: "4",
     title: "Test & improve",
     owner: "machine",
-    caption: "Traigent scores every candidate on your evaluation set and maps the accuracy-cost tradeoff.",
+    caption:
+      "An optimization engine scores every candidate on your evaluation set and maps the accuracy-cost tradeoff.",
   },
   {
     id: "judge",
     n: "5",
     title: "Judge & feed back",
     owner: "human",
-    caption: "You review real outputs. Every note you leave becomes a new evaluation example.",
+    caption: "You review real outputs. The notes you approve become new evaluation examples.",
   },
 ];
 
@@ -309,7 +312,12 @@ function TerminalScene() {
     {
       who: "agent",
       text:
-        "Scaffolding a retrieval agent in agents/billing_qa.py. Your resolved billing tickets look like a strong starter evaluation set — pulling in the ones with a clear right answer. Adding an evaluator that fails any answer citing a policy not in the docs.",
+        "Scaffolding a retrieval agent in agents/billing_qa.py. Your resolved billing tickets look like a strong starter evaluation set — I've drafted one from them, plus an evaluator that fails any answer citing a policy not in the docs. Both are drafts until you approve them.",
+    },
+    {
+      who: "you",
+      text:
+        "Keep the evaluator. Cut the duplicates and add the escalated tickets — the hard cases are the bar.",
     },
     {
       who: "agent",
@@ -383,9 +391,10 @@ function FeedbackDemo() {
       <div className="text-[10px] font-mono uppercase tracking-wider text-slate-500 mb-2">
         Your evaluation set
       </div>
-      <div className="text-3xl font-extrabold text-amber-400">61</div>
+      <div className="text-3xl font-extrabold text-amber-400">+1</div>
       <div className="text-xs text-slate-400 mt-1">
-        examples · every future candidate is graded on all of them
+        evaluation example, added with your sign-off · every future candidate is graded on the
+        full set
       </div>
     </div>
   );
@@ -445,11 +454,15 @@ const FAQS = [
   },
   {
     q: "Do I need to code?",
-    a: "Someone on your side runs a coding agent — that can be a developer or, increasingly, you. Your jobs that nothing automates are describing the agent, defining what good means, and judging the results.",
+    a: "Someone on your side runs a coding agent — today that's usually a developer. If you own the quality bar but not the codebase, it's a two-person loop: they run it, you decide what it's aiming at. Describing the agent, defining what good means, and judging the results are yours — nothing here automates them.",
   },
   {
     q: "Will it get everything right?",
     a: "No agent does. It will be measured: you'll know what it scores, which cases it fails, and what each improvement costs. That's more than most shipped agents can say.",
+  },
+  {
+    q: "What does it cost to try?",
+    a: "The first run is a mock — it calls no models and spends nothing, so you can check the wiring before you check the bill. Real runs call your models against your examples, so the cost scales with candidates × examples × your model's price — and the playbook has your coding agent set a run cost limit and stop for your approval before any paid run. That's also why the engine picks what to try next from run history instead of trying everything.",
   },
   {
     q: "What don't you automate?",
@@ -457,7 +470,7 @@ const FAQS = [
   },
   {
     q: "We already write evals.",
-    a: "Then you're most of the way there. Your evaluation set is the asset — Vibe Agent Building is what it's for. Traigent uses it to search configurations no one would test by hand, and every reviewer note keeps growing it.",
+    a: "Then you're most of the way there. Your evaluation set is the asset — Vibe Agent Building is what it's for. Traigent uses it to search configurations no one would test by hand, and reviewer notes keep growing it — each one a candidate case you accept or reject.",
   },
 ];
 
@@ -495,7 +508,7 @@ const definedTermSchema = {
   "@type": "DefinedTerm",
   name: "Vibe Agent Building",
   description:
-    'Building an AI agent by describing what you want and reacting to what you get, while a coding agent and Traigent handle the repetitive building, testing, and improving, and trustworthy evaluation sets and evaluators decide what "good" means.',
+    'Building an AI agent by describing what you want and reacting to what you get, while a coding agent and an optimization engine handle the repetitive building, testing, and improving, and trustworthy evaluation sets and evaluators decide what "good" means.',
   inDefinedTermSet: "https://traigent.ai/vibe-agent-building",
 };
 
@@ -513,7 +526,7 @@ export default function VibeAgentBuilding() {
         <title>Vibe Agent Building — the term, defined · Traigent</title>
         <meta
           name="description"
-          content='Vibe Agent Building: describe the agent you want, define what good means with trustworthy evaluation sets and evaluators, and let a coding agent plus Traigent do the repetitive building, testing, and improving. You bring the taste. The loop brings the proof.'
+          content='Vibe Agent Building: describe the agent you want, define what good means with trustworthy evaluation sets and evaluators, and let a coding agent plus an optimization engine do the repetitive building, testing, and improving. You bring the taste. The loop brings the proof.'
         />
         <meta
           name="keywords"
@@ -544,7 +557,7 @@ export default function VibeAgentBuilding() {
               className="inline-block px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-xs font-mono tracking-wider mb-6"
               style={{ color: BLUE }}
             >
-              THE TERM
+              THE PRACTICE
             </div>
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6">
               Vibe Agent Building
@@ -555,14 +568,16 @@ export default function VibeAgentBuilding() {
               The loop does the rest — and proves it.
             </p>
             <p className="text-slate-400 max-w-2xl mx-auto leading-relaxed mb-8">
-              Vibe coding made software easy to build and hard to trust. Agents raise the
-              stakes — they answer your customers, spend your budget, and act in your name. Vibe
-              Agent Building keeps the part everyone loves: you describe, the machines build. And
-              it adds the part shipping requires:{" "}
+              Every agent demos well. Ask what it scores, and the room goes quiet. Vibe coding made
+              software easy to build and easy to demo — and made "looks good to me" the entire test
+              suite. Agents raise the stakes: they answer your customers, spend your budget, and act
+              in your name. Vibe Agent Building keeps the part everyone loves — you describe, the
+              machines build — and adds the part shipping requires:{" "}
               <span className="text-white font-semibold">
                 evaluation sets and evaluators you trust decide what "good" means
               </span>
-              , and an optimization loop tests every candidate against it — showing what, if anything, clears your bar and what it costs.
+              , and an optimization loop tests every candidate against them — showing what, if anything,
+              clears your bar and what it costs.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3 text-sm md:text-base">
               <a
@@ -621,7 +636,8 @@ export default function VibeAgentBuilding() {
                   </li>
                   <li>
                     <span className="text-white font-semibold">Judge it.</span> React to real
-                    outputs. Every note you leave becomes a new test.
+                    outputs. The notes you keep become new tests — you decide which ones make the
+                    set.
                   </li>
                 </ul>
               </div>
@@ -635,8 +651,8 @@ export default function VibeAgentBuilding() {
                     the scaffolding, tools, and glue — in your repo, readable by your team.
                   </li>
                   <li>
-                    <span className="text-white font-semibold">Test.</span> Traigent scores every
-                    candidate against your evaluation set: accuracy, cost, latency.
+                    <span className="text-white font-semibold">Test.</span> An optimization engine
+                    scores every candidate against your evaluation set: accuracy, cost, latency.
                   </li>
                   <li>
                     <span className="text-white font-semibold">Improve.</span> Only configurations
@@ -651,8 +667,19 @@ export default function VibeAgentBuilding() {
             </div>
 
             <p className="text-center text-slate-400 mt-6 max-w-2xl mx-auto text-sm md:text-base">
-              This is a division of labor, not a shortcut — and it runs on tools you already have:
-              any coding agent, the Traigent SDK, and your own judgment.
+              This is a division of labor, not a shortcut — and it starts with tools you already
+              have: any coding agent and your own judgment. If your agent already exists, you're
+              not starting over — the loop attaches to the code you have. And your coding agent can
+              read the whole method itself:{" "}
+              <a
+                href="/agent.md"
+                onClick={() => trackEvent("vibe_agent_md_clicked", { location: "vibe_loop_section" })}
+                className="text-white font-semibold underline underline-offset-4 decoration-slate-500 hover:decoration-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              >
+                traigent.ai/agent.md
+              </a>{" "}
+              is the public playbook it follows — the decorator, the eval-set format, the
+              dry-run-first spend rules, and what doesn't work yet.
             </p>
           </FadeIn>
 
@@ -676,7 +703,8 @@ export default function VibeAgentBuilding() {
               </p>
               <FeedbackDemo />
               <p className="text-center text-base md:text-lg font-semibold mt-6 max-w-xl mx-auto">
-                Your feedback isn't a comment. It's a test the agent has to pass from now on.
+                Your feedback isn't a comment. It's the next test — you approve it into the
+                evaluation set, and every future candidate has to pass it.
               </p>
             </div>
           </FadeIn>
@@ -704,7 +732,9 @@ export default function VibeAgentBuilding() {
                 <h3 className="text-white font-bold mb-2">Evidence, not demos</h3>
                 <p className="text-slate-300 text-sm leading-relaxed">
                   Every candidate configuration carries its scores — accuracy, cost, latency — on
-                  your evaluation set. The agent you ship is the one that earned it.
+                  your evaluation set. And because the winner was chosen by searching, its score on
+                  the data it was chosen from runs optimistic: hold examples back, and judge the
+                  finalist on cases it never competed on. That's the number worth shipping against.
                 </p>
               </div>
             </div>
@@ -726,10 +756,11 @@ export default function VibeAgentBuilding() {
             </p>
             <p className="text-slate-400 text-center max-w-2xl mx-auto mb-10">
               That engine is <span className="text-white font-semibold">Traigent</span>, an agent
-              optimization platform. It picks what to try next from run history, so it tests only
-              a fraction of the thousands of possible combinations — and surfaces the ones that
-              score higher, cost less, or both, when a better configuration exists. Two short
-              recordings of it at work:
+              optimization platform. The definition above doesn't name it on purpose — the practice
+              stands without us; step 4 is just where an engine earns its place. It picks what to
+              try next from run history, so it tests only a fraction of the thousands of possible
+              combinations — and surfaces the ones that score higher, cost less, or both, when a better configuration exists.
+              Two short recordings of it at work:
             </p>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
@@ -748,7 +779,7 @@ export default function VibeAgentBuilding() {
                 <p className="text-xs text-slate-500 mt-2 text-center">
                   Traigent converging — candidate configurations scored on accuracy and cost
                   against an evaluation set, surfacing the one that scores best in this run.
-                  Existing product demo.
+                  Recorded from the live product.
                 </p>
                 <p id="video-see-it-desc" className="text-xs text-slate-500 mt-2 leading-relaxed">
                   Text alternative: the Traigent portal runs several candidate configurations
@@ -771,7 +802,7 @@ export default function VibeAgentBuilding() {
                 </div>
                 <p className="text-xs text-slate-500 mt-2 text-center">
                   The tradeoff view — accuracy against cost across candidates: the numbers a team
-                  ships on. Existing product demo.
+                  ships on. Recorded from the live product.
                 </p>
                 <p id="video-value-prop-desc" className="text-xs text-slate-500 mt-2 leading-relaxed">
                   Text alternative: a walkthrough of the Traigent portal covering the optimization
@@ -815,33 +846,57 @@ export default function VibeAgentBuilding() {
               <div className="relative">
                 <h2 className="text-3xl md:text-4xl font-bold mb-3">Bring the vibe. Keep the proof.</h2>
                 <p className="text-slate-300 mb-8 max-w-xl mx-auto">
-                  Describe your first agent this week — and ship it with numbers.
+                  Describe your first agent this week — and decide with numbers.
                 </p>
                 <div className="flex flex-wrap items-center justify-center gap-3 mb-4">
+                  <Link
+                    to="/get-started"
+                    onClick={() => trackEvent("vibe_get_started_clicked", { location: "vibe_closing" })}
+                    className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                  >
+                    Start with the SDK
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
                   <a
                     href={DEMO_URL}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => trackEvent("demo_booking_clicked", { location: "vibe_closing" })}
-                    className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-                  >
-                    Book a demo
-                    <ArrowRight className="w-4 h-4" />
-                  </a>
-                  <Link
-                    to="/get-started"
-                    onClick={() => trackEvent("vibe_get_started_clicked", { location: "vibe_closing" })}
                     className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full border border-slate-600 hover:border-slate-400 text-slate-200 hover:text-white font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                   >
-                    Start with the SDK
-                  </Link>
+                    Book a demo
+                  </a>
                 </div>
-                <p className="text-xs text-slate-500 mb-8">
-                  Bring one use case and a handful of real examples — that's enough to start.
+                <p className="text-xs text-slate-500 mb-8 max-w-2xl mx-auto leading-relaxed">
+                  The SDK page asks for a work email before the install commands. Prefer to skip the
+                  form? Point your coding agent at the public playbook —{" "}
+                  <a
+                    href="/agent.md"
+                    onClick={() => trackEvent("vibe_agent_md_clicked", { location: "vibe_closing" })}
+                    className="text-slate-300 underline underline-offset-4 decoration-slate-600 hover:text-white hover:decoration-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                  >
+                    traigent.ai/agent.md
+                  </a>
+                  . Bring one use case and a handful of real examples — that's enough to start.
                 </p>
                 <div className="flex flex-col items-center gap-2">
                   <p className="text-xs text-slate-500">
-                    Not the person who owns agent quality? Send this to whoever is.
+                    Own the quality bar but not the codebase? Send this to the engineer you'd build
+                    it with — the loop needs both of you.
+                  </p>
+                  <p className="text-xs text-slate-500">
+                    Bringing this into a company with a security review?{" "}
+                    <a
+                      href={DEMO_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() =>
+                        trackEvent("demo_booking_clicked", { location: "vibe_security_signpost" })
+                      }
+                      className="text-slate-300 underline underline-offset-4 decoration-slate-600 hover:text-white hover:decoration-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                    >
+                      Ask us the hard questions.
+                    </a>
                   </p>
                   <CopyButton
                     text={SHARE_TEXT}
