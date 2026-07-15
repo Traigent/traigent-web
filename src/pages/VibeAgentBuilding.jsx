@@ -193,7 +193,7 @@ const LOOP_STEPS = [
     n: "4",
     title: "Test & improve",
     owner: "machine",
-    caption: "Traigent scores every candidate on your evaluation set and converges on better — and cheaper.",
+    caption: "Traigent scores every candidate on your evaluation set and maps the accuracy-cost tradeoff.",
   },
   {
     id: "judge",
@@ -562,7 +562,7 @@ export default function VibeAgentBuilding() {
               <span className="text-white font-semibold">
                 evaluation sets and evaluators you trust decide what "good" means
               </span>
-              , and an optimization loop proves your agent meets it — at a cost you'd accept.
+              , and an optimization loop tests every candidate against it — showing what, if anything, clears your bar and what it costs.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3 text-sm md:text-base">
               <a
@@ -640,7 +640,7 @@ export default function VibeAgentBuilding() {
                   </li>
                   <li>
                     <span className="text-white font-semibold">Improve.</span> Only configurations
-                    that score better survive. The loop stops when the numbers clear your bar.
+                    that score better survive. The scores show you whether any clear your bar.
                   </li>
                 </ul>
               </div>
@@ -727,8 +727,9 @@ export default function VibeAgentBuilding() {
             <p className="text-slate-400 text-center max-w-2xl mx-auto mb-10">
               That engine is <span className="text-white font-semibold">Traigent</span>, an agent
               optimization platform. It picks what to try next from run history, so it tests only
-              a fraction of the thousands of possible combinations — and hands you configurations
-              that score higher and cost less. Two short recordings of it at work:
+              a fraction of the thousands of possible combinations — and surfaces the ones that
+              score higher, cost less, or both, when a better configuration exists. Two short
+              recordings of it at work:
             </p>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
@@ -746,12 +747,13 @@ export default function VibeAgentBuilding() {
                 </div>
                 <p className="text-xs text-slate-500 mt-2 text-center">
                   Traigent converging — candidate configurations scored on accuracy and cost
-                  against an evaluation set until one comes out ahead. Existing product demo.
+                  against an evaluation set, surfacing the one that scores best in this run.
+                  Existing product demo.
                 </p>
                 <p id="video-see-it-desc" className="text-xs text-slate-500 mt-2 leading-relaxed">
                   Text alternative: the Traigent portal runs several candidate configurations
                   against an evaluation set, showing each one's accuracy and cost as it's scored,
-                  then highlighting the configuration that comes out ahead.
+                  then highlighting the configuration that scores best in this run.
                 </p>
               </div>
               <div>

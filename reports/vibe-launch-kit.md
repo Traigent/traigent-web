@@ -17,8 +17,7 @@ short alias `/vibe`).
 > So here's the practice, named: **Vibe Agent Building.**
 >
 > You describe the agent. You define what "good" means — real examples, evaluators you'd trust
-> to grade a person. A coding agent builds; Traigent tests and improves against your evaluation
-> set until the numbers clear your bar — on accuracy *and* cost.
+> to grade a person. A coding agent builds; Traigent tests every candidate against your evaluation set and shows you exactly where each lands — on accuracy and cost, including whether any clear your bar.
 >
 > You bring the taste. The loop brings the proof.
 >
@@ -51,8 +50,8 @@ definition and a working loop — which matches the page's manifesto-first struc
 > 1. Tell a coding agent what you want, in plain English.
 > 2. Give it real examples of great (and terrible) outcomes — that becomes the evaluation set.
 > 3. It scaffolds the agent and declares what's tunable: models, prompts, retrieval depth.
-> 4. Traigent runs the candidates against your evaluation set and converges toward the best
->    accuracy-for-cost configuration.
+> 4. Traigent runs the candidates against your evaluation set and surfaces the best
+>    accuracy/cost tradeoff it finds.
 > 5. You review the failures, leave notes, and your notes become new tests.
 >
 > There's a name for this now: **Vibe Agent Building.** You bring the taste. The loop brings the
