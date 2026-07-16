@@ -67,11 +67,16 @@ const FAQS = [
   },
 ];
 
-function FAQItem({ q, a, readMore, isOpen, onToggle }) {
+function FAQItem({ q, a, readMore, isOpen, onToggle, idx }) {
+  const panelId = `faq-panel-${idx}`;
+  const buttonId = `faq-button-${idx}`;
   return (
     <div className="border-b border-slate-800">
       <button
+        id={buttonId}
         onClick={onToggle}
+        aria-expanded={isOpen}
+        aria-controls={panelId}
         className="w-full flex items-start justify-between gap-4 py-5 text-left group"
       >
         <span className="text-base md:text-lg font-semibold text-white group-hover:text-[#4D8EF8] transition-colors">
@@ -82,12 +87,17 @@ function FAQItem({ q, a, readMore, isOpen, onToggle }) {
         />
       </button>
       <div
+        id={panelId}
+        role="region"
+        aria-labelledby={buttonId}
+        aria-hidden={!isOpen}
         className={`overflow-hidden transition-all duration-300 ease-out ${isOpen ? "max-h-[32rem] pb-5" : "max-h-0"}`}
       >
         <p className="text-slate-300 leading-relaxed">{a}</p>
         {readMore && (
           <Link
             to={readMore.href}
+            tabIndex={isOpen ? undefined : -1}
             onClick={() => trackEvent("faq_readmore_clicked", { href: readMore.href })}
             className="inline-flex items-center gap-1.5 text-sm font-medium text-[#1A6BF5] hover:text-[#4D8EF8] mt-3 group/link"
           >
@@ -155,6 +165,7 @@ export default function FAQ() {
             {FAQS.map((faq, i) => (
               <FAQItem
                 key={i}
+                idx={i}
                 q={faq.q}
                 a={faq.a}
                 readMore={faq.readMore}
