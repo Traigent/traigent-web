@@ -632,8 +632,8 @@ export default function VibeAgentBuilding() {
                 <ArrowRight className="w-4 h-4" />
               </a>
               <a
-                href="#bar"
-                onClick={scrollToId("bar")}
+                href="#examples"
+                onClick={scrollToId("examples")}
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-slate-600 hover:border-slate-400 text-slate-200 hover:text-white font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
               >
                 I have an agent
@@ -670,7 +670,7 @@ export default function VibeAgentBuilding() {
             </p>
 
             <div id="three" className="grid md:grid-cols-3 gap-5 mb-10 scroll-mt-24">
-              <div className="bg-slate-900/60 border border-amber-500/30 rounded-2xl p-6 md:p-7">
+              <div id="examples" className="bg-slate-900/60 border border-amber-500/30 rounded-2xl p-6 md:p-7 scroll-mt-24">
                 <div className="text-[10px] font-mono uppercase tracking-wider text-amber-400 mb-3">
                   Artifact 1
                 </div>
@@ -682,7 +682,7 @@ export default function VibeAgentBuilding() {
                   failures you actually care about. You approve every change.
                 </p>
               </div>
-              <div id="bar" className="bg-slate-900/60 border border-amber-500/30 rounded-2xl p-6 md:p-7 scroll-mt-24">
+              <div className="bg-slate-900/60 border border-amber-500/30 rounded-2xl p-6 md:p-7">
                 <div className="text-[10px] font-mono uppercase tracking-wider text-amber-400 mb-3">
                   Artifact 2
                 </div>
