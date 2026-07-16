@@ -10,34 +10,32 @@ short alias `/vibe`).
 **Voice:** founder, coining the term.
 **Publish from:** the founder's personal profile; mention the Traigent company page once.
 
-> Every agent demos well.
+> You've tuned your agent.
 >
-> Ask what it scores, and the room goes quiet.
+> When did you last tune the thing grading it?
 >
-> Vibe coding made building easy — and made "looks good to me" the entire test suite.
+> Most teams already have an agent. Many have evals. But the test set and the judge often stay
+> frozen while the agent keeps changing.
 >
-> Agents raise the stakes. They answer your customers, spend your budget, and act in your name.
->
-> So here's the practice, named:
+> That's the gap behind a practice we're calling:
 >
 > **Vibe Agent Building.**
 >
-> You describe the agent.
+> Three artifacts decide what ships:
 >
-> You define what "good" means — using real examples and evaluators you'd trust to grade a
-> person.
+> **The examples.** Are they hard enough to separate good from convincing?
 >
-> A coding agent builds it.
+> **The evaluator.** Does it agree with your experts and stay consistent?
 >
-> Then an evaluation and optimization loop tests every candidate against your evaluation set and
-> shows where it lands on quality and cost — including whether anything clears your bar.
+> **The agent.** Can a challenger beat what runs today on cases it never competed on — at a cost
+> you can see?
 >
-> Your feedback doesn't automatically become truth. You decide what joins the evaluation set.
+> Start with the agent and evals you already have. Missing one — or both? Start there. No
+> coding-agent plugin. No AGENT.md edits.
 >
 > **You bring the taste. The loop brings the proof.**
 >
-> Four of these five steps work today with any coding agent. Step four needs an engine. That's
-> what we're building at @Traigent.
+> That's the lifecycle we're building at @Traigent.
 >
 > The full definition — and what the loop looks like in practice:
 >
@@ -49,14 +47,12 @@ short alias `/vibe`).
 
 ## First comment — publish within two minutes
 
-> No signup is needed to try the method.
+> No new agent is required, and no coding-agent setup file has to change.
 >
-> The playbook followed by our coding-agent integration is public at
-> https://traigent.ai/agent.md — including the decorator, evaluation-set format, dry-run-first
-> cost rules, and what doesn't work yet.
+> The SDK is public at https://github.com/Traigent/Traigent. Connect it around the agent function
+> you already run, bring the evals or real cases you already trust, and begin in mock mode.
 >
-> Point your coding agent at it and bring around 10 real examples. The first run is a mock, so it
-> spends nothing.
+> The mock run calls no models, so it spends nothing.
 
 ## Launch runbook
 
@@ -69,8 +65,8 @@ pushed or deployed; the clean production URL still returns 404.
 Complete these checks at least two hours before the planned post:
 
 1. Deploy the page and confirm the clean URL redirects to the correct HashRouter route.
-2. Test the hero, both `/agent.md` links, SDK CTA, demo CTA, videos, and mobile navigation.
-3. Dismiss the cookie banner and capture the dictionary card for the post image.
+2. Test all three audience routes, the SDK CTA, GitHub link, demo CTA, and mobile navigation.
+3. Dismiss the cookie banner and capture the three-artifact lifecycle visual for the post image.
 4. Confirm the person posting can stay in the comments for the next 60–90 minutes.
 5. Brief anyone answering comments on the approved security response below.
 
@@ -95,7 +91,7 @@ LinkedIn analytics to choose future slots.
 
 ### Image and alt text
 
-Attach the dictionary-card screenshot rather than depending on a URL preview. Export a crisp PNG
+Attach the three-artifact lifecycle screenshot rather than depending on a URL preview. Export a crisp PNG
 at approximately **1200 × 627 px** or another LinkedIn-supported ratio. Keep the text large enough
 to read on a phone. LinkedIn's current photo guidance recommends at least 1080 px width and accepts
 ratios from 3:1 through 4:5:
@@ -103,10 +99,9 @@ https://www.linkedin.com/help/linkedin/answer/a527229/share-photos-or-videos?lan
 
 Use this alt text:
 
-> Dictionary-style definition of Vibe Agent Building: building an AI agent by describing what
-> you want and reacting to what you get, while a coding agent and optimization engine handle
-> repetitive building, testing, and improving, and trustworthy evaluation sets and evaluators
-> decide what good means. You bring the taste. The loop brings the proof.
+> Three-artifact lifecycle for Vibe Agent Building: the examples ask whether the cases are hard
+> enough, the evaluator asks whether the judge agrees with experts, and the agent asks whether a
+> challenger beats what runs today. Three artifacts, one loop. You approve every change.
 
 ### First 90 minutes
 
@@ -125,8 +120,9 @@ https://www.linkedin.com/business/talent/blog/talent-acquisition/how-to-write-en
 ### Follow-up sequence
 
 - **Day 1:** the category-defining post above.
-- **Day 2 or 3:** Variant 2's five-step practitioner walkthrough.
-- **Day 5:** a short product clip showing candidate configurations being evaluated.
+- **Day 2:** a short clip about checking the evaluator before trusting its score.
+- **Day 3:** a short clip about strengthening the examples with real failures and hard cases.
+- **Day 5:** a short product clip showing the agent-challenge step and its accuracy/cost evidence.
 - **Week 2:** answer the strongest serious objection from the launch comments.
 - **Week 3:** publish a real customer or internal example only when the evidence is ready.
 
@@ -138,8 +134,8 @@ clear answer to an objection.
 - Substantive comments from the target personas, not total reactions alone.
 - People independently using or repeating the phrase "Vibe Agent Building."
 - Founder-profile views and relevant connection requests.
-- Unique visitors to the page and clicks to `/agent.md`.
-- SDK starts, demo requests, and security-review conversations.
+- Unique visitors to the page, SDK starts, and public-repository clicks.
+- Demo requests and security-review conversations.
 - Impressions, members reached, comments, reposts, and viewer demographics from LinkedIn analytics.
 
 Record the numbers and the three strongest objections before publishing the next post.
@@ -147,12 +143,10 @@ Record the numbers and the three strongest objections before publishing the next
 ## Prepared replies
 
 1. **"How is this not a grid search?"** It picks what to try next from run history, so it tests
-   a fraction of the combinations instead of all of them — and the playbook it follows is
-   public: traigent.ai/agent.md, including the section on what doesn't work yet.
+   a fraction of the combinations instead of all of them.
 2. **"Doesn't this overfit the eval set?"** It would if you scored the winner on the examples it
-   was chosen from — that's the oldest trap in model selection. The playbook's answer is the
-   classic one: hold a slice back and judge the finalist on cases it never competed on
-   (agent.md, step 14). A margin that doesn't survive that isn't a win.
+   was chosen from — that's the oldest trap in model selection. Hold a slice back and judge the
+   finalist on cases it never competed on. A margin that doesn't survive that isn't a win.
 3. **"Where does our data go?"** **Do not improvise.** One agreed sentence must be signed off by
    the owner before the post goes live (see the pre-post gate in the adjudication); until then
    the reply is: "fair question — that's exactly what the demo call walks through against your
@@ -172,18 +166,15 @@ definition and a working loop — which matches the page's manifesto-first struc
 Do not publish the former "Unpopular opinion" version. It led with the automatic-feedback claim
 that this revision corrects and used a fatigued contrarian opener.
 
-## Variant 2 — process walkthrough (LinkedIn, longer)
+## Variant 2 — lifecycle walkthrough (LinkedIn, longer)
 
-> Here's what it looks like to build an agent this way — the parts you do, and the parts you stop
-> doing:
+> Here's what the lifecycle looks like when you already have an agent:
 >
-> 1. Tell a coding agent what you want, in plain English.
-> 2. Give it real examples of great (and terrible) outcomes — that's the seed of your evaluation
->    set; you decide what's in it.
-> 3. It scaffolds the agent and declares what's tunable: models, prompts, retrieval depth.
-> 4. Traigent runs the candidates against your evaluation set and surfaces the best
->    accuracy/cost tradeoff it finds.
-> 5. You review the failures, leave notes, and the notes you approve become new tests.
+> 1. Connect the agent you run today.
+> 2. Bring the evals, goldens, fixtures, or real cases you already trust.
+> 3. Check the examples and the evaluator before trusting the score; you approve every change.
+> 4. Challenge the current agent with candidates, then judge the finalist on held-back cases.
+> 5. See the margin, the cost, and what still fails. You decide whether to ship or loop again.
 >
 > There's a name for this now: **Vibe Agent Building.** You bring the taste. The loop brings the
 > proof. → traigent.ai/vibe-agent-building
@@ -204,19 +195,18 @@ Either way, the post will **not** get a page-specific link-preview card. There i
 fallback that still looks intentional — a bare link renders with a generic or missing preview on
 both LinkedIn and X.
 
-**Required:** screenshot the on-page dictionary card (`§2` of the shipped page, or the miniature
-repeat in the footer) at publish time and attach it as the post's image. This is what makes the
-post visual; do not post without it.
+**Required:** screenshot the on-page three-artifact lifecycle visual at publish time and attach it
+as the post's image. This is what makes the argument tangible; do not post without it. The
+dictionary card (`§2` or its footer repeat) is the alternate asset.
 
 Dismiss the cookie banner before taking the screenshot — on first visit it dims the page and
 covers the card's closing line ("You bring the taste. The loop brings the proof."), which is
 the half of the card the post needs most.
 
-**Alt text:** "Dictionary-style definition card: 'vibe agent building (n.) — Building an AI
-agent by describing what you want and reacting to what you get, while a coding agent and
-an optimization engine handle the repetitive building, testing, and improving, and trustworthy evaluation
-sets and evaluators decide what good actually means. You bring the taste. The loop brings the
-proof.'"
+**Alt text:** "Three-artifact lifecycle for Vibe Agent Building: the examples ask whether the
+cases are hard enough, the evaluator asks whether the judge agrees with experts, and the agent
+asks whether a challenger beats what runs today. Three artifacts, one loop. You approve every
+change."
 
 **Link in post copy:** the clean human-facing URL (`traigent.ai/vibe-agent-building`) is fine to
 use in the visible post text if desired — clicking it works, since `404.html`'s script redirects
@@ -238,8 +228,8 @@ has a static or pre-rendered social route — it doesn't exist today.
 - The recommended post and live process variant were checked against the same red lines as the
   page itself: no planner/
   algorithm internals, no invented numbers (no "10x", no unqualified percentages), "evaluation
-  set" never "benchmark," and the human's three jobs (describe, define good, judge) stay visible
-  in every summary of the loop.
+  set" never "benchmark," and the human's jobs (bring the bar, approve changes, decide what
+  ships) stay visible in every summary of the loop.
 - Do not add deployment, retention, privacy, compliance, data-egress, or safe-pilot claims to
   launch copy or comment replies unless sourced from approved security material.
 - Posting cadence, paid boost, and which variant runs first are owner calls — not made here.
