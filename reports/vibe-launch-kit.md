@@ -4,36 +4,145 @@ Companion to the shipped page,
 [`src/pages/VibeAgentBuilding.jsx`](../src/pages/VibeAgentBuilding.jsx) (`/vibe-agent-building`,
 short alias `/vibe`).
 
-## Recommended post
+## Canonical LinkedIn post
 
 **Platform:** LinkedIn (primary), cross-post to X.
 **Voice:** founder, coining the term.
+**Publish from:** the founder's personal profile; mention the Traigent company page once.
 
-> Every agent demos well. Ask what it scores, and the room goes quiet.
+> Every agent demos well.
 >
-> Vibe coding made building easy — and made "looks good to me" the entire test suite. Agents
-> raise the stakes: they answer your customers, spend your budget, act in your name.
+> Ask what it scores, and the room goes quiet.
 >
-> So here's the practice, named: **Vibe Agent Building.**
+> Vibe coding made building easy — and made "looks good to me" the entire test suite.
 >
-> You describe the agent. You define what "good" means — real examples, evaluators you'd trust
-> to grade a person. A coding agent builds it. Then something has to test every candidate
-> against your evaluation set and show where each lands — on accuracy and cost, including
-> whether any clear your bar.
+> Agents raise the stakes. They answer your customers, spend your budget, and act in your name.
 >
-> You bring the taste. The loop brings the proof.
+> So here's the practice, named:
 >
-> Four of the five steps run today with any coding agent. Step four needs an engine — that's
-> what we build at Traigent.
+> **Vibe Agent Building.**
 >
-> Full definition, and what the loop looks like in practice → traigent.ai/vibe-agent-building
+> You describe the agent.
+>
+> You define what "good" means — using real examples and evaluators you'd trust to grade a
+> person.
+>
+> A coding agent builds it.
+>
+> Then an evaluation and optimization loop tests every candidate against your evaluation set and
+> shows where it lands on quality and cost — including whether anything clears your bar.
+>
+> Your feedback doesn't automatically become truth. You decide what joins the evaluation set.
+>
+> **You bring the taste. The loop brings the proof.**
+>
+> Four of these five steps work today with any coding agent. Step four needs an engine. That's
+> what we're building at @Traigent.
+>
+> The full definition — and what the loop looks like in practice:
+>
+> https://traigent.ai/vibe-agent-building
+>
+> What evidence would you need before trusting an agent to act in your name?
+>
+> #VibeAgentBuilding
 
-## First comment
+## First comment — publish within two minutes
 
-> No signup needed to try the method: the playbook our own coding-agent integration follows is
-> public at traigent.ai/agent.md — the decorator, the eval-set format, the dry-run-first cost
-> rules, and a section on what doesn't work yet. Point your coding agent at it and bring ~10
-> real examples. The first run is a mock; it spends nothing.
+> No signup is needed to try the method.
+>
+> The playbook followed by our coding-agent integration is public at
+> https://traigent.ai/agent.md — including the decorator, evaluation-set format, dry-run-first
+> cost rules, and what doesn't work yet.
+>
+> Point your coding agent at it and bring around 10 real examples. The first run is a mock, so it
+> spends nothing.
+
+## Launch runbook
+
+### Hard gate before posting
+
+Do not publish until `https://traigent.ai/vibe-agent-building` works in a fresh private browser
+window on both desktop and mobile. As of 2026-07-16, the page exists locally but has not been
+pushed or deployed; the clean production URL still returns 404.
+
+Complete these checks at least two hours before the planned post:
+
+1. Deploy the page and confirm the clean URL redirects to the correct HashRouter route.
+2. Test the hero, both `/agent.md` links, SDK CTA, demo CTA, videos, and mobile navigation.
+3. Dismiss the cookie banner and capture the dictionary card for the post image.
+4. Confirm the person posting can stay in the comments for the next 60–90 minutes.
+5. Brief anyone answering comments on the approved security response below.
+
+### When to post
+
+**Primary slot:** Wednesday at **18:00 Israel time**. This overlaps 11:00 US Eastern, 08:00 US
+Pacific, 16:00 UK, and 17:00 Central Europe during northern-hemisphere daylight-saving time.
+
+**US-first alternative:** Wednesday at **23:00 Israel time** (16:00 Eastern, 13:00 Pacific), but
+only if the founder can remain available to reply afterward.
+
+**Initial launch opportunity:** if the page is live and fully verified by 16:00 on Thursday,
+2026-07-16, publish at 18:00 that day. Otherwise use Wednesday, 2026-07-22, at 18:00.
+
+These are starting hypotheses, not universal rules. Buffer's 2026 analysis of 4.8 million posts
+favors Wednesday and late afternoon, while Sprout Social's 2026 analysis favors Tuesday through
+Thursday from late morning through afternoon. After launch, use the founder profile's own
+LinkedIn analytics to choose future slots.
+
+- Buffer timing study: https://buffer.com/resources/best-time-to-post-on-linkedin/
+- Sprout Social timing study: https://sproutsocial.com/insights/best-times-to-post-on-linkedin/
+
+### Image and alt text
+
+Attach the dictionary-card screenshot rather than depending on a URL preview. Export a crisp PNG
+at approximately **1200 × 627 px** or another LinkedIn-supported ratio. Keep the text large enough
+to read on a phone. LinkedIn's current photo guidance recommends at least 1080 px width and accepts
+ratios from 3:1 through 4:5:
+https://www.linkedin.com/help/linkedin/answer/a527229/share-photos-or-videos?lang=en
+
+Use this alt text:
+
+> Dictionary-style definition of Vibe Agent Building: building an AI agent by describing what
+> you want and reacting to what you get, while a coding agent and optimization engine handle
+> repetitive building, testing, and improving, and trustworthy evaluation sets and evaluators
+> decide what good means. You bring the taste. The loop brings the proof.
+
+### First 90 minutes
+
+1. Add the first comment above within two minutes.
+2. Reply to every substantive comment; answer the point and ask a genuine follow-up question.
+3. Invite informed disagreement. Ask AI leaders, evaluation engineers, founders, domain experts,
+   and coding-agent users for their real view — never give them canned comments.
+4. Do not ask for generic likes or coordinate an engagement pod.
+5. Have the Traigent company page join with a useful comment, not a duplicate of the post.
+6. Capture repeated objections and phrases people use; they become material for the follow-ups.
+
+LinkedIn recommends treating posts as conversations and using thoughtful replies to keep them
+going:
+https://www.linkedin.com/business/talent/blog/talent-acquisition/how-to-write-engaging-post-in-linkedin-feed
+
+### Follow-up sequence
+
+- **Day 1:** the category-defining post above.
+- **Day 2 or 3:** Variant 2's five-step practitioner walkthrough.
+- **Day 5:** a short product clip showing candidate configurations being evaluated.
+- **Week 2:** answer the strongest serious objection from the launch comments.
+- **Week 3:** publish a real customer or internal example only when the evidence is ready.
+
+Do not repost the same copy repeatedly. Each follow-up should add evidence, a useful example, or a
+clear answer to an objection.
+
+### What to measure after 72 hours
+
+- Substantive comments from the target personas, not total reactions alone.
+- People independently using or repeating the phrase "Vibe Agent Building."
+- Founder-profile views and relevant connection requests.
+- Unique visitors to the page and clicks to `/agent.md`.
+- SDK starts, demo requests, and security-review conversations.
+- Impressions, members reached, comments, reposts, and viewer demographics from LinkedIn analytics.
+
+Record the numbers and the three strongest objections before publishing the next post.
 
 ## Prepared replies
 
