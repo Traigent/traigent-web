@@ -520,7 +520,7 @@ export default function Pricing() {
                   <FeatureRow label="Single-KPI optimization" free={true} starter={true} pro={true} enterprise={true} />
                   <FeatureRow label="Multi-KPI weighted optimization" free={true} starter={true} pro={true} enterprise={true} />
                   <FeatureRow label="Drift detection &amp; re-optimization" free={true} starter={true} pro={true} enterprise={true} />
-                  <FeatureRow label="Benchmark insights (easy/fail/redundant)" free={true} starter="—" pro={true} enterprise={true} />
+                  <FeatureRow label="Benchmark insights (easy/fail/redundant)" free={true} starter={true} pro={true} enterprise={true} />
                   <FeatureRow label="TVL — Tuned Variables Language" free={true} starter={true} pro={true} enterprise={true} />
 
                   <FeatureRow label="Team &amp; security" section />

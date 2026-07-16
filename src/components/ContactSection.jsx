@@ -2,13 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Send } from "lucide-react";
 import { trackEvent } from "../lib/analytics";
+import { HUBSPOT_PORTAL_ID } from "../lib/hubspotConfig";
 import ConsentGate from "./ConsentGate";
 import ConsentCheckbox from "./ConsentCheckbox";
 
-// HubSpot Forms API config — values from the embed snippet in HubSpot.
-// These are PUBLIC (already in the public embed code), so it's fine to inline.
+// HubSpot Forms API config — the portal ID comes from the shared
+// src/lib/hubspotConfig source of truth (public value, env-overridable).
 const HUBSPOT = {
-  portalId: "148486827",
+  portalId: HUBSPOT_PORTAL_ID,
   formId: "b60362d8-a1d8-4cfc-86ed-3034c4549665",
 };
 

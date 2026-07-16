@@ -2,11 +2,13 @@
  * Codebase ships without PropTypes; prop contract is documented in JSDoc below.
  */
 import { useEffect, useRef, useState } from "react";
+import {
+  HUBSPOT_PORTAL_ID,
+  HUBSPOT_REGION,
+  HUBSPOT_EMBED_SCRIPT_SRC as HUBSPOT_SCRIPT_SRC,
+} from "../lib/hubspotConfig";
 
-const HUBSPOT_SCRIPT_SRC = "https://js-eu1.hsforms.net/forms/embed/v2.js";
-const HUBSPOT_PORTAL_ID = "148486827";
 const HUBSPOT_DEFAULT_FORM_ID = "35384a3e-7386-45b0-924e-84e5d6f637e4";
-const HUBSPOT_REGION = "eu1";
 
 let scriptPromise = null;
 
