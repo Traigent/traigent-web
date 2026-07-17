@@ -1,6 +1,6 @@
 ﻿import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Check, ChevronRight, ChevronDown, ExternalLink, Play, Pause } from "lucide-react";
+import { ArrowRight, Check, ChevronRight, ChevronDown, ExternalLink, Play, Pause, Terminal } from "lucide-react";
 import {
   OptimizationEngineBody,
   FeedbackLoopConnector,
@@ -18,6 +18,7 @@ import StartNowModal from "../components/StartNowModal";
 import ContactSection from "../components/ContactSection";
 import BlogHighlights from "../components/BlogHighlights";
 import { trackEvent } from "../lib/analytics";
+import { useAgentSetupPrompt } from "../lib/useAgentSetupPrompt";
 
 // Placeholder for the Button component
 const Button = ({ children, className, onClick, size }) => (
@@ -50,6 +51,11 @@ export default function Homepage() {
   const [showStartNow, setShowStartNow] = useState(false);
   const [benefitsOpen, setBenefitsOpen] = useState(false);
   const benefitsRef = useRef(null);
+  const { copied: promptCopied, copyPrompt } = useAgentSetupPrompt();
+  const handleConnectAgent = async () => {
+    const ok = await copyPrompt();
+    trackEvent("connect_agent_clicked", { location: "homepage_hero", copied: ok });
+  };
   // Handle scroll requests coming from other pages via TopNav
   useEffect(() => {
     const pending = sessionStorage.getItem("pendingScroll");
@@ -164,7 +170,7 @@ export default function Homepage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.19 }}
-              className="flex justify-center mb-10"
+              className="flex flex-wrap items-center justify-center gap-3 mb-10"
             >
               <Link
                 to="/story"
@@ -178,6 +184,26 @@ export default function Homepage() {
                   Agent Optimization Demo
                 </span>
               </Link>
+              {/* Secondary CTA — copies the canonical keyless setup prompt
+                  (served at /agent-setup/prompt.md) so a coding agent can wire
+                  up Traigent in one paste. */}
+              <button
+                type="button"
+                onClick={handleConnectAgent}
+                aria-label={promptCopied ? "Copied setup prompt" : "Copy setup prompt for your coding agent"}
+                className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-slate-900/60 border border-slate-700 hover:border-blue-500/60 hover:bg-slate-900/80 transition-colors group"
+              >
+                <span className="flex items-center justify-center w-10 h-10 rounded-full bg-slate-800 group-hover:bg-slate-700 transition-colors">
+                  {promptCopied ? (
+                    <Check className="w-4 h-4 text-emerald-400" />
+                  ) : (
+                    <Terminal className="w-4 h-4 text-slate-100" />
+                  )}
+                </span>
+                <span className="text-base md:text-lg font-medium text-slate-100">
+                  {promptCopied ? "Copied — paste into your agent" : "Connect your agent"}
+                </span>
+              </button>
             </motion.div>
             {/* Two-column value summary: HOW (method) + BENEFITS (outcomes) */}
             <motion.div
