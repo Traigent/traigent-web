@@ -697,7 +697,7 @@ function SlideMarketAndRevenue() {
 // Narrative: the wave (few in production, exponential explosion coming) →
 // the pain (sticker shock + 25+ knob re-tune every release) → the play
 // (Traigent as essential infra for the agent economy).
-function SlideMarketOpportunity() {
+function SlideMarketOpportunity({ subtitle, painIntro, painItems, waveNote } = {}) {
   return (
     <div className="w-full max-w-[1180px] mx-auto text-center self-stretch flex flex-col min-h-[600px]">
       {/* Title */}
@@ -706,7 +706,7 @@ function SlideMarketOpportunity() {
           A Problem <span className="text-[#4D8EF8]">About to Explode</span>
         </h2>
         <p className="text-xl md:text-2xl text-slate-300 leading-snug">
-          The cost vs. accuracy tuning crisis is just <span className="font-bold text-white">starting</span>.
+          {subtitle || (<>The cost vs. accuracy tuning crisis is just <span className="font-bold text-white">starting</span>.</>)}
         </p>
       </div>
 
@@ -747,9 +747,14 @@ function SlideMarketOpportunity() {
             <circle cx="265" cy="13"  r="4.5" fill="#4D8EF8"/>
           </svg>
 
-          <p className="text-lg text-slate-300 leading-snug mt-auto">
-            Few in production today.<br /><span className="font-bold text-white">Massive rollouts 2026–2030.</span>
-          </p>
+          <div className="mt-auto">
+            {waveNote && (
+              <p className="text-base font-semibold leading-snug mb-2" style={{ color: "#f59e0b" }}>{waveNote}</p>
+            )}
+            <p className="text-lg text-slate-300 leading-snug">
+              Few in production today.<br /><span className="font-bold text-white">Massive rollouts 2026–2030.</span>
+            </p>
+          </div>
         </div>
 
         {/* COL 2 — THE PAIN */}
@@ -767,16 +772,13 @@ function SlideMarketOpportunity() {
           </h3>
           <div className="text-lg leading-snug mb-3">
             <p className="text-slate-300">
-              Constant re-tuning efforts for cost and accuracy as conditions change:
+              {painIntro || "Constant re-tuning efforts for cost and accuracy as conditions change:"}
             </p>
           </div>
           <ul className="text-base text-slate-300 leading-snug space-y-1.5 flex-1 list-disc pl-5">
-            <li>New models drop</li>
-            <li>Prices shift</li>
-            <li>Domain data drifts</li>
-            <li>Latency / SLA tightens</li>
-            <li>New use cases land</li>
-            <li>Failures surface in prod</li>
+            {(painItems || ["New models drop", "Prices shift", "Domain data drifts", "Latency / SLA tightens", "New use cases land", "Failures surface in prod"]).map((x) => (
+              <li key={x}>{x}</li>
+            ))}
           </ul>
         </div>
 
@@ -1740,6 +1742,43 @@ function SlideArchitecture() {
   );
 }
 
+// Slide: ONE-PAGER — the Bosch deck's slide 2 ("A Problem About to Explode",
+// Wave / Pain / Cure) rendered UNCHANGED, with only a founders footer added
+// beneath it. Its own single-slide deck via the "one-pager" preset; the slide
+// uses reduced canvas padding (SlideCanvas) so the original + footer fit.
+function SlideOnePager() {
+  return (
+    <div className="w-full self-stretch flex flex-col">
+      <SlideMarketOpportunity
+        subtitle={<>The AI Agent <span className="font-semibold text-white underline decoration-2 underline-offset-4 px-1 rounded" style={{ textDecorationColor: "#f59e0b", backgroundColor: "rgba(245,158,11,0.18)" }}>cost vs. accuracy tuning</span> crisis is just <span className="font-bold text-white">starting</span>.</>}
+        painIntro="Continuous re-tuning efforts required as conditions change:"
+        painItems={["New use cases land", "Failures surface in prod", "Business requirements change", "New models drop", "Prices shift", "Domain data drifts"]}
+        waveNote="Business and Customer processes being Agentized rapidly"
+      />
+      {/* Founders — the only addition to the original slide */}
+      <div className="max-w-[1180px] mx-auto w-full flex items-center justify-between mt-3 pt-2.5 border-t border-slate-800 text-left">
+        <div className="flex gap-8">
+          <div className="flex items-baseline gap-2">
+            <span className="text-[15px] font-bold text-white">Amir Barnea</span>
+            <span className="text-slate-500 text-sm">— CEO</span>
+            <a href="mailto:amir@traigent.ai" className="text-xs font-mono" style={{ color: "#4D8EF8" }}>amir@traigent.ai</a>
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className="text-[15px] font-bold text-white">Nimrod Busany, PhD</span>
+            <span className="text-slate-500 text-sm">— CTO</span>
+            <a href="mailto:nimrod@traigent.ai" className="text-xs font-mono" style={{ color: "#4D8EF8" }}>nimrod@traigent.ai</a>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 text-sm">
+          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: "#34d399", boxShadow: "0 0 8px rgba(52,211,153,0.6)" }} />
+          <span className="text-slate-200 font-semibold">Active design partners</span>
+        </div>
+        <a href="https://www.traigent.ai/" target="_blank" rel="noopener noreferrer" className="text-sm font-semibold" style={{ color: "#4D8EF8" }}>traigent.ai</a>
+      </div>
+    </div>
+  );
+}
+
 export const SHORT_SLIDES = [
   // ----- TEXT-ONLY ONE-PAGER (opener — swapped in from slot 22) -----
   { title: "One-Pager Test — Text Only (V2)", section: "Traigent intro", component: SlideOnePagerTextTestV2 },
@@ -1804,6 +1843,8 @@ export const SHORT_SLIDES = [
   // ----- PRODUCT CONCEPT (four-pillar method + system architecture) — indices 38, 39 -----
   { title: "The Traigent Method — Four Pillars, Scored & Improved", section: "Concept", component: SlideFourPillars },
   { title: "The System — Your Coding Agent + Traigent Cloud", section: "Concept", component: SlideArchitecture },
+  // ----- ONE-PAGER (index 40) — its own single-slide deck via the "one-pager" preset -----
+  { title: "One-Pager", section: "One-pager", component: SlideOnePager },
 ];
 
 export default function PitchShort() {
