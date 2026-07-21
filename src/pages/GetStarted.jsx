@@ -159,7 +159,11 @@ export default function GetStarted() {
           <div className="p-6 rounded-xl bg-slate-900/60 border border-slate-800 flex flex-col">
             <h2 className="text-xl font-semibold mb-2">Traigent SDK</h2>
             <p className="text-slate-300 mb-4">
-              Install the published Python SDK from your terminal. The bootstrap is a thin shell script that installs <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">traigent[recommended]</code>, verifies <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">traigent info</code>, refuses root/container installs unless <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">TRAIGENT_ALLOW_ROOT=1</code> is explicitly set, and never prompts for or reads credentials. The installer detects <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">traigent onboard</code> (included in the published SDK) and suggests it next — it sets up device login against <a href="https://portal.traigent.ai" target="_blank" rel="noopener noreferrer" className="text-blue-300 hover:text-blue-200 underline underline-offset-4">portal.traigent.ai</a> and your coding agent.
+              Install the published Python SDK from your terminal and connect it around the agent
+              function you already run. No coding-agent plugin or AGENT.md change is required. The
+              bootstrap installs <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">traigent[recommended]</code>,
+              verifies <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">traigent info</code>,
+              and never prompts for or reads credentials.
             </p>
             {hasAccess && (
               <>
@@ -183,14 +187,7 @@ export default function GetStarted() {
                   <h3 className="text-sm font-semibold text-slate-200 mb-2">next steps</h3>
                   <div className="space-y-3 text-sm text-slate-300">
                     <div>
-                      <div className="text-slate-400 mb-1">If your installed SDK includes onboard:</div>
-                      <div className="font-mono">
-                        <span className="text-slate-500 select-none">$ </span>
-                        <code>traigent onboard</code>
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-slate-400 mb-1">Current SDK fallback:</div>
+                      <div className="text-slate-400 mb-1">Authenticate, then verify the integration in mock mode:</div>
                       <div className="space-y-1 font-mono">
                         <div>
                           <span className="text-slate-500 select-none">$ </span>
