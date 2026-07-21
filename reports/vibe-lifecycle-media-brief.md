@@ -24,8 +24,9 @@ Adopted from the discussion:
 
 - Put existing agent + existing eval users first, then existing agent/no evals, then greenfield.
 - Use three explicit artifacts: examples, evaluator, and agent.
-- Stop promoting `/agent.md`, skill bundles, and coding-agent plugins in this campaign's
-  acquisition journey; legacy assets may remain available for developers who explicitly want them.
+- Do not present `/agent.md`, skill bundles, or coding-agent plugins as requirements or CTAs on
+  this campaign page; the general Get Started surface may still offer them as optional developer
+  workflows.
 - Use one lifecycle master plus focused follow-up cuts, backed by a no-play static visual.
 - Never fabricate dataset or evaluator UI to complete the film.
 
