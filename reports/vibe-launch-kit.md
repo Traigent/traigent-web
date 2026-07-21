@@ -181,19 +181,15 @@ that this revision corrects and used a fatigued contrarian opener.
 
 ## Image + alt text — attaching the screenshot is mandatory
 
-This is a client-rendered SPA on GitHub Pages, using a `HashRouter`. The page's `<Helmet>` tags
-(title, description, `og:*`, Twitter card) are set by JavaScript after the app mounts — social
-crawlers do not execute that JavaScript. In practice:
+This is a client-rendered SPA on GitHub Pages, using a `HashRouter`. The clean path
+(`https://traigent.ai/vibe-agent-building`) is backed by a static metadata document so social and
+search crawlers can read the page-specific title, description, canonical URL, and text-card tags
+without executing JavaScript. Browsers are then redirected to the interactive
+`/#/vibe-agent-building` route.
 
-- A crawler fetching the clean path URL (`https://traigent.ai/vibe-agent-building`) gets an HTTP
-  404 and `public/404.html` (the redirect page), which carries no page-specific Open Graph tags.
-- A crawler fetching the hash URL (`https://traigent.ai/#/vibe-agent-building`) gets the same
-  static `index.html` every route ships, whose Open Graph tags are the site's generic
-  homepage ones (no page-specific title/description, and the site has no `og:image` set anywhere).
-
-Either way, the post will **not** get a page-specific link-preview card. There is no "no image"
-fallback that still looks intentional — a bare link renders with a generic or missing preview on
-both LinkedIn and X.
+The static document does not declare an `og:image`, so platforms may render a text-only preview.
+The attached lifecycle screenshot remains the launch asset and should not be replaced by an
+assumed generated preview.
 
 **Required:** screenshot the on-page three-artifact lifecycle visual at publish time and attach it
 as the post's image. This is what makes the argument tangible; do not post without it. The
@@ -208,18 +204,13 @@ cases are hard enough, the evaluator asks whether the judge agrees with experts,
 asks whether a challenger beats what runs today. Three artifacts, one loop. You approve every
 change."
 
-**Link in post copy:** the clean human-facing URL (`traigent.ai/vibe-agent-building`) is fine to
-use in the visible post text if desired — clicking it works, since `404.html`'s script redirects
-the path to the `/#/vibe-agent-building` route that `HashRouter` resolves. That redirect is what
-makes the clean URL clickable; it is not what a social-media link-preview crawler will follow, per
-the caveat above. If a fallback link is needed anywhere a redirect can't run (e.g. a platform that
-only shows the raw URL), give the direct hash form instead:
-`https://traigent.ai/#/vibe-agent-building`.
+**Link in post copy:** use the clean human-facing URL (`traigent.ai/vibe-agent-building`). Its
+static document carries the crawlable metadata and redirects browsers to the HashRouter route.
 
 Do not use a stock/AI-generated "robot" or abstract-gradient image — it contradicts the page's own
 visual-direction rule (no purple gradients, no robot art) and would undercut the post. Do not
-claim a page-specific Open Graph/Twitter-card preview will render until this page (or the site)
-has a static or pre-rendered social route — it doesn't exist today.
+claim that a platform will render the attached screenshot as the link-card image; the static route
+provides text-card metadata but deliberately has no `og:image`.
 
 ## Honest notes — no traction guarantee
 
