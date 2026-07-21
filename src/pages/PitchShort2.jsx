@@ -40,6 +40,8 @@ const PRESETS = {
   // frontier (slide 33 of SHORT_SLIDES). This deck grows with more
   // customer-facing "what we do + how it's unique" slides.
   "customer-deck":                 { range:   "24,2,35,33,34,36,37" },
+  // Single-slide one-pager deck (SlideOnePager, SHORT_SLIDES index 40).
+  "one-pager":                     { range:   "40" },
 };
 
 const SLIDE_W = 1280;
@@ -142,7 +144,11 @@ function SlideCanvas({ slide, index, total, scale }) {
 
           <div
             className={`h-full w-full flex items-center justify-center ${
-              slide.title === ONE_PAGER_TITLE ? "" : "px-10 pt-16 pb-12"
+              slide.title === ONE_PAGER_TITLE
+                ? ""
+                : slide.title === "One-Pager"
+                  ? "px-10 pt-6 pb-4"
+                  : "px-10 pt-16 pb-12"
             }`}
           >
             <Slide />

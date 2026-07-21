@@ -23,6 +23,11 @@ const DEMO_URL = "https://meetings-eu1.hubspot.com/amir8";
 // with a different ?range= filter (see PitchShort2.jsx).
 const PITCH_DECK_OPTIONS = [
   {
+    label: "One-pager",
+    desc: "The whole story on one slide · problem → solution → benefits · team",
+    href: "/#/one-pager-deck",
+  },
+  {
     label: "Extended product presentation",
     desc: "Full product deck + live demo (no investor section)",
     href: "/#/extended-product-presentation",

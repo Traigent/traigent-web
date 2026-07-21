@@ -73,6 +73,8 @@ export default function App() {
       <Route path="story" element={<StoryMovie />} />
       <Route path="one-pager" element={<OnePager />} />
       <Route path="one-pager-2" element={<OnePager2 />} />
+      {/* One-pager as a single-slide deck (same format as the other decks) */}
+      <Route path="one-pager-deck" element={<PitchShort2 forcedPreset="one-pager" />} />
 
       <Route path="/" element={<Layout />}>
         <Route index element={<Homepage />} />
