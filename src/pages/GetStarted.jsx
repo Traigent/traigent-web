@@ -1,5 +1,5 @@
 ﻿import React, { useState, useEffect } from "react";
-import { ArrowLeft, ExternalLink } from "lucide-react";
+import { ArrowLeft, Check, Copy, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import InstallCommand from "../components/InstallCommand";
@@ -13,10 +13,14 @@ import {
 import { notifyStartNowRepeat, notifyOtpVerified } from "../lib/hubspotForms";
 import { checkKnownContact } from "../lib/hubspotIdentify";
 import { trackEvent } from "../lib/analytics";
+import { useAgentSetupPrompt } from "../lib/useAgentSetupPrompt";
 import OtpGate from "../components/OtpGate";
 import { isOtpEnabled, isVerified } from "../lib/otpAccess";
 
 const createPageUrl = (path) => path;
+// Cross-agent skill install — mirrors the traigent-skills README and the
+// canonical agent-setup prompt served at /agent-setup/prompt.md.
+const SKILLS_INSTALL_COMMAND = "npx -y skills add Traigent/traigent-skills --skill '*'";
 const TERMINAL_INSTALL_COMMAND = "curl -fsSL https://traigent.ai/install.sh | sh";
 // Switch these defaults to traigent[recommended] once that extras bundle ships.
 const MANUAL_INSTALL_COMMANDS = [
@@ -34,6 +38,7 @@ export default function GetStarted() {
   // Same 90-day localStorage memory as the Start Now modal so a visitor
   // who unlocked there doesn't see the form again here, and vice versa.
   const [unlocked, setUnlocked] = useState(() => isUnlocked());
+  const { copied: promptCopied, copyPrompt } = useAgentSetupPrompt();
   // Install commands render only behind the active gate's success state.
   const hasAccess = otpMode ? verified : unlocked;
 
@@ -77,6 +82,14 @@ export default function GetStarted() {
     markUnlocked(email);
     notifyOtpVerified({ email, location: "get_started_page" });
     setVerified(true);
+  };
+
+  const handleConnectAgent = async () => {
+    const ok = await copyPrompt();
+    trackEvent("connect_agent_clicked", {
+      location: "get_started_page",
+      copied: ok,
+    });
   };
 
   return (
@@ -205,6 +218,45 @@ export default function GetStarted() {
               </a>
             </div>
           </div>
+        </div>
+
+        <div className="mt-10 p-6 rounded-xl bg-slate-900/60 border border-slate-800">
+          <h2 className="text-xl font-semibold mb-2">Drive it from your coding agent</h2>
+          <p className="text-slate-300 mb-4 max-w-3xl">
+            Claude Code, Cursor, Codex, Gemini CLI and 30+ other agents pick up the Traigent skill bundle automatically. They&apos;ll guide you through dry-run-first setup, generate the eval dataset, and apply the best config — without you leaving your editor. Coding agent? Point it at <a href="/agent.md" className="text-blue-300 hover:text-blue-200 underline underline-offset-4">traigent.ai/agent.md</a>.
+          </p>
+          {hasAccess && (
+            <>
+              <InstallCommand
+                command={SKILLS_INSTALL_COMMAND}
+                label="Install all Traigent skills"
+                secondary="Installs all published user-facing Traigent SDK skills; npx copies each one into the right location for your agent."
+                className="mb-6"
+              />
+              <div className="border-t border-slate-800 pt-6">
+                <h3 className="text-lg font-semibold mb-2">Connect your agent in one paste</h3>
+                <p className="text-slate-300 mb-4 max-w-3xl">
+                  Copy the canonical setup prompt and paste it into your coding agent. It installs
+                  the skills and the SDK, wires your <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">TRAIGENT_API_KEY</code>,
+                  and runs a keyless mock optimization to prove the setup — then points you at the
+                  portal to create a key.
+                </p>
+                <button
+                  type="button"
+                  onClick={handleConnectAgent}
+                  aria-label={promptCopied ? "Copied setup prompt" : "Copy setup prompt for your agent"}
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-lg font-medium bg-white text-slate-900 hover:bg-gray-100 transition-colors"
+                >
+                  {promptCopied ? (
+                    <Check className="h-4 w-4 text-emerald-600" />
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
+                  {promptCopied ? "Copied — paste into your agent" : "Connect your agent"}
+                </button>
+              </div>
+            </>
+          )}
         </div>
 
         <div className="mt-12 p-6 rounded-xl bg-gradient-to-br from-indigo-600/20 to-purple-700/20 border border-white/10">
