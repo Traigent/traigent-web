@@ -706,7 +706,7 @@ function SlideMarketOpportunity({ subtitle, painIntro, painItems, waveNote } = {
           A Problem <span className="text-[#4D8EF8]">About to Explode</span>
         </h2>
         <p className="text-xl md:text-2xl text-slate-300 leading-snug">
-          {subtitle || (<>The cost vs. accuracy tuning crisis is just <span className="font-bold text-white">starting</span>.</>)}
+          {subtitle || (<>The AI Agent <span className="font-semibold text-white underline decoration-2 underline-offset-4 px-1 rounded" style={{ textDecorationColor: "#f59e0b", backgroundColor: "rgba(245,158,11,0.18)" }}>cost vs. accuracy tuning</span> crisis is just <span className="font-bold text-white">starting</span>.</>)}
         </p>
       </div>
 
@@ -748,9 +748,9 @@ function SlideMarketOpportunity({ subtitle, painIntro, painItems, waveNote } = {
           </svg>
 
           <div className="mt-auto">
-            {waveNote && (
-              <p className="text-base font-semibold leading-snug mb-2" style={{ color: "#f59e0b" }}>{waveNote}</p>
-            )}
+            <p className="text-base font-semibold leading-snug mb-2" style={{ color: "#f59e0b" }}>
+              {waveNote || "Business and Customer processes being Agentized rapidly"}
+            </p>
             <p className="text-lg text-slate-300 leading-snug">
               Few in production today.<br /><span className="font-bold text-white">Massive rollouts 2026–2030.</span>
             </p>
@@ -772,11 +772,11 @@ function SlideMarketOpportunity({ subtitle, painIntro, painItems, waveNote } = {
           </h3>
           <div className="text-lg leading-snug mb-3">
             <p className="text-slate-300">
-              {painIntro || "Constant re-tuning efforts for cost and accuracy as conditions change:"}
+              {painIntro || "Continuous re-tuning efforts required as conditions change:"}
             </p>
           </div>
           <ul className="text-base text-slate-300 leading-snug space-y-1.5 flex-1 list-disc pl-5">
-            {(painItems || ["New models drop", "Prices shift", "Domain data drifts", "Latency / SLA tightens", "New use cases land", "Failures surface in prod"]).map((x) => (
+            {(painItems || ["New use cases land", "Failures surface in prod", "Business requirements change", "New models drop", "Prices shift", "Domain data drifts"]).map((x) => (
               <li key={x}>{x}</li>
             ))}
           </ul>
@@ -1749,13 +1749,11 @@ function SlideArchitecture() {
 function SlideOnePager() {
   return (
     <div className="w-full self-stretch flex flex-col">
-      <SlideMarketOpportunity
-        subtitle={<>The AI Agent <span className="font-semibold text-white underline decoration-2 underline-offset-4 px-1 rounded" style={{ textDecorationColor: "#f59e0b", backgroundColor: "rgba(245,158,11,0.18)" }}>cost vs. accuracy tuning</span> crisis is just <span className="font-bold text-white">starting</span>.</>}
-        painIntro="Continuous re-tuning efforts required as conditions change:"
-        painItems={["New use cases land", "Failures surface in prod", "Business requirements change", "New models drop", "Prices shift", "Domain data drifts"]}
-        waveNote="Business and Customer processes being Agentized rapidly"
-      />
-      {/* Founders — the only addition to the original slide */}
+      {/* The one-pager's problem/solution/benefits copy now lives in
+          SlideMarketOpportunity's defaults, so every deck's slide 2 stays in
+          sync with the one-pager. The one-pager just adds the founders footer. */}
+      <SlideMarketOpportunity />
+      {/* Founders — the only addition to the shared slide */}
       <div className="max-w-[1180px] mx-auto w-full flex items-center justify-between mt-3 pt-2.5 border-t border-slate-800 text-left">
         <div className="flex gap-8">
           <div className="flex items-baseline gap-2">
