@@ -1588,6 +1588,158 @@ function SlideCustomerTeam() {
   );
 }
 
+// Traffic-light dot — semantic RAG state (kept distinct from the blue brand accent).
+function TrafficDot({ c }) {
+  const map = { r: "#f43f5e", a: "#f59e0b", g: "#34d399" };
+  return (
+    <span
+      className="inline-block w-3 h-3 rounded-full shrink-0"
+      style={{ backgroundColor: map[c], boxShadow: `0 0 10px ${map[c]}99` }}
+    />
+  );
+}
+
+// Slide: THE TRAIGENT METHOD — four pillars, each scored (traffic light),
+// recommended, and improved, on a repeating cycle. Product-concept slide.
+function SlideFourPillars() {
+  const pillars = [
+    { num: "1 · DATASET", name: "The dataset", one: 'What "good" is measured on.',
+      light: "a", label: "Amber", lc: "#f59e0b",
+      rec: "Reconstruct from logs, harden for coverage & discrimination." },
+    { num: "2 · EVALUATION", name: "The evaluation", one: "How we grade it — the scorer & its rules.",
+      light: "r", label: "Red", lc: "#f43f5e",
+      rec: "Manufacture a verifier or calibrate the judge; confirm it picks the true winner." },
+    { num: "3a · DIMENSIONS", name: "The config space", one: "What we can change — the full arsenal.",
+      light: "a", label: "Amber", lc: "#f59e0b",
+      rec: "Diagnose the misses → the vital-few dimensions: model · retrieval · prompt · format · examples · reasoning · multi-model routing …" },
+    { num: "3b · SEARCH", name: "The optimization", one: "How we search — the run sequence.",
+      light: "g", label: "Green", lc: "#34d399",
+      rec: "Seeded hypothesis-chain → the accuracy → cost/latency Pareto." },
+  ];
+  const steps = ["Assess", "Score", "Recommend", "Improve"];
+  return (
+    <div className="w-full">
+      <div className="text-center mb-5">
+        <div className="text-[11px] font-mono uppercase tracking-[0.34em] text-blue-400 mb-2">The Traigent Method</div>
+        <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight">
+          Four Pillars — <span className="text-blue-400">Scored</span>, Recommended,{" "}
+          <span style={{ color: "#34d399" }}>Improved</span>. On repeat.
+        </h2>
+        <p className="text-sm text-slate-400 max-w-3xl mx-auto mt-2 leading-snug">
+          Traigent assesses every optimization along four pillars, scores each red / amber / green,
+          recommends the highest-leverage fix, and improves it — cycle after cycle, until all four hold green.
+        </p>
+      </div>
+      <div className="grid grid-cols-4 gap-3">
+        {pillars.map((p) => (
+          <div key={p.num} className="flex flex-col gap-1.5 bg-slate-900/60 border border-slate-700/50 rounded-xl p-4">
+            <span className="self-start text-[10px] font-mono font-bold text-slate-900 bg-blue-400 rounded px-1.5 py-0.5 tracking-wide">{p.num}</span>
+            <span className="text-base font-bold text-white leading-tight">{p.name}</span>
+            <span className="text-xs text-slate-400 leading-snug">{p.one}</span>
+            <span className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-wider mt-0.5" style={{ color: p.lc }}>
+              <TrafficDot c={p.light} /> {p.label}
+            </span>
+            <span className="mt-auto pt-2 border-t border-slate-700/50 text-xs text-slate-300 leading-snug">
+              <span className="text-slate-500">→</span> {p.rec}
+            </span>
+          </div>
+        ))}
+      </div>
+      <div className="flex items-center justify-center gap-2 mt-6 flex-wrap">
+        {steps.map((s) => (
+          <span key={s} className="flex items-center gap-2">
+            <span className="text-xs font-mono uppercase tracking-widest bg-slate-800/60 border border-slate-700/50 rounded-full px-4 py-1.5 text-slate-200">{s}</span>
+            <span className="text-slate-600">→</span>
+          </span>
+        ))}
+        <span className="text-xs font-mono uppercase tracking-widest rounded-full px-4 py-1.5 font-bold text-slate-900"
+          style={{ background: "linear-gradient(135deg,#60a5fa,#3b82f6)" }}>↻ Repeat</span>
+      </div>
+      <div className="flex items-center justify-center gap-6 mt-4 text-[11px] font-mono uppercase tracking-wider text-slate-500">
+        <span className="flex items-center gap-1.5"><TrafficDot c="r" /> Blocking</span>
+        <span className="flex items-center gap-1.5"><TrafficDot c="a" /> Works, weak</span>
+        <span className="flex items-center gap-1.5"><TrafficDot c="g" /> Strong · graduate at all-green</span>
+      </div>
+    </div>
+  );
+}
+
+// Slide: THE SYSTEM — local (coding agent + SDK + skills) ↔ Traigent cloud
+// (backend + frontend), joined by the connective files (run-plans, agg ledger,
+// harness registry). Product-concept slide.
+function SlideArchitecture() {
+  const files = [
+    ["Run-plans", "hypothesis nodes"],
+    ["Aggregate ledger", "the chain of results"],
+    ["Harness / scheme registry", "reproducibility"],
+  ];
+  const be = ["Smart optimizer", "Next-step planner", "Traffic-light scoring", "Registries"];
+  const fe = ["Four-pillar scores", "Run-plan chain", "Pareto frontier", "Approve gate"];
+  return (
+    <div className="w-full">
+      <div className="text-center mb-5">
+        <div className="text-[11px] font-mono uppercase tracking-[0.34em] text-blue-400 mb-2">How it runs</div>
+        <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight">
+          Your coding agent. <span className="text-blue-400">Traigent&apos;s brain.</span>
+        </h2>
+        <p className="text-sm text-slate-400 max-w-3xl mx-auto mt-2 leading-snug">
+          Point Claude Code or Codex at your agent. Your data stays local; the cloud conducts the search and
+          plans each next step; the portal shows the whole chain.
+        </p>
+      </div>
+      <div className="grid grid-cols-[1fr_0.82fr_1fr] gap-3 items-stretch">
+        {/* LOCAL */}
+        <div className="flex flex-col gap-2 bg-slate-900/60 rounded-xl p-4 border" style={{ borderColor: "rgba(59,130,246,.4)" }}>
+          <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-blue-400">On your machine · local</div>
+          <div className="text-sm font-semibold rounded-lg px-3 py-2" style={{ background: "rgba(59,130,246,.14)", border: "1px solid rgba(59,130,246,.35)", color: "#dbeafe" }}>Claude Code / Codex — your coding agent</div>
+          <div className="text-sm rounded-lg px-3 py-2 bg-slate-800/50 border border-slate-700/50 text-slate-200">Traigent SDK</div>
+          <div className="text-sm rounded-lg px-3 py-2 bg-slate-800/50 border border-slate-700/50 text-slate-200">Traigent Skills</div>
+          <div className="text-xs text-slate-400 leading-snug mt-1">
+            Assesses the pillars · <span className="text-slate-200 font-semibold">authors run-plans</span> · executes the harness
+            (real evals) · keeps your <span className="text-slate-200 font-semibold">data + traces local</span>.
+          </div>
+        </div>
+        {/* SPINE — connective files */}
+        <div className="flex flex-col items-center justify-center gap-2 rounded-xl p-3 border border-dashed border-slate-600/70">
+          <div className="text-[10px] font-mono uppercase tracking-[0.16em]" style={{ color: "#a78bfa" }}>The connective files</div>
+          {files.map(([t, s]) => (
+            <div key={t} className="w-full text-center text-sm font-semibold bg-slate-800/50 border border-slate-600/70 rounded-lg px-2 py-2">
+              {t}
+              <span className="block text-[10px] font-mono uppercase tracking-wide text-slate-500 font-normal mt-0.5">{s}</span>
+            </div>
+          ))}
+          <div className="flex justify-between w-full text-[10px] font-mono mt-0.5">
+            <span className="text-blue-400">▲ plans · results</span>
+            <span style={{ color: "#34d399" }}>plan · seeds ▼</span>
+          </div>
+        </div>
+        {/* CLOUD */}
+        <div className="flex flex-col gap-2 bg-slate-900/60 border border-slate-700/50 rounded-xl p-4">
+          <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-slate-500">Traigent cloud</div>
+          <div className="grid grid-rows-2 gap-2 flex-1">
+            <div className="rounded-lg p-3 bg-slate-800/50 border border-slate-700/50 flex flex-col gap-1.5">
+              <div className="text-[10px] font-mono uppercase tracking-[0.16em]" style={{ color: "#34d399" }}>Backend · the conductor</div>
+              <div className="flex flex-wrap gap-1.5">
+                {be.map((t) => (<span key={t} className="text-[11px] bg-slate-900/70 border border-slate-700/50 rounded px-2 py-1 text-slate-200">{t}</span>))}
+              </div>
+            </div>
+            <div className="rounded-lg p-3 bg-slate-800/50 border border-slate-700/50 flex flex-col gap-1.5">
+              <div className="text-[10px] font-mono uppercase tracking-[0.16em]" style={{ color: "#a78bfa" }}>Frontend · the cockpit</div>
+              <div className="flex flex-wrap gap-1.5">
+                {fe.map((t) => (<span key={t} className="text-[11px] bg-slate-900/70 border border-slate-700/50 rounded px-2 py-1 text-slate-200">{t}</span>))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p className="text-center text-sm text-slate-300 mt-5">
+        <span className="text-blue-400 font-semibold">Point your coding agent at your agent</span> — data stays local,
+        the cloud conducts, the portal shows the whole provenance chain.
+      </p>
+    </div>
+  );
+}
+
 export const SHORT_SLIDES = [
   // ----- TEXT-ONLY ONE-PAGER (opener — swapped in from slot 22) -----
   { title: "One-Pager Test — Text Only (V2)", section: "Traigent intro", component: SlideOnePagerTextTestV2 },
@@ -1649,6 +1801,9 @@ export const SHORT_SLIDES = [
   { title: "The Optimum Is a Moving Target (dataset + continuous)", section: "Customer", component: SlideCustomerContinuous },
   // ----- CUSTOMER DECK — TEAM & IP (experts + secret-sauce algorithms) -----
   { title: "Built by ML & AI Experts — The Algorithms Are the Secret Sauce", section: "Customer", component: SlideCustomerTeam },
+  // ----- PRODUCT CONCEPT (four-pillar method + system architecture) — indices 38, 39 -----
+  { title: "The Traigent Method — Four Pillars, Scored & Improved", section: "Concept", component: SlideFourPillars },
+  { title: "The System — Your Coding Agent + Traigent Cloud", section: "Concept", component: SlideArchitecture },
 ];
 
 export default function PitchShort() {
