@@ -143,6 +143,7 @@ function Dropdown({ label, items, isOpen, onOpen, onClose, onScroll }) {
       onMouseLeave={onClose}
     >
       <button
+        type="button"
         className="flex items-center gap-1 text-slate-300 hover:text-white transition-colors"
         onClick={() => (isOpen ? onClose() : onOpen())}
       >
@@ -413,6 +414,7 @@ export default function TopNav() {
                 Open portal
               </button>
               <button
+                type="button"
                 onClick={() => {
                   trackEvent("start_now_clicked", { location: "topnav" });
                   setShowStartNow(true);

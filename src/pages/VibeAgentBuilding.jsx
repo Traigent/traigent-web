@@ -26,29 +26,11 @@ const DEFINITION_TEXT =
 const SHARE_TEXT =
   `Vibe coding asks you to trust the developer's vibes. Vibe Agent Building asks the agent to earn your trust — on tests you wrote. → https://traigent.ai/vibe-agent-building`;
 
-// Copies text via the async Clipboard API where available, falling back to a
-// hidden textarea + execCommand for insecure contexts / older browsers.
 async function copyText(text) {
-  if (navigator.clipboard && window.isSecureContext) {
-    await navigator.clipboard.writeText(text);
-    return;
+  if (!navigator.clipboard || !window.isSecureContext) {
+    throw new Error("Clipboard API unavailable");
   }
-  const el = document.createElement("textarea");
-  el.value = text;
-  el.style.position = "fixed";
-  el.style.opacity = "0";
-  document.body.appendChild(el);
-  el.focus();
-  el.select();
-  let ok = false;
-  try {
-    ok = document.execCommand("copy");
-  } catch {
-    ok = false;
-  } finally {
-    document.body.removeChild(el);
-  }
-  if (!ok) throw new Error("copy command failed");
+  await navigator.clipboard.writeText(text);
 }
 
 function CopyButton({ text, label, copiedLabel, errorLabel, trackName, className }) {
@@ -66,6 +48,23 @@ function CopyButton({ text, label, copiedLabel, errorLabel, trackName, className
     }
   };
 
+  let content = (
+    <>
+      <Copy className="w-3.5 h-3.5" />
+      {label}
+    </>
+  );
+  if (state === "copied") {
+    content = (
+      <>
+        <Check className="w-3.5 h-3.5 text-amber-400" />
+        {copiedLabel || "Copied"}
+      </>
+    );
+  } else if (state === "error") {
+    content = <span className="text-red-400">{errorLabel || "Couldn't copy — select the text manually"}</span>;
+  }
+
   return (
     <button
       type="button"
@@ -75,19 +74,7 @@ function CopyButton({ text, label, copiedLabel, errorLabel, trackName, className
         "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-700 hover:border-amber-400 text-slate-300 hover:text-white text-xs sm:text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400"
       }
     >
-      {state === "copied" ? (
-        <>
-          <Check className="w-3.5 h-3.5 text-amber-400" />
-          {copiedLabel || "Copied"}
-        </>
-      ) : state === "error" ? (
-        <span className="text-red-400">{errorLabel || "Couldn't copy — select the text manually"}</span>
-      ) : (
-        <>
-          <Copy className="w-3.5 h-3.5" />
-          {label}
-        </>
-      )}
+      {content}
     </button>
   );
 }
@@ -231,16 +218,15 @@ function LoopDiagram() {
 
   return (
     <div>
-      <div
-        className="flex flex-wrap items-start justify-center gap-x-1 gap-y-6 mb-6"
-        role="list"
+      <ol
+        className="flex flex-wrap items-start justify-center gap-x-1 gap-y-6 mb-6 list-none m-0 p-0"
         aria-label="The Vibe Agent Building loop, five stations"
       >
         {LOOP_STEPS.map((step, i) => {
           const color = step.owner === "human" ? AMBER : BLUE;
           const isActive = !prefersReducedMotion && i === active;
           return (
-            <div key={step.id} className="flex items-start" role="listitem">
+            <li key={step.id} className="flex items-start">
               <div className="flex flex-col items-center gap-1.5 text-center w-20 sm:w-24">
                 <motion.div
                   animate={
@@ -267,10 +253,10 @@ function LoopDiagram() {
                   aria-hidden="true"
                 />
               )}
-            </div>
+            </li>
           );
         })}
-      </div>
+      </ol>
 
       {prefersReducedMotion ? (
         <ul className="space-y-2 max-w-2xl mx-auto">
@@ -367,8 +353,8 @@ function TerminalScene() {
         <span className="ml-2 text-xs font-mono">agent session</span>
       </div>
       <div className="p-4 sm:p-5 font-mono text-xs sm:text-sm space-y-3 max-h-[26rem] overflow-y-auto">
-        {lines.map((l, i) => (
-          <p key={i} className="leading-relaxed break-words">
+        {lines.map((l) => (
+          <p key={`${l.who}-${l.text}`} className="leading-relaxed break-words">
             <span className="font-bold" style={{ color: l.who === "you" ? AMBER : BLUE }}>
               {l.who} ▸{" "}
             </span>
@@ -383,18 +369,8 @@ function TerminalScene() {
 // FeedbackDemo — motion moment M2. Cycles a thumbs-down note becoming a new
 // evaluation example when motion is allowed; shows both frames side by side,
 // statically, when reduced motion is preferred.
-function FeedbackDemo() {
-  const prefersReducedMotion = useReducedMotion();
-  const [phase, setPhase] = useState("before"); // "before" | "after"
-  const [isPaused, setIsPaused] = useState(false);
-
-  useEffect(() => {
-    if (prefersReducedMotion || isPaused) return;
-    const id = setInterval(() => setPhase((p) => (p === "before" ? "after" : "before")), 3600);
-    return () => clearInterval(id);
-  }, [isPaused, prefersReducedMotion]);
-
-  const DraftCard = () => (
+function DraftCard() {
+  return (
     <div className="bg-slate-900/70 border border-slate-800 rounded-xl p-4 text-sm">
       <div className="text-[10px] font-mono uppercase tracking-wider text-slate-500 mb-2">
         Agent draft · lead reply #31
@@ -412,8 +388,10 @@ function FeedbackDemo() {
       </div>
     </div>
   );
+}
 
-  const EvalStack = () => (
+function EvalStack() {
+  return (
     <div className="bg-slate-900/70 border border-amber-500/30 rounded-xl p-4 flex flex-col items-center justify-center text-center h-full">
       <div className="text-[10px] font-mono uppercase tracking-wider text-slate-500 mb-2">
         Your evaluation set
@@ -425,6 +403,18 @@ function FeedbackDemo() {
       </div>
     </div>
   );
+}
+
+function FeedbackDemo() {
+  const prefersReducedMotion = useReducedMotion();
+  const [phase, setPhase] = useState("before"); // "before" | "after"
+  const [isPaused, setIsPaused] = useState(false);
+
+  useEffect(() => {
+    if (prefersReducedMotion || isPaused) return;
+    const id = setInterval(() => setPhase((p) => (p === "before" ? "after" : "before")), 3600);
+    return () => clearInterval(id);
+  }, [isPaused, prefersReducedMotion]);
 
   if (prefersReducedMotion) {
     return (
@@ -796,21 +786,21 @@ export default function VibeAgentBuilding() {
               coding-agent plugin or AGENT.md edit required — and shows what, if anything, clears
               your bar, what it costs, and what still fails.
             </p>
-            <div className="grid sm:grid-cols-3 gap-3 max-w-3xl mx-auto mb-8" role="list" aria-label="Traigent lifecycle proof">
+            <ol className="grid sm:grid-cols-3 gap-3 max-w-3xl mx-auto mb-8 list-none m-0 p-0" aria-label="Traigent lifecycle proof">
               {[
                 ["1", "Strengthen the bar", "Examples and evaluator earn trust first."],
                 ["2", "Challenge the agent", "Candidates face the bar you approved."],
                 ["3", "Decide with evidence", "Margin, cost, and failures stay visible."],
               ].map(([n, title, detail]) => (
-                <div key={n} role="listitem" className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 text-left">
+                <li key={n} className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 text-left">
                   <div className="font-mono text-xs mb-2" style={{ color: n === "2" ? BLUE : AMBER }}>
                     {n.padStart(2, "0")}
                   </div>
                   <h3 className="text-white font-semibold mb-1">{title}</h3>
                   <p className="text-slate-400 text-sm leading-relaxed">{detail}</p>
-                </div>
+                </li>
               ))}
-            </div>
+            </ol>
             <p className="text-center text-slate-400 text-sm md:text-base">
               Ready to connect the agent you already have?{" "}
               <Link
@@ -885,8 +875,8 @@ export default function VibeAgentBuilding() {
                     className="text-slate-300 underline underline-offset-4 decoration-slate-600 hover:text-white hover:decoration-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                   >
                     GitHub
-                  </a>
-                  . Bring one agent and the evals or real cases you already trust — that's enough
+                  </a>{". "}
+                  Bring one agent and the evals or real cases you already trust — that's enough
                   to start.
                 </p>
                 <div className="flex flex-col items-center gap-2">
