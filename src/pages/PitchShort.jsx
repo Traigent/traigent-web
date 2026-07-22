@@ -697,18 +697,20 @@ function SlideMarketAndRevenue() {
 // Narrative: the wave (few in production, exponential explosion coming) →
 // the pain (sticker shock + 25+ knob re-tune every release) → the play
 // (Traigent as essential infra for the agent economy).
-function SlideMarketOpportunity({ subtitle, painIntro, painItems, waveNote } = {}) {
+export function SlideMarketOpportunity({ subtitle, painIntro, painItems, waveNote, hideHeader, compact } = {}) {
   return (
-    <div className="w-full max-w-[1180px] mx-auto text-center self-stretch flex flex-col min-h-[600px]">
+    <div className={`w-full max-w-[1180px] mx-auto text-center self-stretch flex flex-col ${compact ? "" : "min-h-[600px]"}`}>
       {/* Title */}
-      <div className="mb-4">
-        <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight tracking-tight mb-2">
-          A Problem <span className="text-[#4D8EF8]">About to Explode</span>
-        </h2>
-        <p className="text-xl md:text-2xl text-slate-300 leading-snug">
-          {subtitle || (<>The AI Agent <span className="font-semibold text-white underline decoration-2 underline-offset-4 px-1 rounded" style={{ textDecorationColor: "#f59e0b", backgroundColor: "rgba(245,158,11,0.18)" }}>cost vs. accuracy tuning</span> crisis is just <span className="font-bold text-white">starting</span>.</>)}
-        </p>
-      </div>
+      {!hideHeader && (
+        <div className="mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight tracking-tight mb-2">
+            A Problem <span className="text-[#4D8EF8]">About to Explode</span>
+          </h2>
+          <p className="text-xl md:text-2xl text-slate-300 leading-snug">
+            {subtitle || (<>The AI Agent <span className="font-semibold text-white underline decoration-2 underline-offset-4 px-1 rounded" style={{ textDecorationColor: "#f59e0b", backgroundColor: "rgba(245,158,11,0.18)" }}>cost vs. accuracy tuning</span> crisis is just <span className="font-bold text-white">starting</span>.</>)}
+          </p>
+        </div>
+      )}
 
       {/* Three columns: THE WAVE / THE PAIN / THE PLAY */}
       <div className="grid grid-cols-3 gap-4 flex-1">
