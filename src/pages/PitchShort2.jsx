@@ -40,8 +40,10 @@ const PRESETS = {
   // frontier (slide 33 of SHORT_SLIDES). This deck grows with more
   // customer-facing "what we do + how it's unique" slides.
   "customer-deck":                 { range:   "24,2,35,33,34,36,37" },
-  // Single-slide one-pager deck (SlideOnePager, SHORT_SLIDES index 40).
-  "one-pager":                     { range:   "40" },
+  // Single-slide one-pager deck (SlideOnePager, SHORT_SLIDES index 40) — investors.
+  "one-pager-investors":           { range:   "40" },
+  // Prospect one-pager (index 41) — same slide, WITHOUT the founders footer.
+  "one-pager-prospects":           { range:   "41" },
 };
 
 const SLIDE_W = 1280;

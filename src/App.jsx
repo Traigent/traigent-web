@@ -74,7 +74,10 @@ export default function App() {
       <Route path="one-pager" element={<OnePager />} />
       <Route path="one-pager-2" element={<OnePager2 />} />
       {/* One-pager as a single-slide deck (same format as the other decks) */}
-      <Route path="one-pager-deck" element={<PitchShort2 forcedPreset="one-pager" />} />
+      <Route path="one-pager-investors" element={<PitchShort2 forcedPreset="one-pager-investors" />} />
+      {/* legacy alias so /one-pager-deck keeps working after the rename */}
+      <Route path="one-pager-deck" element={<PitchShort2 forcedPreset="one-pager-investors" />} />
+      <Route path="one-pager-prospects" element={<PitchShort2 forcedPreset="one-pager-prospects" />} />
 
       <Route path="/" element={<Layout />}>
         <Route index element={<Homepage />} />
