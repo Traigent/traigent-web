@@ -1777,6 +1777,16 @@ function SlideOnePager() {
   );
 }
 
+// Slide: ONE-PAGER (PROSPECTS) — identical to the investor one-pager
+// (SlideOnePager) but WITHOUT the founders footer (no names/emails, no "active
+// design partners"). For customers & channels. It's just the shared
+// market/problem/solution slide on its own, so it takes standard canvas padding
+// (the reduced-padding special case in SlideCanvas keys off the "One-Pager"
+// title, which this one deliberately does not use).
+function SlideOnePagerProspect() {
+  return <SlideMarketOpportunity />;
+}
+
 export const SHORT_SLIDES = [
   // ----- TEXT-ONLY ONE-PAGER (opener — swapped in from slot 22) -----
   { title: "One-Pager Test — Text Only (V2)", section: "Traigent intro", component: SlideOnePagerTextTestV2 },
@@ -1843,6 +1853,8 @@ export const SHORT_SLIDES = [
   { title: "The System — Your Coding Agent + Traigent Cloud", section: "Concept", component: SlideArchitecture },
   // ----- ONE-PAGER (index 40) — its own single-slide deck via the "one-pager" preset -----
   { title: "One-Pager", section: "One-pager", component: SlideOnePager },
+  // ----- ONE-PAGER (PROSPECTS, index 41) — investor one-pager minus the founders footer -----
+  { title: "One-Pager (Prospects)", section: "One-pager", component: SlideOnePagerProspect },
 ];
 
 export default function PitchShort() {
