@@ -137,15 +137,15 @@ export default function HomepagePreview() {
         }}></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 md:pt-10 pb-2 md:pb-3">
           {/* Centered hero content */}
-          <div className="text-center max-w-6xl mx-auto">
+          <div className="text-center max-w-7xl mx-auto">
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.15 }}
               className="whitespace-nowrap font-bold text-slate-100 leading-[1.15] tracking-tight mb-6"
-              style={{ fontSize: 'clamp(0.8rem, 3.6vw, 2.85rem)', letterSpacing: '-0.02em' }}
+              style={{ fontSize: 'clamp(1rem, 4.5vw, 3.6rem)', letterSpacing: '-0.02em' }}
             >
-              Vibe <span className="text-[#4D8EF8]">High Accuracy</span> and <span className="text-[#f59e0b]">Low Cost</span> <span className="text-white">AI Agents</span>
+              Vibe <span className="text-[#4D8EF8]">Accurate</span> yet <span className="text-[#f59e0b]">Low Cost</span> <span className="text-white">AI Agents</span>
             </motion.p>
             {/* Hero CTA row — primary "Connect your coding agent to Traigent"
                 (copies the keyless setup prompt) followed by the "Agent
