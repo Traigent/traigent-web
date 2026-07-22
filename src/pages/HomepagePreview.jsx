@@ -147,27 +147,16 @@ export default function HomepagePreview() {
             >
               Vibe <span className="text-[#4D8EF8]">High Accuracy</span> and <span className="text-[#f59e0b]">Low Cost</span> <span className="text-white">AI Agents</span>
             </motion.p>
-            {/* "Agent Optimization Demo" — 1-minute narrated walkthrough CTA, with a
-                prominent play button so it reads as "watch video" at a glance. */}
+            {/* Hero CTA row — primary "Connect your coding agent to Traigent"
+                (copies the keyless setup prompt) followed by the "Agent
+                Optimization Demo" narrated walkthrough. */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.19 }}
               className="flex flex-wrap items-center justify-center gap-3 mb-10"
             >
-              <Link
-                to="/story"
-                onClick={() => trackEvent("hero_video_clicked", { destination: "story" })}
-                className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-slate-900/60 border border-slate-700 hover:border-blue-500/60 hover:bg-slate-900/80 transition-colors group"
-              >
-                <span className="flex items-center justify-center w-10 h-10 rounded-full bg-[#1A6BF5] group-hover:bg-[#4D8EF8] transition-colors shadow-lg shadow-blue-500/30">
-                  <Play className="w-4 h-4 text-white fill-white ml-0.5" />
-                </span>
-                <span className="text-base md:text-lg font-medium text-slate-100">
-                  Agent Optimization Demo
-                </span>
-              </Link>
-              {/* Secondary CTA — copies the canonical keyless setup prompt
+              {/* Primary CTA — copies the canonical keyless setup prompt
                   (served at /agent-setup/prompt.md) so a coding agent can wire
                   up Traigent in one paste. */}
               <button
@@ -184,9 +173,21 @@ export default function HomepagePreview() {
                   )}
                 </span>
                 <span className="text-base md:text-lg font-medium text-slate-100">
-                  {promptCopied ? "Copied — paste into your coding agent" : "Connect your coding agent"}
+                  {promptCopied ? "Copied — paste into your coding agent" : "Connect your coding agent to Traigent"}
                 </span>
               </button>
+              <Link
+                to="/story"
+                onClick={() => trackEvent("hero_video_clicked", { destination: "story" })}
+                className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-slate-900/60 border border-slate-700 hover:border-blue-500/60 hover:bg-slate-900/80 transition-colors group"
+              >
+                <span className="flex items-center justify-center w-10 h-10 rounded-full bg-[#1A6BF5] group-hover:bg-[#4D8EF8] transition-colors shadow-lg shadow-blue-500/30">
+                  <Play className="w-4 h-4 text-white fill-white ml-0.5" />
+                </span>
+                <span className="text-base md:text-lg font-medium text-slate-100">
+                  Agent Optimization Demo
+                </span>
+              </Link>
             </motion.div>
             {/* Two-column value summary removed — the "A Problem About to Explode"
                 (SlideMarketOpportunity) graphic below now sits directly under the hero. */}
