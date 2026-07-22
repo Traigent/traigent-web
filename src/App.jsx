@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import Homepage from './pages/Homepage'
+import HomepagePreview from './pages/HomepagePreview'
 import GetStarted from './pages/GetStarted'
 import OnePager from './pages/OnePager'
 import OnePager2 from './pages/OnePager2'
@@ -81,6 +82,9 @@ export default function App() {
 
       <Route path="/" element={<Layout />}>
         <Route index element={<Homepage />} />
+        {/* Hidden new-site concept playground (noindex, unlinked). Promote later
+            by pointing the index route at HomepagePreview. */}
+        <Route path="preview" element={<HomepagePreview />} />
         <Route path="get-started" element={<GetStarted />} />
         <Route path="value-proposition" element={<ValueProposition />} />
         <Route path="blog" element={<Blog />} />
