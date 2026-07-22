@@ -8,7 +8,7 @@ import {
   BenchmarkCardBody,
   ObservabilityCardBody,
 } from "../components/PlatformShowcase";
-import { SlideParetoFrontier } from "./PitchShort";
+import { SlideMarketOpportunity } from "./PitchShort";
 import { Link } from "react-router-dom";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -135,40 +135,17 @@ export default function HomepagePreview() {
         <div className="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[900px] h-[600px] pointer-events-none" style={{
           background: 'radial-gradient(ellipse, rgba(26,107,245,0.18) 0%, transparent 70%)'
         }}></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 md:pt-14 pb-6 md:pb-8">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 md:pt-10 pb-2 md:pb-3">
           {/* Centered hero content */}
-          <div className="text-center max-w-4xl mx-auto">
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.55] tracking-tight mb-6"
-              style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.03em' }}
-            >
-              AI Agent Optimization<br />
-              <span className="text-[#4D8EF8]">Fully Automated</span>
-            </motion.h1>
+          <div className="text-center max-w-6xl mx-auto">
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.15 }}
-              className="text-2xl md:text-3xl lg:text-[2rem] text-slate-300 leading-snug mb-3"
+              className="whitespace-nowrap font-bold text-slate-100 leading-[1.15] tracking-tight mb-6"
+              style={{ fontSize: 'clamp(0.8rem, 3.6vw, 2.85rem)', letterSpacing: '-0.02em' }}
             >
-              <span className="font-bold text-white">Rapidly</span> finds <span className="font-bold text-[#4D8EF8]">High Accuracy</span> and <span className="font-bold text-[#f59e0b]">Low Cost</span>
-            </motion.p>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.18 }}
-              className="text-2xl md:text-3xl lg:text-[2rem] text-slate-300 leading-snug mb-6 whitespace-nowrap"
-            >
-              yielding configurations among{" "}
-              <Link
-                to="/knob-explorer"
-                className="font-bold text-white underline underline-offset-4 decoration-white/40 hover:decoration-white transition-colors"
-              >
-                thousands possible
-              </Link>
+              Vibe <span className="text-[#4D8EF8]">High Accuracy</span> and <span className="text-[#f59e0b]">Low Cost</span> <span className="text-white">AI Agents</span>
             </motion.p>
             {/* "Agent Optimization Demo" — 1-minute narrated walkthrough CTA, with a
                 prominent play button so it reads as "watch video" at a glance. */}
@@ -207,130 +184,14 @@ export default function HomepagePreview() {
                   )}
                 </span>
                 <span className="text-base md:text-lg font-medium text-slate-100">
-                  {promptCopied ? "Copied — paste into your agent" : "Connect your agent"}
+                  {promptCopied ? "Copied — paste into your coding agent" : "Connect your coding agent"}
                 </span>
               </button>
             </motion.div>
-            {/* Two-column value summary: HOW (method) + BENEFITS (outcomes) */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="grid md:grid-cols-2 gap-5 md:gap-6 max-w-4xl mx-auto mb-6 text-left"
-            >
-              {/* Left — how Traigent finds the optimum */}
-              <div className="bg-slate-900/50 border-2 rounded-2xl p-6 md:p-7" style={{ borderColor: "rgba(26, 107, 245, 0.35)" }}>
-                <a
-                  href="#product"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    document.getElementById("product")?.scrollIntoView({ behavior: "smooth", block: "start" });
-                    trackEvent("hero_aop_chip_clicked", { destination: "product" });
-                  }}
-                  className="block w-fit mx-auto px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-[10px] md:text-[11px] font-mono tracking-widest hover:bg-blue-500/20 hover:border-blue-500/60 transition-colors mb-4"
-                  style={{ color: "#4D8EF8" }}
-                >
-                  AGENT OPTIMIZATION PLATFORM
-                </a>
-                <ul className="space-y-3">
-                  {[
-                    <><span className="text-white font-semibold underline underline-offset-4 decoration-2 decoration-[#4D8EF8]/70">Finds the optimal model and configuration combo</span> in <span className="text-white font-semibold">hours, not weeks</span>.</>,
-                    <><span className="text-white font-semibold">Automatically</span>, not manually.</>,
-                    <>With <span className="text-white font-semibold">confidence</span>, not guesswork.</>,
-                    <><span className="font-semibold" style={{ color: "#4D8EF8" }}>High Accuracy</span>, <span className="font-semibold" style={{ color: "#f59e0b" }}>Low Cost</span> — <span className="text-white font-semibold">Continuously</span>.</>,
-                  ].map((item, i) => (
-                    <li key={i} className="flex items-start gap-2.5 text-slate-300 leading-snug">
-                      <Check className="w-5 h-5 mt-0.5 flex-shrink-0 text-[#4D8EF8]" strokeWidth={3} />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            {/* Two-column value summary removed — the "A Problem About to Explode"
+                (SlideMarketOpportunity) graphic below now sits directly under the hero. */}
 
-              {/* Right — what you get out of it */}
-              <div className="bg-gradient-to-br from-blue-500/10 to-slate-900/0 border-2 rounded-2xl p-6 md:p-7" style={{ borderColor: "#1A6BF5" }}>
-                <span
-                  className="block w-fit mx-auto px-3 py-1 rounded-full bg-blue-500/15 border border-blue-500/40 text-[10px] md:text-[11px] font-mono tracking-widest mb-4"
-                  style={{ color: "#4D8EF8" }}
-                >
-                  TRAIGENT BENEFITS
-                </span>
-                <ul className="space-y-3">
-                  {[
-                    {
-                      content: <><span className="text-white font-semibold">Reduce engineering costs.</span></>,
-                      to: "/ttm",
-                      linkLabel: "TTM calc",
-                    },
-                    {
-                      content: <><span className="text-white font-semibold">Save LLM costs</span> over the lifecycle.</>,
-                      to: "/roi",
-                      linkLabel: "ROI calc",
-                    },
-                    {
-                      content: <><span className="text-white font-semibold">Shorten time to market.</span></>,
-                    },
-                    {
-                      content: <>Ship with <span className="text-white font-semibold">100% confidence</span>.</>,
-                    },
-                  ].map((b, i) => (
-                    <li key={i} className="flex items-start gap-2.5 text-slate-300 leading-snug">
-                      <Check className="w-5 h-5 mt-0.5 flex-shrink-0 text-[#4D8EF8]" strokeWidth={3} />
-                      <span className="flex-1">
-                        {b.content}
-                        {b.to && (
-                          <>
-                            {" "}
-                            <Link
-                              to={b.to}
-                              className="inline-flex items-center gap-0.5 text-[#4D8EF8] hover:text-white underline underline-offset-2 decoration-[#4D8EF8]/50 hover:decoration-white font-medium whitespace-nowrap"
-                            >
-                              {b.linkLabel} →
-                            </Link>
-                          </>
-                        )}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </motion.div>
-
-            {/* Design Partners & Early Adopters */}
-            <motion.div
-              id="customers"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="mt-6 md:mt-8 mb-6 md:mb-8 scroll-mt-20"
-            >
-              <p className="text-center text-sm md:text-base text-slate-300 uppercase tracking-widest font-bold mb-8">Customers</p>
-              <div className="relative overflow-hidden">
-                <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#080808] to-transparent z-10"></div>
-                <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#080808] to-transparent z-10"></div>
-                <div className="flex gap-16 items-center animate-scroll" style={{ width: 'max-content', animation: 'scroll 40s linear infinite' }}>
-                  {/* 8 copies of the 5-logo set so total content is always wide
-                      enough to keep the right half filled on large viewports.
-                      The animation translates -50% (= 4 copies), which lands
-                      on the visually-identical 5th copy → seamless loop. */}
-                  {[...Array(8)].map((_, setIndex) => (
-                    <React.Fragment key={setIndex}>
-                      <div className="text-slate-300 text-xl md:text-2xl font-bold whitespace-nowrap">Bazak</div>
-                      <div className="text-slate-300 text-xl md:text-2xl font-bold whitespace-nowrap">iForAI</div>
-                      <div className="text-slate-300 text-xl md:text-2xl font-bold whitespace-nowrap">Cloudzone</div>
-                      <div className="text-slate-300 text-xl md:text-2xl font-bold whitespace-nowrap">Profisea</div>
-                      <div className="text-slate-300 text-xl md:text-2xl font-bold whitespace-nowrap">Yotpo</div>
-                    </React.Fragment>
-                  ))}
-                </div>
-              </div>
-              <style>{`
-                @keyframes scroll {
-                  from { transform: translateX(0); }
-                  to { transform: translateX(-50%); }
-                }
-              `}</style>
-            </motion.div>
+            {/* Customers band moved out of the hero — now its own section below. */}
           </div>
 
         </div>
@@ -339,9 +200,38 @@ export default function HomepagePreview() {
       {/* How It Works — three-panel BEFORE / TRAIGENT / AFTER story.
           Component is shared with /pitch-short(-2) slide 21 so the visual
           stays identical between the homepage and the deck. */}
-      <section className="pt-2 md:pt-4 pb-16 md:pb-20 bg-[#080808]">
+      <section className="pt-0 pb-8 md:pb-10 bg-[#080808]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SlideParetoFrontier />
+          <SlideMarketOpportunity hideHeader compact />
+        </div>
+      </section>
+
+      {/* Customers — scrolling design-partner / early-adopter band, sits below
+          the "A Problem About to Explode" market band. */}
+      <section id="customers" className="py-12 md:py-16 bg-[#080808] border-t border-slate-800/50 scroll-mt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <p className="text-center text-sm md:text-base text-slate-300 uppercase tracking-widest font-bold mb-8">Customers</p>
+          <div className="relative overflow-hidden">
+            <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#080808] to-transparent z-10"></div>
+            <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#080808] to-transparent z-10"></div>
+            <div className="flex gap-16 items-center animate-scroll" style={{ width: 'max-content', animation: 'scroll 40s linear infinite' }}>
+              {[...Array(8)].map((_, setIndex) => (
+                <React.Fragment key={setIndex}>
+                  <div className="text-slate-300 text-xl md:text-2xl font-bold whitespace-nowrap">Bazak</div>
+                  <div className="text-slate-300 text-xl md:text-2xl font-bold whitespace-nowrap">iForAI</div>
+                  <div className="text-slate-300 text-xl md:text-2xl font-bold whitespace-nowrap">Cloudzone</div>
+                  <div className="text-slate-300 text-xl md:text-2xl font-bold whitespace-nowrap">Profisea</div>
+                  <div className="text-slate-300 text-xl md:text-2xl font-bold whitespace-nowrap">Yotpo</div>
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+          <style>{`
+            @keyframes scroll {
+              from { transform: translateX(0); }
+              to { transform: translateX(-50%); }
+            }
+          `}</style>
         </div>
       </section>
 
