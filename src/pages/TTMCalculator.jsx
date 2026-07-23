@@ -77,6 +77,8 @@ function SliderRow({ icon: Icon, label, value, valuePrefix = "", suffix, min, ma
         step={step}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
+        aria-label={label}
+        aria-valuetext={`${valuePrefix}${value}${suffix ? ` ${suffix}` : ""}`}
         className="w-full"
         style={{ accentColor: accent }}
       />

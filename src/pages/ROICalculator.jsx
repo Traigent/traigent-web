@@ -276,6 +276,7 @@ export default function ROICalculator() {
                     <button
                       key={p.value}
                       type="button"
+                      aria-pressed={active}
                       onClick={() => {
                         setMonthlySpend(p.value);
                         trackEvent("roi_spend_preset_clicked", { preset: p.value });
@@ -301,6 +302,8 @@ export default function ROICalculator() {
                 step="1"
                 value={positionFromSpend(monthlySpend)}
                 onChange={(e) => setMonthlySpend(spendFromPosition(Number(e.target.value)))}
+                aria-label="Monthly LLM spend"
+                aria-valuetext={`${formatUSD(monthlySpend)} / month`}
                 className="w-full accent-[#1A6BF5]"
               />
               <div className="flex justify-between text-xs text-slate-500 mt-2 font-mono">
@@ -335,6 +338,8 @@ export default function ROICalculator() {
                 step="1"
                 value={passesPerYear}
                 onChange={(e) => setPassesPerYear(Number(e.target.value))}
+                aria-label="Optimization passes per year"
+                aria-valuetext={`${passesPerYear} ${passesPerYear === 1 ? "pass" : "passes"} per year`}
                 className="w-full accent-[#1A6BF5]"
               />
               <div className="flex justify-between text-xs text-slate-500 mt-2 font-mono">
@@ -363,6 +368,8 @@ export default function ROICalculator() {
                 step="5"
                 value={hourlyRate}
                 onChange={(e) => setHourlyRate(Number(e.target.value))}
+                aria-label="Engineer hourly rate (fully-loaded)"
+                aria-valuetext={`$${hourlyRate} per hour`}
                 className="w-full accent-[#1A6BF5]"
               />
               <div className="flex justify-between text-xs text-slate-500 mt-2 font-mono">
@@ -390,6 +397,7 @@ export default function ROICalculator() {
               {Object.entries(TIERS).map(([key, t]) => (
                 <button
                   key={key}
+                  aria-pressed={tier === key}
                   onClick={() => setTier(key)}
                   className={`text-left rounded-xl p-4 border transition-all ${
                     tier === key
@@ -450,6 +458,7 @@ export default function ROICalculator() {
                 return (
                   <button
                     key={opt.key}
+                    aria-pressed={isActive}
                     onClick={() => {
                       setSavingsScenario(opt.key);
                       // When Custom is clicked, always reset to 15% so it opens at a clean default.
@@ -490,6 +499,8 @@ export default function ROICalculator() {
                   step="1"
                   value={customSavingsPct}
                   onChange={(e) => setCustomSavingsPct(Number(e.target.value))}
+                  aria-label="Custom savings percentage"
+                  aria-valuetext={`${customSavingsPct}% of monthly LLM spend`}
                   className="w-full accent-[#1A6BF5]"
                 />
                 <div className="flex justify-between text-xs text-slate-500 mt-2 font-mono">
