@@ -26,10 +26,10 @@ const PRESETS = {
   // Position 1 (SlideOnePagerTextTestV2) is dropped — it's redundant with the
   // redesigned SlideParetoFrontier at position 2.
   "extended-product-presentation": { range:   "24,2-23,27-29" },
-  // Mirrors the Ness recipient deck's slide range (minus its cover slide).
-  // Lifecycle close: moving-target (30) + continuous-optimization (31) land
-  // right before the final CTA (29) — the lifecycle argument sets up the ask.
-  "short-summary":                 { range:   "24,2,4-5,20,28,27,30,31,32,29" },
+  // The Cloudzone channel deck minus its recipient cover: market opener (24),
+  // methodology (38), slide 2, SPIDER text2SQL proof (33), architecture (39),
+  // foundational slides (4-5, 20, 28), CTA (29).
+  "short-summary":                 { range:   "24,38,2,33,39,4-5,20,28,29" },
   "market-opportunity":            { range:   "24-27" },
   // Same slide range as market-opportunity for now — kept as a separate
   // preset so /investor-pitch can diverge later without touching the
