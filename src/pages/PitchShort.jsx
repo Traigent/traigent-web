@@ -1626,8 +1626,11 @@ function SlideFourPillars() {
       <div className="text-center mb-5">
         <div className="text-2xl md:text-3xl font-mono uppercase tracking-[0.2em] text-blue-400 mb-3">The Traigent Methodology</div>
         <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight">
-          Traigent builds optimized agents leveraging <span className="text-blue-400">four pillars</span>
+          Vibe Coding the <span className="text-blue-400">Optimal</span> Agent
         </h2>
+        <p className="text-lg md:text-2xl font-semibold text-slate-200 mt-2 leading-snug">
+          Traigent builds optimized agents leveraging <span className="text-blue-400">four pillars</span>
+        </p>
         <p className="text-sm text-slate-400 max-w-3xl mx-auto mt-2 leading-snug">
           Each pillar is <span className="text-blue-400">Scored</span>, Recommended and then{" "}
           <span style={{ color: "#34d399" }}>Improved</span> sequentially
@@ -1681,10 +1684,13 @@ function SlideArchitecture() {
   return (
     <div className="w-full">
       <div className="text-center mb-5">
-        <div className="text-2xl md:text-3xl font-mono uppercase tracking-[0.2em] text-blue-400 mb-3">How it runs — The architecture</div>
+        <div className="text-2xl md:text-3xl font-mono uppercase tracking-[0.2em] text-blue-400 mb-3">How it works — The architecture</div>
         <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight">
-          Your coding agent. <span className="text-blue-400">Traigent&apos;s brain.</span>
+          Vibe Coding the <span className="text-blue-400">Optimal</span> Agent
         </h2>
+        <p className="text-lg md:text-2xl font-semibold text-slate-200 mt-2 leading-snug">
+          Traigent SDK and Skills harness <span className="text-blue-400">your coding agent</span>
+        </p>
         <p className="text-sm text-slate-400 max-w-3xl mx-auto mt-2 leading-snug">
           Point Claude Code or Codex at your agent. Your data stays local; the cloud conducts the search and
           plans each next step; the portal shows the whole chain.
