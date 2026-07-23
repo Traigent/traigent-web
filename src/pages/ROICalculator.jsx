@@ -354,8 +354,6 @@ export default function ROICalculator() {
                 <span className="text-4xl md:text-5xl font-bold text-white">${hourlyRate}</span>
                 <span className="text-slate-500 text-sm">/ hour</span>
               </div>
-              <div className="text-xs mb-4 leading-snug invisible min-h-[3.5rem]" aria-hidden="true">spacer</div>
-              <div className="text-[10px] font-mono uppercase tracking-wider mb-2 invisible" aria-hidden="true">spacer</div>
               <input
                 type="range"
                 min="50"
