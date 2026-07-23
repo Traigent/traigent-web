@@ -1173,15 +1173,15 @@ function SlideCustomerObjectiveSpider() {
     },
     {
       v: <>gpt‑4o‑mini · <span className="text-white">compact</span> · k2 · <span className="text-white">sql_guidance</span></>,
-      acc: "86.0%", cost: "$0.000074", note: "+14 pts at ~the OLD price",
+      acc: "86.0%", cost: "$0.000074", note: "~59% cheaper than the most accurate",
     },
     {
       v: <>gpt‑4o‑mini · <span className="text-white">m_schema · k4</span> · sql_guidance</>,
-      acc: "87.0%", cost: "$0.000101", note: "best value — ~½ the winner’s cost",
+      acc: "87.0%", cost: "$0.000101", note: "~44% cheaper than the most accurate",
     },
     {
       v: <>deepseek · compact · k2 · sql_guidance</>,
-      acc: "87.7%", cost: "$0.000131", note: "cross‑vendor, still cheap",
+      acc: "87.7%", cost: "$0.000131", note: "~27% cheaper than the most accurate",
     },
     {
       v: <span className="text-white font-semibold">deepseek · m_schema · k4 · sql_guidance</span>,
@@ -1616,7 +1616,7 @@ function SlideFourPillars() {
     { num: "3a · DIMENSIONS", name: "The config space", one: "What we can change — the full arsenal.",
       light: "a", label: "Amber", lc: "#f59e0b",
       rec: "Diagnose the misses → the vital-few dimensions: model · retrieval · prompt · format · examples · reasoning · multi-model routing …" },
-    { num: "3b · SEARCH", name: "The optimization", one: "How we search — the run sequence.",
+    { num: "3b · SEARCH", name: "The optimization", one: "ML algorithms converge rapidly.",
       light: "g", label: "Green", lc: "#34d399",
       rec: "Seeded hypothesis-chain → the accuracy → cost/latency Pareto." },
   ];
@@ -1624,14 +1624,13 @@ function SlideFourPillars() {
   return (
     <div className="w-full">
       <div className="text-center mb-5">
-        <div className="text-[11px] font-mono uppercase tracking-[0.34em] text-blue-400 mb-2">The Traigent Method</div>
+        <div className="text-2xl md:text-3xl font-mono uppercase tracking-[0.2em] text-blue-400 mb-3">The Traigent Methodology</div>
         <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight">
-          Four Pillars — <span className="text-blue-400">Scored</span>, Recommended,{" "}
-          <span style={{ color: "#34d399" }}>Improved</span>. On repeat.
+          Traigent builds optimized agents leveraging <span className="text-blue-400">four pillars</span>
         </h2>
         <p className="text-sm text-slate-400 max-w-3xl mx-auto mt-2 leading-snug">
-          Traigent assesses every optimization along four pillars, scores each red / amber / green,
-          recommends the highest-leverage fix, and improves it — cycle after cycle, until all four hold green.
+          Each pillar is <span className="text-blue-400">Scored</span>, Recommended and then{" "}
+          <span style={{ color: "#34d399" }}>Improved</span> sequentially
         </p>
       </div>
       <div className="grid grid-cols-4 gap-3">
@@ -1682,7 +1681,7 @@ function SlideArchitecture() {
   return (
     <div className="w-full">
       <div className="text-center mb-5">
-        <div className="text-[11px] font-mono uppercase tracking-[0.34em] text-blue-400 mb-2">How it runs</div>
+        <div className="text-2xl md:text-3xl font-mono uppercase tracking-[0.2em] text-blue-400 mb-3">How it runs — The architecture</div>
         <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight">
           Your coding agent. <span className="text-blue-400">Traigent&apos;s brain.</span>
         </h2>
