@@ -85,10 +85,10 @@ const PITCH_DECK_OPTIONS = [
 ];
 
 const productItems = [
-  { label: "Optimization Engine", scrollId: "optimization", desc: "Picks next best config from run history" },
-  { label: "Agent Wrapper", scrollId: "product", desc: "Automated execution + KPI capture" },
-  { label: "Observability & Tracing", scrollId: "observability", desc: "Full trace tree · spans · tokens · cost" },
-  { label: "Benchmark Insights", scrollId: "benchmark", desc: "Flags easy / always-fail / redundant questions" },
+  { label: "Lifecycle onboarding demo", href: "/onboarding-simulation", desc: "Diagnose · improve · optimize · validate" },
+  { label: "Four development pillars", scrollId: "product", desc: "Dataset · evaluator · agent design · optimization" },
+  { label: "Vibe Agent Building", href: "/vibe-agent-building", desc: "The evidence-driven development method" },
+  { label: "Agent Optimization", href: "/agent-optimization", desc: "Efficient quality, cost, and latency search" },
   { label: "TVL", href: "https://www.tvl-lang.org/", external: true, desc: "Tuned Variables Language — machine-checkable spec format" },
 ];
 
@@ -116,7 +116,7 @@ const mainTabs = [
   { label: "The Problem", href: "/value-proposition" },
   { label: "Why Traigent", href: "/blog" },
   { label: "Pricing", href: "/pricing" },
-  { label: "Vibe Agent Building", href: "/vibe-agent-building" },
+  { label: "Lifecycle Demo", href: "/onboarding-simulation" },
 ];
 
 function MenuItem({ item, onScroll }) {

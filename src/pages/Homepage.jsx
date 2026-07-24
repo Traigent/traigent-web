@@ -1,783 +1,419 @@
-﻿import React, { useState, useRef, useEffect } from "react";
-import { motion } from "framer-motion";
-import { ArrowRight, Check, ChevronRight, ChevronDown, ExternalLink, Play, Pause, Terminal } from "lucide-react";
-import {
-  OptimizationEngineBody,
-  FeedbackLoopConnector,
-  AgentWrapperBody,
-  BenchmarkCardBody,
-  ObservabilityCardBody,
-} from "../components/PlatformShowcase";
-import { SlideParetoFrontier } from "./PitchShort";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
-import versionInfo from "../version.json";
 import { Helmet } from "react-helmet-async";
+import { motion, useReducedMotion } from "framer-motion";
+import {
+  ArrowRight,
+  BarChart3,
+  BrainCircuit,
+  Check,
+  GaugeCircle,
+  DatabaseZap,
+  FlaskConical,
+  GitBranch,
+  LockKeyhole,
+  Radar,
+  Workflow,
+  ShieldCheck,
+  Sparkles,
+  TimerReset,
+} from "lucide-react";
 import StartNowModal from "../components/StartNowModal";
 import ContactSection from "../components/ContactSection";
-import BlogHighlights from "../components/BlogHighlights";
 import { trackEvent } from "../lib/analytics";
-import { useAgentSetupPrompt } from "../lib/useAgentSetupPrompt";
 
-// Placeholder for the Button component
-const Button = ({ children, className, onClick, size }) => (
-  <button
-    className={`inline-flex items-center justify-center font-medium ${className}`}
-    onClick={onClick}
-  >
-    {children}
-  </button>
-);
+const DEMO_URL = "https://meetings-eu1.hubspot.com/amir8";
 
-// Placeholder for the createPageUrl function
-const createPageUrl = (path) => path;
-const PORTAL_URL = "https://portal.traigent.ai";
+const pillars = [
+  {
+    number: "01",
+    icon: DatabaseZap,
+    title: "Evaluation dataset",
+    short: "Improve what you test",
+    description:
+      "Find weak labels, trivial examples, blind spots, and missing production failures. Evolve the questions and answers that define success.",
+    accent: "#55d6be",
+  },
+  {
+    number: "02",
+    icon: GaugeCircle,
+    title: "Evaluation strategy",
+    short: "Improve how you judge",
+    description:
+      "Detect noisy scores, biased judges, brittle rubrics, and metrics that reward the wrong behavior before they select a winner.",
+    accent: "#f6c85f",
+  },
+  {
+    number: "03",
+    icon: GitBranch,
+    title: "Agent design",
+    short: "Improve what you build",
+    description:
+      "Explore prompts, models, retrieval, routing, cascades, tools, and composite agent architectures—not only configuration values.",
+    accent: "#8da2fb",
+  },
+  {
+    number: "04",
+    icon: Radar,
+    title: "Optimization strategy",
+    short: "Improve how you search",
+    description:
+      "Use efficient sequential and Pareto-aware experiments to find quality, cost, and latency trade-offs without brute-force waste.",
+    accent: "#ff8f70",
+  },
+];
 
-// Reusable animated wrapper to reduce duplication
-const FadeInView = ({ children, className, delay = 0, direction = "y" }) => (
-  <motion.div
-    initial={{ opacity: 0, [direction]: 20 }}
-    whileInView={{ opacity: 1, [direction]: 0 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.5, delay }}
-    className={className}
-  >
-    {children}
-  </motion.div>
-);
+const lifecycle = ["Screen", "Build", "Evaluate", "Optimize", "Validate", "Deploy", "Adapt"];
+
+const outcomes = [
+  {
+    icon: TimerReset,
+    title: "Move faster",
+    body: "Compress repetitive weeks of manual experiments into a guided, reviewable improvement loop.",
+  },
+  {
+    icon: BarChart3,
+    title: "Raise quality",
+    body: "Improve held-out accuracy against the difficult cases that actually separate useful agents from convincing demos.",
+  },
+  {
+    icon: BrainCircuit,
+    title: "Control cost",
+    body: "Find architectures that spend expert-model capacity only where the task needs it.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Earn trust",
+    body: "Keep the dataset, evaluator, failures, trade-offs, and final validation visible before anything ships.",
+  },
+];
+
+function Reveal({ children, className = "", delay = 0 }) {
+  const reduceMotion = useReducedMotion();
+  return (
+    <motion.div
+      initial={reduceMotion ? false : { opacity: 0, y: 24 }}
+      whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ duration: 0.55, delay, ease: [0.16, 1, 0.3, 1] }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+function LifecycleCore() {
+  const reduceMotion = useReducedMotion();
+  return (
+    <>
+      <div className="mx-auto grid max-w-md grid-cols-2 gap-3 sm:hidden" aria-label="Four development pillars leading to a trusted agent">
+        <div className="col-span-2 mx-auto mb-2 flex h-40 w-40 flex-col items-center justify-center rounded-full border border-blue-300/40 bg-[#071325] text-center shadow-[0_0_60px_rgba(45,123,255,0.25)]">
+          <ShieldCheck className="mb-3 h-7 w-7 text-blue-300" aria-hidden="true" />
+          <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-blue-300">Outcome</span>
+          <strong className="mt-2 text-lg text-white">Trusted agent</strong>
+          <span className="mt-1 text-xs text-slate-400">measured · efficient · ready</span>
+        </div>
+        {pillars.map(({ icon: Icon, short, accent }, index) => (
+          <div key={short} className="rounded-2xl border bg-slate-950/90 p-3" style={{ borderColor: `${accent}55` }}>
+            <div className="mb-3 flex items-center gap-2">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg" style={{ color: accent, backgroundColor: `${accent}18` }}>
+                <Icon className="h-4 w-4" aria-hidden="true" />
+              </span>
+              <span className="font-mono text-[8px] uppercase tracking-[0.18em] text-slate-500">Pillar {index + 1}</span>
+            </div>
+            <p className="text-xs font-semibold leading-snug text-slate-100">{short}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="relative mx-auto hidden aspect-square w-full max-w-[540px] sm:block" aria-label="Four pillars orbiting a trusted agent">
+      <div className="absolute inset-[9%] rounded-full border border-blue-400/20" />
+      <div className="absolute inset-[18%] rounded-full border border-dashed border-slate-600/50" />
+      <motion.div
+        className="absolute inset-[9%] rounded-full border-t border-blue-400/80"
+        animate={reduceMotion ? undefined : { rotate: 360 }}
+        transition={{ duration: 24, repeat: Infinity, ease: "linear" }}
+      />
+
+      <div className="absolute left-1/2 top-1/2 flex h-40 w-40 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border border-blue-300/40 bg-[#071325]/95 text-center shadow-[0_0_80px_rgba(45,123,255,0.28)] sm:h-48 sm:w-48">
+        <ShieldCheck className="mb-3 h-7 w-7 text-blue-300" aria-hidden="true" />
+        <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-blue-300">Outcome</span>
+        <strong className="mt-2 text-lg leading-tight text-white sm:text-xl">Trusted agent</strong>
+        <span className="mt-2 text-xs text-slate-400">measured · efficient · ready</span>
+      </div>
+
+      {pillars.map(({ icon: Icon, short, accent }, index) => {
+        const positions = [
+          "left-[2%] top-[10%]",
+          "right-[0%] top-[14%]",
+          "bottom-[10%] left-[1%]",
+          "bottom-[6%] right-[1%]",
+        ];
+        return (
+          <div
+            key={short}
+            className={`absolute ${positions[index]} w-[42%] max-w-[190px] rounded-2xl border bg-slate-950/90 p-3 shadow-2xl backdrop-blur sm:p-4`}
+            style={{ borderColor: `${accent}55` }}
+          >
+            <div className="mb-2 flex items-center gap-2">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg" style={{ color: accent, backgroundColor: `${accent}18` }}>
+                <Icon className="h-4 w-4" aria-hidden="true" />
+              </span>
+              <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-slate-500">Pillar {index + 1}</span>
+            </div>
+            <p className="text-xs font-semibold leading-snug text-slate-100 sm:text-sm">{short}</p>
+          </div>
+        );
+      })}
+      </div>
+    </>
+  );
+}
 
 export default function Homepage() {
   const [showStartNow, setShowStartNow] = useState(false);
-  const [benefitsOpen, setBenefitsOpen] = useState(false);
-  const benefitsRef = useRef(null);
-  const { copied: promptCopied, copyPrompt } = useAgentSetupPrompt();
-  const handleConnectAgent = async () => {
-    const ok = await copyPrompt();
-    trackEvent("connect_agent_clicked", { location: "homepage_hero", copied: ok });
-  };
-  // Handle scroll requests coming from other pages via TopNav
+
   useEffect(() => {
     const pending = sessionStorage.getItem("pendingScroll");
-    if (pending) {
-      sessionStorage.removeItem("pendingScroll");
-      setTimeout(() => {
-        document.getElementById(pending)?.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 100);
-    }
+    if (!pending) return undefined;
+
+    sessionStorage.removeItem("pendingScroll");
+    const timer = window.setTimeout(() => {
+      document.getElementById(pending)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
+    return () => window.clearTimeout(timer);
   }, []);
-  // Close the 'Benefits quantified and explained' dropdown on outside click / Esc
-  useEffect(() => {
-    if (!benefitsOpen) return;
-    function onDocClick(e) {
-      if (benefitsRef.current && !benefitsRef.current.contains(e.target)) setBenefitsOpen(false);
-    }
-    function onKey(e) {
-      if (e.key === "Escape") setBenefitsOpen(false);
-    }
-    document.addEventListener("mousedown", onDocClick);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("mousedown", onDocClick);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [benefitsOpen]);
+
   return (
-    <div className="bg-white">
+    <div className="min-h-screen overflow-hidden bg-[#05070b] text-white [font-family:'Avenir_Next','Segoe_UI',sans-serif]">
       <Helmet>
-        <title>Traigent — Agent Optimization Platform</title>
-        <meta name="description" content="Rapidly finds High Accuracy and Low Cost yielding configurations among thousands possible." />
-        <meta property="og:title" content="Traigent — AI Agent Optimization Platform" />
-        <meta property="og:description" content="Rapidly finds High Accuracy and Low Cost yielding configurations among thousands possible." />
+        <title>Traigent — Vibe Code AI Agents You Can Trust</title>
+        <meta
+          name="description"
+          content="Build, evaluate, optimize, and continuously improve AI agents across the full development lifecycle."
+        />
+        <meta property="og:title" content="Vibe Code Your Agents. Prove They Work." />
+        <meta
+          property="og:description"
+          content="Traigent turns agent development into a measured lifecycle across data, evaluation, architecture, and optimization."
+        />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://traigent.ai" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Traigent — AI Agent Optimization Platform" />
-        <meta name="twitter:description" content="Rapidly finds High Accuracy and Low Cost yielding configurations among thousands possible." />
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            name: "Traigent",
-            url: "https://traigent.ai",
-            description: "The most advanced AI Agent Optimization Platform on the market.",
-            sameAs: [
-              "https://github.com/Traigent/Traigent",
-            ],
-          })}
-        </script>
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "SoftwareApplication",
-            name: "Traigent",
-            applicationCategory: "DeveloperApplication",
-            description: "AI Agent Optimization Platform — optimization, benchmark evolution, and observability in one.",
-            offers: { "@type": "Offer", priceCurrency: "USD" },
-            operatingSystem: "Cross-platform",
-          })}
-        </script>
+        <meta name="twitter:title" content="Vibe Code Your Agents. Prove They Work." />
+        <meta
+          name="twitter:description"
+          content="Higher quality, lower cost, faster iteration, and evidence you can trust."
+        />
       </Helmet>
-      {showStartNow && <StartNowModal onClose={() => setShowStartNow(false)} location="homepage_hero" />}
-      {/* Hero Section */}
-      <section className="relative overflow-x-clip bg-[#080808] text-white">
-        {/* Noise texture overlay */}
-        <div className="absolute inset-0 opacity-60 pointer-events-none" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E")`
-        }}></div>
-        {/* Blue gradient glow */}
-        <div className="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[900px] h-[600px] pointer-events-none" style={{
-          background: 'radial-gradient(ellipse, rgba(26,107,245,0.18) 0%, transparent 70%)'
-        }}></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 md:pt-14 pb-6 md:pb-8">
-          {/* Centered hero content */}
-          <div className="text-center max-w-4xl mx-auto">
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.55] tracking-tight mb-6"
-              style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.03em' }}
-            >
-              AI Agent Optimization<br />
-              <span className="text-[#4D8EF8]">Fully Automated</span>
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.15 }}
-              className="text-2xl md:text-3xl lg:text-[2rem] text-slate-300 leading-snug mb-3"
-            >
-              <span className="font-bold text-white">Rapidly</span> finds <span className="font-bold text-[#4D8EF8]">High Accuracy</span> and <span className="font-bold text-[#f59e0b]">Low Cost</span>
-            </motion.p>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.18 }}
-              className="text-2xl md:text-3xl lg:text-[2rem] text-slate-300 leading-snug mb-6 whitespace-nowrap"
-            >
-              yielding configurations among{" "}
+
+      {showStartNow && <StartNowModal onClose={() => setShowStartNow(false)} location="homepage_lifecycle" />}
+
+      <section className="relative isolate min-h-[850px] overflow-hidden border-b border-white/10">
+        <div className="pointer-events-none absolute inset-0 opacity-30 [background-image:linear-gradient(rgba(120,150,190,.11)_1px,transparent_1px),linear-gradient(90deg,rgba(120,150,190,.11)_1px,transparent_1px)] [background-size:64px_64px] [mask-image:linear-gradient(to_bottom,black,transparent_90%)]" />
+        <div className="pointer-events-none absolute left-[8%] top-24 h-72 w-72 rounded-full bg-blue-600/15 blur-[110px]" />
+        <div className="pointer-events-none absolute right-[5%] top-40 h-96 w-96 rounded-full bg-emerald-500/10 blur-[130px]" />
+
+        <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-5 pb-20 pt-20 sm:px-8 md:pt-28 lg:grid-cols-[1.08fr_.92fr] lg:px-10 lg:pb-28">
+          <div className="relative z-10">
+            <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-emerald-300/25 bg-emerald-300/[0.07] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.26em] text-emerald-200 sm:text-xs">
+              <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
+              The full development lifecycle for AI agents
+            </div>
+            <h1 className="max-w-4xl text-[clamp(3.25rem,7vw,6.7rem)] font-semibold leading-[0.91] tracking-[-0.055em] text-white">
+              Vibe Code
+              <span className="mt-1 block bg-gradient-to-r from-[#6da9ff] via-[#80e0d0] to-[#f4d27a] bg-clip-text text-transparent">
+                Your Agents.
+              </span>
+              <span className="mt-2 block text-[0.72em] tracking-[-0.045em] text-slate-300">Prove They Work.</span>
+            </h1>
+            <p className="mt-8 max-w-2xl text-lg leading-relaxed text-slate-300 sm:text-xl">
+              Build, evaluate, optimize, and continuously improve AI agents across their full lifecycle—so you reach higher quality faster, control LLM cost, and ship with evidence you can trust.
+            </p>
+
+            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <Link
-                to="/knob-explorer"
-                className="font-bold text-white underline underline-offset-4 decoration-white/40 hover:decoration-white transition-colors"
+                to="/onboarding-simulation"
+                onClick={() => trackEvent("lifecycle_demo_clicked", { location: "homepage_hero" })}
+                className="group inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-[#eaf2ff] px-6 py-3 font-semibold text-[#07101f] transition duration-200 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-300"
               >
-                thousands possible
+                Experience the lifecycle
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
               </Link>
-            </motion.p>
-            {/* "Agent Optimization Demo" — 1-minute narrated walkthrough CTA, with a
-                prominent play button so it reads as "watch video" at a glance. */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.19 }}
-              className="flex flex-wrap items-center justify-center gap-3 mb-10"
-            >
-              <Link
-                to="/story"
-                onClick={() => trackEvent("hero_video_clicked", { destination: "story" })}
-                className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-slate-900/60 border border-slate-700 hover:border-blue-500/60 hover:bg-slate-900/80 transition-colors group"
-              >
-                <span className="flex items-center justify-center w-10 h-10 rounded-full bg-[#1A6BF5] group-hover:bg-[#4D8EF8] transition-colors shadow-lg shadow-blue-500/30">
-                  <Play className="w-4 h-4 text-white fill-white ml-0.5" />
-                </span>
-                <span className="text-base md:text-lg font-medium text-slate-100">
-                  Agent Optimization Demo
-                </span>
-              </Link>
-              {/* Secondary CTA — copies the canonical keyless setup prompt
-                  (served at /agent-setup/prompt.md) so a coding agent can wire
-                  up Traigent in one paste. */}
               <button
                 type="button"
-                onClick={handleConnectAgent}
-                aria-label={promptCopied ? "Copied setup prompt" : "Copy setup prompt for your coding agent"}
-                className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-slate-900/60 border border-slate-700 hover:border-blue-500/60 hover:bg-slate-900/80 transition-colors group"
+                onClick={() => {
+                  trackEvent("start_now_clicked", { location: "homepage_lifecycle_hero" });
+                  setShowStartNow(true);
+                }}
+                className="inline-flex min-h-12 items-center justify-center gap-3 rounded-full border border-slate-600 bg-slate-900/60 px-6 py-3 font-semibold text-white transition duration-200 hover:border-slate-400 hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-300"
               >
-                <span className="flex items-center justify-center w-10 h-10 rounded-full bg-slate-800 group-hover:bg-slate-700 transition-colors">
-                  {promptCopied ? (
-                    <Check className="w-4 h-4 text-emerald-400" />
-                  ) : (
-                    <Terminal className="w-4 h-4 text-slate-100" />
-                  )}
-                </span>
-                <span className="text-base md:text-lg font-medium text-slate-100">
-                  {promptCopied ? "Copied — paste into your agent" : "Connect your agent"}
-                </span>
+                Connect your agent
               </button>
-            </motion.div>
-            {/* Two-column value summary: HOW (method) + BENEFITS (outcomes) */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="grid md:grid-cols-2 gap-5 md:gap-6 max-w-4xl mx-auto mb-6 text-left"
-            >
-              {/* Left — how Traigent finds the optimum */}
-              <div className="bg-slate-900/50 border-2 rounded-2xl p-6 md:p-7" style={{ borderColor: "rgba(26, 107, 245, 0.35)" }}>
-                <a
-                  href="#product"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    document.getElementById("product")?.scrollIntoView({ behavior: "smooth", block: "start" });
-                    trackEvent("hero_aop_chip_clicked", { destination: "product" });
-                  }}
-                  className="block w-fit mx-auto px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-[10px] md:text-[11px] font-mono tracking-widest hover:bg-blue-500/20 hover:border-blue-500/60 transition-colors mb-4"
-                  style={{ color: "#4D8EF8" }}
-                >
-                  AGENT OPTIMIZATION PLATFORM
-                </a>
-                <ul className="space-y-3">
-                  {[
-                    <><span className="text-white font-semibold underline underline-offset-4 decoration-2 decoration-[#4D8EF8]/70">Finds the optimal model and configuration combo</span> in <span className="text-white font-semibold">hours, not weeks</span>.</>,
-                    <><span className="text-white font-semibold">Automatically</span>, not manually.</>,
-                    <>With <span className="text-white font-semibold">confidence</span>, not guesswork.</>,
-                    <><span className="font-semibold" style={{ color: "#4D8EF8" }}>High Accuracy</span>, <span className="font-semibold" style={{ color: "#f59e0b" }}>Low Cost</span> — <span className="text-white font-semibold">Continuously</span>.</>,
-                  ].map((item, i) => (
-                    <li key={i} className="flex items-start gap-2.5 text-slate-300 leading-snug">
-                      <Check className="w-5 h-5 mt-0.5 flex-shrink-0 text-[#4D8EF8]" strokeWidth={3} />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            </div>
 
-              {/* Right — what you get out of it */}
-              <div className="bg-gradient-to-br from-blue-500/10 to-slate-900/0 border-2 rounded-2xl p-6 md:p-7" style={{ borderColor: "#1A6BF5" }}>
-                <span
-                  className="block w-fit mx-auto px-3 py-1 rounded-full bg-blue-500/15 border border-blue-500/40 text-[10px] md:text-[11px] font-mono tracking-widest mb-4"
-                  style={{ color: "#4D8EF8" }}
-                >
-                  TRAIGENT BENEFITS
-                </span>
-                <ul className="space-y-3">
-                  {[
-                    {
-                      content: <><span className="text-white font-semibold">Reduce engineering costs.</span></>,
-                      to: "/ttm",
-                      linkLabel: "TTM calc",
-                    },
-                    {
-                      content: <><span className="text-white font-semibold">Save LLM costs</span> over the lifecycle.</>,
-                      to: "/roi",
-                      linkLabel: "ROI calc",
-                    },
-                    {
-                      content: <><span className="text-white font-semibold">Shorten time to market.</span></>,
-                    },
-                    {
-                      content: <>Ship with <span className="text-white font-semibold">100% confidence</span>.</>,
-                    },
-                  ].map((b, i) => (
-                    <li key={i} className="flex items-start gap-2.5 text-slate-300 leading-snug">
-                      <Check className="w-5 h-5 mt-0.5 flex-shrink-0 text-[#4D8EF8]" strokeWidth={3} />
-                      <span className="flex-1">
-                        {b.content}
-                        {b.to && (
-                          <>
-                            {" "}
-                            <Link
-                              to={b.to}
-                              className="inline-flex items-center gap-0.5 text-[#4D8EF8] hover:text-white underline underline-offset-2 decoration-[#4D8EF8]/50 hover:decoration-white font-medium whitespace-nowrap"
-                            >
-                              {b.linkLabel} →
-                            </Link>
-                          </>
-                        )}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </motion.div>
-
-            {/* Design Partners & Early Adopters */}
-            <motion.div
-              id="customers"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="mt-6 md:mt-8 mb-6 md:mb-8 scroll-mt-20"
-            >
-              <p className="text-center text-sm md:text-base text-slate-300 uppercase tracking-widest font-bold mb-8">Customers</p>
-              <div className="relative overflow-hidden">
-                <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#080808] to-transparent z-10"></div>
-                <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#080808] to-transparent z-10"></div>
-                <div className="flex gap-16 items-center animate-scroll" style={{ width: 'max-content', animation: 'scroll 40s linear infinite' }}>
-                  {/* 8 copies of the 5-logo set so total content is always wide
-                      enough to keep the right half filled on large viewports.
-                      The animation translates -50% (= 4 copies), which lands
-                      on the visually-identical 5th copy → seamless loop. */}
-                  {[...Array(8)].map((_, setIndex) => (
-                    <React.Fragment key={setIndex}>
-                      <div className="text-slate-300 text-xl md:text-2xl font-bold whitespace-nowrap">Bazak</div>
-                      <div className="text-slate-300 text-xl md:text-2xl font-bold whitespace-nowrap">iForAI</div>
-                      <div className="text-slate-300 text-xl md:text-2xl font-bold whitespace-nowrap">Cloudzone</div>
-                      <div className="text-slate-300 text-xl md:text-2xl font-bold whitespace-nowrap">Profisea</div>
-                      <div className="text-slate-300 text-xl md:text-2xl font-bold whitespace-nowrap">Yotpo</div>
-                    </React.Fragment>
-                  ))}
+            <div className="mt-10 grid max-w-2xl grid-cols-2 gap-x-6 gap-y-4 border-t border-white/10 pt-6 text-sm text-slate-400 sm:grid-cols-4">
+              {["Faster iteration", "Higher accuracy", "Lower LLM cost", "Visible evidence"].map((item) => (
+                <div key={item} className="flex items-center gap-2">
+                  <Check className="h-4 w-4 shrink-0 text-emerald-300" aria-hidden="true" />
+                  <span>{item}</span>
                 </div>
-              </div>
-              <style>{`
-                @keyframes scroll {
-                  from { transform: translateX(0); }
-                  to { transform: translateX(-50%); }
-                }
-              `}</style>
-            </motion.div>
+              ))}
+            </div>
           </div>
 
+          <div className="relative">
+            <LifecycleCore />
+          </div>
         </div>
       </section>
 
-      {/* How It Works — three-panel BEFORE / TRAIGENT / AFTER story.
-          Component is shared with /pitch-short(-2) slide 21 so the visual
-          stays identical between the homepage and the deck. */}
-      <section className="pt-2 md:pt-4 pb-16 md:pb-20 bg-[#080808]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SlideParetoFrontier />
+      <section className="border-b border-white/10 bg-[#080b11] py-10" aria-label="Development outcomes">
+        <div className="mx-auto grid max-w-7xl gap-4 px-5 sm:grid-cols-2 sm:px-8 lg:grid-cols-4 lg:px-10">
+          {outcomes.map(({ icon: Icon, title, body }) => (
+            <div key={title} className="group border-l border-slate-700 px-5 py-3 transition-colors hover:border-blue-400">
+              <Icon className="mb-4 h-5 w-5 text-blue-300" aria-hidden="true" />
+              <h2 className="text-base font-semibold text-white">{title}</h2>
+              <p className="mt-2 text-sm leading-relaxed text-slate-400">{body}</p>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* Two Components Section */}
-      <section id="product" className="pt-8 md:pt-12 pb-24 bg-[#080808] border-t border-slate-800/50 scroll-mt-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            id="optimization"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="text-center mb-12 scroll-mt-20"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Agent Optimization Platform</h2>
-            <p className="text-xl md:text-2xl font-semibold text-[#1A6BF5] mb-6 max-w-xl mx-auto leading-snug" style={{ textWrap: 'balance' }}>
-              Fully automated. Needs only a fraction of the model and configuration combinations to experiment with.
+      <section id="product" className="relative py-24 sm:py-32">
+        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+          <Reveal className="max-w-3xl">
+            <p className="font-mono text-xs uppercase tracking-[0.28em] text-blue-300">One system · four pillars</p>
+            <h2 className="mt-5 text-4xl font-semibold tracking-[-0.04em] sm:text-6xl">
+              Optimization is one powerful pillar.
+              <span className="block text-slate-500">The lifecycle is the product.</span>
+            </h2>
+            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-slate-400">
+              Traigent improves the quality bar and the agent together. A better candidate never wins against stale data or an unreliable evaluator.
             </p>
-            <p className="text-slate-400 max-w-2xl mx-auto leading-relaxed">
-              Two components working in a tight feedback loop — an <span className="text-white font-semibold">optimization engine</span> that picks the next best configuration based on run history, and an <span className="text-white font-semibold">agent wrapper</span> that runs it against your benchmark and reports KPIs back to the optimization engine.
-            </p>
-          </motion.div>
-          <div className="flex flex-col gap-6 items-stretch lg:grid lg:grid-cols-[1fr_180px_1fr] lg:gap-6">
+          </Reveal>
 
-            {/* Left: Optimization Engine (component 2) */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="flex-1 bg-slate-900/60 border border-slate-700/50 rounded-2xl p-8"
-            >
-              <OptimizationEngineBody />
-            </motion.div>
-
-            {/* Center: feedback loop connector */}
-            <FeedbackLoopConnector />
-
-            {/* Right: Agent Wrapper (component 1) */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="flex-1 bg-slate-900/60 border border-slate-700/50 rounded-2xl p-8"
-            >
-              <AgentWrapperBody />
-            </motion.div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* Beyond Optimization — Secondary Differentiators */}
-      <section id="capabilities" className="py-20 bg-[#080808] border-t border-slate-800/50 scroll-mt-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            id="beyond"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="text-center mb-12 scroll-mt-20"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Beyond Optimization</h2>
-            <p className="text-slate-400 max-w-2xl mx-auto leading-relaxed">
-              Running across your benchmark hundreds of times unlocks two more capabilities competitors can't match — a self-improving benchmark and full-blown observability built in.
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 gap-6 items-stretch">
-
-            {/* Card 1: Self-Improving Benchmark */}
-            <motion.div
-              id="benchmark"
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="bg-slate-900/60 border border-amber-500/30 rounded-2xl p-8 scroll-mt-24"
-            >
-              <BenchmarkCardBody />
-            </motion.div>
-
-            {/* Card 2: Full Observability & Tracing */}
-            <motion.div
-              id="observability"
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="bg-slate-900/60 border border-amber-500/30 rounded-2xl p-8 scroll-mt-24"
-            >
-              <ObservabilityCardBody />
-            </motion.div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto text-center mb-12">
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="text-3xl md:text-4xl font-bold text-gray-900 mb-6"
-            >
-              How It Works
-            </motion.h2>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              {
-                step: "01",
-                title: "Wrap",
-                description: "Engineer wraps your agent with the SDK in ~1 hour. One-time. Your agent code doesn't change."
-              },
-              {
-                step: "02",
-                title: "Optimize",
-                description: "The engine sweeps the model and configuration space unattended. Needs only a fraction of combinations to converge."
-              },
-              {
-                step: "03",
-                title: "Converge",
-                description: "Returns the optimal model + config combo for your KPIs — cost, latency, accuracy — in hours, not weeks. With quantified confidence."
-              },
-              {
-                step: "04",
-                title: "Re-optimize",
-                description: "Apply the winning config in production. Re-run automatically as models update, costs shift, or usage drifts."
-              }
-            ].map((item, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="relative p-6 rounded-xl bg-white border border-gray-100 hover:border-indigo-100 hover:shadow-sm transition-all"
-              >
-                <div className="w-12 h-12 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-700 font-bold mb-4">
-                  {item.step}
+          <div className="mt-14 grid gap-px overflow-hidden rounded-3xl border border-white/10 bg-white/10 md:grid-cols-2">
+            {pillars.map(({ number, icon: Icon, title, short, description, accent }, index) => (
+              <Reveal key={title} delay={index * 0.06} className="group relative bg-[#080b11] p-7 sm:p-9">
+                <div className="absolute right-7 top-7 font-mono text-xs tracking-[0.25em] text-slate-600">{number}</div>
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl" style={{ color: accent, backgroundColor: `${accent}16` }}>
+                  <Icon className="h-6 w-6" aria-hidden="true" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{item.title}</h3>
-                <p className="text-gray-600">{item.description}</p>
-
-                {index < 3 && (
-                  <div className="hidden lg:block absolute top-1/2 -right-3 transform -translate-y-1/2 z-10">
-                    <ChevronRight className="w-6 h-6 text-indigo-400" />
-                  </div>
-                )}
-              </motion.div>
+                <p className="mt-7 font-mono text-xs uppercase tracking-[0.2em]" style={{ color: accent }}>{short}</p>
+                <h3 className="mt-3 text-2xl font-semibold text-white">{title}</h3>
+                <p className="mt-4 max-w-xl leading-relaxed text-slate-400">{description}</p>
+              </Reveal>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Engineer-First Integration Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="min-w-0"
-            >
-              <span className="inline-block px-3 py-1 bg-emerald-100 rounded-full text-emerald-700 text-sm font-medium mb-4">
-                Engineer-First
-              </span>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-                One Decorator. Instant Optimization.
-              </h2>
-              <p className="text-lg text-gray-600 mb-6">
-                No rewrites. Just attach to your existing agent calls, specify what you want (and your constraints), then apply the best config—no dashboard required.
+      <section className="relative border-y border-white/10 bg-[#080b11] py-24 sm:py-28">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(41,106,210,.12),transparent_56%)]" />
+        <div className="relative mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+          <Reveal className="text-center">
+            <p className="font-mono text-xs uppercase tracking-[0.28em] text-emerald-300">A continuous improvement loop</p>
+            <h2 className="mx-auto mt-5 max-w-4xl text-4xl font-semibold tracking-[-0.04em] sm:text-6xl">
+              Your agent changes. The world changes. The evidence keeps up.
+            </h2>
+          </Reveal>
+
+          <div className="mt-16 grid gap-3 sm:grid-cols-4 lg:grid-cols-7">
+            {lifecycle.map((stage, index) => (
+              <Reveal key={stage} delay={index * 0.05} className="relative">
+                <div className={`h-full min-h-28 rounded-2xl border p-4 ${index === lifecycle.length - 1 ? "border-emerald-300/40 bg-emerald-300/[0.07]" : "border-white/10 bg-white/[0.025]"}`}>
+                  <span className="font-mono text-[10px] text-slate-600">{String(index + 1).padStart(2, "0")}</span>
+                  <p className="mt-8 font-semibold text-white">{stage}</p>
+                </div>
+                {index < lifecycle.length - 1 && (
+                  <ArrowRight className="absolute -right-2 top-1/2 z-10 hidden h-4 w-4 -translate-y-1/2 text-slate-600 lg:block" aria-hidden="true" />
+                )}
+              </Reveal>
+            ))}
+          </div>
+
+          <Reveal className="mt-12 flex flex-col items-center justify-between gap-6 rounded-3xl border border-blue-300/20 bg-blue-300/[0.045] p-7 sm:flex-row sm:p-9">
+            <div>
+              <div className="flex items-center gap-3">
+                <FlaskConical className="h-6 w-6 text-blue-300" aria-hidden="true" />
+                <h3 className="text-xl font-semibold">See the full loop improve one agent</h3>
+              </div>
+              <p className="mt-3 max-w-2xl text-slate-400">
+                Start with a failed quality gate. Repair the dataset, calibrate the evaluator, compare agent architectures, and validate the finalist on unseen cases.
               </p>
-              <ul className="space-y-3">
-                <li className="flex items-center gap-3 text-gray-700">
-                  <Check className="w-5 h-5 text-emerald-500 flex-shrink-0" />
-                  Works with OpenAI, Anthropic, Google, and more
-                </li>
-                <li className="flex items-center gap-3 text-gray-700">
-                  <Check className="w-5 h-5 text-emerald-500 flex-shrink-0" />
-                  Preserves your existing code structure
-                </li>
-                <li className="flex items-center gap-3 text-gray-700">
-                  <Check className="w-5 h-5 text-emerald-500 flex-shrink-0" />
-                  Apply the best config in production
-                </li>
-              </ul>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="min-w-0 overflow-hidden rounded-xl bg-slate-900 p-6 font-mono text-sm shadow-2xl"
+            </div>
+            <Link
+              to="/onboarding-simulation"
+              className="group inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-blue-500 px-6 py-3 font-semibold text-white transition hover:bg-blue-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-300"
             >
-              <div className="mb-4 flex items-center gap-2 overflow-x-auto pb-1 text-slate-400">
-                <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                <span className="ml-2">my_agent.py</span>
-              </div>
-              <div className="-mx-2 overflow-x-auto px-2">
-                <SyntaxHighlighter
-                  language="python"
-                  style={vscDarkPlus}
-                  customStyle={{
-                    margin: 0,
-                    padding: 0,
-                    background: 'transparent',
-                    fontSize: '0.875rem',
-                    maxWidth: '100%',
-                    overflowX: 'auto',
-                    whiteSpace: 'pre',
-                  }}
-                  showLineNumbers={false}
-                >
-{`import traigent
-from langchain_openai import ChatOpenAI
-
-@traigent.optimize(
-    configuration_space={
-        "model": ["gpt-4o-mini", "gpt-4o"],
-        "temperature": [0.1, 0.5, 0.9],
-        "use_rag": [True, False],
-        "top_k": [1, 2, 3],
-    },
-    objectives=["accuracy", "cost"],
-    eval_dataset="eval.jsonl",
-)
-def answer_question(question: str) -> str:
-    config = traigent.get_config()
-
-    # Tuned variables from config
-    model = config["model"]
-    temperature = config["temperature"]
-    use_rag = config["use_rag"]
-    top_k = config["top_k"]
-
-    context = retrieve_docs(question, k=top_k) if use_rag else ""
-
-    llm = ChatOpenAI(model=model, temperature=temperature)
-    return llm.invoke(f"{context}\\n\\nQ: {question}").content`}
-                </SyntaxHighlighter>
-              </div>
-            </motion.div>
-          </div>
+              Run the simulation
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+            </Link>
+          </Reveal>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-br from-indigo-600 to-purple-700 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto text-center">
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="text-3xl md:text-4xl font-bold mb-6"
-            >
-              Ready to Optimize Your AI Agents?
-            </motion.h2>
-            <p className="text-xl opacity-90 mb-10">
-              See how Traigent improves your KPIs in hours, not weeks.
+      <section className="py-24 sm:py-32">
+        <div className="mx-auto grid max-w-7xl gap-14 px-5 sm:px-8 lg:grid-cols-[.9fr_1.1fr] lg:px-10">
+          <Reveal>
+            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-300/25 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.24em] text-emerald-300">
+              <LockKeyhole className="h-3.5 w-3.5" aria-hidden="true" />
+              Enterprise trust
+            </div>
+            <h2 className="mt-6 text-4xl font-semibold tracking-[-0.04em] sm:text-5xl">Your quality bar. Your environment. Your decision.</h2>
+            <p className="mt-6 text-lg leading-relaxed text-slate-400">
+              Run optimization inside the customer environment, keep sensitive content private, and preserve a reviewable trail from every experiment to the final shipping decision.
             </p>
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="flex flex-wrap justify-center gap-3"
-            >
-              <button
-                onClick={() => {
-                  trackEvent("start_now_clicked", { location: "cta_section" });
-                  setShowStartNow(true);
-                }}
-                className="border border-slate-600 hover:border-slate-400 text-slate-200 hover:text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
-              >
-                Start Now
-              </button>
-              <a
-                href="https://meetings-eu1.hubspot.com/amir8"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => trackEvent("demo_booking_clicked", { location: "cta_section" })}
-                className="bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
-              >
-                Book a demo
-              </a>
-            </motion.div>
+          </Reveal>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {[
+              ["Screen before search", "Identify weak datasets, unreliable evaluation, and architectural bottlenecks before spending on a large optimization run."],
+              ["Validate out of sample", "Judge finalists on held-out examples they never competed on so search optimism does not masquerade as progress."],
+              ["Make trade-offs explicit", "Keep quality, cost, latency, constraints, and remaining failures together in the final decision."],
+              ["Compound what you learn", "Reuse prior experiments, team knowledge, and governed specifications instead of rediscovering the same lessons."],
+            ].map(([title, body], index) => (
+              <Reveal key={title} delay={index * 0.05} className="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
+                <h3 className="font-semibold text-white">{title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-slate-400">{body}</p>
+              </Reveal>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* From the blog — objection-handler content surfaced on the homepage */}
-      <BlogHighlights />
+      <section className="border-y border-white/10 bg-gradient-to-b from-[#0a101b] to-[#06080c] py-24">
+        <Reveal className="mx-auto max-w-4xl px-5 text-center sm:px-8">
+          <Workflow className="mx-auto h-8 w-8 text-blue-300" aria-hidden="true" />
+          <h2 className="mt-6 text-4xl font-semibold tracking-[-0.04em] sm:text-6xl">Build the agent. Strengthen the bar. Keep improving both.</h2>
+          <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-400">
+            Start with the agent and evidence you have today. Traigent shows the next highest-value improvement—and what it changed.
+          </p>
+          <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
+            <Link to="/onboarding-simulation" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-white px-6 py-3 font-semibold text-slate-950 transition hover:bg-blue-50">
+              Explore the onboarding demo <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </Link>
+            <a href={DEMO_URL} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center justify-center rounded-full border border-slate-600 px-6 py-3 font-semibold text-white transition hover:border-slate-400">
+              Book a demo
+            </a>
+          </div>
+        </Reveal>
+      </section>
 
       <ContactSection />
 
-      {/* Footer */}
-      <footer className="bg-slate-950 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-8">
-            <div>
-              <div className="text-xl font-bold mb-4">Traigent</div>
-              <p className="text-slate-400 mb-6 max-w-xs">
-                Agent Optimization Platform. Wrap. Optimize. Converge. Re-optimize.
-              </p>
-              <p className="text-xs text-slate-500">
-                Traigent Ltd, Hartglas 16, Tel-Aviv, Israel
-              </p>
-              <p className="mt-2 text-xs text-slate-500">
-                <a href="mailto:support@traigent.ai" className="hover:text-white transition-colors">
-                  support@traigent.ai
-                </a>
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Resources</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link to="/agent-optimization" className="text-slate-400 hover:text-white transition-colors">
-                    Agent Optimization
-                  </Link>
-                </li>
-                <li>
-                  <Link to={createPageUrl("/get-started")} className="text-slate-400 hover:text-white transition-colors">
-                    Get started
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/research" className="text-slate-400 hover:text-white transition-colors">
-                    Research
-                  </Link>
-                </li>
-                <li>
-                  <a href="https://www.tvl-lang.org/" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">
-                    Learn TVL
-                  </a>
-                </li>
-                <li>
-                  {/* Email-gated: opens the Start Now modal (repo + install
-                      command unlock after the visitor leaves an email). */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      trackEvent("github_gate_opened", { location: "homepage_footer" });
-                      setShowStartNow(true);
-                    }}
-                    className="text-slate-400 hover:text-white transition-colors"
-                  >
-                    Try out our SDK - it's free!
-                  </button>
-                </li>
-                <li>
-                  <Link to="/one-pager" className="text-slate-400 hover:text-white transition-colors">
-                    One Pager
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/value-proposition" className="text-slate-400 hover:text-white transition-colors">
-                    Value Proposition
-                  </Link>
-                </li>
-                <li>
-                  <a
-                    href={`${PORTAL_URL}/pricing`}
-                    className="text-slate-400 hover:text-white transition-colors"
-                  >
-                    Pricing
-                  </a>
-                </li>
-                <li>
-                  <a href={PORTAL_URL} className="text-slate-400 hover:text-white transition-colors">
-                    Open portal
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Legal</h3>
-              <ul className="space-y-2">
-                <li>
-                  <a
-                    href={`${PORTAL_URL}/privacy`}
-                    className="text-slate-400 hover:text-white transition-colors"
-                  >
-                    Privacy Policy
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href={`${PORTAL_URL}/terms`}
-                    className="text-slate-400 hover:text-white transition-colors"
-                  >
-                    Terms of Service
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href={`${PORTAL_URL}/refund`}
-                    className="text-slate-400 hover:text-white transition-colors"
-                  >
-                    Refund Policy
-                  </a>
-                </li>
-              </ul>
-            </div>
+      <footer className="border-t border-white/10 bg-[#030406] py-10 text-sm text-slate-500">
+        <div className="mx-auto flex max-w-7xl flex-col justify-between gap-5 px-5 sm:flex-row sm:items-center sm:px-8 lg:px-10">
+          <div>
+            <span className="font-semibold text-slate-200">Traigent</span>
+            <span className="ml-3">Vibe code agents you can trust.</span>
           </div>
-
-          <div className="border-t border-slate-800 mt-12 pt-8 text-center text-slate-500">
-            <p>
-              © {new Date().getFullYear()} Traigent Ltd. All rights reserved.{" "}
-              {/* Hidden sales-deck shortcut: right-click the dot to open /pitch-short-2 in a new tab.
-                  Looks decorative to visitors. No left-click handler. */}
-              <span
-                onContextMenu={(e) => {
-                  e.preventDefault();
-                  window.open("#/pitch-short-2", "_blank", "noopener,noreferrer");
-                }}
-                aria-hidden="true"
-                title=""
-                className="text-slate-700 select-none ml-2"
-              >
-                ▸
-              </span>
-            </p>
-            <p></p>
-            <p className="mt-2 text-slate-950 selection:bg-white selection:text-slate-900">{versionInfo.version}</p>
+          <div className="flex flex-wrap gap-5">
+            <Link to="/pricing" className="transition hover:text-white">Pricing</Link>
+            <Link to="/research" className="transition hover:text-white">Research</Link>
+            <Link to="/privacy" className="transition hover:text-white">Privacy</Link>
+            <a href="mailto:support@traigent.ai" className="transition hover:text-white">Support</a>
           </div>
         </div>
       </footer>
