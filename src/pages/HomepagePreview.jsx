@@ -8,7 +8,7 @@ import {
   BenchmarkCardBody,
   ObservabilityCardBody,
 } from "../components/PlatformShowcase";
-import { SlideMarketOpportunity } from "./PitchShort";
+import { SlideMarketOpportunity, SlideFourPillars, SlideCustomerObjectiveSpider, SlideParetoFrontier } from "./PitchShort";
 import { Link } from "react-router-dom";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -145,7 +145,7 @@ export default function HomepagePreview() {
               className="whitespace-nowrap font-bold text-slate-100 leading-[1.15] tracking-tight mb-6"
               style={{ fontSize: 'clamp(1rem, 4.5vw, 3.6rem)', letterSpacing: '-0.02em' }}
             >
-              Vibe <span className="text-[#4D8EF8]">Accurate</span> yet <span className="text-[#f59e0b]">Low Cost</span> <span className="text-white">AI Agents</span>
+              Vibe Coding <span className="text-[#4D8EF8]">Optimal</span> <span className="text-white">AI Agents</span>
             </motion.p>
             {/* Hero CTA row — primary "Connect your coding agent to Traigent"
                 (copies the keyless setup prompt) followed by the "Agent
@@ -207,32 +207,27 @@ export default function HomepagePreview() {
         </div>
       </section>
 
-      {/* Customers — scrolling design-partner / early-adopter band, sits below
-          the "A Problem About to Explode" market band. */}
-      <section id="customers" className="py-12 md:py-16 bg-[#080808] border-t border-slate-800/50 scroll-mt-20">
+      {/* Slide 2 of /short-summary — the four-pillar methodology (SlideFourPillars);
+          leads the content immediately after the 3-box market band. */}
+      <section className="pt-8 md:pt-12 pb-8 md:pb-12 bg-[#080808] border-t border-slate-800/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-center text-sm md:text-base text-slate-300 uppercase tracking-widest font-bold mb-8">Customers</p>
-          <div className="relative overflow-hidden">
-            <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#080808] to-transparent z-10"></div>
-            <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#080808] to-transparent z-10"></div>
-            <div className="flex gap-16 items-center animate-scroll" style={{ width: 'max-content', animation: 'scroll 40s linear infinite' }}>
-              {[...Array(8)].map((_, setIndex) => (
-                <React.Fragment key={setIndex}>
-                  <div className="text-slate-300 text-xl md:text-2xl font-bold whitespace-nowrap">Bazak</div>
-                  <div className="text-slate-300 text-xl md:text-2xl font-bold whitespace-nowrap">iForAI</div>
-                  <div className="text-slate-300 text-xl md:text-2xl font-bold whitespace-nowrap">Cloudzone</div>
-                  <div className="text-slate-300 text-xl md:text-2xl font-bold whitespace-nowrap">Profisea</div>
-                  <div className="text-slate-300 text-xl md:text-2xl font-bold whitespace-nowrap">Yotpo</div>
-                </React.Fragment>
-              ))}
-            </div>
-          </div>
-          <style>{`
-            @keyframes scroll {
-              from { transform: translateX(0); }
-              to { transform: translateX(-50%); }
-            }
-          `}</style>
+          <SlideFourPillars />
+        </div>
+      </section>
+
+      {/* Slide 4 of /short-summary — example end result: SPIDER text2SQL frontier
+          proof (SlideCustomerObjectiveSpider); right after the solution section. */}
+      <section className="pt-8 md:pt-12 pb-8 md:pb-12 bg-[#080808] border-t border-slate-800/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <SlideCustomerObjectiveSpider compact />
+        </div>
+      </section>
+
+      {/* Slide 3 of /short-summary — the multi-dimensional optimization problem
+          (SlideParetoFrontier); placed after the Traigent (example) Results section. */}
+      <section className="pt-8 md:pt-12 pb-8 md:pb-12 bg-[#080808] border-t border-slate-800/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <SlideParetoFrontier />
         </div>
       </section>
 
@@ -540,6 +535,35 @@ def answer_question(question: str) -> str:
 
       {/* From the blog — objection-handler content surfaced on the homepage */}
       <BlogHighlights />
+
+      {/* Customers — scrolling design-partner / early-adopter band, placed just
+          above Contact Us. */}
+      <section id="customers" className="py-12 md:py-16 bg-[#080808] border-t border-slate-800/50 scroll-mt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <p className="text-center text-sm md:text-base text-slate-300 uppercase tracking-widest font-bold mb-8">Customers</p>
+          <div className="relative overflow-hidden">
+            <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#080808] to-transparent z-10"></div>
+            <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#080808] to-transparent z-10"></div>
+            <div className="flex gap-16 items-center animate-scroll" style={{ width: 'max-content', animation: 'scroll 40s linear infinite' }}>
+              {[...Array(8)].map((_, setIndex) => (
+                <React.Fragment key={setIndex}>
+                  <div className="text-slate-300 text-xl md:text-2xl font-bold whitespace-nowrap">Bazak</div>
+                  <div className="text-slate-300 text-xl md:text-2xl font-bold whitespace-nowrap">iForAI</div>
+                  <div className="text-slate-300 text-xl md:text-2xl font-bold whitespace-nowrap">Cloudzone</div>
+                  <div className="text-slate-300 text-xl md:text-2xl font-bold whitespace-nowrap">Profisea</div>
+                  <div className="text-slate-300 text-xl md:text-2xl font-bold whitespace-nowrap">Yotpo</div>
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+          <style>{`
+            @keyframes scroll {
+              from { transform: translateX(0); }
+              to { transform: translateX(-50%); }
+            }
+          `}</style>
+        </div>
+      </section>
 
       <ContactSection />
 

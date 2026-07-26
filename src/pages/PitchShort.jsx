@@ -721,6 +721,9 @@ export function SlideMarketOpportunity({ subtitle, painIntro, painItems, waveNot
             Exponential adoption ahead
             <span className="block">LLM costs set to explode</span>
           </h3>
+          <p className="text-base font-semibold leading-snug mb-3" style={{ color: "#f59e0b" }}>
+            {waveNote || "Business Processes and Customer Interactions are being Agentized rapidly"}
+          </p>
 
           {/* Hockey-stick chart */}
           <svg viewBox="0 0 280 130" className="w-full mb-4 flex-1" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
@@ -750,9 +753,6 @@ export function SlideMarketOpportunity({ subtitle, painIntro, painItems, waveNot
           </svg>
 
           <div className="mt-auto">
-            <p className="text-base font-semibold leading-snug mb-2" style={{ color: "#f59e0b" }}>
-              {waveNote || "Business and Customer processes being Agentized rapidly"}
-            </p>
             <p className="text-lg text-slate-300 leading-snug">
               Few in production today.<br /><span className="font-bold text-white">Massive rollouts 2026–2030.</span>
             </p>
@@ -1164,7 +1164,7 @@ function SlideLoopProof() {
 // measured (customer-demo-simulation#2 writeup: SPIDER execution-match,
 // bayesian/cost-capped/portal-tracked search, leave-one-out few-shot, validated
 // on the full 1,034-question dev set). Do NOT round these away.
-function SlideCustomerObjectiveSpider() {
+export function SlideCustomerObjectiveSpider({ compact } = {}) {
   const FRONTIER = [
     {
       v: <><span className="text-slate-400">gpt‑4o‑mini · ddl_fk · k2 · fixed</span> <span className="text-slate-600">(no sql_guidance)</span></>,
@@ -1267,7 +1267,8 @@ function SlideCustomerObjectiveSpider() {
         </a>
       </div>
 
-      {/* How we got there + what we discarded */}
+      {/* How we got there + what we discarded — hidden in compact (homepage) mode */}
+      {!compact && (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-3.5">
           <div className="text-[10px] md:text-xs font-mono uppercase tracking-widest mb-1.5" style={{ color: "#4D8EF8" }}>
@@ -1303,6 +1304,7 @@ function SlideCustomerObjectiveSpider() {
           </p>
         </div>
       </div>
+      )}
     </div>
   );
 }
@@ -1605,7 +1607,7 @@ function TrafficDot({ c }) {
 
 // Slide: THE TRAIGENT METHOD — four pillars, each scored (traffic light),
 // recommended, and improved, on a repeating cycle. Product-concept slide.
-function SlideFourPillars() {
+export function SlideFourPillars() {
   const pillars = [
     { num: "1 · DATASET", name: "The dataset", one: 'What "good" is measured on.',
       light: "a", label: "Amber", lc: "#f59e0b",
@@ -1613,10 +1615,10 @@ function SlideFourPillars() {
     { num: "2 · EVALUATION", name: "The evaluation", one: "How we grade it — the scorer & its rules.",
       light: "r", label: "Red", lc: "#f43f5e",
       rec: "Manufacture a verifier or calibrate the judge; confirm it picks the true winner." },
-    { num: "3a · DIMENSIONS", name: "The config space", one: "What we can change — the full arsenal.",
+    { num: "3 · DIMENSIONS", name: "Agent config dimensions", one: "Thousands of optional permutations evaluated.",
       light: "a", label: "Amber", lc: "#f59e0b",
-      rec: "Diagnose the misses → the vital-few dimensions: model · retrieval · prompt · format · examples · reasoning · multi-model routing …" },
-    { num: "3b · SEARCH", name: "The optimization", one: "ML algorithms converge rapidly.",
+      rec: "model · retrieval · prompt · format · examples · reasoning · multi-model routing/cascading …" },
+    { num: "4 · SEARCH", name: "Finding the optimal values", one: "ML algorithms converge rapidly.",
       light: "g", label: "Green", lc: "#34d399",
       rec: "Seeded hypothesis-chain → the accuracy → cost/latency Pareto." },
   ];
@@ -1624,26 +1626,29 @@ function SlideFourPillars() {
   return (
     <div className="w-full">
       <div className="text-center mb-5">
-        <div className="text-2xl md:text-3xl font-mono uppercase tracking-[0.2em] text-blue-400 mb-3">The Traigent Methodology</div>
-        <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight">
-          Vibe Coding the <span className="text-blue-400">Optimal</span> Agent
-        </h2>
+        <div className="text-2xl md:text-3xl font-mono uppercase tracking-[0.2em] text-blue-400 mb-3">The Traigent Solution</div>
         <p className="text-lg md:text-2xl font-semibold text-slate-200 mt-2 leading-snug">
-          Traigent builds optimized agents leveraging <span className="text-blue-400">four pillars</span>
+          Install <span className="text-white">Traigent</span> on <span className="text-blue-400">your coding agent</span>
         </p>
-        <p className="text-sm text-slate-400 max-w-3xl mx-auto mt-2 leading-snug">
-          Each pillar is <span className="text-blue-400">Scored</span>, Recommended and then{" "}
-          <span style={{ color: "#34d399" }}>Improved</span> sequentially
+        <p className="text-lg md:text-2xl font-semibold text-slate-200 mt-1.5 leading-snug">
+          Traigent evolves <span className="text-white">4 pillars</span> to build the <span className="text-blue-400">optimal agent</span>
         </p>
       </div>
       <div className="grid grid-cols-4 gap-3">
+        {/* Group titles — each spans its pair of pillars below */}
+        <div className="col-span-2 text-center text-[13px] md:text-sm font-bold uppercase tracking-wider text-slate-200 bg-slate-800/50 border border-slate-700/50 rounded-lg py-2">
+          Evolving the Benchmark
+        </div>
+        <div className="col-span-2 text-center text-[13px] md:text-sm font-bold uppercase tracking-wider text-slate-200 bg-slate-800/50 border border-slate-700/50 rounded-lg py-2">
+          Programming and Parametrizing the Optimal Agent
+        </div>
         {pillars.map((p) => (
           <div key={p.num} className="flex flex-col gap-1.5 bg-slate-900/60 border border-slate-700/50 rounded-xl p-4">
             <span className="self-start text-[10px] font-mono font-bold text-slate-900 bg-blue-400 rounded px-1.5 py-0.5 tracking-wide">{p.num}</span>
             <span className="text-base font-bold text-white leading-tight">{p.name}</span>
             <span className="text-xs text-slate-400 leading-snug">{p.one}</span>
-            <span className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-wider mt-0.5" style={{ color: p.lc }}>
-              <TrafficDot c={p.light} /> {p.label}
+            <span className="self-start text-[10px] font-mono uppercase tracking-wider text-slate-300 bg-slate-800/70 border border-slate-700/50 rounded px-1.5 py-0.5 mt-0.5">
+              Evolved Sequentially
             </span>
             <span className="mt-auto pt-2 border-t border-slate-700/50 text-xs text-slate-300 leading-snug">
               <span className="text-slate-500">→</span> {p.rec}
@@ -1666,6 +1671,10 @@ function SlideFourPillars() {
         <span className="flex items-center gap-1.5"><TrafficDot c="a" /> Works, weak</span>
         <span className="flex items-center gap-1.5"><TrafficDot c="g" /> Strong · graduate at all-green</span>
       </div>
+      <p className="text-center text-sm text-slate-400 max-w-3xl mx-auto mt-4 leading-snug">
+        Each pillar is <span className="text-blue-400">Scored</span>, Recommended and then{" "}
+        <span style={{ color: "#34d399" }}>Improved</span> sequentially
+      </p>
     </div>
   );
 }
@@ -1673,7 +1682,7 @@ function SlideFourPillars() {
 // Slide: THE SYSTEM — local (coding agent + SDK + skills) ↔ Traigent cloud
 // (backend + frontend), joined by the connective files (run-plans, agg ledger,
 // harness registry). Product-concept slide.
-function SlideArchitecture() {
+export function SlideArchitecture() {
   const files = [
     ["Run-plans", "hypothesis nodes"],
     ["Aggregate ledger", "the chain of results"],
