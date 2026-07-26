@@ -85,8 +85,7 @@ export default function HomepagePreview() {
   return (
     <div className="bg-white">
       <Helmet>
-        <meta name="robots" content="noindex,nofollow" />
-        <title>Traigent — Preview (new concept · WIP)</title>
+        <title>Traigent — Agent Optimization Platform</title>
         <meta name="description" content="Rapidly finds High Accuracy and Low Cost yielding configurations among thousands possible." />
         <meta property="og:title" content="Traigent — AI Agent Optimization Platform" />
         <meta property="og:description" content="Rapidly finds High Accuracy and Low Cost yielding configurations among thousands possible." />
@@ -119,11 +118,6 @@ export default function HomepagePreview() {
           })}
         </script>
       </Helmet>
-      {/* PREVIEW banner — this is the hidden /preview new-site concept, NOT the
-          live site. Remove when this gets promoted to the main homepage. */}
-      <div className="bg-amber-500 text-black text-center text-xs md:text-sm font-semibold py-1.5 px-4">
-        PREVIEW — new site concept · work in progress · not the live site
-      </div>
       {showStartNow && <StartNowModal onClose={() => setShowStartNow(false)} location="homepage_hero" />}
       {/* Hero Section */}
       <section className="relative overflow-x-clip bg-[#080808] text-white">

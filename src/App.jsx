@@ -81,10 +81,10 @@ export default function App() {
       <Route path="one-pager-prospects" element={<PitchShort2 forcedPreset="one-pager-prospects" />} />
 
       <Route path="/" element={<Layout />}>
-        <Route index element={<Homepage />} />
-        {/* Hidden new-site concept playground (noindex, unlinked). Promote later
-            by pointing the index route at HomepagePreview. */}
-        <Route path="preview" element={<HomepagePreview />} />
+        <Route index element={<HomepagePreview />} />
+        {/* Previous homepage — kept as a hidden, unlinked rollback. Repoint the
+            index route back to <Homepage /> to revert. */}
+        <Route path="classic" element={<Homepage />} />
         <Route path="get-started" element={<GetStarted />} />
         <Route path="value-proposition" element={<ValueProposition />} />
         <Route path="blog" element={<Blog />} />
