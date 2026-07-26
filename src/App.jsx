@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import Homepage from './pages/Homepage'
 import HomepagePreview from './pages/HomepagePreview'
+import OnboardingSimulation from './pages/OnboardingSimulation'
 import GetStarted from './pages/GetStarted'
 import OnePager from './pages/OnePager'
 import OnePager2 from './pages/OnePager2'
@@ -85,6 +86,7 @@ export default function App() {
         {/* Previous homepage — kept as a hidden, unlinked rollback. Repoint the
             index route back to <Homepage /> to revert. */}
         <Route path="classic" element={<Homepage />} />
+        <Route path="onboarding-simulation" element={<OnboardingSimulation />} />
         <Route path="get-started" element={<GetStarted />} />
         <Route path="value-proposition" element={<ValueProposition />} />
         <Route path="blog" element={<Blog />} />
