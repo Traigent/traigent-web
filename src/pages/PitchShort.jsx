@@ -1855,7 +1855,7 @@ export const SHORT_SLIDES = [
   { title: "Run It Continuously — Accumulate Every Result", section: "Lifecycle", component: SlideContinuousOptimization },
   { title: "The Feedback Loop Is How the Agent Evolves", section: "Lifecycle", component: SlideLoopProof },
   // ----- CUSTOMER DECK — THE OBJECTIVE (real, measured SPIDER text2SQL frontier) -----
-  { title: "The Objective — text2SQL on SPIDER (real frontier)", section: "Customer", component: SlideCustomerObjectiveSpider },
+  { title: "The Objective — text2SQL on SPIDER (real frontier)", section: "Customer", component: () => <SlideCustomerObjectiveSpider compact /> },
   // ----- CUSTOMER DECK — IMMENSE ACCOMPLISHMENT (impact / why it matters) -----
   { title: "Appreciating Traigent's Immense Accomplishment", section: "Customer", component: SlideCustomerImmenseAccomplishment },
   // ----- CUSTOMER DECK — OPENING HOOK (proof, not promises) -----
