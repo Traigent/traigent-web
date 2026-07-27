@@ -206,17 +206,6 @@ export default function HomepagePreview() {
       <section id="solution" className="pt-8 md:pt-12 pb-8 md:pb-12 bg-[#080808] border-t border-slate-800/50 scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <SlideFourPillars />
-          {/* Prominent CTA into the interactive onboarding / lifecycle simulation */}
-          <div className="mt-8 flex justify-center">
-            <Link
-              to="/onboarding-simulation"
-              onClick={() => trackEvent("lifecycle_sim_clicked", { location: "homepage_solution" })}
-              className="inline-flex items-center gap-2.5 rounded-full bg-[#1A6BF5] hover:bg-[#4D8EF8] px-7 py-3.5 text-base md:text-lg font-semibold text-white shadow-lg shadow-blue-500/30 transition-colors"
-            >
-              <Play className="w-5 h-5 fill-white" /> Interactive onboarding example
-              <ArrowRight className="w-5 h-5" />
-            </Link>
-          </div>
         </div>
       </section>
 

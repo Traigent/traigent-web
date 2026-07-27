@@ -6,7 +6,8 @@
 // JSX is duplicated from PitchFull.
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, ArrowDown, ArrowUp, ArrowUpRight, Blocks, ChevronsDown, Database, DollarSign, Check, Clock, MessageSquare, RefreshCw, ShieldCheck, Target, TrendingDown, TrendingUp, Users, X, Zap } from "lucide-react";
+import { trackEvent } from "../lib/analytics";
+import { ArrowRight, ArrowDown, ArrowUp, ArrowUpRight, Blocks, ChevronsDown, Database, DollarSign, Check, Clock, MessageSquare, Play, RefreshCw, ShieldCheck, Target, TrendingDown, TrendingUp, Users, X, Zap } from "lucide-react";
 import StartNowModal from "../components/StartNowModal";
 
 // Shared optimizer ring — clockwise Learn → Deduce → <thirdLabel> → Repeat
@@ -1631,7 +1632,7 @@ export function SlideFourPillars() {
           Install <span className="text-white">Traigent</span> on <span className="text-blue-400">your coding agent</span>
         </p>
         <p className="text-lg md:text-2xl font-semibold text-slate-200 mt-1.5 leading-snug">
-          Traigent evolves <span className="text-white">4 pillars</span> to build the <span className="text-blue-400">optimal agent</span>
+          Traigent builds <span className="text-blue-400">THE OPTIMAL agent</span> from the ground up — programming it across <span className="text-white">4 pillars</span>
         </p>
       </div>
       <div className="grid grid-cols-4 gap-3">
@@ -1675,6 +1676,18 @@ export function SlideFourPillars() {
         Each pillar is <span className="text-blue-400">Scored</span>, Recommended and then{" "}
         <span style={{ color: "#34d399" }}>Improved</span> sequentially
       </p>
+      {/* CTA into the interactive onboarding / lifecycle simulation (same button
+          as the homepage solution section). */}
+      <div className="mt-5 flex justify-center">
+        <Link
+          to="/onboarding-simulation"
+          onClick={() => trackEvent("lifecycle_sim_clicked", { location: "solution_slide" })}
+          className="inline-flex items-center gap-2.5 rounded-full bg-[#1A6BF5] hover:bg-[#4D8EF8] px-7 py-3.5 text-base md:text-lg font-semibold text-white shadow-lg shadow-blue-500/30 transition-colors"
+        >
+          <Play className="w-5 h-5 fill-white" /> Interactive onboarding example
+          <ArrowRight className="w-5 h-5" />
+        </Link>
+      </div>
     </div>
   );
 }
