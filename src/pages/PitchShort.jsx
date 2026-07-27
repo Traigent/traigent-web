@@ -1632,7 +1632,7 @@ export function SlideFourPillars() {
           Traigent builds <span className="text-blue-400">THE OPTIMAL agent</span> from the ground up — programming it across <span className="text-white">4 pillars</span>
         </p>
         <p className="text-lg md:text-2xl font-semibold text-slate-200 mt-1.5 leading-snug">
-          Install <span className="text-white">Traigent</span> on <span className="text-blue-400">your coding agent</span>
+          Just install <span className="text-white">Traigent</span> on <span className="text-blue-400">your coding agent</span>
         </p>
       </div>
       <div className="grid grid-cols-4 gap-3">
