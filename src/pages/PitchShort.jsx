@@ -1803,6 +1803,142 @@ function SlideOnePagerProspect() {
   return <SlideMarketOpportunity />;
 }
 
+// ── INVESTOR / BUSINESS-PLAN SLIDES ──────────────────────────────────────────
+// New seed-raise slides: market potential (TAM/SAM/SOM), the business plan
+// (land / expand / own), and the why-invest case + the ask. Numbers are grounded
+// in SlideMarketAndRevenue's cascade ($128B addressable non-vendor bill by 2030,
+// ~$410M base-case ARR). The raise amount on SlideWhyInvest is a placeholder.
+function SlideMarketPotential() {
+  const tiers = [
+    { label: "TAM", w: "100%", color: "#4D8EF8", big: "~$190B",
+      sub: "Total non-vendor agent LLM bill + the engineering spent tuning it, by 2030." },
+    { label: "SAM", w: "66%", color: "#34d399", big: "$128B",
+      sub: "Non-vendor agents on third-party LLM APIs — the segment that must optimize to survive its COGS curve." },
+    { label: "SOM", w: "24%", color: "#f59e0b", big: "~$410M ARR",
+      sub: "Traigent's 2030 base case at 8% penetration (bear / bull = ~$205M / ~$615M)." },
+  ];
+  return (
+    <div className="w-full max-w-[1180px] mx-auto text-center self-stretch flex flex-col min-h-[600px]">
+      <div className="mb-4">
+        <div className="text-2xl md:text-3xl font-mono uppercase tracking-[0.2em] text-blue-400 mb-2">Market Potential</div>
+        <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight">
+          A multi-billion-dollar market, <span className="text-[#34d399]">compounding</span>
+        </h2>
+        <p className="text-sm md:text-base text-slate-300 mt-2 max-w-3xl mx-auto leading-snug">
+          Few agents are in production today; the rollout wave is 2026&ndash;2030 &mdash; and every agent hits the same cost-vs-accuracy tuning wall.
+        </p>
+      </div>
+      <div className="flex flex-col gap-3 flex-1 justify-center">
+        {tiers.map((t) => (
+          <div key={t.label} className="flex items-center gap-4">
+            <div className="w-14 shrink-0 text-right font-mono font-bold text-lg" style={{ color: t.color }}>{t.label}</div>
+            <div className="flex-1">
+              <div className="rounded-lg px-4 py-3 text-left border-2" style={{ width: t.w, borderColor: t.color + "66", background: t.color + "14" }}>
+                <span className="text-2xl md:text-3xl font-bold text-white">{t.big}</span>
+                <span className="block text-[12.5px] text-slate-300 leading-snug mt-0.5">{t.sub}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="text-[12px] text-slate-400 mt-3 text-left">
+        Comps: <span className="text-white font-semibold">Sierra</span> hit $150M ARR 24 months from launch; <span className="text-white font-semibold">Decagon</span> $35M+ in 9 months. Traigent is the picks-and-shovels every agent company needs to survive its COGS curve.
+      </div>
+    </div>
+  );
+}
+
+function SlideBusinessPlan() {
+  const phases = [
+    { tag: "2026 · NOW", color: "#4D8EF8", title: "Land — coding-agent-led", pts: [
+      "Free first-run onboarding through the customer's own coding agent (Claude Code / Codex / Gemini).",
+      "SDK + portal; bottom-up inside agent teams.",
+      "Engineering savings (day-1) drive adoption before the LLM bill is large enough to optimize." ] },
+    { tag: "2027 · EXPAND", color: "#f59e0b", title: "Expand — channels + accounts", pts: [
+      "Channel partners (e.g. CloudZone) and design partners.",
+      "Grow within accounts as production LLM bills scale.",
+      "LLM cost savings (50%) become the expansion engine." ] },
+    { tag: "2028+ · OWN", color: "#34d399", title: "Own — the optimization layer", pts: [
+      "Enterprise + platform: the standard governed optimization layer.",
+      "Continuous re-optimization across the whole agent lifecycle.",
+      "Category ARR: ~$34M (2028) → ~$138M (2029) → ~$410M (2030)." ] },
+  ];
+  const model = [
+    ["Model", <>Outcome-based: <span className="text-white font-bold">5% of customer savings delivered</span> = <span className="text-[#34d399] font-bold">$0.04 ARR</span> per $1 of penetrated LLM bill.</>],
+    ["Margins", <><span className="text-white font-bold">Software gross margins.</span> Smart search keeps our compute a fraction of the value delivered.</>],
+    ["Motion", <><span className="text-white font-bold">PLG + channel.</span> Near-zero-CAC onboarding lands; channels and enterprise expand.</>],
+  ];
+  return (
+    <div className="w-full max-w-[1180px] mx-auto text-center self-stretch flex flex-col min-h-[600px]">
+      <div className="mb-3">
+        <div className="text-2xl md:text-3xl font-mono uppercase tracking-[0.2em] text-blue-400 mb-2">The Business Plan</div>
+        <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight">
+          Land, expand, own the <span className="text-[#4D8EF8]">optimization layer</span>
+        </h2>
+      </div>
+      <div className="grid grid-cols-3 gap-3 mb-3 text-left">
+        {model.map(([h, body]) => (
+          <div key={h} className="bg-slate-900/70 border border-slate-700/60 rounded-xl p-3">
+            <div className="text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-1">{h}</div>
+            <div className="text-[13px] text-slate-200 leading-snug">{body}</div>
+          </div>
+        ))}
+      </div>
+      <div className="grid grid-cols-3 gap-3 flex-1">
+        {phases.map((p) => (
+          <div key={p.tag} className="bg-slate-900/60 border-2 rounded-xl p-4 text-left flex flex-col" style={{ borderColor: p.color + "55" }}>
+            <div className="text-xs font-mono font-bold uppercase tracking-widest mb-1" style={{ color: p.color }}>{p.tag}</div>
+            <div className="text-base font-bold text-white mb-2 leading-tight">{p.title}</div>
+            <ul className="text-[12.5px] text-slate-300 leading-snug space-y-1.5 list-disc pl-4">
+              {p.pts.map((x, i) => <li key={i}>{x}</li>)}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SlideWhyInvest() {
+  const reasons = [
+    { icon: TrendingUp, c: "#4D8EF8", t: "Inevitable market", d: "Every non-vendor agent hits the cost-vs-accuracy wall. We're the picks-and-shovels for the agent economy." },
+    { icon: Target, c: "#34d399", t: "Proven results", d: "SPIDER text2SQL: a naive agent → 90.7%, ~82% cheaper — found autonomously in ~5 hours. Real, measured." },
+    { icon: ShieldCheck, c: "#a78bfa", t: "Defensible IP", d: "Smart Pareto search (FrontierScout), cross-agent Skills, and TVL governance — not a wrapper." },
+    { icon: Zap, c: "#f59e0b", t: "Capital-efficient GTM", d: "Coding-agent-led onboarding = near-zero CAC. Land bottom-up, expand as LLM bills grow." },
+    { icon: Users, c: "#4D8EF8", t: "Team", d: "Amir Barnea (CEO) & Nimrod Busany, PhD (CTO), with ML/AI experts. Active design partners." },
+    { icon: ArrowUpRight, c: "#34d399", t: "Timing", d: "Few agents in production today; the wave is 2026–2030. We're early to the layer everyone will need." },
+  ];
+  return (
+    <div className="w-full max-w-[1180px] mx-auto text-center self-stretch flex flex-col min-h-[600px]">
+      <div className="mb-3">
+        <div className="text-2xl md:text-3xl font-mono uppercase tracking-[0.2em] text-blue-400 mb-2">Why Invest</div>
+        <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight">
+          Six reasons Traigent is a <span className="text-[#34d399]">category bet</span>
+        </h2>
+      </div>
+      <div className="grid grid-cols-3 gap-3 flex-1">
+        {reasons.map((r) => {
+          const I = r.icon;
+          return (
+            <div key={r.t} className="bg-slate-900/60 border border-slate-700/50 rounded-xl p-4 text-left">
+              <I className="w-6 h-6 mb-2" style={{ color: r.c }} />
+              <div className="text-base font-bold text-white leading-tight mb-1">{r.t}</div>
+              <div className="text-[12.5px] text-slate-300 leading-snug">{r.d}</div>
+            </div>
+          );
+        })}
+      </div>
+      <div className="mt-3 rounded-xl border-2 px-4 py-3 text-left" style={{ borderColor: "rgba(52,211,153,0.4)", background: "rgba(52,211,153,0.06)" }}>
+        <span className="text-[10px] font-mono uppercase tracking-widest text-[#34d399]">The ask</span>
+        <div className="text-sm md:text-base text-slate-100 mt-1 leading-snug">
+          Raising our <span className="font-bold text-white">[Seed]</span> round &mdash; <span className="font-bold text-white">$[ &nbsp; ]M</span> to scale coding-agent-led GTM, harden the cloud backend, and grow the ML team.
+          <span className="text-slate-400"> Use of funds: GTM · Product / Cloud · Team · 18&ndash;24 mo runway.</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export const SHORT_SLIDES = [
   // ----- TEXT-ONLY ONE-PAGER (opener — swapped in from slot 22) -----
   { title: "One-Pager Test — Text Only (V2)", section: "Traigent intro", component: SlideOnePagerTextTestV2 },
@@ -1871,6 +2007,10 @@ export const SHORT_SLIDES = [
   { title: "One-Pager", section: "One-pager", component: SlideOnePager },
   // ----- ONE-PAGER (PROSPECTS, index 41) — investor one-pager minus the founders footer -----
   { title: "One-Pager (Prospects)", section: "One-pager", component: SlideOnePagerProspect },
+  // ----- INVESTOR / BUSINESS PLAN (indices 42-44) -----
+  { title: "Market Potential — TAM / SAM / SOM", section: "Investor", component: SlideMarketPotential },
+  { title: "The Business Plan — Land / Expand / Own", section: "Investor", component: SlideBusinessPlan },
+  { title: "Why Invest — Category Bet + The Ask", section: "Investor", component: SlideWhyInvest },
 ];
 
 export default function PitchShort() {

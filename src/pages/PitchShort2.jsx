@@ -35,6 +35,10 @@ const PRESETS = {
   // preset so /investor-pitch can diverge later without touching the
   // /market-opportunity preset.
   "investor-pitch":                { range:   "24-29" },
+  // Business plan & investment deck for the seed raise: market opener, market
+  // potential (TAM/SAM/SOM), revenue cascade, the business plan, why-invest +
+  // the ask, the SPIDER proof, and the investor CTA. New slides = 42,43,44.
+  "invest":                        { range:   "24,42,26,43,44,33,29" },
   // Customer deck — opens with the first two slides of /short-summary (24, 2)
   // as the framing intro, then THE OBJECTIVE: a real, measured SPIDER text2SQL
   // frontier (slide 33 of SHORT_SLIDES). This deck grows with more
