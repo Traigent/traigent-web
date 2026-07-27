@@ -53,6 +53,11 @@ const PITCH_DECK_OPTIONS = [
     href: "/#/investor-pitch",
   },
   {
+    label: "Business plan & investment",
+    desc: "For the raise — market potential (TAM/SAM/SOM), business plan, why invest + the ask",
+    href: "/#/invest",
+  },
+  {
     label: "Customer",
     desc: "For customers — the objective, via a real SPIDER text2SQL frontier",
     href: "/#/customer-deck",
