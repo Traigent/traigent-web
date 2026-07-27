@@ -1939,6 +1939,97 @@ function SlideWhyInvest() {
   );
 }
 
+function SlideCompetition() {
+  const cols = ["Traigent", "Eval / observability", "Prompt optimizers", "Agent frameworks", "In-house / manual"];
+  const rows = [
+    ["Measure agent quality", [2, 2, 1, 0, 1]],
+    ["Search the full config space (model · retrieval · prompt · format · examples · routing)", [2, 0, 1, 0, 1]],
+    ["Prove the optimal (Pareto) frontier", [2, 0, 0, 0, 0]],
+    ["Optimize cost + latency, not just accuracy", [2, 1, 0, 0, 1]],
+    ["Runs through any coding agent (Claude Code / Codex / Gemini)", [2, 0, 0, 0, 0]],
+    ["Governed + reproducible (TVL)", [2, 1, 0, 0, 0]],
+  ];
+  const cell = (v) =>
+    v === 2 ? <Check className="w-4 h-4 mx-auto" style={{ color: "#34d399" }} strokeWidth={3} />
+      : v === 1 ? <span className="text-amber-400 font-bold">~</span>
+        : <X className="w-4 h-4 mx-auto text-slate-600" />;
+  return (
+    <div className="w-full max-w-[1180px] mx-auto text-center self-stretch flex flex-col min-h-[600px]">
+      <div className="mb-3">
+        <div className="text-2xl md:text-3xl font-mono uppercase tracking-[0.2em] text-blue-400 mb-2">Competition</div>
+        <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight">
+          Everyone else helps you watch or build. <span className="text-[#34d399]">We find the optimal agent.</span>
+        </h2>
+      </div>
+      <div className="bg-slate-900/70 border border-slate-700/60 rounded-xl p-3 flex-1 flex flex-col justify-center">
+        <table className="w-full text-left text-[12.5px]">
+          <thead>
+            <tr className="text-[10px] font-mono uppercase tracking-wider text-slate-400 border-b border-slate-700">
+              <th className="py-2 w-[38%]"></th>
+              {cols.map((c, i) => (
+                <th key={c} className={"py-2 px-1 text-center align-bottom " + (i === 0 ? "text-[#4D8EF8]" : "")}>{c}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map(([label, vals]) => (
+              <tr key={label} className="border-b border-slate-800/70 last:border-b-0">
+                <td className="py-2 pr-2 text-slate-200 leading-snug">{label}</td>
+                {vals.map((v, i) => (
+                  <td key={i} className={"py-2 px-1 text-center " + (i === 0 ? "bg-[#4D8EF8]/10" : "")}>{cell(v)}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="text-[11.5px] text-slate-400 mt-2 text-left">
+        Adjacent tools — <span className="text-slate-300">Langfuse · Arize · Braintrust · Galileo</span> (measure) · <span className="text-slate-300">DSPy</span> (prompts) · <span className="text-slate-300">LangChain · CrewAI</span> (build) — none search the full space and prove the frontier. Traigent is the layer on top of all of them.
+      </div>
+    </div>
+  );
+}
+
+function SlideTeam() {
+  const founders = [
+    { initials: "AB", name: "Amir Barnea", role: "CEO & Co-founder", email: "amir@traigent.ai",
+      pts: ["Owns product, GTM and the customer motion", "30+ years building and shipping complex software systems"] },
+    { initials: "NB", name: "Nimrod Busany, PhD", role: "CTO & Co-founder", email: "nimrod@traigent.ai",
+      pts: ["Owns the optimization science and the core IP", "Smart search that finds the Pareto frontier in a fraction of the trials"] },
+  ];
+  return (
+    <div className="w-full max-w-[1180px] mx-auto text-center self-stretch flex flex-col min-h-[600px]">
+      <div className="mb-4">
+        <div className="text-2xl md:text-3xl font-mono uppercase tracking-[0.2em] text-blue-400 mb-2">Team</div>
+        <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight">
+          The team building the <span className="text-[#4D8EF8]">optimization layer</span>
+        </h2>
+      </div>
+      <div className="grid grid-cols-2 gap-4 flex-1">
+        {founders.map((f) => (
+          <div key={f.name} className="bg-slate-900/60 border border-slate-700/50 rounded-2xl p-6 text-left flex flex-col">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold text-white shrink-0"
+                style={{ background: "linear-gradient(135deg,#1A6BF5,#34d399)" }}>{f.initials}</div>
+              <div>
+                <div className="text-xl font-bold text-white leading-tight">{f.name}</div>
+                <div className="text-sm font-semibold text-[#4D8EF8]">{f.role}</div>
+                <a href={"mailto:" + f.email} className="text-xs font-mono text-slate-400 hover:text-slate-200">{f.email}</a>
+              </div>
+            </div>
+            <ul className="text-sm text-slate-300 leading-snug space-y-2 list-disc pl-5">
+              {f.pts.map((x, i) => <li key={i}>{x}</li>)}
+            </ul>
+          </div>
+        ))}
+      </div>
+      <div className="mt-4 bg-slate-900/50 border border-slate-700/50 rounded-xl px-4 py-3 text-[13px] text-slate-300 text-left">
+        <span className="text-white font-semibold">Backed by mathematicians &amp; AI experts</span> — the smart-search algorithms are the secret sauce — and validated with <span className="text-white font-semibold">active design partners</span> (CloudZone and others). <span className="text-slate-500">[edit bios / add advisors]</span>
+      </div>
+    </div>
+  );
+}
+
 export const SHORT_SLIDES = [
   // ----- TEXT-ONLY ONE-PAGER (opener — swapped in from slot 22) -----
   { title: "One-Pager Test — Text Only (V2)", section: "Traigent intro", component: SlideOnePagerTextTestV2 },
@@ -2011,6 +2102,8 @@ export const SHORT_SLIDES = [
   { title: "Market Potential — TAM / SAM / SOM", section: "Investor", component: SlideMarketPotential },
   { title: "The Business Plan — Land / Expand / Own", section: "Investor", component: SlideBusinessPlan },
   { title: "Why Invest — Category Bet + The Ask", section: "Investor", component: SlideWhyInvest },
+  { title: "Competition — the Optimization Layer", section: "Investor", component: SlideCompetition },
+  { title: "Team — Amir (CEO) + Nimrod (CTO)", section: "Investor", component: SlideTeam },
 ];
 
 export default function PitchShort() {

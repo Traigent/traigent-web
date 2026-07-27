@@ -38,7 +38,11 @@ const PRESETS = {
   // Business plan & investment deck for the seed raise: market opener, market
   // potential (TAM/SAM/SOM), revenue cascade, the business plan, why-invest +
   // the ask, the SPIDER proof, and the investor CTA. New slides = 42,43,44.
-  "invest":                        { range:   "24,42,26,43,44,33,29" },
+  // Full traditional arc: problem (24) -> solution (38) -> technology (39) ->
+  // market potential (42) -> business plan / GTM (43) -> revenue (26) ->
+  // competition (45) -> traction/proof (33) -> team (46) -> why-invest + ask
+  // (44) -> CTA (29).
+  "invest":                        { range:   "24,38,39,42,43,26,45,33,46,44,29" },
   // Customer deck — opens with the first two slides of /short-summary (24, 2)
   // as the framing intro, then THE OBJECTIVE: a real, measured SPIDER text2SQL
   // frontier (slide 33 of SHORT_SLIDES). This deck grows with more
