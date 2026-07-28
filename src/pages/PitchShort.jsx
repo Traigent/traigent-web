@@ -630,10 +630,13 @@ function SlideMarketAndRevenue() {
       {/* Title */}
       <div className="mb-2">
         <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight tracking-tight mb-1">
-          Market &amp; Revenue &mdash; <span style={{ color: "#4D8EF8" }}>Non-Vendor Agents</span>
+          Market and <span style={{ color: "#4D8EF8" }}>Revenues</span>
         </h2>
         <p className="text-sm md:text-base text-slate-300 leading-snug">
-          Revenue grounded in <span className="font-bold text-[#34d399]">5% of customer savings actually delivered</span> &mdash; not a TAM percentage. <span className="font-bold text-[#4D8EF8]">Engineering savings unlock adoption first</span>; <span className="font-bold text-[#f59e0b]">LLM cost savings drive expansion</span> as production bills grow.
+          Revenue grounded in <span className="font-bold text-[#34d399]">5% of customer savings actually delivered</span> &mdash; not a TAM percentage.
+        </p>
+        <p className="text-sm md:text-base text-slate-300 leading-snug mt-1">
+          <span className="font-bold text-[#4D8EF8]">Engineering savings unlock adoption first</span>; <span className="font-bold text-[#f59e0b]">LLM cost savings drive expansion</span> as production bills grow.
         </p>
       </div>
 
@@ -2088,7 +2091,7 @@ export const SHORT_SLIDES = [
   // ----- SWEEP THE EVAL + OBSERVABILITY PACK (follow-up to slide 24) -----
   { title: "Sweep the Eval + Observability Pack", section: "Appendix", component: SlideSweepThePack },
   // ----- MARKET & REVENUE (the numbers from the partner brief) -----
-  { title: "Market & Revenue — Non-Vendor Agents", section: "Appendix", component: SlideMarketAndRevenue },
+  { title: "Market and Revenues", section: "Appendix", component: SlideMarketAndRevenue },
   // ----- LIVE DEMO — appears as last slide of every filtered deck via URL ranges -----
   { title: "Optimization in Action (Video Demo)", section: "Demo", component: SlideOptimizationInActionDemo },
   // ----- 1-MIN STORY CTA — slide 5 of /investor-pitch (range 24-29) -----
