@@ -15,6 +15,7 @@ import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import versionInfo from "../version.json";
 import { Helmet } from "react-helmet-async";
 import StartNowModal from "../components/StartNowModal";
+import LeadFunnelModal from "../components/LeadFunnelModal";
 import ContactSection from "../components/ContactSection";
 import BlogHighlights from "../components/BlogHighlights";
 import { trackEvent } from "../lib/analytics";
@@ -49,6 +50,7 @@ const FadeInView = ({ children, className, delay = 0, direction = "y" }) => (
 
 export default function HomepagePreview() {
   const [showStartNow, setShowStartNow] = useState(false);
+  const [showLeadFunnel, setShowLeadFunnel] = useState(false);
   const [benefitsOpen, setBenefitsOpen] = useState(false);
   const benefitsRef = useRef(null);
   const { copied: promptCopied, copyPrompt } = useAgentSetupPrompt();
@@ -119,6 +121,7 @@ export default function HomepagePreview() {
         </script>
       </Helmet>
       {showStartNow && <StartNowModal onClose={() => setShowStartNow(false)} location="homepage_hero" />}
+      {showLeadFunnel && <LeadFunnelModal onClose={() => setShowLeadFunnel(false)} location="homepage_hero" />}
       {/* Hero Section */}
       <section className="relative overflow-x-clip bg-[#080808] text-white">
         {/* Noise texture overlay */}
@@ -141,16 +144,32 @@ export default function HomepagePreview() {
             >
               Vibe Coding <span className="text-[#4D8EF8]">Optimal</span> <span className="text-white">AI Agents</span>
             </motion.p>
-            {/* Hero CTA row — primary "Connect your coding agent to Traigent"
-                (copies the keyless setup prompt) followed by the "Agent
-                Optimization Demo" narrated walkthrough. */}
+            {/* Hero CTA row — primary filled "Start free — get the SDK" opens
+                the backend lead funnel (Marketing front door unit A2). The two
+                low-emphasis pills that follow ("Connect your coding agent",
+                copies the keyless setup prompt; "Agent Optimization Demo", the
+                narrated walkthrough) are demoted to secondary. */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.19 }}
               className="flex flex-wrap items-center justify-center gap-3 mb-10"
             >
-              {/* Primary CTA — copies the canonical keyless setup prompt
+              {/* Primary CTA (filled) — opens the lead-funnel modal: email ->
+                  6-digit code -> "check your email for the portal link". This
+                  is now the clear primary action in the hero. */}
+              <button
+                type="button"
+                onClick={() => {
+                  trackEvent("lead_funnel_opened", { location: "homepage_hero" });
+                  setShowLeadFunnel(true);
+                }}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white text-base md:text-lg font-semibold transition-colors shadow-lg shadow-blue-500/30"
+              >
+                Start free — get the SDK
+                <ArrowRight className="w-4 h-4" />
+              </button>
+              {/* Secondary CTA — copies the canonical keyless setup prompt
                   (served at /agent-setup/prompt.md) so a coding agent can wire
                   up Traigent in one paste. */}
               <button
