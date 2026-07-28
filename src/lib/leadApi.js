@@ -30,7 +30,16 @@
 // │    (replace the BACKEND-HOST-PLACEHOLDER token there).                   │
 // └──────────────────────────────────────────────────────────────────────────┘
 
-const API_BASE = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/+$/, "");
+// Trim trailing slashes without a regex (avoids a super-linear backtracking
+// smell): VITE_API_BASE_URL is joined with absolute "/api/..." paths, so a
+// trailing slash would double it.
+function stripTrailingSlashes(url) {
+  let base = url;
+  while (base.endsWith("/")) base = base.slice(0, -1);
+  return base;
+}
+
+const API_BASE = stripTrailingSlashes(import.meta.env.VITE_API_BASE_URL || "");
 
 /** True once VITE_API_BASE_URL is configured; until then the funnel is dormant. */
 export function isLeadFunnelEnabled() {
@@ -77,7 +86,7 @@ export async function captureLead({ email, website, elapsedSeconds }) {
       elapsed_seconds: elapsedSeconds,
     });
     if (!ok) return { ok: false, error: data.error || "send_failed" };
-    return { ok: true, runId: (data.data && data.data.run_id) || "" };
+    return { ok: true, runId: data.data?.run_id || "" };
   } catch {
     return { ok: false, error: "network" };
   }
@@ -111,10 +120,11 @@ export function leadErrorMessage(error, remaining) {
   switch (error) {
     case "rate_limited":
       return "Too many requests — please try again in a little while.";
-    case "invalid_code":
-      return remaining > 0
-        ? `That code didn't match — ${remaining} attempt${remaining === 1 ? "" : "s"} left.`
-        : "That code didn't match.";
+    case "invalid_code": {
+      if (!(remaining > 0)) return "That code didn't match.";
+      const plural = remaining === 1 ? "" : "s";
+      return `That code didn't match — ${remaining} attempt${plural} left.`;
+    }
     case "too_many_attempts":
       return "Too many wrong attempts — request a fresh code.";
     case "expired":

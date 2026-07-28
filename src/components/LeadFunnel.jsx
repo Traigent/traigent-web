@@ -1,9 +1,11 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useRef, useState } from "react";
-import { Mail, ShieldCheck, Github, ArrowRight, Terminal, Check } from "lucide-react";
+import { ShieldCheck, Github, ArrowRight, Terminal, Check } from "lucide-react";
 import ConsentGate from "./ConsentGate";
 import ConsentCheckbox from "./ConsentCheckbox";
 import InstallCommand from "./InstallCommand";
+import CodeEntryForm from "./CodeEntryForm";
+import EmailEntryForm from "./EmailEntryForm";
 import { captureLead, verifyLead, leadErrorMessage, isLeadFunnelEnabled } from "../lib/leadApi";
 import { useAgentSetupPrompt } from "../lib/useAgentSetupPrompt";
 import { trackEvent } from "../lib/analytics";
@@ -100,72 +102,82 @@ export default function LeadFunnel({ surface = "homepage_hero", onVerified }) {
 
   if (step === "code") {
     return (
-      <div>
-        <h2 className="text-2xl font-bold text-white mb-2">Check your email for the code</h2>
-        <p className="text-slate-300 mb-1 flex items-center gap-2">
-          <Mail className="w-4 h-4 text-blue-400 shrink-0" />
-          We emailed a 6-digit code to <span className="font-semibold text-white">{email}</span>
-        </p>
-        <p className="text-xs text-slate-500 mb-4">
-          The code is in the subject line. Check spam if it hasn&apos;t arrived within a minute.
-        </p>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (!busy && code.trim().length === 6) submitCode();
-          }}
-        >
-          <input
-            ref={codeInputRef}
-            type="text"
-            inputMode="numeric"
-            autoComplete="one-time-code"
-            pattern="\d{6}"
-            maxLength={6}
-            value={code}
-            onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-            placeholder="123456"
-            aria-label="6-digit verification code"
-            className="w-full bg-slate-950 border border-slate-700 focus:border-blue-500 outline-none rounded-lg px-4 py-3 text-white text-2xl tracking-[0.5em] text-center font-mono mb-3"
-          />
-          {error && <p className="text-sm text-red-400 mb-3">{error}</p>}
-          <button
-            type="submit"
-            disabled={busy || code.trim().length !== 6}
-            className="w-full inline-flex items-center justify-center bg-[#1A6BF5] hover:bg-[#4D8EF8] disabled:opacity-40 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg text-sm font-medium transition-colors"
-          >
-            <ShieldCheck className="mr-2 h-4 w-4" />
-            {busy ? "Verifying…" : "Verify email"}
-          </button>
-        </form>
-        <div className="flex items-center justify-between mt-4 text-xs text-slate-500">
-          <button
-            type="button"
-            onClick={() => {
-              if (cooldown <= 0 && !busy) sendCode();
-            }}
-            disabled={cooldown > 0 || busy}
-            className="underline underline-offset-2 hover:text-slate-300 disabled:no-underline disabled:cursor-default"
-          >
-            {cooldown > 0 ? `Resend code in ${cooldown}s` : "Resend code"}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setStep("email");
-              setError("");
-              setCode("");
-            }}
-            className="underline underline-offset-2 hover:text-slate-300"
-          >
-            Use a different email
-          </button>
-        </div>
-      </div>
+      <CodeEntryForm
+        email={email}
+        code={code}
+        onCodeChange={setCode}
+        onVerify={submitCode}
+        busy={busy}
+        error={error}
+        cooldown={cooldown}
+        onResend={sendCode}
+        onUseDifferentEmail={() => {
+          setStep("email");
+          setError("");
+          setCode("");
+        }}
+        codeInputRef={codeInputRef}
+        heading="Check your email for the code"
+        hint="The code is in the subject line. Check spam if it hasn't arrived within a minute."
+        submitLabel="Verify email"
+        submitBusyLabel="Verifying…"
+      />
     );
   }
 
-  // step === "email"
+  // step === "email" — pick the body without a nested ternary
+  let emailStepBody;
+  if (!isLeadFunnelEnabled()) {
+    emailStepBody = (
+      <div className="rounded-xl border border-slate-700/60 bg-slate-950/40 p-6 text-center">
+        <p className="mb-4 text-sm leading-relaxed text-slate-300">
+          Self-serve signup is not switched on for this site yet. In the
+          meantime, book a quick demo and we&apos;ll get you set up.
+        </p>
+        <a
+          href={DEMO_BOOKING_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => trackEvent("demo_booking_clicked", { location: `${surface}_lead_dormant` })}
+          className="inline-flex items-center rounded-lg bg-[#1A6BF5] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#4D8EF8]"
+        >
+          Book a demo
+          <ArrowRight className="ml-2 h-4 w-4" />
+        </a>
+      </div>
+    );
+  } else if (consent) {
+    emailStepBody = (
+      <EmailEntryForm
+        surface={surface}
+        email={email}
+        onEmailChange={setEmail}
+        onSubmit={sendCode}
+        busy={busy}
+        error={error}
+        extraFields={
+          /* Honeypot — visually hidden and out of the tab order so a real user
+             never sees or fills it. Bots that autofill it are silently dropped
+             by the backend (the 202 stays byte-identical). */
+          <div aria-hidden="true" style={{ position: "absolute", left: "-9999px", width: "1px", height: "1px", overflow: "hidden" }}>
+            <label htmlFor={`${surface}-website`}>Leave this field empty</label>
+            <input
+              id={`${surface}-website`}
+              type="text"
+              name="website"
+              tabIndex={-1}
+              autoComplete="off"
+              value={website}
+              onChange={(e) => setWebsite(e.target.value)}
+            />
+          </div>
+        }
+      />
+    );
+  } else {
+    emailStepBody = <p className="text-xs text-slate-500">Tick the box above to continue.</p>;
+  }
+
   return (
     <div>
       <h2 className="text-2xl font-bold text-white mb-2">Start free — get the SDK</h2>
@@ -177,71 +189,7 @@ export default function LeadFunnel({ surface = "homepage_hero", onVerified }) {
         <div className="mb-4">
           <ConsentCheckbox id={`${surface}-consent`} checked={consent} onChange={setConsent} />
         </div>
-        {!isLeadFunnelEnabled() ? (
-          <div className="rounded-xl border border-slate-700/60 bg-slate-950/40 p-6 text-center">
-            <p className="mb-4 text-sm leading-relaxed text-slate-300">
-              Self-serve signup is not switched on for this site yet. In the
-              meantime, book a quick demo and we&apos;ll get you set up.
-            </p>
-            <a
-              href={DEMO_BOOKING_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => trackEvent("demo_booking_clicked", { location: `${surface}_lead_dormant` })}
-              className="inline-flex items-center rounded-lg bg-[#1A6BF5] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#4D8EF8]"
-            >
-              Book a demo
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </a>
-          </div>
-        ) : consent ? (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (!busy && email.trim()) sendCode();
-            }}
-          >
-            {/* Honeypot — visually hidden and out of the tab order so a real
-                user never sees or fills it. Bots that autofill it are silently
-                dropped by the backend (the 202 stays byte-identical). */}
-            <div aria-hidden="true" style={{ position: "absolute", left: "-9999px", width: "1px", height: "1px", overflow: "hidden" }}>
-              <label htmlFor={`${surface}-website`}>Leave this field empty</label>
-              <input
-                id={`${surface}-website`}
-                type="text"
-                name="website"
-                tabIndex={-1}
-                autoComplete="off"
-                value={website}
-                onChange={(e) => setWebsite(e.target.value)}
-              />
-            </div>
-            <label htmlFor={`${surface}-email`} className="block text-xs text-slate-400 mb-1.5">
-              Work email — we&apos;ll send a 6-digit code to verify it&apos;s yours
-            </label>
-            <input
-              id={`${surface}-email`}
-              type="email"
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@company.com"
-              aria-label="Work email"
-              className="w-full bg-slate-950 border border-slate-700 focus:border-blue-500 outline-none rounded-lg px-4 py-3 text-white mb-3"
-            />
-            {error && <p className="text-sm text-red-400 mb-3">{error}</p>}
-            <button
-              type="submit"
-              disabled={busy || !email.trim()}
-              className="w-full inline-flex items-center justify-center bg-[#1A6BF5] hover:bg-[#4D8EF8] disabled:opacity-40 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg text-sm font-medium transition-colors"
-            >
-              <Mail className="mr-2 h-4 w-4" />
-              {busy ? "Sending…" : "Email me a code"}
-            </button>
-          </form>
-        ) : (
-          <p className="text-xs text-slate-500">Tick the box above to continue.</p>
-        )}
+        {emailStepBody}
       </ConsentGate>
     </div>
   );

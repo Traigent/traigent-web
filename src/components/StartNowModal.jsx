@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
-import { X, ArrowRight, Github } from "lucide-react";
+import { ArrowRight, Github } from "lucide-react";
+import ModalShell from "./ModalShell";
 import InstallCommand from "./InstallCommand";
 import HubSpotStartNowForm from "./HubSpotStartNowForm";
 import ConsentGate from "./ConsentGate";
@@ -40,18 +41,6 @@ export default function StartNowModal({ onClose, location = "unknown" }) {
   // it does, auto-unlock without showing the form. Skipped in OTP mode —
   // recognition can't substitute for mailbox proof.
   const [checkingIdentity, setCheckingIdentity] = useState(() => !otpMode && !isUnlocked());
-
-  useEffect(() => {
-    const onKey = (e) => {
-      if (e.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", onKey);
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
-    };
-  }, [onClose]);
 
   // When an already-unlocked visitor reopens the modal, silently re-submit
   // their stored email to HubSpot so the founder gets a notification that
@@ -105,42 +94,26 @@ export default function StartNowModal({ onClose, location = "unknown" }) {
     setVerified(true);
   };
 
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <div
-        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
-        onClick={onClose}
-        aria-hidden="true"
-      />
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="start-now-title"
-        className="relative bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl max-w-2xl w-full p-8 max-h-[90vh] overflow-y-auto"
-      >
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors"
-          aria-label="Close"
-        >
-          <X className="w-5 h-5" />
-        </button>
+  // Pick the modal body without a nested ternary.
+  let body;
+  if (otpMode) {
+    body = verified ? (
+      <UnlockedView />
+    ) : (
+      <OtpLockedView surface={`start_now_${location}`} onVerified={handleVerified} />
+    );
+  } else if (checkingIdentity) {
+    body = <CheckingView />;
+  } else if (unlocked) {
+    body = <UnlockedView />;
+  } else {
+    body = <LockedView onSubmitted={handleSubmitted} />;
+  }
 
-        {otpMode ? (
-          verified ? (
-            <UnlockedView />
-          ) : (
-            <OtpLockedView surface={`start_now_${location}`} onVerified={handleVerified} />
-          )
-        ) : checkingIdentity ? (
-          <CheckingView />
-        ) : unlocked ? (
-          <UnlockedView />
-        ) : (
-          <LockedView onSubmitted={handleSubmitted} />
-        )}
-      </div>
-    </div>
+  return (
+    <ModalShell onClose={onClose} ariaLabelledby="start-now-title">
+      {body}
+    </ModalShell>
   );
 }
 
