@@ -1971,8 +1971,11 @@ function SlideCompetition() {
       <div className="mb-3">
         <div className="text-2xl md:text-3xl font-mono uppercase tracking-[0.2em] text-blue-400 mb-2">Competition</div>
         <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight">
-          Everyone else helps you watch or build. <span className="text-[#34d399]">We find the optimal agent.</span>
+          We build <span className="text-[#34d399]">THE OPTIMAL agent</span> from the ground up
         </h2>
+        <p className="text-base md:text-lg text-slate-300 mt-2 leading-snug max-w-3xl mx-auto">
+          Founded on the <span className="text-[#4D8EF8]">benchmarks we help you build</span> — while everyone else only measures or scaffolds.
+        </p>
       </div>
       <div className="bg-slate-900/70 border border-slate-700/60 rounded-xl p-3 flex-1 flex flex-col justify-center">
         <table className="w-full text-left text-[12.5px]">
