@@ -1979,7 +1979,7 @@ function SlideCompetition() {
           We build <span className="text-[#34d399]">THE OPTIMAL agent</span> from the ground up
         </h2>
         <p className="text-base md:text-lg text-slate-300 mt-2 leading-snug whitespace-nowrap">
-          Founded on the <span className="text-[#4D8EF8]">benchmarks we help you build/improve</span> — while everyone else only measures or scaffolds.
+          Founded on the <span className="text-[#4D8EF8]">benchmarks we help you build/improve</span>
         </p>
       </div>
       <div className="bg-slate-900/70 border border-slate-700/60 rounded-xl p-3 flex-1 flex flex-col justify-center">
