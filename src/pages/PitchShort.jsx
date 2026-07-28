@@ -1889,7 +1889,7 @@ function SlideBusinessPlan() {
       <div className="mb-3">
         <div className="text-2xl md:text-3xl font-mono uppercase tracking-[0.2em] text-blue-400 mb-2">The Business Plan</div>
         <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight">
-          Land, expand, own the <span className="text-[#4D8EF8]">optimization layer</span>
+          Land, expand, own the <span className="text-[#4D8EF8]">category</span>
         </h2>
       </div>
       <div className="grid grid-cols-3 gap-3 mb-3 text-left">
