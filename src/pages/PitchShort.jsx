@@ -1958,7 +1958,7 @@ function SlideCompetition() {
     ["Measure agent quality", [2, 2, 1, 0, 1]],
     ["Improve the benchmark (dataset + evaluator)", [2, 1, 0, 0, 1]],
     ["Build the optimal agent from the ground up", [2, 0, 0, 1, 1]],
-    ["Search the full config space (model · retrieval · prompt · format · examples · routing)", [2, 0, 1, 0, 1]],
+    ["Utilize all config options (model · retrieval · prompt · format · examples · routing, cascading)", [2, 0, 1, 0, 1]],
     ["Prove the optimal (Pareto) frontier", [2, 0, 0, 0, 0]],
     ["Optimize cost + latency, not just accuracy", [2, 1, 0, 0, 1]],
     ["Runs through any coding agent (Claude Code / Codex / Gemini)", [2, 0, 0, 0, 0]],
@@ -2002,7 +2002,7 @@ function SlideCompetition() {
         </table>
       </div>
       <div className="text-[11.5px] text-slate-400 mt-2 text-left">
-        Adjacent tools — <span className="text-slate-300">Langfuse · Arize · Braintrust · Galileo</span> (measure) · <span className="text-slate-300">DSPy</span> (prompts) · <span className="text-slate-300">LangChain · CrewAI</span> (build) — none search the full space and prove the frontier. Traigent is the layer on top of all of them.
+        Adjacent tools — <span className="text-slate-300">Langfuse · Arize · Braintrust · Galileo · LangSmith</span> (measure) · <span className="text-slate-300">DSPy · TextGrad</span> (prompts) · <span className="text-slate-300">LangChain/LangGraph · LlamaIndex · CrewAI · AutoGen · OpenAI Agents SDK · Google ADK</span> (build) — none search the full space and prove the frontier. Traigent is the layer on top of all of them.
       </div>
     </div>
   );
