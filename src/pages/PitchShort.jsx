@@ -640,9 +640,9 @@ function SlideMarketAndRevenue() {
         </p>
       </div>
 
-      {/* Assumptions strip */}
-      <div className="bg-slate-900/70 border border-slate-700/60 rounded-xl p-3 mb-3 text-left">
-        <div className="text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-1.5">Assumptions (read first)</div>
+      {/* Assumptions strip — rendered at the bottom via order-last */}
+      <div className="bg-slate-900/70 border border-slate-700/60 rounded-xl p-3 mt-3 text-left order-last">
+        <div className="text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-1.5">Assumptions</div>
         <ol className="text-[12.5px] text-slate-300 leading-snug space-y-1 list-decimal pl-5">
           <li><span className="font-bold text-white">Customers:</span> organizations creating agents to perform their business processes and customer interactions. <span className="font-bold text-white">Agents = a new type of workforce.</span></li>
           <li><span className="font-bold text-white">Cost structure:</span> every $1 of customer LLM bill is matched by ~$0.50 of engineering on tuning (6–10 FTE on a $3–5M LLM bill).</li>
