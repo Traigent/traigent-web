@@ -1956,6 +1956,8 @@ function SlideCompetition() {
   const cols = ["Traigent", "Eval / observability", "Prompt optimizers", "Agent frameworks", "In-house / manual"];
   const rows = [
     ["Measure agent quality", [2, 2, 1, 0, 1]],
+    ["Improve the benchmark (dataset + evaluator)", [2, 1, 0, 0, 1]],
+    ["Build the optimal agent from the ground up", [2, 0, 0, 1, 1]],
     ["Search the full config space (model · retrieval · prompt · format · examples · routing)", [2, 0, 1, 0, 1]],
     ["Prove the optimal (Pareto) frontier", [2, 0, 0, 0, 0]],
     ["Optimize cost + latency, not just accuracy", [2, 1, 0, 0, 1]],
