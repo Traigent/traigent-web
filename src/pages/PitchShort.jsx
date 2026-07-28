@@ -1975,8 +1975,8 @@ function SlideCompetition() {
         <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight">
           We build <span className="text-[#34d399]">THE OPTIMAL agent</span> from the ground up
         </h2>
-        <p className="text-base md:text-lg text-slate-300 mt-2 leading-snug max-w-3xl mx-auto">
-          Founded on the <span className="text-[#4D8EF8]">benchmarks we help you build</span> — while everyone else only measures or scaffolds.
+        <p className="text-base md:text-lg text-slate-300 mt-2 leading-snug whitespace-nowrap">
+          Founded on the <span className="text-[#4D8EF8]">benchmarks we help you build/improve</span> — while everyone else only measures or scaffolds.
         </p>
       </div>
       <div className="bg-slate-900/70 border border-slate-700/60 rounded-xl p-3 flex-1 flex flex-col justify-center">
@@ -2002,7 +2002,7 @@ function SlideCompetition() {
         </table>
       </div>
       <div className="text-[11.5px] text-slate-400 mt-2 text-left">
-        Adjacent tools — <span className="text-slate-300">Langfuse · Arize · Braintrust · Galileo · LangSmith</span> (measure) · <span className="text-slate-300">DSPy · TextGrad</span> (prompts) · <span className="text-slate-300">LangChain/LangGraph · LlamaIndex · CrewAI · AutoGen · OpenAI Agents SDK · Google ADK</span> (build) — none search the full space and prove the frontier. Traigent is the layer on top of all of them.
+        Adjacent tools — <span className="text-slate-300">Langfuse · Arize · Braintrust · Galileo · LangSmith</span> (measure) · <span className="text-slate-300">DSPy · TextGrad</span> (prompts) · <span className="text-slate-300">LangChain/LangGraph · LlamaIndex · CrewAI · AutoGen · OpenAI Agents SDK · Google ADK</span> (build) — none search the full space and prove the frontier. Traigent does much more than all of them combined.
       </div>
     </div>
   );
