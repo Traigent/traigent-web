@@ -654,7 +654,7 @@ function SlideMarketAndRevenue() {
             </ul>
           </li>
           <li><span className="font-bold text-white">Take rate:</span> <span className="text-[#34d399] font-bold">5%</span> of total savings &mdash; effective <span className="text-white font-bold">$0.04 of ARR per $1 of penetrated customer LLM bill</span>.</li>
-          <li><span className="font-bold text-white">Penetration:</span> share of the non-vendor LLM bill reached by Traigent customers. Revenue is calculated on savings achieved <em>within penetrated markets only</em>.</li>
+          <li><span className="font-bold text-white">Penetration:</span> share of the agent LLM bill reached by Traigent customers. Revenue is calculated on savings achieved <em>within penetrated markets only</em>.</li>
         </ol>
       </div>
 
@@ -1822,14 +1822,14 @@ function SlideOnePagerProspect() {
 // ── INVESTOR / BUSINESS-PLAN SLIDES ──────────────────────────────────────────
 // New seed-raise slides: market potential (TAM/SAM/SOM), the business plan
 // (land / expand / own), and the why-invest case + the ask. Numbers are grounded
-// in SlideMarketAndRevenue's cascade ($128B addressable non-vendor bill by 2030,
+// in SlideMarketAndRevenue's cascade ($128B addressable agent bill by 2030,
 // ~$410M base-case ARR). The raise amount on SlideWhyInvest is a placeholder.
 function SlideMarketPotential() {
   const tiers = [
     { label: "TAM", w: "100%", color: "#4D8EF8", big: "~$190B",
-      sub: "Total non-vendor agent LLM bill + the engineering spent tuning it, by 2030." },
+      sub: "Total agent LLM bill + the engineering spent tuning it, by 2030." },
     { label: "SAM", w: "66%", color: "#34d399", big: "$128B",
-      sub: "Non-vendor agents on third-party LLM APIs — the segment that must optimize to survive its COGS curve." },
+      sub: "Agents built on third-party LLM APIs — the segment that must optimize to survive its COGS curve." },
     { label: "SOM", w: "24%", color: "#f59e0b", big: "~$410M ARR",
       sub: "Traigent's 2030 base case at 8% penetration (bear / bull = ~$205M / ~$615M)." },
   ];
@@ -1917,7 +1917,7 @@ function SlideBusinessPlan() {
 
 function SlideWhyInvest() {
   const reasons = [
-    { icon: TrendingUp, c: "#4D8EF8", t: "Inevitable market", d: "Every non-vendor agent hits the cost-vs-accuracy wall. We're the picks-and-shovels for the agent economy." },
+    { icon: TrendingUp, c: "#4D8EF8", t: "Inevitable market", d: "Every agent hits the cost-vs-accuracy wall. We're the picks-and-shovels for the agent economy." },
     { icon: Target, c: "#34d399", t: "Proven results", d: "SPIDER text2SQL: a naive agent → 90.7%, ~82% cheaper — found autonomously in ~5 hours. Real, measured." },
     { icon: ShieldCheck, c: "#a78bfa", t: "Defensible IP", d: "Smart Pareto search (FrontierScout), cross-agent Skills, and TVL governance — not a wrapper." },
     { icon: Zap, c: "#f59e0b", t: "Capital-efficient GTM", d: "Coding-agent-led onboarding = near-zero CAC. Land bottom-up, expand as LLM bills grow." },
