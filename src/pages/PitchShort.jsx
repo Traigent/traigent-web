@@ -2002,7 +2002,7 @@ function SlideCompetition() {
         </table>
       </div>
       <div className="text-[11.5px] text-slate-400 mt-2 text-left">
-        Adjacent tools — <span className="text-slate-300">Langfuse · Arize · Braintrust · Galileo</span> (measure) · <span className="text-slate-300">DSPy</span> (prompts) · <span className="text-slate-300">LangChain · CrewAI</span> (build) — none search the full space and prove the frontier. Traigent is the layer on top of all of them.
+        Adjacent tools — <span className="text-slate-300">Langfuse · Arize · Braintrust · Galileo · LangSmith</span> (measure) · <span className="text-slate-300">DSPy · TextGrad</span> (prompts) · <span className="text-slate-300">LangChain/LangGraph · LlamaIndex · CrewAI · AutoGen · OpenAI Agents SDK · Google ADK</span> (build) — none search the full space and prove the frontier. Traigent is the layer on top of all of them.
       </div>
     </div>
   );
