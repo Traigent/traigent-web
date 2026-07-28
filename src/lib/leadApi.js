@@ -66,6 +66,10 @@ async function post(path, body) {
  * means "the backend accepted the request", never "a code was actually sent".
  */
 export async function captureLead({ email, website, elapsedSeconds }) {
+  // Enforce the dormant guard at the API layer, not only at the render layer,
+  // so no caller can accidentally issue a same-origin relative POST to the
+  // marketing origin when VITE_API_BASE_URL is unset (defense in depth).
+  if (!isLeadFunnelEnabled()) return { ok: false, error: "disabled" };
   try {
     const { ok, data } = await post("/api/v1/leads", {
       email,
@@ -86,6 +90,7 @@ export async function captureLead({ email, website, elapsedSeconds }) {
  * Returns { ok } on success or { ok:false, error, remaining? } otherwise.
  */
 export async function verifyLead({ email, runId, code }) {
+  if (!isLeadFunnelEnabled()) return { ok: false, error: "disabled" };
   try {
     const { ok, data } = await post("/api/v1/leads/verify", {
       email,
