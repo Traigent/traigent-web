@@ -2007,7 +2007,7 @@ function SlideTeam() {
   const founders = [
     { initials: "AB", name: "Amir Barnea", role: "CEO & Co-founder", email: "amir@traigent.ai",
       pts: ["Owns product, GTM and the customer motion", "30+ years building and shipping complex software systems"] },
-    { initials: "NB", name: "Nimrod Busany, PhD", role: "CTO & Co-founder", email: "nimrod@traigent.ai",
+    { initials: "NB", name: "Nimrod Busany, PhD", role: "Founder & Chief Research Scientist", email: "nimrod@traigent.ai",
       pts: ["Owns the optimization science and the core IP", "Smart search that finds the Pareto frontier in a fraction of the trials"] },
   ];
   return (
@@ -2116,7 +2116,7 @@ export const SHORT_SLIDES = [
   { title: "The Business Plan — Land / Expand / Own", section: "Investor", component: SlideBusinessPlan },
   { title: "Why Invest — Category Bet + The Ask", section: "Investor", component: SlideWhyInvest },
   { title: "Competition — the Optimization Layer", section: "Investor", component: SlideCompetition },
-  { title: "Team — Amir (CEO) + Nimrod (CTO)", section: "Investor", component: SlideTeam },
+  { title: "Team — Amir (CEO) + Nimrod (Chief Research Scientist)", section: "Investor", component: SlideTeam },
 ];
 
 export default function PitchShort() {
