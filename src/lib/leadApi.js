@@ -26,8 +26,8 @@
 // │ 2. The backend's CORS_ORIGINS must include https://traigent.ai AND       │
 // │    https://www.traigent.ai (a different origin from the portal FE) or    │
 // │    the browser fetch is blocked. This is a backend / IaC config change.  │
-// │ 3. index.html CSP connect-src must include that same backend host        │
-// │    (replace the BACKEND-HOST-PLACEHOLDER token there).                   │
+// │ 3. index.html CSP connect-src must include that same backend host — add  │
+// │    it there at deploy time; it is NOT committed (env-configured host).   │
 // └──────────────────────────────────────────────────────────────────────────┘
 
 // Trim trailing slashes without a regex (avoids a super-linear backtracking
@@ -121,9 +121,15 @@ export function leadErrorMessage(error, remaining) {
     case "rate_limited":
       return "Too many requests — please try again in a little while.";
     case "invalid_code": {
-      if (!(remaining > 0)) return "That code didn't match.";
-      const plural = remaining === 1 ? "" : "s";
-      return `That code didn't match — ${remaining} attempt${plural} left.`;
+      // Positive remaining shows the count; anything else (0, negative, or an
+      // absent `remaining`) falls through to the generic line — inverting the
+      // branch avoids the `!(x > 0)` double-negative without the `<= 0` bug
+      // that would print "undefined attempts left" when remaining is absent.
+      if (remaining > 0) {
+        const plural = remaining === 1 ? "" : "s";
+        return `That code didn't match — ${remaining} attempt${plural} left.`;
+      }
+      return "That code didn't match.";
     }
     case "too_many_attempts":
       return "Too many wrong attempts — request a fresh code.";
