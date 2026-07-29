@@ -13,6 +13,8 @@
 // Reachable via the hidden ▸ menu in TopNav.
 import { Fragment, useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
+import KnobExplorer from "./KnobExplorer";
+import OptimizationDemo from "./OptimizationDemo";
 import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, ChevronDown, ChevronUp, Pause, Play, RotateCcw, SkipBack, SkipForward, Sparkles } from "lucide-react";
@@ -225,27 +227,18 @@ function Narration({
 // query params, then advances after a fixed duration.
 // =============================================================================
 
-function EmbeddedAct({ src, durationMs, onComplete, title, paused = false, showFinal = false }) {
-  // Lock the iframe src at mount. Without this, when an act played all the
-  // way through and the parent flipped `showFinal=true` to enter the end-
-  // of-act freeze state, the parent's src prop would change (the parent
-  // appends `&final=1` when showFinal is set), forcing the iframe to re-
-  // mount — visible to the user as a black "blink" reloading the same
-  // end-frame the tour already produced. Locking it ignores prop changes.
-  const [lockedSrc] = useState(src);
-  const [loaded, setLoaded] = useState(false);
-  const [absoluteSrc, setAbsoluteSrc] = useState(lockedSrc);
-
-  // Resolve to an absolute URL once the component is on the client. Using
-  // `window.location.origin + src` removes any base-path ambiguity that can
-  // make the iframe load a blank document (which was the Act 2 black-screen
-  // bug — relative `/#/...` resolved against the wrong origin in some dev
-  // setups, producing an empty page).
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setAbsoluteSrc(window.location.origin + lockedSrc);
-    }
-  }, [lockedSrc]);
+function InlineAct({ Page, path, durationMs, onComplete, paused = false, showFinal = false }) {
+  // Render the real Knob Explorer / Demo page INLINE (not in an iframe) inside a
+  // nested MemoryRouter that supplies its query-string hints. The site can't
+  // frame itself in production — Cloudflare serves `X-Frame-Options: DENY` +
+  // CSP `frame-ancestors 'none'`, which blocked the old iframe embed and left
+  // Acts 2/4 blank. Rendering inline removes the self-framing dependency.
+  //
+  // Parse the query hints once at mount into a params object handed to the page
+  // as a prop. The page reads these INSTEAD of the router's search params, so no
+  // nested <Router> is needed (react-router v7 forbids Router-in-Router). Locking
+  // at mount means a later `showFinal` flip doesn't rebuild it.
+  const [lockedParams] = useState(() => new URLSearchParams(path.split("?")[1] || ""));
 
   // Advance timer is suspended while paused. When unpaused, the iframe is
   // (re)mounted fresh and the timer restarts at 0 — the inner page (Knob
@@ -274,41 +267,17 @@ function EmbeddedAct({ src, durationMs, onComplete, title, paused = false, showF
     return () => window.removeEventListener("message", handler);
   }, [onComplete, paused]);
 
-  // When showFinal is set, the iframe must mount even while paused — the
-  // `&final=1` URL renders the page's terminal state directly (which is the
-  // whole point of the "End Act 2/4" jump). Without this, paused + showFinal
-  // would just blank the screen.
-  const shouldRenderIframe = !paused || showFinal;
+  // When showFinal is set, the page must mount even while paused — the
+  // `&final=1` path renders the terminal state directly (the "End Act 2/4" jump).
+  const shouldRender = !paused || showFinal;
 
   return (
     <div
-      className="absolute inset-0 bg-[#080808]"
+      className="absolute inset-0 bg-[#080808] overflow-hidden"
       style={{ width: "100%", height: "100vh" }}
     >
-      {shouldRenderIframe ? (
-        <>
-          {!loaded && (
-            <div className="absolute inset-0 flex items-center justify-center text-slate-500 text-sm font-mono z-10 pointer-events-none">
-              Loading…
-            </div>
-          )}
-          <iframe
-            key={absoluteSrc}
-            src={absoluteSrc}
-            title={title}
-            onLoad={() => setLoaded(true)}
-            className="border-0 block"
-            style={{
-              width: "100%",
-              height: "100%",
-              minHeight: "100vh",
-              background: "#080808",
-              display: "block",
-            }}
-            width="100%"
-            height="100%"
-          />
-        </>
+      {shouldRender ? (
+        <Page embeddedParams={lockedParams} />
       ) : (
         <div className="absolute inset-0 flex items-center justify-center text-slate-500 text-sm font-mono z-10 pointer-events-none">
           Paused — press Play to start this act
@@ -842,10 +811,10 @@ const ACTS = [
     label: "The config space",
     durationMs: 24_500,
     render: (onComplete, _restart, opts = {}) => (
-      <EmbeddedAct
-        src={`/#/knob-explorer?guided=BIRD&chrome=hidden${opts.showFinal ? "&final=1" : ""}`}
+      <InlineAct
+        Page={KnobExplorer}
+        path={`/knob-explorer?guided=BIRD&chrome=hidden${opts.showFinal ? "&final=1" : ""}`}
         durationMs={24_500}
-        title="Knob space — BIRD configuration"
         onComplete={onComplete}
         paused={opts.paused}
         showFinal={opts.showFinal}
@@ -869,10 +838,10 @@ const ACTS = [
     label: "The optimization",
     durationMs: 90_000,
     render: (onComplete, _restart, opts = {}) => (
-      <EmbeddedAct
-        src={`/#/demo?autostart=1&speed=4x&chrome=hidden${opts.showFinal ? "&final=1" : "&pauseAfterStep1=1"}`}
+      <InlineAct
+        Page={OptimizationDemo}
+        path={`/demo?autostart=1&speed=4x&chrome=hidden${opts.showFinal ? "&final=1" : "&pauseAfterStep1=1"}`}
         durationMs={90_000}
-        title="Optimization demo (4× speed)"
         onComplete={onComplete}
         paused={opts.paused}
         showFinal={opts.showFinal}
@@ -996,8 +965,8 @@ export default function StoryMovie() {
     setShowFinalState(true);
     setActElapsedMs(0);
     if (currentAct === n) {
-      // Already on this act — EmbeddedAct locks its src at mount, so we
-      // need a full remount to swap the iframe to the `&final=1` URL. Cycle
+      // Already on this act — InlineAct locks its path at mount, so we
+      // need a full remount to swap the page to the `&final=1` state. Cycle
       // through act 0 briefly so AnimatePresence rebuilds the subtree.
       setCurrentAct(0);
       setTimeout(() => setCurrentAct(n), 50);
