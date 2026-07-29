@@ -18,9 +18,17 @@ const DEMO_BOOKING_URL = "https://meetings-eu1.hubspot.com/amir8";
  * Lead-funnel front door (Marketing front door unit A2). Three steps:
  *   1. email + consent tick     -> capture  (POST /api/v1/leads)
  *   2. 6-digit code entry        -> verify   (POST /api/v1/leads/verify)
- *   3. success                   -> the backend emailed a portal redeem link;
- *                                   we hand over the SDK repo + agent-setup
- *                                   prompt and point the user at their inbox.
+ *   3. success                   -> the backend emailed a SECOND mail carrying a
+ *                                   single-use access link (10 days) that
+ *                                   authorizes creating the account; we hand
+ *                                   over the SDK repo + agent-setup prompt and
+ *                                   point the user at their inbox.
+ *
+ * The access link is not a sign-in: no account exists until the user redeems it
+ * and registers. Copy on this screen must not imply otherwise - a user told
+ * they have been "signed in" will go looking for a portal session that is not
+ * there. The API key is created afterwards, by the user, from the portal's
+ * top-bar key control (TraigentFrontend#2046).
  *
  * This deliberately does NOT edit the shared OtpGate (used by StartNowModal +
  * a Get-SDK caller). It mirrors OtpGate's shell but adds a hidden `website`
@@ -215,12 +223,14 @@ function SuccessView({ email, surface }) {
         Email verified
       </h2>
       <p className="text-slate-300 mb-2">
-        We just emailed a sign-in link to <span className="font-semibold text-white">{email}</span>.
-        Open it to finish creating your account in the portal.
+        We just sent a <span className="font-semibold text-white">second</span> email to{" "}
+        <span className="font-semibold text-white">{email}</span> — this one carries your access
+        link. Open it to create your Traigent account, then generate your API key from the
+        highlighted key button in the portal&apos;s top bar.
       </p>
       <p className="text-xs text-slate-500 mb-6">
-        Check spam if it hasn&apos;t arrived within a minute — the link is the only
-        way in from here (we don&apos;t sign you in on this page).
+        The link is good for 10 days and works once. It is the only way in from here — we
+        don&apos;t sign you in on this page. Check spam if it hasn&apos;t arrived within a minute.
       </p>
 
       <p className="text-sm font-medium text-slate-300 mb-2">
