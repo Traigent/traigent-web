@@ -1,13 +1,12 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useRef, useState } from "react";
-import { ShieldCheck, Github, ArrowRight, Terminal, Check } from "lucide-react";
+import { ShieldCheck, Github, ArrowRight } from "lucide-react";
 import ConsentGate from "./ConsentGate";
 import ConsentCheckbox from "./ConsentCheckbox";
 import InstallCommand from "./InstallCommand";
 import CodeEntryForm from "./CodeEntryForm";
 import EmailEntryForm from "./EmailEntryForm";
 import { captureLead, verifyLead, leadErrorMessage, isLeadFunnelEnabled } from "../lib/leadApi";
-import { useAgentSetupPrompt } from "../lib/useAgentSetupPrompt";
 import { trackEvent } from "../lib/analytics";
 
 const RESEND_COOLDOWN_S = 30;
@@ -218,11 +217,6 @@ export default function LeadFunnel({ surface = "homepage_hero", onVerified }) {
  * hero copies).
  */
 function SuccessView({ email, surface }) {
-  const { copied, copyPrompt } = useAgentSetupPrompt();
-  const handleConnectAgent = async () => {
-    const ok = await copyPrompt();
-    trackEvent("connect_agent_clicked", { location: `${surface}_lead_success`, copied: ok });
-  };
   return (
     <div>
       <h2 className="text-2xl font-bold text-white mb-2 flex items-center gap-2">
@@ -248,25 +242,33 @@ function SuccessView({ email, surface }) {
         secondary="Paste it into Claude Code, Cursor, Codex — whichever you use. It clones the walkthrough and runs your first optimization. No keys needed until the run connects."
       />
 
-      <div className="flex flex-wrap gap-3 mt-6">
-        <button
-          type="button"
-          onClick={handleConnectAgent}
-          title="Copies the keyless setup prompt (wires the SDK into an existing project)"
-          className="inline-flex items-center bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white px-6 py-3 rounded-lg text-sm font-medium transition-colors"
+      {/* Reference only, below the prompt and visually quieter - the plan is
+          explicit that a repo link must not read as the line to follow. The
+          keyless agent-setup prompt that used to sit here as a second button is
+          gone: it wired the SDK into an existing project and told the agent to
+          go make its own key, which is a different journey from this one and
+          competed with the prompt above. The walkthrough it now points at does
+          the key step itself, in order. */}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-5 text-sm">
+        <a
+          href={FIRST_RUN_REPO_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => trackEvent("first_run_repo_clicked", { location: `${surface}_lead_success` })}
+          className="inline-flex items-center text-slate-400 hover:text-white transition-colors"
         >
-          {copied ? <Check className="mr-2 h-4 w-4 text-emerald-300" /> : <Terminal className="mr-2 h-4 w-4" />}
-          {copied ? "Copied — paste into your coding agent" : "Connect your coding agent"}
-        </button>
+          <Github className="mr-1.5 h-3.5 w-3.5" />
+          Browse the walkthrough this clones
+        </a>
         <a
           href={SDK_REPO_URL}
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => trackEvent("sdk_repo_clicked", { location: `${surface}_lead_success` })}
-          className="inline-flex items-center border border-slate-600 hover:border-slate-400 text-slate-200 hover:text-white px-6 py-3 rounded-lg text-sm font-medium transition-colors"
+          className="inline-flex items-center text-slate-400 hover:text-white transition-colors"
         >
-          <Github className="mr-2 h-4 w-4" />
-          SDK reference (not the next step)
+          <Github className="mr-1.5 h-3.5 w-3.5" />
+          SDK on GitHub
         </a>
       </div>
     </div>
