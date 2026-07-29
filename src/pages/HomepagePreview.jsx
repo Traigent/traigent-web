@@ -14,12 +14,10 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import versionInfo from "../version.json";
 import { Helmet } from "react-helmet-async";
-import StartNowModal from "../components/StartNowModal";
 import LeadFunnelModal from "../components/LeadFunnelModal";
 import ContactSection from "../components/ContactSection";
 import BlogHighlights from "../components/BlogHighlights";
 import { trackEvent } from "../lib/analytics";
-import { useAgentSetupPrompt } from "../lib/useAgentSetupPrompt";
 
 // Placeholder for the Button component
 const Button = ({ children, className, onClick, size }) => (
@@ -49,15 +47,9 @@ const FadeInView = ({ children, className, delay = 0, direction = "y" }) => (
 );
 
 export default function HomepagePreview() {
-  const [showStartNow, setShowStartNow] = useState(false);
   const [showLeadFunnel, setShowLeadFunnel] = useState(false);
   const [benefitsOpen, setBenefitsOpen] = useState(false);
   const benefitsRef = useRef(null);
-  const { copied: promptCopied, copyPrompt } = useAgentSetupPrompt();
-  const handleConnectAgent = async () => {
-    const ok = await copyPrompt();
-    trackEvent("connect_agent_clicked", { location: "homepage_hero", copied: ok });
-  };
   // Handle scroll requests coming from other pages via TopNav
   useEffect(() => {
     const pending = sessionStorage.getItem("pendingScroll");
@@ -120,7 +112,6 @@ export default function HomepagePreview() {
           })}
         </script>
       </Helmet>
-      {showStartNow && <StartNowModal onClose={() => setShowStartNow(false)} location="homepage_hero" />}
       {showLeadFunnel && <LeadFunnelModal onClose={() => setShowLeadFunnel(false)} location="homepage_hero" />}
       {/* Hero Section */}
       <section className="relative overflow-x-clip bg-[#080808] text-white">
@@ -144,50 +135,36 @@ export default function HomepagePreview() {
             >
               Vibe Coding <span className="text-[#4D8EF8]">Optimal</span> <span className="text-white">AI Agents</span>
             </motion.p>
-            {/* Hero CTA row — primary filled "Start free — get the SDK" opens
-                the backend lead funnel (Marketing front door unit A2). The two
-                low-emphasis pills that follow ("Connect your coding agent",
-                copies the keyless setup prompt; "Agent Optimization Demo", the
-                narrated walkthrough) are demoted to secondary. */}
+            {/* Hero CTA row — ONE journey start.
+                "Connect your agent" opens the lead funnel (email -> 6-digit
+                code -> access-link email -> portal) and carries the treasure
+                halo, which is the only such cue on the site: a first-time
+                visitor must not have to work out which control begins the
+                journey. The keyless copy-prompt that used to sit here has been
+                removed on purpose - the setup prompt belongs AFTER the address
+                is confirmed (it is offered on the funnel's success screen), and
+                a second prominent button beside the entry point is exactly the
+                confusion the halo exists to remove. */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.19 }}
               className="flex flex-wrap items-center justify-center gap-3 mb-10"
             >
-              {/* Primary CTA (filled) — opens the lead-funnel modal: email ->
-                  6-digit code -> "check your email for the portal link". This
-                  is now the clear primary action in the hero. */}
+              {/* THE journey start. Everything downstream - the confirmation
+                  code, the access-link email, portal registration, the API key -
+                  begins with this one click. */}
               <button
                 type="button"
                 onClick={() => {
                   trackEvent("lead_funnel_opened", { location: "homepage_hero" });
                   setShowLeadFunnel(true);
                 }}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white text-base md:text-lg font-semibold transition-colors shadow-lg shadow-blue-500/30"
+                className="treasure-halo inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white text-base md:text-lg font-semibold transition-colors"
               >
-                Start free — get the SDK
+                <Terminal className="w-5 h-5" />
+                Connect your agent
                 <ArrowRight className="w-4 h-4" />
-              </button>
-              {/* Secondary CTA — copies the canonical keyless setup prompt
-                  (served at /agent-setup/prompt.md) so a coding agent can wire
-                  up Traigent in one paste. */}
-              <button
-                type="button"
-                onClick={handleConnectAgent}
-                aria-label={promptCopied ? "Copied setup prompt" : "Copy setup prompt for your coding agent"}
-                className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-slate-900/60 border border-slate-700 hover:border-blue-500/60 hover:bg-slate-900/80 transition-colors group"
-              >
-                <span className="flex items-center justify-center w-10 h-10 rounded-full bg-slate-800 group-hover:bg-slate-700 transition-colors">
-                  {promptCopied ? (
-                    <Check className="w-4 h-4 text-emerald-400" />
-                  ) : (
-                    <Terminal className="w-4 h-4 text-slate-100" />
-                  )}
-                </span>
-                <span className="text-base md:text-lg font-medium text-slate-100">
-                  {promptCopied ? "Copied — paste into your coding agent" : "Connect your coding agent to Traigent"}
-                </span>
               </button>
               <Link
                 to="/story"
@@ -523,14 +500,18 @@ def answer_question(question: str) -> str:
               transition={{ duration: 0.5, delay: 0.2 }}
               className="flex flex-wrap justify-center gap-3"
             >
+              {/* Same journey as the hero's "Connect your agent" - one entry
+                  point, not two competing ones. Previously opened the legacy
+                  StartNowModal (a different OTP gate that never reached the
+                  portal funnel). */}
               <button
                 onClick={() => {
-                  trackEvent("start_now_clicked", { location: "cta_section" });
-                  setShowStartNow(true);
+                  trackEvent("lead_funnel_opened", { location: "cta_section" });
+                  setShowLeadFunnel(true);
                 }}
                 className="border border-slate-600 hover:border-slate-400 text-slate-200 hover:text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
               >
-                Start Now
+                Connect your agent
               </button>
               <a
                 href="https://meetings-eu1.hubspot.com/amir8"
@@ -623,13 +604,12 @@ def answer_question(question: str) -> str:
                   </a>
                 </li>
                 <li>
-                  {/* Email-gated: opens the Start Now modal (repo + install
-                      command unlock after the visitor leaves an email). */}
+                  {/* Same funnel as every other entry point on this page. */}
                   <button
                     type="button"
                     onClick={() => {
-                      trackEvent("github_gate_opened", { location: "homepage_footer" });
-                      setShowStartNow(true);
+                      trackEvent("lead_funnel_opened", { location: "homepage_footer" });
+                      setShowLeadFunnel(true);
                     }}
                     className="text-slate-400 hover:text-white transition-colors"
                   >

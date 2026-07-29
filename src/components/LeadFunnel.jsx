@@ -12,6 +12,13 @@ import { trackEvent } from "../lib/analytics";
 
 const RESEND_COOLDOWN_S = 30;
 const SDK_REPO_URL = "https://github.com/Traigent/Traigent";
+const FIRST_RUN_REPO_URL = "https://github.com/Traigent/traigent-first-run";
+// The continuation line, verbatim from the onboarding plan. This - not the SDK
+// repo link - is what the visitor pastes next; the repo link is reference
+// material and is deliberately placed after it so it cannot be mistaken for
+// the next step.
+const FIRST_RUN_INIT_PROMPT = `Help me run my first Traigent optimization.
+Clone ${FIRST_RUN_REPO_URL} and follow GUIDE.md.`;
 const DEMO_BOOKING_URL = "https://meetings-eu1.hubspot.com/amir8";
 
 /**
@@ -234,17 +241,18 @@ function SuccessView({ email, surface }) {
       </p>
 
       <p className="text-sm font-medium text-slate-300 mb-2">
-        While you wait — wire Traigent into your coding agent:
+        While you wait — hand this to your coding agent:
       </p>
       <InstallCommand
-        command='uv tool install "traigent[recommended]" && traigent quickstart'
-        secondary="No API keys. No LLM provider calls. No spend. Just python. (Have pip instead? `pip install` works too.)"
+        command={FIRST_RUN_INIT_PROMPT}
+        secondary="Paste it into Claude Code, Cursor, Codex — whichever you use. It clones the walkthrough and runs your first optimization. No keys needed until the run connects."
       />
 
       <div className="flex flex-wrap gap-3 mt-6">
         <button
           type="button"
           onClick={handleConnectAgent}
+          title="Copies the keyless setup prompt (wires the SDK into an existing project)"
           className="inline-flex items-center bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white px-6 py-3 rounded-lg text-sm font-medium transition-colors"
         >
           {copied ? <Check className="mr-2 h-4 w-4 text-emerald-300" /> : <Terminal className="mr-2 h-4 w-4" />}
@@ -258,8 +266,7 @@ function SuccessView({ email, surface }) {
           className="inline-flex items-center border border-slate-600 hover:border-slate-400 text-slate-200 hover:text-white px-6 py-3 rounded-lg text-sm font-medium transition-colors"
         >
           <Github className="mr-2 h-4 w-4" />
-          View SDK on GitHub
-          <ArrowRight className="ml-2 h-4 w-4" />
+          SDK reference (not the next step)
         </a>
       </div>
     </div>

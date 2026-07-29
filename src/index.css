@@ -13,3 +13,42 @@ body {
   min-width: 320px;
   min-height: 100vh;
 } 
+/*
+ * Treasure halo — the single "start here" cue in the hero.
+ *
+ * There is exactly one journey into Traigent (email -> code -> access link ->
+ * portal), and a first-time visitor must not have to guess which control
+ * begins it. This is the only element on the marketing site that carries the
+ * halo; adding a second one defeats its whole purpose.
+ *
+ * A warm gold ring that breathes outward rather than a hard flash: it should
+ * read as inviting, not as an alert. The static inner ring is present in every
+ * keyframe, so the control stays marked at the fade point and for anyone who
+ * has motion reduced.
+ */
+@keyframes traigent-treasure-halo {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 0 rgba(250, 204, 21, 0.55),
+      0 0 18px 2px rgba(250, 204, 21, 0.35);
+  }
+  50% {
+    box-shadow:
+      0 0 0 12px rgba(250, 204, 21, 0),
+      0 0 26px 6px rgba(250, 204, 21, 0.18);
+  }
+}
+
+.treasure-halo {
+  animation: traigent-treasure-halo 2.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .treasure-halo {
+    animation: none;
+    box-shadow:
+      0 0 0 3px rgba(250, 204, 21, 0.55),
+      0 0 18px 2px rgba(250, 204, 21, 0.3);
+  }
+}
