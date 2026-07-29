@@ -588,11 +588,10 @@ const CHEAT_SHEETS = {
 };
 
 function CheatSheet({ sheet, onResume, isLastAct }) {
-  // Starts COLLAPSED so the act's punch frame (the title + the prose the
-  // viewer just heard narrated) stays visually unobstructed. The bouncing
-  // ChevronDown + yellow ring on the toggle button signal that there's
-  // more to read if they want it.
-  const [collapsed, setCollapsed] = useState(true);
+  // Starts EXPANDED (fully open) so the viewer sees the cheat-sheet details
+  // right away. The toggle still collapses it to keep the act's punch frame
+  // (the narrated title + prose) unobstructed if they prefer.
+  const [collapsed, setCollapsed] = useState(false);
   if (!sheet) return null;
   const resumeLabel = isLastAct ? "Replay from Act 1" : "Resume — Next act";
   const ResumeIcon = isLastAct ? RotateCcw : SkipForward;
