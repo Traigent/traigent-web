@@ -629,12 +629,10 @@ export default function OptimizationDemo({ embeddedParams } = {}) {
   // pauseAfterStep1 flag is set — freezes the demo and shows the cheat
   // sheet until the user clicks Resume.
   const [isPausedAfterStep1, setIsPausedAfterStep1] = useState(false);
-  // Collapse state for the post-Step-1 cheat sheet — starts COLLAPSED so
-  // the trial table behind it stays in focus; the bouncing down-arrow on
-  // the toggle button signals that there's content to expand. Same
-  // affordance as the story cheat sheets, lets the viewer hide details while keeping
-  // the badge + Resume button.
-  const [step1SheetCollapsed, setStep1SheetCollapsed] = useState(true);
+  // Collapse state for the post-Step-1 cheat sheet — starts EXPANDED (fully
+  // open) so the viewer sees the details immediately. The toggle still lets
+  // them collapse it to keep the trial table behind it in focus.
+  const [step1SheetCollapsed, setStep1SheetCollapsed] = useState(false);
   const sceneStartedAtRef = useRef(null);
   const timerRef = useRef(null);
 
