@@ -584,7 +584,7 @@ const SPEED_OPTIONS = [
   { label: "4×",  multiplier: 4 },
 ];
 
-export default function OptimizationDemo() {
+export default function OptimizationDemo({ embeddedParams } = {}) {
   usePageView();
   const phase1Trials = useMemo(() => buildPhase1Trials(80), []);
   const phase2Trials = useMemo(() => buildPhase2Trials(50, 71), []);
@@ -594,24 +594,27 @@ export default function OptimizationDemo() {
   //   ?speed=1x|2x|4x              → preset speed multiplier
   //   ?chrome=hidden               → hide back-link + intro header (recording)
   const [searchParams] = useSearchParams();
+  // Inline-embed support (/story Act 4): read query hints from a prop when
+  // provided, else the router's search params. Avoids a nested <Router>.
+  const params = embeddedParams || searchParams;
   const initialSpeed = useMemo(() => {
-    const s = (searchParams.get("speed") || "").toLowerCase();
+    const s = (params.get("speed") || "").toLowerCase();
     if (s === "1x") return 1;
     if (s === "2x") return 2;
     if (s === "4x") return 4;
     return 2;
-  }, [searchParams]);
-  const autostart = searchParams.get("autostart") === "1";
-  const chromeHidden = searchParams.get("chrome") === "hidden";
+  }, [params]);
+  const autostart = params.get("autostart") === "1";
+  const chromeHidden = params.get("chrome") === "hidden";
   // ?final=1 → render in terminal state: Scene 5, all Phase-1 and Phase-2
   // trials visible, winner cards on screen. Used by the "End Act 4" jump
   // button on /story.
-  const showFinal = searchParams.get("final") === "1";
+  const showFinal = params.get("final") === "1";
   // ?pauseAfterStep1=1 → after Phase-1 finishes (Run #1, find accuracy peak)
   // the demo freezes and shows a yellow cheat sheet with a Resume button.
   // Lets the viewer absorb the Step 2 → Step 3 transition. Used when the
   // demo is embedded in /story (Act 4).
-  const pauseAfterStep1Flag = searchParams.get("pauseAfterStep1") === "1";
+  const pauseAfterStep1Flag = params.get("pauseAfterStep1") === "1";
   useRemoveChatWidget();
 
   // When ?autostart=1 is set (the /story embed case), initialize state

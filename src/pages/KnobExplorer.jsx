@@ -789,7 +789,7 @@ function sortKnobsByImpact(knobs, metric) {
   });
 }
 
-export default function KnobExplorer() {
+export default function KnobExplorer({ embeddedParams } = {}) {
   usePageView();
   // Persist selections + sort preference across reloads / tabs so the user
   // can leave the page and come back to the same configuration.
@@ -809,13 +809,17 @@ export default function KnobExplorer() {
   const [, applySearchSpace] = useCustomSearchSpace();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const cameFrom = searchParams.get("from"); // "ttm" | "roi" | null
+  // When embedded inline (the /story movie renders this page directly, not via
+  // its own route), the parent hands the query hints as a prop, so we read those
+  // instead of the router's search params — no nested <Router> needed.
+  const params = embeddedParams || searchParams;
+  const cameFrom = params.get("from"); // "ttm" | "roi" | null
   // /story uses ?guided=BIRD&chrome=hidden to embed this page as Act 2.
   // ?final=1 (with guided=BIRD) skips the tour and renders the FINAL state
   // immediately — used by the "End Act 2" jump button on /story.
-  const guided = searchParams.get("guided");
-  const chromeHidden = searchParams.get("chrome") === "hidden";
-  const showFinal = searchParams.get("final") === "1";
+  const guided = params.get("guided");
+  const chromeHidden = params.get("chrome") === "hidden";
+  const showFinal = params.get("final") === "1";
   useRemoveChatWidget();
 
   // ---- Open page, silent known-contact notify ----------------------------
