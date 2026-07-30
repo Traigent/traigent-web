@@ -137,7 +137,8 @@ export default function HomepagePreview() {
             </motion.p>
             {/* Hero CTA row — ONE journey start.
                 "Connect your agent" opens the lead funnel (email -> 6-digit
-                code -> access-link email -> portal) and carries the treasure
+                confirmation code -> emailed access code -> portal registration)
+                and carries the treasure
                 halo, which is the only such cue on the site: a first-time
                 visitor must not have to work out which control begins the
                 journey. The keyless copy-prompt that used to sit here has been
@@ -152,8 +153,8 @@ export default function HomepagePreview() {
               className="flex flex-wrap items-center justify-center gap-3 mb-10"
             >
               {/* THE journey start. Everything downstream - the confirmation
-                  code, the access-link email, portal registration, the API key -
-                  begins with this one click. */}
+                  code, the emailed access code, portal registration, the API
+                  key - begins with this one click. */}
               <button
                 type="button"
                 onClick={() => {

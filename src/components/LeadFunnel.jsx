@@ -9,7 +9,10 @@ import EmailEntryForm from "./EmailEntryForm";
 import { captureLead, verifyLead, leadErrorMessage, isLeadFunnelEnabled } from "../lib/leadApi";
 import { trackEvent } from "../lib/analytics";
 
-const RESEND_COOLDOWN_S = 30;
+// Fallback only. Every capture 202 states the authoritative cooldown in
+// `resend_after_seconds` (lead_routes.py:100-106) and that value wins; this
+// covers the case where the field is missing or unusable.
+const RESEND_COOLDOWN_FALLBACK_S = 30;
 const SDK_REPO_URL = "https://github.com/Traigent/Traigent";
 const FIRST_RUN_REPO_URL = "https://github.com/Traigent/traigent-first-run";
 // The continuation line, verbatim from the onboarding plan. This - not the SDK
@@ -59,6 +62,9 @@ export default function LeadFunnel({ surface = "homepage_hero", onVerified }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [cooldown, setCooldown] = useState(0);
+  // ISO-8601 instant the emailed access code stops working, straight from the
+  // verify 200 (lead_routes.py:477). A timestamp, never a credential.
+  const [accessCodeExpiresAt, setAccessCodeExpiresAt] = useState("");
   const codeInputRef = useRef(null);
   // When the funnel mounted — capture reports the seconds elapsed since, so the
   // backend can silently drop implausibly fast (bot) submissions.
@@ -90,10 +96,12 @@ export default function LeadFunnel({ surface = "homepage_hero", onVerified }) {
       setRunId(result.runId);
       setStep("code");
       setCode("");
-      setCooldown(RESEND_COOLDOWN_S);
+      // The server states the cooldown it wants on every capture 202; honour it
+      // instead of a client guess that can silently drift from the real limit.
+      setCooldown(result.resendAfterSeconds || RESEND_COOLDOWN_FALLBACK_S);
       trackEvent("lead_capture_submitted", { location: surface });
     } else {
-      setError(leadErrorMessage(result.error));
+      setError(leadErrorMessage(result.errorCode));
     }
   };
 
@@ -105,19 +113,22 @@ export default function LeadFunnel({ surface = "homepage_hero", onVerified }) {
     setBusy(false);
     if (result.ok) {
       trackEvent("lead_verify_succeeded", { location: surface });
+      setAccessCodeExpiresAt(result.expiresAt);
       setStep("success");
       if (onVerified) onVerified(email.trim().toLowerCase());
     } else {
-      setError(leadErrorMessage(result.error, result.remaining));
-      if (result.error === "expired" || result.error === "too_many_attempts") {
-        setStep("email");
-        setCode("");
-      }
+      // No step reset here. The backend collapses wrong / expired / exhausted
+      // into ONE indistinguishable 400 (LEAD_CODE_INVALID, lead_routes.py:418-427)
+      // precisely so the response cannot be an oracle, so the client cannot know
+      // which one happened and must not pretend to. The recovery the copy names
+      // is available in place: this step already offers "Resend code" and "Use a
+      // different email".
+      setError(leadErrorMessage(result.errorCode));
     }
   };
 
   if (step === "success") {
-    return <SuccessView email={email.trim()} surface={surface} />;
+    return <SuccessView email={email.trim()} surface={surface} expiresAt={accessCodeExpiresAt} />;
   }
 
   if (step === "code") {
@@ -216,13 +227,32 @@ export default function LeadFunnel({ surface = "homepage_hero", onVerified }) {
 }
 
 /**
+ * Render the access code's validity window from the authoritative `expires_at`
+ * the verify 200 returns (lead_routes.py:469-483) rather than from a literal.
+ * The backend window is env-configurable (`LEAD_ACCESS_WINDOW_DAYS`), so a
+ * hardcoded "10 days" here would silently become a lie the day it is retuned.
+ * Falls back to a claim that stays true for any window if the field is absent or
+ * unparseable — never to a made-up number.
+ */
+function formatCodeValidity(expiresAt) {
+  const expiry = expiresAt ? new Date(expiresAt) : null;
+  if (!expiry || Number.isNaN(expiry.getTime())) {
+    return "is good for a limited time — that email states the exact expiry";
+  }
+  return `is good until ${expiry.toLocaleString(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  })}`;
+}
+
+/**
  * Verified. The backend has emailed the access code (the portal handoff), so the
  * marketing site's job is done — we point the user at their inbox and hand over
  * the two engineer-facing next steps: the SDK repo and the one-paste
  * agent-setup prompt (the same canonical /agent-setup/prompt.md the homepage
  * hero copies).
  */
-function SuccessView({ email, surface }) {
+function SuccessView({ email, surface, expiresAt }) {
   return (
     <div>
       <h2 className="text-2xl font-bold text-white mb-2 flex items-center gap-2">
@@ -237,7 +267,7 @@ function SuccessView({ email, surface }) {
         from the highlighted key button in the portal&apos;s top bar.
       </p>
       <p className="text-xs text-slate-500 mb-6">
-        The code works once and is good for 10 days. It is the only way in from here — we
+        The code works once and {formatCodeValidity(expiresAt)}. It is the only way in from here — we
         don&apos;t sign you in on this page. Check spam if it hasn&apos;t arrived within a minute.
       </p>
 

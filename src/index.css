@@ -16,8 +16,9 @@ body {
 /*
  * Treasure halo — the single "start here" cue in the hero.
  *
- * There is exactly one journey into Traigent (email -> code -> access link ->
- * portal), and a first-time visitor must not have to guess which control
+ * There is exactly one journey into Traigent (email -> confirmation code ->
+ * emailed access code -> portal registration), and a first-time visitor must
+ * not have to guess which control
  * begins it. This is the only element on the marketing site that carries the
  * halo; adding a second one defeats its whole purpose.
  *
