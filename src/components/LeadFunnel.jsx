@@ -202,8 +202,8 @@ export default function LeadFunnel({ surface = "homepage_hero", onVerified }) {
     <div>
       <h2 className="text-2xl font-bold text-white mb-2">Start free — get the SDK</h2>
       <p className="text-slate-400 mb-6">
-        Verify your work email with a 6-digit code. We&apos;ll then email you a link
-        to finish setting up in the portal — no card, no spend.
+        Verify your work email with a 6-digit code. We&apos;ll then email you an access
+        code to finish setting up in the portal — no card, no spend.
       </p>
       <ConsentGate>
         <div className="mb-4">
