@@ -52,7 +52,12 @@ const DEMO_BOOKING_URL = "https://meetings-eu1.hubspot.com/amir8";
  * dropped server-side and the client never branches on them. The whole email
  * step stays behind ConsentGate / ConsentCheckbox (GDPR).
  */
-export default function LeadFunnel({ surface = "homepage_hero", onVerified }) {
+// No `onVerified` callback: the only render site (LeadFunnelModal) never passed
+// one, so the guarded call below was unreachable and the prop advertised a hook
+// that never fired. This component owns its own success step; a caller that
+// genuinely needs the verified address should have the prop added back
+// deliberately, together with the call site that supplies it.
+export default function LeadFunnel({ surface = "homepage_hero" }) {
   const [step, setStep] = useState("email"); // email | code | success
   const [email, setEmail] = useState("");
   const [consent, setConsent] = useState(false);
@@ -115,7 +120,6 @@ export default function LeadFunnel({ surface = "homepage_hero", onVerified }) {
       trackEvent("lead_verify_succeeded", { location: surface });
       setAccessCodeExpiresAt(result.expiresAt);
       setStep("success");
-      if (onVerified) onVerified(email.trim().toLowerCase());
     } else {
       // No step reset here. The backend collapses wrong / expired / exhausted
       // into ONE indistinguishable 400 (LEAD_CODE_INVALID, lead_routes.py:418-427)

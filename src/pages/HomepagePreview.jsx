@@ -48,7 +48,22 @@ const FadeInView = ({ children, className, delay = 0, direction = "y" }) => (
 );
 
 export default function HomepagePreview() {
-  const [showLeadFunnel, setShowLeadFunnel] = useState(false);
+  // Holds WHICH entry point opened the funnel, not merely that it is open.
+  // `null` = closed. Three buttons on this page open the same modal, and the
+  // location has to survive the trip: the conversion that matters is the lead
+  // submitted from inside the modal, and that event is attributed with whatever
+  // the modal was handed. When this was a boolean the mount hardcoded
+  // "homepage_hero", so every conversion — including ones from the CTA section
+  // and the footer — reported as the hero and per-surface conversion could not
+  // be measured at all.
+  const [leadFunnelLocation, setLeadFunnelLocation] = useState(null);
+
+  // One call site for both effects, so the tracked location and the modal's
+  // location are the same value by construction and cannot drift apart again.
+  const openLeadFunnel = (location) => {
+    trackEvent("lead_funnel_opened", { location });
+    setLeadFunnelLocation(location);
+  };
   const [benefitsOpen, setBenefitsOpen] = useState(false);
   const benefitsRef = useRef(null);
   // Handle scroll requests coming from other pages via TopNav
@@ -113,7 +128,11 @@ export default function HomepagePreview() {
           })}
         </script>
       </Helmet>
-      {showLeadFunnel && <LeadFunnelModal onClose={() => setShowLeadFunnel(false)} location="homepage_hero" />}
+      {/* `!== null`, not truthiness: an empty-string location would otherwise
+          track an open event while never rendering the modal. */}
+      {leadFunnelLocation !== null && (
+        <LeadFunnelModal onClose={() => setLeadFunnelLocation(null)} location={leadFunnelLocation} />
+      )}
       {/* Hero Section */}
       <section className="relative overflow-x-clip bg-[#080808] text-white">
         {/* Noise texture overlay */}
@@ -159,9 +178,8 @@ export default function HomepagePreview() {
               <button
                 type="button"
                 onClick={() => {
-                  trackEvent("lead_funnel_opened", { location: "homepage_hero" });
                   navigator.clipboard?.writeText?.(FIRST_RUN_INIT_PROMPT);
-                  setShowLeadFunnel(true);
+                  openLeadFunnel("homepage_hero");
                 }}
                 className="treasure-halo inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white text-base md:text-lg font-semibold transition-colors"
               >
@@ -509,8 +527,7 @@ def answer_question(question: str) -> str:
                   portal funnel). */}
               <button
                 onClick={() => {
-                  trackEvent("lead_funnel_opened", { location: "cta_section" });
-                  setShowLeadFunnel(true);
+                  openLeadFunnel("cta_section");
                 }}
                 className="border border-slate-600 hover:border-slate-400 text-slate-200 hover:text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
               >
@@ -611,8 +628,7 @@ def answer_question(question: str) -> str:
                   <button
                     type="button"
                     onClick={() => {
-                      trackEvent("lead_funnel_opened", { location: "homepage_footer" });
-                      setShowLeadFunnel(true);
+                      openLeadFunnel("homepage_footer");
                     }}
                     className="text-slate-400 hover:text-white transition-colors"
                   >
