@@ -25,12 +25,18 @@ const DEMO_BOOKING_URL = "https://meetings-eu1.hubspot.com/amir8";
  *   1. email + consent tick     -> capture  (POST /api/v1/leads)
  *   2. 6-digit code entry        -> verify   (POST /api/v1/leads/verify)
  *   3. success                   -> the backend emailed a SECOND mail carrying a
- *                                   single-use access link (10 days) that
+ *                                   single-use access CODE (10 days) that
  *                                   authorizes creating the account; we hand
  *                                   over the SDK repo + agent-setup prompt and
  *                                   point the user at their inbox.
  *
- * The access link is not a sign-in: no account exists until the user redeems it
+ * The credential is the CODE, not the URL. That mail's registration link is
+ * deliberately credential-free (`/register?lead=1`) and the code travels in the
+ * message body for the user to type: putting it in the URL is exactly the
+ * query-string leak #2463 exists to remove, so copy here must never describe a
+ * link that "works once" or invite the user to click their way in.
+ *
+ * The access code is not a sign-in: no account exists until the user enters it
  * and registers. Copy on this screen must not imply otherwise - a user told
  * they have been "signed in" will go looking for a portal session that is not
  * there. The API key is created afterwards, by the user, from the portal's
@@ -210,7 +216,7 @@ export default function LeadFunnel({ surface = "homepage_hero", onVerified }) {
 }
 
 /**
- * Verified. The backend has emailed a redeem link (the portal handoff), so the
+ * Verified. The backend has emailed the access code (the portal handoff), so the
  * marketing site's job is done — we point the user at their inbox and hand over
  * the two engineer-facing next steps: the SDK repo and the one-paste
  * agent-setup prompt (the same canonical /agent-setup/prompt.md the homepage
@@ -225,12 +231,13 @@ function SuccessView({ email, surface }) {
       </h2>
       <p className="text-slate-300 mb-2">
         We just sent a <span className="font-semibold text-white">second</span> email to{" "}
-        <span className="font-semibold text-white">{email}</span> — this one carries your access
-        link. Open it to create your Traigent account, then generate your API key from the
-        highlighted key button in the portal&apos;s top bar.
+        <span className="font-semibold text-white">{email}</span> — this one carries your{" "}
+        <span className="font-semibold text-white">access code</span>. Open the registration page
+        from that email, enter the code to create your Traigent account, then generate your API key
+        from the highlighted key button in the portal&apos;s top bar.
       </p>
       <p className="text-xs text-slate-500 mb-6">
-        The link is good for 10 days and works once. It is the only way in from here — we
+        The code works once and is good for 10 days. It is the only way in from here — we
         don&apos;t sign you in on this page. Check spam if it hasn&apos;t arrived within a minute.
       </p>
 
