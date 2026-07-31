@@ -648,6 +648,49 @@ test("runGuard distinguishes dormant, required, allowed, and blocked builds", ()
   );
 });
 
+test("runGuard never follows the environment root for committed policy inputs", () => {
+  withFixture(
+    {
+      "index.html": DOCUMENT(META("'none'")),
+      "public/CNAME": "attacker.example.test\n",
+    },
+    (root) => {
+      const common = {
+        root,
+        loadEnvFn: () => ({}),
+        log: () => {},
+        error: () => {},
+      };
+
+      // The explicit production CSP source proves index.html came from this
+      // module's repository, not the caller-controlled environment root.
+      assert.equal(
+        runGuard({
+          ...common,
+          processEnv: {
+            FUNNEL_REQUIRED: "1",
+            VITE_API_BASE_URL: "https://otp.traigent.ai",
+          },
+        }),
+        0,
+      );
+
+      // traigent.ai is admitted only by the committed policy's 'self'. This
+      // proves public/CNAME also came from the module repository.
+      assert.equal(
+        runGuard({
+          ...common,
+          processEnv: {
+            FUNNEL_REQUIRED: "1",
+            VITE_API_BASE_URL: SELF_ORIGIN,
+          },
+        }),
+        0,
+      );
+    },
+  );
+});
+
 test("the repository meta CSP admits both endpoints for a safe CI origin", () => {
   const root = resolve(import.meta.dirname, "..");
   const html = readFileSync(resolve(root, "index.html"), "utf8");
