@@ -10,8 +10,10 @@
  * verified separately before the funnel is activated.
  */
 import { existsSync, readFileSync } from "node:fs";
+import { isIP } from "node:net";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { parse } from "parse5";
 import { loadEnv } from "vite";
 
 import { LEAD_API_PATHS } from "../src/lib/leadApiContract.js";
@@ -20,12 +22,16 @@ export const BUILD_MODE = "production";
 
 const TRUE_VALUES = new Set(["1", "true", "yes"]);
 const FALSE_VALUES = new Set(["", "0", "false", "no"]);
-const HEAD_ELEMENT = /<head\b[^>]*>([\s\S]*?)<\/head>/i;
 const SCHEME_ONLY_SOURCE = /^([a-z][a-z0-9+.-]*):$/i;
 const EXPLICIT_SOURCE_SCHEME = /^[a-z][a-z0-9+.-]*:\/\//i;
+const CSP_HOST_LABEL = "[a-z0-9-]+";
+const CSP_HOST_PART = new RegExp(
+  `^(?:\\*|(?:\\*\\.)?${CSP_HOST_LABEL}(?:\\.${CSP_HOST_LABEL})*\\.?)$`,
+  "i",
+);
+const CSP_PORT_PART = /^(?:\*|\d+)$/;
 const ATTRIBUTE_NAME = /[^\s=/>]+/y;
 const UNQUOTED_ATTRIBUTE_VALUE = /[^\s"'=<>`]+/y;
-const TAG_NAME_BOUNDARIES = new Set([" ", "\t", "\n", "\f", "\r", "/", ">"]);
 const META_TAG_PREFIX = "<meta";
 const WILDCARD_HOST_PLACEHOLDER = "csp-wildcard-placeholder";
 const WILDCARD_PORT_PLACEHOLDER = "65535";
@@ -38,6 +44,35 @@ export class CspGuardError extends Error {
     super(message);
     this.name = "CspGuardError";
   }
+}
+
+function unbracketedHostname(url) {
+  const { hostname } = url;
+  return hostname.startsWith("[") && hostname.endsWith("]")
+    ? hostname.slice(1, -1)
+    : hostname;
+}
+
+function serializedUrlHostname(rawUrl) {
+  const authorityStart = rawUrl.indexOf("://");
+  if (authorityStart === -1) return null;
+
+  const authorityAndRest = rawUrl.slice(authorityStart + 3);
+  const authorityEnd = authorityAndRest.search(/[/?#]/);
+  const authority =
+    authorityEnd === -1
+      ? authorityAndRest
+      : authorityAndRest.slice(0, authorityEnd);
+  const hostAndPort = authority.slice(authority.lastIndexOf("@") + 1);
+  if (hostAndPort.startsWith("[")) {
+    const closingBracket = hostAndPort.indexOf("]");
+    return closingBracket === -1 ? null : hostAndPort.slice(1, closingBracket);
+  }
+
+  const portSeparator = hostAndPort.lastIndexOf(":");
+  return portSeparator === -1
+    ? hostAndPort
+    : hostAndPort.slice(0, portSeparator);
 }
 
 /** Parse the origin-only HTTP(S) base required by leadApi's URL construction. */
@@ -76,6 +111,18 @@ export function parseApiBase(rawBase) {
   if (url.hash) {
     throw new CspGuardError(
       "VITE_API_BASE_URL must be an origin only; fragments are not supported.",
+    );
+  }
+  const hostname = unbracketedHostname(url);
+  const serializedHostname = serializedUrlHostname(base);
+  if (
+    isIP(hostname) !== 0 &&
+    (hostname !== "127.0.0.1" || serializedHostname !== "127.0.0.1")
+  ) {
+    throw new CspGuardError(
+      "VITE_API_BASE_URL must use a DNS hostname or the exact 127.0.0.1 " +
+        "loopback spelling; CSP host sources reject other IP literals and " +
+        "URL-canonicalized numeric spellings.",
     );
   }
 
@@ -195,69 +242,62 @@ function parseMetaAttributes(tag) {
   return attributes;
 }
 
-function findTagEnd(markup, start) {
-  let quote = null;
-
-  for (let cursor = start; cursor < markup.length; cursor += 1) {
-    const character = markup[cursor];
-    if (quote !== null) {
-      if (character === quote) quote = null;
-    } else if (character === '"' || character === "'") {
-      quote = character;
-    } else if (character === ">") {
-      return cursor;
-    }
-  }
-
-  return -1;
+function directElement(parent, tagName) {
+  return parent?.childNodes?.find((node) => node.tagName === tagName);
 }
 
-function extractMetaTags(head) {
-  const tags = [];
-  let cursor = 0;
-
-  while (cursor < head.length) {
-    const start = head.indexOf("<", cursor);
-    if (start === -1) break;
-
-    const candidate = head.slice(start, start + META_TAG_PREFIX.length);
-    if (candidate.toLowerCase() !== META_TAG_PREFIX) {
-      cursor = start + 1;
-      continue;
-    }
-
-    const boundary = head[start + META_TAG_PREFIX.length];
-    if (!TAG_NAME_BOUNDARIES.has(boundary)) {
-      cursor = start + META_TAG_PREFIX.length;
-      continue;
-    }
-
-    const end = findTagEnd(head, start + META_TAG_PREFIX.length);
-    if (end === -1) {
-      throw new CspGuardError(
-        "Content-Security-Policy meta tag contains an unterminated attribute.",
-      );
-    }
-    tags.push(head.slice(start, end + 1));
-    cursor = end + 1;
-  }
-
-  return tags;
-}
-
-/** Return every enforced CSP meta policy; browsers apply their intersection. */
-export function extractMetaCspPolicies(html) {
-  const head = HEAD_ELEMENT.exec(String(html))?.[1];
-  if (head === undefined) {
+/**
+ * Return only meta elements the browser actually placed directly in <head>.
+ *
+ * A raw-text scan cannot establish that boundary: strings which look like
+ * `<meta>` inside comments, script text, templates, noscript, or markup the
+ * HTML parser moved into <body> are inert. parse5 uses the HTML parsing
+ * algorithm, including those insertion modes, so an inert string can never
+ * satisfy the build guard.
+ */
+function enforcedHeadMetaElements(markup) {
+  const document = parse(markup, {
+    scriptingEnabled: true,
+    sourceCodeLocationInfo: true,
+  });
+  const htmlElement = directElement(document, "html");
+  const headElement = directElement(htmlElement, "head");
+  if (
+    !headElement?.sourceCodeLocation?.startTag ||
+    !headElement.sourceCodeLocation.endTag
+  ) {
     throw new CspGuardError(
       "index.html must contain a complete head element for its CSP meta policy.",
     );
   }
 
+  return (headElement.childNodes ?? []).filter(
+    (node) => node.tagName === "meta",
+  );
+}
+
+/** Return every enforced CSP meta policy; browsers apply their intersection. */
+export function extractMetaCspPolicies(html) {
+  const markup = String(html);
   const policies = [];
 
-  for (const tag of extractMetaTags(head)) {
-    const attributes = parseMetaAttributes(tag);
+  for (const element of enforcedHeadMetaElements(markup)) {
+    const location = element.sourceCodeLocation;
+    if (
+      location?.startOffset === undefined ||
+      location.endOffset === undefined
+    ) {
+      throw new CspGuardError(
+        "Content-Security-Policy meta tag has no source location.",
+      );
+    }
+    // Keep the existing strict structural checks (duplicate attributes,
+    // unterminated quotes, and invalid unquoted values), then use parse5's
+    // decoded attribute values so HTML character references match the browser.
+    parseMetaAttributes(markup.slice(location.startOffset, location.endOffset));
+    const attributes = new Map(
+      element.attrs.map(({ name, value }) => [name.toLowerCase(), value]),
+    );
     if (
       attributes.get("http-equiv")?.toLowerCase() === "content-security-policy"
     ) {
@@ -372,17 +412,40 @@ function hostSourceParts(source, selfOrigin) {
       : authorityAndPath.slice(0, slashIndex);
   const sourcePath =
     slashIndex === -1 ? null : authorityAndPath.slice(slashIndex);
-  const hasWildcardHost = authority.startsWith("*.");
-  const hasWildcardPort = authority.endsWith(":*");
+  const portSeparator = authority.lastIndexOf(":");
+  const serializedHost =
+    portSeparator === -1 ? authority : authority.slice(0, portSeparator);
+  const serializedPort =
+    portSeparator === -1 ? null : authority.slice(portSeparator + 1);
+  if (
+    !CSP_HOST_PART.test(serializedHost) ||
+    (serializedPort !== null && !CSP_PORT_PART.test(serializedPort))
+  ) {
+    return null;
+  }
+  const hasBareWildcardHost = serializedHost === "*";
+  const hasWildcardHost =
+    hasBareWildcardHost || serializedHost.startsWith("*.");
+  const hasWildcardPort = serializedPort === "*";
 
   if (authority.includes("*") && !hasWildcardHost && !hasWildcardPort) {
     return null;
   }
 
   const schemePrefix = hasScheme ? "" : `${new URL(selfOrigin).protocol}//`;
-  const parseableSource = `${schemePrefix}${source}`
-    .replace("*.", `${WILDCARD_HOST_PLACEHOLDER}.`)
-    .replace(/:\*(?=\/|$)/, `:${WILDCARD_PORT_PLACEHOLDER}`);
+  let parseableSource = `${schemePrefix}${source}`;
+  if (hasBareWildcardHost) {
+    parseableSource = parseableSource.replace("*", WILDCARD_HOST_PLACEHOLDER);
+  } else if (hasWildcardHost) {
+    parseableSource = parseableSource.replace(
+      "*.",
+      `${WILDCARD_HOST_PLACEHOLDER}.`,
+    );
+  }
+  parseableSource = parseableSource.replace(
+    /:\*(?=\/|$)/,
+    `:${WILDCARD_PORT_PLACEHOLDER}`,
+  );
 
   let parsed;
   try {
@@ -394,8 +457,10 @@ function hostSourceParts(source, selfOrigin) {
   return {
     parsed,
     hasScheme,
+    hasBareWildcardHost,
     hasWildcardHost,
     hasWildcardPort,
+    serializedHost,
     sourcePath,
   };
 }
@@ -414,7 +479,24 @@ function selfSourceAllowsUrl(source, target, selfOrigin) {
   );
 }
 
-function hostPartMatches(parsed, target, hasWildcardHost) {
+function hostPartMatches(
+  parsed,
+  target,
+  hasBareWildcardHost,
+  hasWildcardHost,
+  serializedHost,
+) {
+  const parsedHostname = unbracketedHostname(parsed);
+  const targetHostname = unbracketedHostname(target);
+  if (isIP(targetHostname) !== 0) {
+    return (
+      !hasWildcardHost &&
+      targetHostname === "127.0.0.1" &&
+      serializedHost === targetHostname &&
+      parsedHostname === targetHostname
+    );
+  }
+  if (hasBareWildcardHost) return true;
   if (!hasWildcardHost) return parsed.hostname === target.hostname;
 
   const suffix = parsed.hostname.replace(`${WILDCARD_HOST_PLACEHOLDER}.`, "");
@@ -441,10 +523,27 @@ export function sourceAllowsUrl(source, target, selfOrigin = null) {
   const parts = hostSourceParts(source, selfOrigin);
   if (parts === null) return false;
 
-  const { parsed, hasWildcardHost, hasWildcardPort, sourcePath } = parts;
+  const {
+    parsed,
+    hasBareWildcardHost,
+    hasWildcardHost,
+    hasWildcardPort,
+    serializedHost,
+    sourcePath,
+  } = parts;
 
   if (!schemePartMatches(parsed.protocol, target.protocol)) return false;
-  if (!hostPartMatches(parsed, target, hasWildcardHost)) return false;
+  if (
+    !hostPartMatches(
+      parsed,
+      target,
+      hasBareWildcardHost,
+      hasWildcardHost,
+      serializedHost,
+    )
+  ) {
+    return false;
+  }
   if (!portPartMatches(parsed, target, hasWildcardPort)) return false;
   return pathPartMatches(sourcePath, target.pathname);
 }

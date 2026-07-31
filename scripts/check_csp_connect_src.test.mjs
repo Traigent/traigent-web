@@ -71,10 +71,19 @@ test("parseApiBase rejects unusable or non-origin values", () => {
     "https://api.example.test?mode=wrong",
     "https://api.example.test#fragment",
     "https://api.example.test:65536",
+    "https://1.1.1.1",
+    "https://[::1]",
+    "http://127.1:5000",
+    "http://2130706433:5000",
+    "http://0x7f000001:5000",
     "not-a-url",
   ]) {
     assert.throws(() => parseApiBase(invalid), CspGuardError, invalid);
   }
+  assert.equal(
+    parseApiBase("http://127.0.0.1:5000").href,
+    "http://127.0.0.1:5000/",
+  );
 });
 
 test("leadApiEndpoints returns both exact client request URLs", () => {
@@ -109,6 +118,130 @@ test("source matching handles self, exact hosts, and wildcard subdomains", () =>
     ),
     false,
   );
+  // CSP3 host-part matching deliberately rejects IP literals other than the
+  // explicit 127.0.0.1 exception. URL() itself accepts and canonicalizes them,
+  // so this must not be delegated to the generic URL host comparison.
+  assert.equal(
+    sourceAllowsUrl(
+      "https://1.1.1.1",
+      new URL("https://1.1.1.1/api/v1/leads"),
+      SELF_ORIGIN,
+    ),
+    false,
+  );
+  assert.equal(
+    sourceAllowsUrl(
+      "http://127.0.0.1:5000",
+      new URL("http://127.0.0.1:5000/api/v1/leads"),
+      SELF_ORIGIN,
+    ),
+    true,
+  );
+  for (const nonCanonicalLoopback of [
+    "http://127.1:5000",
+    "http://2130706433:5000",
+    "http://0x7f000001:5000",
+  ]) {
+    assert.equal(
+      sourceAllowsUrl(
+        nonCanonicalLoopback,
+        new URL("http://127.0.0.1:5000/api/v1/leads"),
+        SELF_ORIGIN,
+      ),
+      false,
+      nonCanonicalLoopback,
+    );
+  }
+});
+
+test("bare wildcard host sources respect scheme, port, path, and IP rules", () => {
+  const capture = new URL(`${API_ORIGIN}/api/v1/leads`);
+  const verify = new URL(`${API_ORIGIN}/api/v1/leads/verify`);
+  const customPort = new URL("https://other.example.test:8443/api/v1/leads");
+
+  assert.equal(sourceAllowsUrl("https://*", capture, SELF_ORIGIN), true);
+  assert.equal(sourceAllowsUrl("http://*", capture, SELF_ORIGIN), true);
+  assert.equal(
+    sourceAllowsUrl(
+      "https://*",
+      new URL("http://api.example.test/api/v1/leads"),
+      SELF_ORIGIN,
+    ),
+    false,
+  );
+
+  assert.equal(
+    sourceAllowsUrl("https://*:8443", customPort, SELF_ORIGIN),
+    true,
+  );
+  assert.equal(
+    sourceAllowsUrl("https://*:443", customPort, SELF_ORIGIN),
+    false,
+  );
+  assert.equal(sourceAllowsUrl("https://*:*", customPort, SELF_ORIGIN), true);
+  assert.equal(sourceAllowsUrl("*:443", capture, SELF_ORIGIN), true);
+
+  assert.equal(
+    sourceAllowsUrl("https://*/api/v1/leads", capture, SELF_ORIGIN),
+    true,
+  );
+  assert.equal(
+    sourceAllowsUrl("https://*/api/v1/leads", verify, SELF_ORIGIN),
+    false,
+  );
+  assert.equal(sourceAllowsUrl("https://*/api/v1/", verify, SELF_ORIGIN), true);
+
+  assert.equal(
+    sourceAllowsUrl(
+      "http://*:5000",
+      new URL("http://127.0.0.1:5000/api/v1/leads"),
+      SELF_ORIGIN,
+    ),
+    false,
+  );
+  assert.equal(
+    sourceAllowsUrl(
+      "https://*",
+      new URL("https://1.1.1.1/api/v1/leads"),
+      SELF_ORIGIN,
+    ),
+    false,
+  );
+});
+
+test("source matching rejects URL spellings outside CSP host-source grammar", () => {
+  for (const [source, target] of [
+    ["https://%61pi.example.test", `${API_ORIGIN}/api/v1/leads`],
+    ["https://éxample.test", "https://éxample.test/api/v1/leads"],
+    ["https://api_example.test", "https://api_example.test/api/v1/leads"],
+    ["https://api.example.test:", `${API_ORIGIN}/api/v1/leads`],
+  ]) {
+    assert.equal(
+      sourceAllowsUrl(source, new URL(target), SELF_ORIGIN),
+      false,
+      source,
+    );
+  }
+});
+
+test("meta validation rejects URL-canonicalized loopback host sources", () => {
+  const apiBase = parseApiBase("http://127.0.0.1:5000");
+  for (const nonCanonicalLoopback of [
+    "http://127.1:5000",
+    "http://2130706433:5000",
+    "http://0x7f000001:5000",
+  ]) {
+    assert.throws(
+      () =>
+        validateMetaCsp({
+          html: DOCUMENT(META(nonCanonicalLoopback)),
+          apiBase,
+          selfOrigin: SELF_ORIGIN,
+        }),
+      /meta CSP policy 1 blocks/,
+      nonCanonicalLoopback,
+    );
+  }
 });
 
 test("source matching respects schemes and effective ports", () => {
@@ -208,6 +341,41 @@ test("meta parser accepts attribute order and intersects multiple policies", () 
   );
 });
 
+test("inert meta-like markup cannot satisfy the committed CSP guard", () => {
+  const inertCandidates = [
+    `<!-- ${META(API_ORIGIN)} -->`,
+    `<script type="text/plain">${META(API_ORIGIN)}</script>`,
+    `<template>${META(API_ORIGIN)}</template>`,
+    `<noscript>${META(API_ORIGIN)}</noscript>`,
+    `<div>${META(API_ORIGIN)}</div>`,
+  ];
+
+  for (const inert of inertCandidates) {
+    assert.throws(
+      () => extractMetaCspPolicies(DOCUMENT(inert)),
+      /No Content-Security-Policy|complete head element/,
+      inert,
+    );
+    // A body-only element implicitly closes <head>; a later literal meta tag is
+    // therefore also outside the browser's enforced head and must not rescue
+    // the document. The other inert contexts leave <head> open, so a real
+    // sibling policy remains enforceable.
+    if (inert.startsWith("<div>")) {
+      assert.throws(
+        () => extractMetaCspPolicies(DOCUMENT(inert, META(API_ORIGIN))),
+        /No Content-Security-Policy|complete head element/,
+        inert,
+      );
+    } else {
+      assert.deepEqual(
+        extractMetaCspPolicies(DOCUMENT(inert, META(API_ORIGIN))),
+        [`default-src 'self'; connect-src ${API_ORIGIN}`],
+        inert,
+      );
+    }
+  }
+});
+
 test("malformed or ambiguous meta CSP fails closed", () => {
   assert.throws(() => extractMetaCspPolicies(DOCUMENT()), /No Content/);
   assert.throws(
@@ -239,7 +407,7 @@ test("malformed or ambiguous meta CSP fails closed", () => {
             `content="connect-src ${API_ORIGIN}>`,
         ),
       ),
-    /unterminated attribute/,
+    /unterminated attribute|complete head element/,
   );
   assert.throws(
     () =>
