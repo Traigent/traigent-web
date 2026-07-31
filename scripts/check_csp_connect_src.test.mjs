@@ -180,6 +180,22 @@ test("bare wildcard host sources respect scheme, port, path, and IP rules", () =
   );
   assert.equal(sourceAllowsUrl("https://*:*", customPort, SELF_ORIGIN), true);
   assert.equal(sourceAllowsUrl("*:443", capture, SELF_ORIGIN), true);
+  assert.equal(
+    sourceAllowsUrl(
+      "https://*:*/api/*",
+      new URL("https://other.example.test:8443/api/*"),
+      SELF_ORIGIN,
+    ),
+    true,
+  );
+  assert.equal(
+    sourceAllowsUrl(
+      "https://*:*/api/*",
+      new URL("https://other.example.test:8443/api/value"),
+      SELF_ORIGIN,
+    ),
+    false,
+  );
 
   assert.equal(
     sourceAllowsUrl("https://*/api/v1/leads", capture, SELF_ORIGIN),

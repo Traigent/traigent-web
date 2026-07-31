@@ -26,7 +26,7 @@ const SCHEME_ONLY_SOURCE = /^([a-z][a-z0-9+.-]*):$/i;
 const EXPLICIT_SOURCE_SCHEME = /^[a-z][a-z0-9+.-]*:\/\//i;
 const CSP_HOST_LABEL = "[a-z0-9-]+";
 const CSP_HOST_PART = new RegExp(
-  `^(?:\\*|(?:\\*\\.)?${CSP_HOST_LABEL}(?:\\.${CSP_HOST_LABEL})*\\.?)$`,
+  String.raw`^(?:\*|(?:\*\.)?${CSP_HOST_LABEL}(?:\.${CSP_HOST_LABEL})*\.?)$`,
   "i",
 );
 const CSP_PORT_PART = /^(?:\*|\d+)$/;
@@ -394,6 +394,36 @@ function portPartMatches(source, target, hasWildcardPort) {
   );
 }
 
+function parseableHostSource({
+  source,
+  selfOrigin,
+  hasScheme,
+  serializedHost,
+  serializedPort,
+  hasBareWildcardHost,
+  hasWildcardHost,
+  hasWildcardPort,
+  sourcePath,
+}) {
+  const sourceProtocol = hasScheme
+    ? `${source.slice(0, source.indexOf(":"))}:`
+    : new URL(selfOrigin).protocol;
+
+  let parseableHost = serializedHost;
+  if (hasBareWildcardHost) {
+    parseableHost = WILDCARD_HOST_PLACEHOLDER;
+  } else if (hasWildcardHost) {
+    parseableHost = `${WILDCARD_HOST_PLACEHOLDER}.${serializedHost.slice(2)}`;
+  }
+
+  let parseablePort = "";
+  if (serializedPort !== null) {
+    parseablePort = `:${hasWildcardPort ? WILDCARD_PORT_PLACEHOLDER : serializedPort}`;
+  }
+
+  return `${sourceProtocol}//${parseableHost}${parseablePort}${sourcePath ?? ""}`;
+}
+
 function hostSourceParts(source, selfOrigin) {
   if (source.includes("@") || source.includes("?") || source.includes("#")) {
     return null;
@@ -432,20 +462,21 @@ function hostSourceParts(source, selfOrigin) {
     return null;
   }
 
-  const schemePrefix = hasScheme ? "" : `${new URL(selfOrigin).protocol}//`;
-  let parseableSource = `${schemePrefix}${source}`;
-  if (hasBareWildcardHost) {
-    parseableSource = parseableSource.replace("*", WILDCARD_HOST_PLACEHOLDER);
-  } else if (hasWildcardHost) {
-    parseableSource = parseableSource.replace(
-      "*.",
-      `${WILDCARD_HOST_PLACEHOLDER}.`,
-    );
-  }
-  parseableSource = parseableSource.replace(
-    /:\*(?=\/|$)/,
-    `:${WILDCARD_PORT_PLACEHOLDER}`,
-  );
+  // Rebuild the URL from the validated grammar parts. Generic first-match
+  // replacement is unsafe here because one host-source may contain a wildcard
+  // host, wildcard port, and a literal "*" in its path. Structural assembly
+  // guarantees that only the host and port grammar slots are substituted.
+  const parseableSource = parseableHostSource({
+    source,
+    selfOrigin,
+    hasScheme,
+    serializedHost,
+    serializedPort,
+    hasBareWildcardHost,
+    hasWildcardHost,
+    hasWildcardPort,
+    sourcePath,
+  });
 
   let parsed;
   try {
@@ -499,7 +530,7 @@ function hostPartMatches(
   if (hasBareWildcardHost) return true;
   if (!hasWildcardHost) return parsed.hostname === target.hostname;
 
-  const suffix = parsed.hostname.replace(`${WILDCARD_HOST_PLACEHOLDER}.`, "");
+  const suffix = parsed.hostname.slice(`${WILDCARD_HOST_PLACEHOLDER}.`.length);
   return target.hostname.endsWith(`.${suffix}`);
 }
 
