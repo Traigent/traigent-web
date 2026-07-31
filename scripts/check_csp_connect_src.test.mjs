@@ -532,10 +532,11 @@ test("real Vite env precedence uses production.local over lower layers", () => {
 });
 
 test("runGuard distinguishes dormant, required, allowed, and blocked builds", () => {
+  const html = DOCUMENT(META(`${API_ORIGIN} 'self'`));
   withFixture(
     {
-      "index.html": DOCUMENT(META(`${API_ORIGIN} 'self'`)),
-      "public/CNAME": "traigent.ai\n",
+      "index.html": "this caller-controlled file must never be read",
+      "public/CNAME": "attacker.example.test\n",
     },
     (root) => {
       const messages = [];
@@ -548,6 +549,8 @@ test("runGuard distinguishes dormant, required, allowed, and blocked builds", ()
       assert.equal(
         runGuard({
           root,
+          html,
+          selfOrigin: SELF_ORIGIN,
           processEnv: {},
           loadEnvFn,
           log: logger,
@@ -561,6 +564,8 @@ test("runGuard distinguishes dormant, required, allowed, and blocked builds", ()
       assert.equal(
         runGuard({
           root,
+          html,
+          selfOrigin: SELF_ORIGIN,
           processEnv: { FUNNEL_REQUIRED: "1" },
           loadEnvFn,
           log: logger,
@@ -574,6 +579,8 @@ test("runGuard distinguishes dormant, required, allowed, and blocked builds", ()
       assert.equal(
         runGuard({
           root,
+          html,
+          selfOrigin: SELF_ORIGIN,
           processEnv: { FUNNEL_REQUIRED: "tru" },
           loadEnvFn,
           log: logger,
@@ -587,6 +594,8 @@ test("runGuard distinguishes dormant, required, allowed, and blocked builds", ()
       assert.equal(
         runGuard({
           root,
+          html,
+          selfOrigin: SELF_ORIGIN,
           processEnv: {
             FUNNEL_REQUIRED: "1",
             VITE_API_BASE_URL: "http://api.example.test",
@@ -603,6 +612,8 @@ test("runGuard distinguishes dormant, required, allowed, and blocked builds", ()
       assert.equal(
         runGuard({
           root,
+          html,
+          selfOrigin: SELF_ORIGIN,
           processEnv: {
             FUNNEL_REQUIRED: "1",
             VITE_API_BASE_URL: API_ORIGIN,
@@ -620,6 +631,8 @@ test("runGuard distinguishes dormant, required, allowed, and blocked builds", ()
       assert.equal(
         runGuard({
           root,
+          html,
+          selfOrigin: SELF_ORIGIN,
           processEnv: {
             FUNNEL_REQUIRED: "1",
             VITE_API_BASE_URL: "https://blocked.example.test",

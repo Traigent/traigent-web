@@ -38,6 +38,8 @@ const WILDCARD_PORT_PLACEHOLDER = "65535";
 
 const modulePath = fileURLToPath(import.meta.url);
 const moduleRoot = resolve(dirname(modulePath), "..");
+const committedHtmlPath = resolve(moduleRoot, "index.html");
+const committedCnamePath = resolve(moduleRoot, "public", "CNAME");
 
 export class CspGuardError extends Error {
   constructor(message) {
@@ -604,11 +606,10 @@ export function validateMetaCsp({ html, apiBase, selfOrigin = null }) {
   return { endpoints, policyCount: policies.length };
 }
 
-function readSelfOrigin(root) {
-  const cnamePath = resolve(root, "public", "CNAME");
-  if (!existsSync(cnamePath)) return null;
+function readCommittedSelfOrigin() {
+  if (!existsSync(committedCnamePath)) return null;
 
-  const hostname = readFileSync(cnamePath, "utf8").trim();
+  const hostname = readFileSync(committedCnamePath, "utf8").trim();
   return hostname ? new URL(`https://${hostname}`).origin : null;
 }
 
@@ -624,6 +625,8 @@ function activationBoundaryLines() {
 /** Execute the CLI behavior without terminating the importing process. */
 export function runGuard({
   root = moduleRoot,
+  html,
+  selfOrigin,
   processEnv = process.env,
   loadEnvFn = loadEnv,
   log = console.log,
@@ -655,12 +658,19 @@ export function runGuard({
         "FUNNEL_REQUIRED builds must use an HTTPS VITE_API_BASE_URL.",
       );
     }
-    const html = readFileSync(resolve(root, "index.html"), "utf8");
-    const selfOrigin = readSelfOrigin(root);
+    // `root` exists only to model Vite's environment-file precedence in tests.
+    // Committed policy inputs never follow that caller-supplied path: production
+    // reads repository-fixed files, while tests inject inert strings directly.
+    const committedHtml =
+      html === undefined
+        ? readFileSync(committedHtmlPath, "utf8")
+        : String(html);
+    const committedSelfOrigin =
+      selfOrigin === undefined ? readCommittedSelfOrigin() : selfOrigin;
     const { endpoints, policyCount } = validateMetaCsp({
-      html,
+      html: committedHtml,
       apiBase,
-      selfOrigin,
+      selfOrigin: committedSelfOrigin,
     });
 
     log(
