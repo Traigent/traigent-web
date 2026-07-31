@@ -56,7 +56,15 @@
 // It deliberately cannot certify the edge header, CORS, backend configuration,
 // secrets, or cross-repo deployment state. See .env.example for operator detail.
 
-import { LEAD_CAPTURE_PATH, LEAD_VERIFY_PATH } from "./leadApiContract.js";
+import {
+  CLIENT_ERROR_DISABLED,
+  LEAD_CAPTURE_PATH,
+  LEAD_ROUTE_NOT_FOUND,
+  LEAD_VERIFY_PATH,
+  isLeadFunnelUnavailableError,
+} from "./leadApiContract.js";
+
+export { CLIENT_ERROR_DISABLED, isLeadFunnelUnavailableError };
 
 // Trim trailing slashes without a regex (avoids a super-linear backtracking
 // smell): VITE_API_BASE_URL is joined with absolute "/api/..." paths, so a
@@ -83,7 +91,6 @@ export function isLeadFunnelEnabled() {
 // the backend's SCREAMING_SNAKE tokens on purpose: nothing here may be mistaken
 // for a value lead_routes.py can emit.
 export const CLIENT_ERROR_NETWORK = "CLIENT_NETWORK_ERROR";
-export const CLIENT_ERROR_DISABLED = "CLIENT_FUNNEL_DISABLED";
 export const CLIENT_ERROR_HTTP = "CLIENT_HTTP_ERROR";
 
 /**
@@ -102,7 +109,7 @@ function resolveErrorCode(status, data) {
   if (typeof code === "string" && code) return code;
   if (status === 429) return "LEAD_RATE_LIMITED";
   if (status === 503) return "LEAD_RATE_LIMIT_UNAVAILABLE";
-  if (status === 404) return "NOT_FOUND";
+  if (status === 404) return LEAD_ROUTE_NOT_FOUND;
   return CLIENT_ERROR_HTTP;
 }
 
@@ -240,7 +247,7 @@ export function leadErrorMessage(errorCode) {
     // 404, lead_routes.py:147-149 — ENABLE_LEAD_ACCESS_ONBOARDING is off, so the
     // routes do not exist. Same user-facing situation as the client-side dormant
     // guard, from the other end of the wire.
-    case "NOT_FOUND":
+    case LEAD_ROUTE_NOT_FOUND:
     case CLIENT_ERROR_DISABLED:
       return NOT_AVAILABLE;
     case CLIENT_ERROR_NETWORK:

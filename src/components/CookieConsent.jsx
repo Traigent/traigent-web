@@ -1,9 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { getConsentRecord, setConsent, OPEN_BANNER_EVENT } from '../lib/consent';
+import { focusModal, topmostModal } from '../lib/modalFocus';
 
 export default function CookieConsent() {
   const [showBanner, setShowBanner] = useState(false);
   const [showPreferences, setShowPreferences] = useState(false);
+  const bannerRef = useRef(null);
+  const wasOpenRef = useRef(false);
 
   useEffect(() => {
     // If there's no explicit choice yet, show the banner
@@ -13,6 +16,20 @@ export default function CookieConsent() {
       }
     }
   }, []);
+
+  // Cookie controls deliberately sit above every site modal. Move focus into
+  // them whenever they open, then return it to the top modal (if any) when the
+  // choice is complete so neither surface strands keyboard users.
+  useEffect(() => {
+    const isOpen = showBanner || showPreferences;
+    if (isOpen) {
+      wasOpenRef.current = true;
+      focusModal(bannerRef.current);
+    } else if (wasOpenRef.current) {
+      wasOpenRef.current = false;
+      focusModal(topmostModal());
+    }
+  }, [showBanner, showPreferences]);
 
   // Any other UI surface (e.g. a gated form's "Cookies required" block) can
   // re-open the banner by dispatching OPEN_BANNER_EVENT — see
@@ -45,6 +62,7 @@ export default function CookieConsent() {
   if (!showBanner && !showPreferences) {
     return (
       <button
+        data-modal-focus-allowed="true"
         onClick={() => setShowPreferences(true)}
         className="fixed bottom-4 left-4 z-[9999] bg-slate-800 text-slate-300 text-xs px-3 py-2 rounded-full shadow-lg hover:bg-slate-700 transition-colors border border-slate-700"
       >
@@ -55,9 +73,22 @@ export default function CookieConsent() {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-[10000] p-4 sm:p-6 pointer-events-none">
-      <div className="max-w-4xl mx-auto bg-slate-900 border border-slate-700 rounded-xl shadow-2xl p-6 pointer-events-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div
+        ref={bannerRef}
+        tabIndex={-1}
+        role="region"
+        aria-labelledby="cookie-preferences-title"
+        data-modal-focus-allowed="true"
+        data-modal-focus-priority="true"
+        className="max-w-4xl mx-auto bg-slate-900 border border-slate-700 rounded-xl shadow-2xl p-6 pointer-events-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+      >
         <div className="flex-1">
-          <h3 className="text-white font-semibold mb-2">Cookie Preferences</h3>
+          <h3
+            id="cookie-preferences-title"
+            className="text-white font-semibold mb-2"
+          >
+            Cookie Preferences
+          </h3>
           <p className="text-slate-300 text-sm">
             We use cookies to improve your experience, understand how you interact with our site, and personalize our marketing. 
             By clicking "Accept", you consent to our use of these cookies. You can change your choice at any time.{' '}

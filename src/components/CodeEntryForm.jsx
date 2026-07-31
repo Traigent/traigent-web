@@ -1,4 +1,5 @@
 /* eslint-disable react/prop-types */
+import { useId } from "react";
 import { Mail, ShieldCheck } from "lucide-react";
 
 /**
@@ -29,12 +30,17 @@ export default function CodeEntryForm({
   submitLabel = "Verify & unlock",
   submitBusyLabel = "Verifying…",
 }) {
+  const errorId = useId();
+
   return (
     <div>
-      {heading && <h2 className="text-2xl font-bold text-white mb-2">{heading}</h2>}
+      {heading && (
+        <h2 className="text-2xl font-bold text-white mb-2">{heading}</h2>
+      )}
       <p className="text-slate-300 mb-1 flex items-center gap-2">
         <Mail className="w-4 h-4 text-blue-400 shrink-0" />
-        We emailed a 6-digit code to <span className="font-semibold text-white">{email}</span>
+        We emailed a 6-digit code to{" "}
+        <span className="font-semibold text-white">{email}</span>
       </p>
       <p className="text-xs text-slate-500 mb-4">{hint}</p>
       <form
@@ -54,9 +60,20 @@ export default function CodeEntryForm({
           onChange={(e) => onCodeChange(e.target.value.replace(/\D/g, ""))}
           placeholder="123456"
           aria-label="6-digit verification code"
+          aria-invalid={Boolean(error)}
+          aria-describedby={error ? errorId : undefined}
           className="w-full bg-slate-950 border border-slate-700 focus:border-blue-500 outline-none rounded-lg px-4 py-3 text-white text-2xl tracking-[0.5em] text-center font-mono mb-3"
         />
-        {error && <p className="text-sm text-red-400 mb-3">{error}</p>}
+        {error && (
+          <p
+            id={errorId}
+            role="alert"
+            aria-atomic="true"
+            className="text-sm text-red-400 mb-3"
+          >
+            {error}
+          </p>
+        )}
         <button
           type="submit"
           disabled={busy || code.trim().length !== 6}
