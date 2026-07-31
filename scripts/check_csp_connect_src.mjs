@@ -18,14 +18,15 @@ import { LEAD_API_PATHS } from "../src/lib/leadApiContract.js";
 
 export const BUILD_MODE = "production";
 
-const TRUE_VALUE = /^(1|true|yes)$/i;
-const FALSE_VALUE = /^(|0|false|no)$/i;
+const TRUE_VALUES = new Set(["1", "true", "yes"]);
+const FALSE_VALUES = new Set(["", "0", "false", "no"]);
 const HEAD_ELEMENT = /<head\b[^>]*>([\s\S]*?)<\/head>/i;
-const META_TAG = /<meta\b[^>]*>/gi;
-const META_ATTRIBUTE =
-  /([^\s=/>]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?/g;
 const SCHEME_ONLY_SOURCE = /^([a-z][a-z0-9+.-]*):$/i;
 const EXPLICIT_SOURCE_SCHEME = /^[a-z][a-z0-9+.-]*:\/\//i;
+const ATTRIBUTE_NAME = /[^\s=/>]+/y;
+const UNQUOTED_ATTRIBUTE_VALUE = /[^\s"'=<>`]+/y;
+const TAG_NAME_BOUNDARIES = new Set([" ", "\t", "\n", "\f", "\r", "/", ">"]);
+const META_TAG_PREFIX = "<meta";
 const WILDCARD_HOST_PLACEHOLDER = "csp-wildcard-placeholder";
 const WILDCARD_PORT_PLACEHOLDER = "65535";
 
@@ -99,43 +100,154 @@ export function resolveBuildEnvironment({
   const base = String(
     processEnv.VITE_API_BASE_URL ?? fileEnv.VITE_API_BASE_URL ?? "",
   ).trim();
-  const requiredValue = String(
+  const rawRequiredValue = String(
     processEnv.FUNNEL_REQUIRED ?? fileEnv.FUNNEL_REQUIRED ?? "",
   ).trim();
-  if (!TRUE_VALUE.test(requiredValue) && !FALSE_VALUE.test(requiredValue)) {
+  const requiredValue = rawRequiredValue.toLowerCase();
+  if (!TRUE_VALUES.has(requiredValue) && !FALSE_VALUES.has(requiredValue)) {
     throw new CspGuardError(
       "FUNNEL_REQUIRED must be empty/0/false/no or 1/true/yes; " +
-        `received ${JSON.stringify(requiredValue)}.`,
+        `received ${JSON.stringify(rawRequiredValue)}.`,
     );
   }
 
   return {
     base,
-    funnelRequired: TRUE_VALUE.test(requiredValue),
+    funnelRequired: TRUE_VALUES.has(requiredValue),
+  };
+}
+
+function skipWhitespace(input, start) {
+  let cursor = start;
+  while (cursor < input.length && /\s/.test(input[cursor])) {
+    cursor += 1;
+  }
+  return cursor;
+}
+
+function matchAt(pattern, input, start) {
+  pattern.lastIndex = start;
+  return pattern.exec(input);
+}
+
+function readAttributeValue(tag, afterName) {
+  let cursor = skipWhitespace(tag, afterName);
+  if (tag[cursor] !== "=") {
+    return { value: "", next: cursor };
+  }
+
+  cursor = skipWhitespace(tag, cursor + 1);
+  const quote = tag[cursor];
+  if (quote === '"' || quote === "'") {
+    const closingQuote = tag.indexOf(quote, cursor + 1);
+    if (closingQuote === -1) {
+      throw new CspGuardError(
+        "Content-Security-Policy meta tag contains an unterminated attribute.",
+      );
+    }
+    return {
+      value: tag.slice(cursor + 1, closingQuote),
+      next: closingQuote + 1,
+    };
+  }
+
+  const valueMatch = matchAt(UNQUOTED_ATTRIBUTE_VALUE, tag, cursor);
+  if (valueMatch === null) {
+    throw new CspGuardError(
+      "Content-Security-Policy meta tag contains an invalid attribute value.",
+    );
+  }
+  return {
+    value: valueMatch[0],
+    next: cursor + valueMatch[0].length,
   };
 }
 
 function parseMetaAttributes(tag) {
   const attributes = new Map();
+  let cursor = META_TAG_PREFIX.length;
 
-  for (const match of tag.matchAll(META_ATTRIBUTE)) {
-    const [, rawName, doubleQuoted, singleQuoted, unquoted] = match;
-    const value = doubleQuoted ?? singleQuoted ?? unquoted ?? "";
+  while (cursor < tag.length) {
+    cursor = skipWhitespace(tag, cursor);
+    if (tag[cursor] === ">" || tag.startsWith("/>", cursor)) {
+      break;
+    }
+
+    const nameMatch = matchAt(ATTRIBUTE_NAME, tag, cursor);
+    if (nameMatch === null) {
+      throw new CspGuardError(
+        "Content-Security-Policy meta tag contains an invalid attribute.",
+      );
+    }
+    const rawName = nameMatch[0];
     const name = rawName.toLowerCase();
     if (attributes.has(name)) {
       throw new CspGuardError(
         `Content-Security-Policy meta tag repeats the ${name} attribute.`,
       );
     }
+
+    const { value, next } = readAttributeValue(tag, cursor + rawName.length);
     attributes.set(name, value);
+    cursor = next;
   }
 
   return attributes;
 }
 
+function findTagEnd(markup, start) {
+  let quote = null;
+
+  for (let cursor = start; cursor < markup.length; cursor += 1) {
+    const character = markup[cursor];
+    if (quote !== null) {
+      if (character === quote) quote = null;
+    } else if (character === '"' || character === "'") {
+      quote = character;
+    } else if (character === ">") {
+      return cursor;
+    }
+  }
+
+  return -1;
+}
+
+function extractMetaTags(head) {
+  const tags = [];
+  let cursor = 0;
+
+  while (cursor < head.length) {
+    const start = head.indexOf("<", cursor);
+    if (start === -1) break;
+
+    const candidate = head.slice(start, start + META_TAG_PREFIX.length);
+    if (candidate.toLowerCase() !== META_TAG_PREFIX) {
+      cursor = start + 1;
+      continue;
+    }
+
+    const boundary = head[start + META_TAG_PREFIX.length];
+    if (!TAG_NAME_BOUNDARIES.has(boundary)) {
+      cursor = start + META_TAG_PREFIX.length;
+      continue;
+    }
+
+    const end = findTagEnd(head, start + META_TAG_PREFIX.length);
+    if (end === -1) {
+      throw new CspGuardError(
+        "Content-Security-Policy meta tag contains an unterminated attribute.",
+      );
+    }
+    tags.push(head.slice(start, end + 1));
+    cursor = end + 1;
+  }
+
+  return tags;
+}
+
 /** Return every enforced CSP meta policy; browsers apply their intersection. */
 export function extractMetaCspPolicies(html) {
-  const head = String(html).match(HEAD_ELEMENT)?.[1];
+  const head = HEAD_ELEMENT.exec(String(html))?.[1];
   if (head === undefined) {
     throw new CspGuardError(
       "index.html must contain a complete head element for its CSP meta policy.",
@@ -144,7 +256,7 @@ export function extractMetaCspPolicies(html) {
 
   const policies = [];
 
-  for (const tag of head.match(META_TAG) ?? []) {
+  for (const tag of extractMetaTags(head)) {
     const attributes = parseMetaAttributes(tag);
     if (
       attributes.get("http-equiv")?.toLowerCase() === "content-security-policy"
@@ -261,7 +373,7 @@ function hostSourceParts(source, selfOrigin) {
   const sourcePath =
     slashIndex === -1 ? null : authorityAndPath.slice(slashIndex);
   const hasWildcardHost = authority.startsWith("*.");
-  const hasWildcardPort = /:\*$/.test(authority);
+  const hasWildcardPort = authority.endsWith(":*");
 
   if (authority.includes("*") && !hasWildcardHost && !hasWildcardPort) {
     return null;
@@ -288,24 +400,40 @@ function hostSourceParts(source, selfOrigin) {
   };
 }
 
+function selfSourceAllowsUrl(source, target, selfOrigin) {
+  if (source.toLowerCase() !== "'self'" || selfOrigin === null) return false;
+
+  const ownOrigin = new URL(selfOrigin);
+  const portsMatch =
+    effectivePort(ownOrigin) === effectivePort(target) ||
+    (!ownOrigin.port && !target.port);
+  return (
+    ownOrigin.hostname === target.hostname &&
+    schemePartMatches(ownOrigin.protocol, target.protocol) &&
+    portsMatch
+  );
+}
+
+function hostPartMatches(parsed, target, hasWildcardHost) {
+  if (!hasWildcardHost) return parsed.hostname === target.hostname;
+
+  const suffix = parsed.hostname.replace(`${WILDCARD_HOST_PLACEHOLDER}.`, "");
+  return target.hostname.endsWith(`.${suffix}`);
+}
+
+function pathPartMatches(sourcePath, targetPath) {
+  if (sourcePath === null) return true;
+  if (sourcePath.endsWith("/")) return targetPath.startsWith(sourcePath);
+  return targetPath === sourcePath;
+}
+
 /** Return whether one CSP source expression admits one concrete endpoint URL. */
 export function sourceAllowsUrl(source, target, selfOrigin = null) {
   if (source === "*") return true;
-
   if (source.startsWith("'")) {
-    if (source.toLowerCase() !== "'self'" || selfOrigin === null) return false;
-    const ownOrigin = new URL(selfOrigin);
-    const portsMatch =
-      effectivePort(ownOrigin) === effectivePort(target) ||
-      (!ownOrigin.port && !target.port);
-    return (
-      ownOrigin.hostname === target.hostname &&
-      schemePartMatches(ownOrigin.protocol, target.protocol) &&
-      portsMatch
-    );
+    return selfSourceAllowsUrl(source, target, selfOrigin);
   }
-
-  const schemeOnly = source.match(SCHEME_ONLY_SOURCE);
+  const schemeOnly = SCHEME_ONLY_SOURCE.exec(source);
   if (schemeOnly) {
     return schemePartMatches(schemeOnly[1], target.protocol);
   }
@@ -316,24 +444,9 @@ export function sourceAllowsUrl(source, target, selfOrigin = null) {
   const { parsed, hasWildcardHost, hasWildcardPort, sourcePath } = parts;
 
   if (!schemePartMatches(parsed.protocol, target.protocol)) return false;
-
-  if (hasWildcardHost) {
-    const suffix = parsed.hostname.replace(`${WILDCARD_HOST_PLACEHOLDER}.`, "");
-    if (!target.hostname.endsWith(`.${suffix}`)) return false;
-  } else if (parsed.hostname !== target.hostname) {
-    return false;
-  }
-
+  if (!hostPartMatches(parsed, target, hasWildcardHost)) return false;
   if (!portPartMatches(parsed, target, hasWildcardPort)) return false;
-
-  if (sourcePath !== null) {
-    if (sourcePath.endsWith("/")) {
-      return target.pathname.startsWith(sourcePath);
-    }
-    return target.pathname === sourcePath;
-  }
-
-  return true;
+  return pathPartMatches(sourcePath, target.pathname);
 }
 
 /**

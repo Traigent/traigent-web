@@ -174,11 +174,20 @@ test("source matching applies CSP path restrictions to the real endpoints", () =
 
 test("meta parser accepts attribute order and intersects multiple policies", () => {
   const html = DOCUMENT(
+    "<title>\u0130</title>",
+    '<meta name="description" content="2 > 1">',
     META(`${API_ORIGIN} 'self'`),
     `<meta http-equiv='Content-Security-Policy' content="connect-src ${API_ORIGIN}">`,
   );
+  const unquotedName = DOCUMENT(
+    `<meta data-guard http-equiv=Content-Security-Policy ` +
+      `content='connect-src ${API_ORIGIN}' />`,
+  );
 
   assert.equal(extractMetaCspPolicies(html).length, 2);
+  assert.deepEqual(extractMetaCspPolicies(unquotedName), [
+    `connect-src ${API_ORIGIN}`,
+  ]);
   assert.equal(
     validateMetaCsp({
       html,
@@ -207,6 +216,30 @@ test("malformed or ambiguous meta CSP fails closed", () => {
         DOCUMENT('<meta http-equiv="Content-Security-Policy" content="">'),
       ),
     /non-empty content/,
+  );
+  assert.throws(
+    () =>
+      extractMetaCspPolicies(
+        DOCUMENT(
+          "<meta http-equiv=Content-Security-Policy content=>",
+          META(API_ORIGIN),
+        ),
+      ),
+    /invalid attribute value/,
+  );
+  assert.throws(
+    () => extractMetaCspPolicies(DOCUMENT(`<meta /oops>${META(API_ORIGIN)}`)),
+    /invalid attribute/,
+  );
+  assert.throws(
+    () =>
+      extractMetaCspPolicies(
+        DOCUMENT(
+          `<meta http-equiv="Content-Security-Policy" ` +
+            `content="connect-src ${API_ORIGIN}>`,
+        ),
+      ),
+    /unterminated attribute/,
   );
   assert.throws(
     () =>
@@ -244,7 +277,7 @@ test("build environment is pinned to Vite production mode and process wins", () 
     root: "/unused",
     processEnv: {
       VITE_API_BASE_URL: "https://process.example.test",
-      FUNNEL_REQUIRED: "yes",
+      FUNNEL_REQUIRED: "YES",
     },
     loadEnvFn: (mode) => {
       observedMode = mode;
