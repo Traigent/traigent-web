@@ -40,28 +40,23 @@
 // Base URL comes from VITE_API_BASE_URL. Empty = funnel dormant (no relative
 // POSTs to the marketing origin — the UI shows a "not available yet" message).
 //
-// ┌─ DEPLOY PREREQUISITES (ALL FOUR gate go-live) ───────────────────────────┐
-// │ 1. The backend must run with ENABLE_LEAD_ACCESS_ONBOARDING=true. It      │
-// │    defaults to FALSE (config.py:807-808) and both routes answer a plain  │
-// │    404 while it is off (lead_routes.py:266-267, :389-390), so without it │
-// │    every request fails no matter how the client is configured.           │
-// │ 2. VITE_API_BASE_URL must point at the prod backend host that serves     │
-// │    /api/v1/leads reachable from a browser. The host is env-configured on │
-// │    the backend, not hardcoded — the owner / IaC knows the exact hostname │
-// │    (likely portal.traigent.ai or an api.* host). DO NOT guess it here.   │
-// │    Vite inlines VITE_* at BUILD time, so it must be set for the build    │
-// │    that produces the deployed bundle — see the `Build` step's env block  │
-// │    in .github/workflows/deploy-gh-pages.yml, not just a runtime setting. │
-// │ 3. The backend's CORS_ORIGINS must include https://traigent.ai AND       │
-// │    https://www.traigent.ai (a different origin from the portal FE) or    │
-// │    the browser fetch is blocked. This is a backend / IaC config change   │
-// │    and cannot be confirmed from anything checked into this repo.         │
-// │ 4. index.html's Content-Security-Policy is a COMMITTED <meta> tag with a │
-// │    static connect-src allowlist. The backend origin from (2) must be     │
-// │    added to that list in index.html and committed, or the browser blocks │
-// │    the fetch before it is made. There is no placeholder to swap — you    │
-// │    are editing a real, live allowlist.                                   │
-// └──────────────────────────────────────────────────────────────────────────┘
+// DEPLOY PREREQUISITES. Keep the funnel dormant until all of these are true:
+//   1. Compatible backend registration and portal registration changes are live.
+//   2. Backend lead-access/identity secrets are provisioned and
+//      ENABLE_LEAD_ACCESS_ONBOARDING is enabled.
+//   3. VITE_API_BASE_URL is the production backend origin, supplied at build
+//      time. It must contain no path, query, fragment, or credentials.
+//   4. Backend and ingress/Istio CORS allow the apex and www marketing origins.
+//   5. Both enforced CSPs admit the backend: index.html's committed meta policy
+//      AND the independently managed Cloudflare response header.
+//   6. The deploy's FUNNEL_REQUIRED assertion is enabled so configuration
+//      removal cannot silently ship a dormant funnel.
+//
+// The build guard checks the committed meta CSP and exact lead endpoint URLs.
+// It deliberately cannot certify the edge header, CORS, backend configuration,
+// secrets, or cross-repo deployment state. See .env.example for operator detail.
+
+import { LEAD_CAPTURE_PATH, LEAD_VERIFY_PATH } from "./leadApiContract.js";
 
 // Trim trailing slashes without a regex (avoids a super-linear backtracking
 // smell): VITE_API_BASE_URL is joined with absolute "/api/..." paths, so a
@@ -72,7 +67,12 @@ function stripTrailingSlashes(url) {
   return base;
 }
 
-const API_BASE = stripTrailingSlashes(import.meta.env.VITE_API_BASE_URL || "");
+// Match the build guard's normalization exactly. In particular, a process
+// environment value with incidental surrounding whitespace must not pass the
+// guard and then produce an invalid runtime URL.
+const API_BASE = stripTrailingSlashes(
+  (import.meta.env.VITE_API_BASE_URL || "").trim(),
+);
 
 /** True once VITE_API_BASE_URL is configured; until then the funnel is dormant. */
 export function isLeadFunnelEnabled() {
@@ -145,9 +145,10 @@ export async function captureLead({ email, website, elapsedSeconds }) {
   // Enforce the dormant guard at the API layer, not only at the render layer,
   // so no caller can accidentally issue a same-origin relative POST to the
   // marketing origin when VITE_API_BASE_URL is unset (defense in depth).
-  if (!isLeadFunnelEnabled()) return { ok: false, errorCode: CLIENT_ERROR_DISABLED };
+  if (!isLeadFunnelEnabled())
+    return { ok: false, errorCode: CLIENT_ERROR_DISABLED };
   try {
-    const { ok, status, data } = await post("/api/v1/leads", {
+    const { ok, status, data } = await post(LEAD_CAPTURE_PATH, {
       email,
       website,
       elapsed_seconds: elapsedSeconds,
@@ -177,9 +178,10 @@ export async function captureLead({ email, website, elapsedSeconds }) {
  * working (lead_routes.py:477); it is a timestamp, not a credential.
  */
 export async function verifyLead({ email, runId, code }) {
-  if (!isLeadFunnelEnabled()) return { ok: false, errorCode: CLIENT_ERROR_DISABLED };
+  if (!isLeadFunnelEnabled())
+    return { ok: false, errorCode: CLIENT_ERROR_DISABLED };
   try {
-    const { ok, status, data } = await post("/api/v1/leads/verify", {
+    const { ok, status, data } = await post(LEAD_VERIFY_PATH, {
       email,
       run_id: runId,
       code,
@@ -191,9 +193,12 @@ export async function verifyLead({ email, runId, code }) {
   }
 }
 
-const GENERIC_RETRY = "Something went wrong on our side. Please try again in a minute.";
-const GENERIC_UNREACHABLE = "We couldn't reach the lead service. Please try again in a few minutes.";
-const NOT_AVAILABLE = "Self-serve signup isn't switched on yet. Book a demo and we'll set you up.";
+const GENERIC_RETRY =
+  "Something went wrong on our side. Please try again in a minute.";
+const GENERIC_UNREACHABLE =
+  "We couldn't reach the lead service. Please try again in a few minutes.";
+const NOT_AVAILABLE =
+  "Self-serve signup isn't switched on yet. Book a demo and we'll set you up.";
 
 /**
  * Friendly copy for a token returned by captureLead / verifyLead.

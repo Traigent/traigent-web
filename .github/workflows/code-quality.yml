@@ -14,25 +14,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v6
+      - uses: actions/checkout@v6
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v6
-      with:
-        node-version: '20'
-        cache: 'npm'
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+          cache: "npm"
 
-    - name: Install dependencies
-      run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-    - name: Run ESLint
-      run: npm run lint --if-present || echo "No lint script configured"
+      - name: Run ESLint
+        run: npm run lint --if-present || echo "No lint script configured"
 
-    - name: Check formatting with Prettier
-      run: npx prettier --check "src/**/*.{js,jsx,ts,tsx,css}" || echo "Formatting check completed"
+      - name: Check formatting with Prettier
+        run: npx prettier --check "src/**/*.{js,jsx,ts,tsx,css}" || echo "Formatting check completed"
 
-    - name: Build check
-      run: npm run build
+      - name: Check CSP guard formatting
+        run: npx prettier --check "scripts/check_csp_connect_src*.mjs"
 
-    - name: Summary
-      run: echo "✅ Code quality checks completed"
+      - name: Build check
+        env:
+          # Exercise the non-dormant guard path in PR CI. This value is used only
+          # in the throwaway CI bundle and is already admitted by the meta CSP.
+          FUNNEL_REQUIRED: "1"
+          VITE_API_BASE_URL: https://otp.traigent.ai
+        run: npm run build
+
+      - name: Summary
+        run: echo "✅ Code quality checks completed"

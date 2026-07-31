@@ -64,8 +64,13 @@ jobs:
           # the variable says. Setting it also requires the backend host to be
           # present in index.html's committed CSP connect-src allowlist and the
           # backend to run with ENABLE_LEAD_ACCESS_ONBOARDING=true; see
-          # .env.example for the full four-item prerequisite list.
+          # .env.example for the complete activation prerequisite list.
           VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
+          # Build-only assertion, not exposed to the browser. Leave unset while
+          # the funnel is deliberately dormant; set the Actions Variable to "1"
+          # when production activation is approved so clearing the API URL fails
+          # the deployment instead of silently restoring the dormant experience.
+          FUNNEL_REQUIRED: ${{ vars.FUNNEL_REQUIRED }}
         run: npm run build
 
       - name: Deploy

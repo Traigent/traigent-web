@@ -1,176 +1,440 @@
 #!/usr/bin/env node
 /**
- * Build-time guard: the funnel's API origin must be allowed by the page's CSP.
+ * Build-time guard for the lead funnel's committed CSP meta policy.
  *
- * WHY THIS EXISTS. Turning the lead funnel on looks like one switch --
- * `VITE_API_BASE_URL` -- but it is two. `index.html` ships a
- * `Content-Security-Policy` meta tag whose `connect-src` is a STATIC allowlist.
- * Point `VITE_API_BASE_URL` at a host that is not on it and every symptom lies:
- * the page renders, the funnel looks live, the button responds, and the fetch is
- * killed by the browser before it leaves. `leadApi` cannot tell a CSP block from
- * a dead network, so the visitor gets a generic "network error" and the operator
- * gets nothing. Nothing else in the build, the tests or the deploy workflow
- * catches it. The failure mode is a fully deployed, plausible-looking,
- * non-functional funnel; this turns it into a build error naming both values.
- *
- * Deliberately NOT doing the "helpful" thing of rewriting the CSP to include the
- * host: widening a security header as a silent side effect of setting an
- * unrelated env var is exactly the kind of thing a reviewer should have to see.
- *
- * READ THE SAME INPUT THE BUNDLER READS. An earlier version read
- * `process.env.VITE_API_BASE_URL`, which Vite does NOT use as its only source:
- * it resolves `.env`, `.env.local`, `.env.[mode]` and `.env.[mode].local` from
- * the project root as well. `.env.example` in this repo instructs developers to
- * "copy this file to .env.local", so the documented developer path produced a
- * guard that printed "funnel dormant, skipping" and exited 0 while Vite inlined
- * a real URL into the bundle -- the exact false green this script exists to
- * prevent, in the script itself. `.gitignore` lists a bare `.env`, so a
- * committed `.env.production` is not ignored and would carry that false green
- * into the deploy. `loadEnv` is the bundler's own resolution, so the two cannot
- * diverge again.
+ * This module deliberately checks one boundary only: both browser fetches that
+ * `src/lib/leadApi.js` builds must be admitted by every Content-Security-Policy
+ * meta tag committed in `index.html`. Production also sends an independently
+ * enforced CSP response header from Cloudflare. CORS, backend feature flags,
+ * secret bindings, and that edge header remain deployment/IaC gates and must be
+ * verified separately before the funnel is activated.
  */
-import { readFileSync, existsSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { loadEnv } from "vite";
 
-const here = dirname(fileURLToPath(import.meta.url));
-const root = resolve(here, "..");
-const indexHtml = resolve(root, "index.html");
+import { LEAD_API_PATHS } from "../src/lib/leadApiContract.js";
 
-const mode = process.env.NODE_ENV || "production";
-const base = (loadEnv(mode, root, "VITE_").VITE_API_BASE_URL || "").trim();
+export const BUILD_MODE = "production";
+
+const TRUE_VALUE = /^(1|true|yes)$/i;
+const FALSE_VALUE = /^(|0|false|no)$/i;
+const HEAD_ELEMENT = /<head\b[^>]*>([\s\S]*?)<\/head>/i;
+const META_TAG = /<meta\b[^>]*>/gi;
+const META_ATTRIBUTE =
+  /([^\s=/>]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?/g;
+const SCHEME_ONLY_SOURCE = /^([a-z][a-z0-9+.-]*):$/i;
+const EXPLICIT_SOURCE_SCHEME = /^[a-z][a-z0-9+.-]*:\/\//i;
+const WILDCARD_HOST_PLACEHOLDER = "csp-wildcard-placeholder";
+const WILDCARD_PORT_PLACEHOLDER = "65535";
+
+const modulePath = fileURLToPath(import.meta.url);
+const moduleRoot = resolve(dirname(modulePath), "..");
+
+export class CspGuardError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "CspGuardError";
+  }
+}
+
+/** Parse the origin-only HTTP(S) base required by leadApi's URL construction. */
+export function parseApiBase(rawBase) {
+  const base = String(rawBase ?? "").trim();
+  let url;
+
+  try {
+    url = new URL(base);
+  } catch {
+    throw new CspGuardError(
+      `VITE_API_BASE_URL must be a valid absolute HTTP(S) origin: ${base || "(empty)"}`,
+    );
+  }
+
+  if (url.protocol !== "http:" && url.protocol !== "https:") {
+    throw new CspGuardError(
+      `VITE_API_BASE_URL must use http: or https:, not ${url.protocol}`,
+    );
+  }
+  if (url.username || url.password) {
+    throw new CspGuardError(
+      "VITE_API_BASE_URL must not contain user information.",
+    );
+  }
+  if (url.pathname !== "/") {
+    throw new CspGuardError(
+      "VITE_API_BASE_URL must be an origin only; paths are not supported.",
+    );
+  }
+  if (url.search) {
+    throw new CspGuardError(
+      "VITE_API_BASE_URL must be an origin only; query strings are not supported.",
+    );
+  }
+  if (url.hash) {
+    throw new CspGuardError(
+      "VITE_API_BASE_URL must be an origin only; fragments are not supported.",
+    );
+  }
+
+  return new URL(url.origin);
+}
+
+/** Build the exact URLs used by captureLead and verifyLead. */
+export function leadApiEndpoints(apiBase) {
+  return LEAD_API_PATHS.map((path) => new URL(path, apiBase));
+}
 
 /**
- * The page's own origin, for resolving `'self'`.
- *
- * A GitHub Pages custom domain is declared in `public/CNAME`, so this is known
- * at build time. Resolving it matters: a same-origin API is legitimately covered
- * by `'self'` and must not be reported as blocked. Treating `'self'` as
- * "unknown, therefore no match" is a false RED, which teaches people to bypass
- * the guard -- the more corrosive of the two failure directions, because nobody
- * files it as a bug.
+ * Resolve build settings with Vite's production-mode file precedence and then
+ * overlay the process environment, matching Vite's documented priority.
  */
-const cnamePath = resolve(root, "public", "CNAME");
-const selfOrigin = existsSync(cnamePath)
-  ? `https://${readFileSync(cnamePath, "utf8").trim()}`
-  : null;
-
-// Dormant is a supported, deliberate state: `leadApi` makes no cross-origin call
-// at all without a base URL. But "dormant" and "someone cleared the Actions
-// variable" are indistinguishable from here, and both ship a funnel that never
-// captures a lead -- so allow a build to DECLARE that it expects a live funnel
-// and fail when it is not.
-const funnelRequired = /^(1|true|yes)$/i.test((process.env.FUNNEL_REQUIRED || "").trim());
-
-if (!base) {
-  if (funnelRequired) {
-    console.error("");
-    console.error("[csp-check] BUILD BLOCKED — FUNNEL_REQUIRED is set but VITE_API_BASE_URL is empty.");
-    console.error("  This build declared a live funnel and would have deployed a dormant one:");
-    console.error("  the page renders and the CTA opens, but no lead is ever captured.");
-    console.error("");
-    process.exit(1);
+export function resolveBuildEnvironment({
+  root,
+  processEnv = process.env,
+  loadEnvFn = loadEnv,
+} = {}) {
+  const fileEnv = loadEnvFn(BUILD_MODE, root, "");
+  const base = String(
+    processEnv.VITE_API_BASE_URL ?? fileEnv.VITE_API_BASE_URL ?? "",
+  ).trim();
+  const requiredValue = String(
+    processEnv.FUNNEL_REQUIRED ?? fileEnv.FUNNEL_REQUIRED ?? "",
+  ).trim();
+  if (!TRUE_VALUE.test(requiredValue) && !FALSE_VALUE.test(requiredValue)) {
+    throw new CspGuardError(
+      "FUNNEL_REQUIRED must be empty/0/false/no or 1/true/yes; " +
+        `received ${JSON.stringify(requiredValue)}.`,
+    );
   }
-  console.log("[csp-check] VITE_API_BASE_URL is unset — funnel dormant, skipping.");
-  process.exit(0);
+
+  return {
+    base,
+    funnelRequired: TRUE_VALUE.test(requiredValue),
+  };
 }
 
-let apiUrl;
-try {
-  apiUrl = new URL(base);
-} catch {
-  console.error(`[csp-check] VITE_API_BASE_URL is not a valid absolute URL: ${base}`);
-  process.exit(1);
-}
-const apiOrigin = apiUrl.origin;
+function parseMetaAttributes(tag) {
+  const attributes = new Map();
 
-const html = readFileSync(indexHtml, "utf8");
-// The quote char is captured and back-referenced rather than using a character
-// class: the CSP value itself contains single quotes (`'self'`, `'none'`), so a
-// naive [^"']+ terminates at the first source expression and silently reports
-// "no connect-src directive".
-const cspMatch = html.match(
-  /http-equiv=(["'])Content-Security-Policy\1[^>]*?content=(["'])([\s\S]*?)\2/i,
-);
-if (!cspMatch) {
-  console.error(`[csp-check] No Content-Security-Policy meta tag found in ${indexHtml}.`);
-  console.error("[csp-check] If the CSP moved to a header, update or retire this check deliberately.");
-  process.exit(1);
+  for (const match of tag.matchAll(META_ATTRIBUTE)) {
+    const [, rawName, doubleQuoted, singleQuoted, unquoted] = match;
+    const value = doubleQuoted ?? singleQuoted ?? unquoted ?? "";
+    const name = rawName.toLowerCase();
+    if (attributes.has(name)) {
+      throw new CspGuardError(
+        `Content-Security-Policy meta tag repeats the ${name} attribute.`,
+      );
+    }
+    attributes.set(name, value);
+  }
+
+  return attributes;
 }
 
-const connectDirective = cspMatch[3]
-  .split(";")
-  .map((d) => d.trim())
-  .find((d) => d === "connect-src" || d.startsWith("connect-src "));
+/** Return every enforced CSP meta policy; browsers apply their intersection. */
+export function extractMetaCspPolicies(html) {
+  const head = String(html).match(HEAD_ELEMENT)?.[1];
+  if (head === undefined) {
+    throw new CspGuardError(
+      "index.html must contain a complete head element for its CSP meta policy.",
+    );
+  }
 
-if (connectDirective === undefined) {
-  console.error("[csp-check] CSP declares no connect-src; it falls back to default-src, which this");
-  console.error("[csp-check] check cannot reason about. Declare connect-src explicitly.");
-  process.exit(1);
+  const policies = [];
+
+  for (const tag of head.match(META_TAG) ?? []) {
+    const attributes = parseMetaAttributes(tag);
+    if (
+      attributes.get("http-equiv")?.toLowerCase() === "content-security-policy"
+    ) {
+      const content = attributes.get("content");
+      if (!content?.trim()) {
+        throw new CspGuardError(
+          "Content-Security-Policy meta tag has no non-empty content attribute.",
+        );
+      }
+      policies.push(content);
+    }
+  }
+
+  if (policies.length === 0) {
+    throw new CspGuardError(
+      "No Content-Security-Policy meta tag was found in index.html.",
+    );
+  }
+
+  return policies;
 }
 
-const connectSrc = connectDirective.split(/\s+/).slice(1);
-if (connectSrc.length === 0) {
-  // An EMPTY connect-src blocks every connection outright — it does not fall
-  // back to default-src. Fail closed, and say the right thing about why.
-  console.error("[csp-check] connect-src is present but empty, which blocks every connection.");
-  process.exit(1);
+/** Parse one policy's explicit connect-src source list. */
+export function connectSources(policy) {
+  let sources;
+
+  for (const rawDirective of policy.split(";")) {
+    const directive = rawDirective.trim();
+    if (!directive) continue;
+
+    const [rawName, ...values] = directive.split(/\s+/);
+    if (rawName.toLowerCase() !== "connect-src") continue;
+    if (sources !== undefined) {
+      throw new CspGuardError(
+        "Content-Security-Policy meta tag declares connect-src more than once.",
+      );
+    }
+    sources = values;
+  }
+
+  if (sources === undefined) {
+    throw new CspGuardError(
+      "Content-Security-Policy meta tag must declare connect-src explicitly.",
+    );
+  }
+  if (sources.length === 0) {
+    throw new CspGuardError(
+      "Content-Security-Policy meta connect-src is empty and blocks every connection.",
+    );
+  }
+  if (
+    sources.some((source) => source.toLowerCase() === "'none'") &&
+    sources.length !== 1
+  ) {
+    throw new CspGuardError(
+      "Content-Security-Policy meta connect-src mixes 'none' with other sources.",
+    );
+  }
+
+  return sources;
 }
 
-/** Does one connect-src source expression admit this origin? */
-function admits(source, url) {
+function effectivePort(url) {
+  if (url.port) return url.port;
+  if (url.protocol === "https:" || url.protocol === "wss:") return "443";
+  if (url.protocol === "http:" || url.protocol === "ws:") return "80";
+  return "";
+}
+
+function schemePartMatches(sourceProtocol, targetProtocol) {
+  const source = sourceProtocol.replace(/:$/, "").toLowerCase();
+  const target = targetProtocol.replace(/:$/, "").toLowerCase();
+  return (
+    source === target ||
+    (source === "http" && target === "https") ||
+    (source === "ws" && ["wss", "http", "https"].includes(target)) ||
+    (source === "wss" && target === "https")
+  );
+}
+
+function portPartMatches(source, target, hasWildcardPort) {
+  if (hasWildcardPort) return true;
+
+  const sourcePort = effectivePort(source);
+  const targetPort = effectivePort(target);
+  if (sourcePort === targetPort) return true;
+
+  // CSP3 treats an insecure default-port source as matching the corresponding
+  // secure default-port upgrade (http/ws :80 -> https/wss :443).
+  return (
+    sourcePort === "80" &&
+    targetPort === "443" &&
+    schemePartMatches(source.protocol, target.protocol)
+  );
+}
+
+function hostSourceParts(source, selfOrigin) {
+  if (source.includes("@") || source.includes("?") || source.includes("#")) {
+    return null;
+  }
+
+  const hasScheme = EXPLICIT_SOURCE_SCHEME.test(source);
+  if (!hasScheme && !selfOrigin) return null;
+
+  const authorityAndPath = hasScheme
+    ? source.slice(source.indexOf("://") + 3)
+    : source;
+  const slashIndex = authorityAndPath.indexOf("/");
+  const authority =
+    slashIndex === -1
+      ? authorityAndPath
+      : authorityAndPath.slice(0, slashIndex);
+  const sourcePath =
+    slashIndex === -1 ? null : authorityAndPath.slice(slashIndex);
+  const hasWildcardHost = authority.startsWith("*.");
+  const hasWildcardPort = /:\*$/.test(authority);
+
+  if (authority.includes("*") && !hasWildcardHost && !hasWildcardPort) {
+    return null;
+  }
+
+  const schemePrefix = hasScheme ? "" : `${new URL(selfOrigin).protocol}//`;
+  const parseableSource = `${schemePrefix}${source}`
+    .replace("*.", `${WILDCARD_HOST_PLACEHOLDER}.`)
+    .replace(/:\*(?=\/|$)/, `:${WILDCARD_PORT_PLACEHOLDER}`);
+
+  let parsed;
+  try {
+    parsed = new URL(parseableSource);
+  } catch {
+    return null;
+  }
+
+  return {
+    parsed,
+    hasScheme,
+    hasWildcardHost,
+    hasWildcardPort,
+    sourcePath,
+  };
+}
+
+/** Return whether one CSP source expression admits one concrete endpoint URL. */
+export function sourceAllowsUrl(source, target, selfOrigin = null) {
   if (source === "*") return true;
 
   if (source.startsWith("'")) {
-    // Only `'self'` names an origin; `'none'`, `'unsafe-inline'` etc. never
-    // admit a fetch target.
-    return source === "'self'" && selfOrigin !== null && url.origin === selfOrigin;
+    if (source.toLowerCase() !== "'self'" || selfOrigin === null) return false;
+    const ownOrigin = new URL(selfOrigin);
+    const portsMatch =
+      effectivePort(ownOrigin) === effectivePort(target) ||
+      (!ownOrigin.port && !target.port);
+    return (
+      ownOrigin.hostname === target.hostname &&
+      schemePartMatches(ownOrigin.protocol, target.protocol) &&
+      portsMatch
+    );
   }
 
-  // A scheme-only source such as `https:` admits every origin on that scheme.
-  const schemeOnly = source.match(/^([a-z][a-z0-9+.-]*):$/i);
-  if (schemeOnly) return url.protocol === `${schemeOnly[1].toLowerCase()}:`;
+  const schemeOnly = source.match(SCHEME_ONLY_SOURCE);
+  if (schemeOnly) {
+    return schemePartMatches(schemeOnly[1], target.protocol);
+  }
 
-  const hasScheme = source.includes("://");
-  const withScheme = hasScheme ? source : `https://${source}`;
-  let parsed;
-  try {
-    parsed = new URL(withScheme.replace("*.", "wildcard-placeholder."));
-  } catch {
+  const parts = hostSourceParts(source, selfOrigin);
+  if (parts === null) return false;
+
+  const { parsed, hasWildcardHost, hasWildcardPort, sourcePath } = parts;
+
+  if (!schemePartMatches(parsed.protocol, target.protocol)) return false;
+
+  if (hasWildcardHost) {
+    const suffix = parsed.hostname.replace(`${WILDCARD_HOST_PLACEHOLDER}.`, "");
+    if (!target.hostname.endsWith(`.${suffix}`)) return false;
+  } else if (parsed.hostname !== target.hostname) {
     return false;
   }
 
-  // Scheme must match when the source states one. Without this, `wss://*.x.com`
-  // green-lights an `https://api.x.com` base URL that the browser will block —
-  // and this CSP really does carry wss-only entries.
-  if (hasScheme && parsed.protocol !== url.protocol) return false;
+  if (!portPartMatches(parsed, target, hasWildcardPort)) return false;
 
-  if (source.includes("*.")) {
-    const suffix = parsed.host.replace("wildcard-placeholder.", "");
-    // `*.example.com` matches `a.example.com`, and NOT bare `example.com`.
-    return url.host.endsWith(`.${suffix}`);
+  if (sourcePath !== null) {
+    if (sourcePath.endsWith("/")) {
+      return target.pathname.startsWith(sourcePath);
+    }
+    return target.pathname === sourcePath;
   }
-  return url.host === parsed.host;
+
+  return true;
 }
 
-if (connectSrc.some((source) => admits(source, apiUrl))) {
-  console.log(`[csp-check] OK — ${apiOrigin} is allowed by connect-src.`);
-  process.exit(0);
+/**
+ * Verify that every exact lead endpoint is admitted by every committed meta
+ * policy. Multiple policies are intersected by browsers, so one denial fails.
+ */
+export function validateMetaCsp({ html, apiBase, selfOrigin = null }) {
+  const endpoints = leadApiEndpoints(apiBase);
+  const policies = extractMetaCspPolicies(html);
+
+  policies.forEach((policy, policyIndex) => {
+    const sources = connectSources(policy);
+    endpoints.forEach((endpoint) => {
+      if (
+        !sources.some((source) => sourceAllowsUrl(source, endpoint, selfOrigin))
+      ) {
+        throw new CspGuardError(
+          `meta CSP policy ${policyIndex + 1} blocks ${endpoint.href}; ` +
+            `connect-src allows: ${sources.join(" ")}`,
+        );
+      }
+    });
+  });
+
+  return { endpoints, policyCount: policies.length };
 }
 
-console.error("");
-console.error("[csp-check] BUILD BLOCKED — the funnel would deploy dead.");
-console.error("");
-console.error(`  VITE_API_BASE_URL origin : ${apiOrigin}`);
-console.error(`  page origin ('self')     : ${selfOrigin ?? "unknown (no public/CNAME)"}`);
-console.error(`  connect-src allows       : ${connectSrc.join(" ")}`);
-console.error("");
-console.error("  Every lead-funnel fetch would be blocked by the browser before it left the");
-console.error("  page, and would surface to the visitor as a generic network error.");
-console.error("");
-console.error("  Fix ONE of these, deliberately:");
-console.error("    - point VITE_API_BASE_URL at a host already on connect-src, or");
-console.error(`    - add ${apiOrigin} to connect-src in index.html (a reviewed CSP change).`);
-console.error("");
-process.exit(1);
+function readSelfOrigin(root) {
+  const cnamePath = resolve(root, "public", "CNAME");
+  if (!existsSync(cnamePath)) return null;
+
+  const hostname = readFileSync(cnamePath, "utf8").trim();
+  return hostname ? new URL(`https://${hostname}`).origin : null;
+}
+
+function activationBoundaryLines() {
+  return [
+    "[csp-check] Scope: committed index.html CSP meta policy only.",
+    "[csp-check] Activation also requires the Cloudflare CSP response header,",
+    "[csp-check] backend/Istio CORS, feature flag + secret bindings, and the",
+    "[csp-check] compatible backend/portal deploy as separate deployment/IaC gates.",
+  ];
+}
+
+/** Execute the CLI behavior without terminating the importing process. */
+export function runGuard({
+  root = moduleRoot,
+  processEnv = process.env,
+  loadEnvFn = loadEnv,
+  log = console.log,
+  error = console.error,
+} = {}) {
+  try {
+    const { base, funnelRequired } = resolveBuildEnvironment({
+      root,
+      processEnv,
+      loadEnvFn,
+    });
+
+    if (!base) {
+      if (funnelRequired) {
+        throw new CspGuardError(
+          "FUNNEL_REQUIRED is set but VITE_API_BASE_URL is empty; " +
+            "this build would deploy the funnel dormant.",
+        );
+      }
+      log(
+        "[csp-check] VITE_API_BASE_URL is unset — funnel intentionally dormant.",
+      );
+      return 0;
+    }
+
+    const apiBase = parseApiBase(base);
+    if (funnelRequired && apiBase.protocol !== "https:") {
+      throw new CspGuardError(
+        "FUNNEL_REQUIRED builds must use an HTTPS VITE_API_BASE_URL.",
+      );
+    }
+    const html = readFileSync(resolve(root, "index.html"), "utf8");
+    const selfOrigin = readSelfOrigin(root);
+    const { endpoints, policyCount } = validateMetaCsp({
+      html,
+      apiBase,
+      selfOrigin,
+    });
+
+    log(
+      `[csp-check] OK — ${endpoints.length} lead endpoints are allowed by ` +
+        `${policyCount} committed CSP meta ${policyCount === 1 ? "policy" : "policies"}.`,
+    );
+    activationBoundaryLines().forEach((line) => log(line));
+    return 0;
+  } catch (guardError) {
+    const message =
+      guardError instanceof Error ? guardError.message : String(guardError);
+    error(`[csp-check] BUILD BLOCKED — ${message}`);
+    activationBoundaryLines().forEach((line) => error(line));
+    return 1;
+  }
+}
+
+if (process.argv[1] && resolve(process.argv[1]) === modulePath) {
+  process.exitCode = runGuard();
+}
