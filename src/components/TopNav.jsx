@@ -428,16 +428,6 @@ export default function TopNav() {
               >
                 Open portal
               </button>
-              <button
-                type="button"
-                onClick={() => {
-                  trackEvent("start_now_clicked", { location: "topnav" });
-                  setShowStartNow(true);
-                }}
-                className="border border-slate-600 hover:border-slate-400 text-slate-200 hover:text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
-              >
-                Connect your agent
-              </button>
               <a
                 href={DEMO_URL}
                 target="_blank"
@@ -656,17 +646,6 @@ export default function TopNav() {
                 className="text-center text-sm text-slate-300 hover:text-white py-2 transition-colors"
               >
                 Open portal
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  trackEvent("start_now_clicked", { location: "topnav_mobile" });
-                  setShowStartNow(true);
-                  closeMobile();
-                }}
-                className="border border-slate-600 hover:border-slate-400 text-slate-200 hover:text-white py-3 rounded-lg text-sm font-medium transition-colors"
-              >
-                Connect your agent
               </button>
               <a
                 href={DEMO_URL}

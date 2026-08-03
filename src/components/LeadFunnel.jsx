@@ -19,8 +19,8 @@ const FIRST_RUN_REPO_URL = "https://github.com/Traigent/traigent-first-run";
 // repo link - is what the visitor pastes next; the repo link is reference
 // material and is deliberately placed after it so it cannot be mistaken for
 // the next step.
-const FIRST_RUN_INIT_PROMPT = `Help me run my first Traigent optimization.
-Clone ${FIRST_RUN_REPO_URL}, open GUIDE.md, and walk me through it step by step — ask me for anything you need (like an API key) as you go.`;
+export const FIRST_RUN_INIT_PROMPT = `Help me run my first Traigent optimization.
+Clone ${FIRST_RUN_REPO_URL} and follow GUIDE.md.`;
 const DEMO_BOOKING_URL = "https://meetings-eu1.hubspot.com/amir8";
 
 /**
@@ -211,10 +211,18 @@ export default function LeadFunnel({ surface = "homepage_hero", onVerified }) {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-white mb-2">Start free — get the SDK</h2>
-      <p className="text-slate-400 mb-6">
-        Verify your work email with a 6-digit code. We&apos;ll then email you an access
-        code to finish setting up in the portal — no card, no spend.
+      <h2 className="text-2xl font-bold text-white mb-2">Connect your agent</h2>
+      <p className="text-sm font-medium text-slate-300 mb-2">
+        Copy this and paste it into your local coding agent — strongest model (e.g. Claude Opus):
+      </p>
+      <div className="mb-6">
+        <InstallCommand
+          command={FIRST_RUN_INIT_PROMPT}
+          secondary="It clones the walkthrough and runs your first optimization. No keys needed until the run connects."
+        />
+      </div>
+      <p className="text-slate-400 mb-6 text-sm">
+        Then leave your email — we&apos;ll send a 6-digit code and your access code to finish in the portal. No card, no spend.
       </p>
       <ConsentGate>
         <div className="mb-4">
@@ -272,11 +280,11 @@ function SuccessView({ email, surface, expiresAt }) {
       </p>
 
       <p className="text-sm font-medium text-slate-300 mb-2">
-        While you wait — hand this to your coding agent:
+        While you wait — copy this and paste it into your local coding agent (ideally on its strongest model):
       </p>
       <InstallCommand
         command={FIRST_RUN_INIT_PROMPT}
-        secondary="Paste it into Claude Code, Cursor, Codex — whichever you use. It clones the walkthrough and runs your first optimization. No keys needed until the run connects."
+        secondary="Paste it into your local coding agent — Claude Code, Cursor, Codex, whichever you use — ideally running the strongest model available (e.g. Claude Opus). It clones the walkthrough and runs your first optimization. No keys needed until the run connects."
       />
 
       {/* Reference only, below the prompt and visually quieter - the plan is

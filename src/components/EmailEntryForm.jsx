@@ -28,7 +28,7 @@ export default function EmailEntryForm({
     >
       {extraFields}
       <label htmlFor={`${surface}-email`} className="block text-xs text-slate-400 mb-1.5">
-        Work email — we&apos;ll send a 6-digit code to verify it&apos;s yours
+        Email — we&apos;ll send a 6-digit code to verify it&apos;s yours
       </label>
       <input
         id={`${surface}-email`}
@@ -36,8 +36,8 @@ export default function EmailEntryForm({
         autoComplete="email"
         value={email}
         onChange={(e) => onEmailChange(e.target.value)}
-        placeholder="you@company.com"
-        aria-label="Work email"
+        placeholder="you@example.com"
+        aria-label="Email"
         className="w-full bg-slate-950 border border-slate-700 focus:border-blue-500 outline-none rounded-lg px-4 py-3 text-white mb-3"
       />
       {error && <p className="text-sm text-red-400 mb-3">{error}</p>}
