@@ -50,7 +50,7 @@ export function registerModal(dialog) {
 }
 
 export function topmostModal() {
-  return modalStack[modalStack.length - 1] || null;
+  return modalStack.at(-1) || null;
 }
 
 export function isTopmostModal(dialog) {
@@ -86,7 +86,7 @@ export function trapModalTab(event, dialog, activeElement) {
   }
 
   const first = focusable[0];
-  const last = focusable[focusable.length - 1];
+  const last = focusable.at(-1);
   const focusIsInside = dialog?.contains?.(activeElement);
   const shouldWrapBackward =
     event.shiftKey &&

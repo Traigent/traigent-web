@@ -73,10 +73,9 @@ export default function CookieConsent() {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-[10000] p-4 sm:p-6 pointer-events-none">
-      <div
+      <section
         ref={bannerRef}
         tabIndex={-1}
-        role="region"
         aria-labelledby="cookie-preferences-title"
         data-modal-focus-allowed="true"
         data-modal-focus-priority="true"
@@ -117,7 +116,7 @@ export default function CookieConsent() {
             Accept All
           </button>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

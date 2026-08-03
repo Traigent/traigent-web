@@ -92,10 +92,11 @@ export default function ModalShell({
         onClick={onClose}
         aria-hidden="true"
       />
-      {/* NOSONAR a native <dialog> would change focus/Escape/backdrop semantics across both shared modals; role="dialog" keeps behavior identical and is intentional */}
-      <div
+      {/* Keep the native dialog semantic while the shared focus manager retains
+          cookie-consent priority and the existing backdrop behavior. */}
+      <dialog
         ref={dialogRef}
-        role="dialog"
+        open
         aria-modal="true"
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledby}
@@ -111,7 +112,7 @@ export default function ModalShell({
           <X className="w-5 h-5" />
         </button>
         {children}
-      </div>
+      </dialog>
     </div>
   );
 }

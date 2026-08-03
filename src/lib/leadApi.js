@@ -63,10 +63,10 @@ import {
   LEAD_CAPTURE_PATH,
   LEAD_ROUTE_NOT_FOUND,
   LEAD_VERIFY_PATH,
-  isLeadFunnelUnavailableError,
 } from "./leadApiContract.js";
 
-export { CLIENT_ERROR_DISABLED, isLeadFunnelUnavailableError };
+export { CLIENT_ERROR_DISABLED };
+export { isLeadFunnelUnavailableError } from "./leadApiContract.js";
 
 // Trim trailing slashes without a regex (avoids a super-linear backtracking
 // smell): VITE_API_BASE_URL is joined with absolute "/api/..." paths, so a

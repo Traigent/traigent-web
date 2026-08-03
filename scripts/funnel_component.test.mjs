@@ -185,7 +185,9 @@ test("all top-nav entry points use the attributed lead funnel, including dormant
         analyticsEvents.length = 0;
         await click(entry);
 
-        const dialog = document.querySelector('[role="dialog"]');
+        const dialog = document.querySelector(
+          'dialog[aria-label="Get started with Traigent"]',
+        );
         assert.ok(dialog, `${location} opens a dialog`);
         assert.match(dialog.textContent, /Self-serve setup is unavailable/);
         assert.doesNotMatch(dialog.textContent, /Book a demo/);
@@ -197,7 +199,10 @@ test("all top-nav entry points use the attributed lead funnel, including dormant
         ]);
 
         await click(dialog.querySelector('button[aria-label="Close"]'));
-        assert.equal(document.querySelector('[role="dialog"]'), null);
+        assert.equal(
+          document.querySelector('dialog[aria-label="Get started with Traigent"]'),
+          null,
+        );
       }
     },
   );
@@ -229,7 +234,9 @@ test("all top-nav entry points use the attributed lead funnel, including dormant
     },
     async ({ analyticsEvents }) => {
       await click(buttonWithText("Start Now", 0));
-      const dialog = document.querySelector('[role="dialog"]');
+      const dialog = document.querySelector(
+        'dialog[aria-label="Get started with Traigent"]',
+      );
       assert.match(dialog.textContent, /Start free — get the SDK/);
       assert.doesNotMatch(dialog.textContent, /first Traigent optimization/);
 
