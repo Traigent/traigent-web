@@ -10,24 +10,40 @@ import { createServer } from "vite";
 
 const REPOSITORY_ROOT = new URL("..", import.meta.url).pathname;
 
+// Node 21+ exposes some web globals — `navigator` in particular — as
+// getter-only accessors, so a plain `globalThis.x = …` assignment throws
+// "Cannot set property x of #<Object> which has only a getter". defineProperty
+// installs an own data property that shadows the accessor, and behaves the same
+// on versions where the global does not exist at all. This test must pass on
+// both runtimes: the pull-request gate runs Node 20 and the Pages deploy runs
+// Node 22, and only the deploy was failing.
+function installGlobal(name, value) {
+  Object.defineProperty(globalThis, name, {
+    value,
+    writable: true,
+    enumerable: true,
+    configurable: true,
+  });
+}
+
 function installDom() {
   const dom = new JSDOM('<!doctype html><div id="root"></div>', {
     url: "https://traigent.ai/",
   });
   const { window } = dom;
 
-  globalThis.window = window;
-  globalThis.document = window.document;
-  globalThis.navigator = window.navigator;
-  globalThis.localStorage = window.localStorage;
-  globalThis.sessionStorage = window.sessionStorage;
-  globalThis.HTMLElement = window.HTMLElement;
-  globalThis.Element = window.Element;
-  globalThis.Node = window.Node;
-  globalThis.Event = window.Event;
-  globalThis.CustomEvent = window.CustomEvent;
-  globalThis.MouseEvent = window.MouseEvent;
-  globalThis.getComputedStyle = window.getComputedStyle.bind(window);
+  installGlobal("window", window);
+  installGlobal("document", window.document);
+  installGlobal("navigator", window.navigator);
+  installGlobal("localStorage", window.localStorage);
+  installGlobal("sessionStorage", window.sessionStorage);
+  installGlobal("HTMLElement", window.HTMLElement);
+  installGlobal("Element", window.Element);
+  installGlobal("Node", window.Node);
+  installGlobal("Event", window.Event);
+  installGlobal("CustomEvent", window.CustomEvent);
+  installGlobal("MouseEvent", window.MouseEvent);
+  installGlobal("getComputedStyle", window.getComputedStyle.bind(window));
   globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
   window.matchMedia = () => ({
@@ -104,7 +120,7 @@ async function withTopNav({ state, fetchImpl }, callback) {
   const dom = installDom();
   const analyticsEvents = [];
   window.gtag = (...args) => analyticsEvents.push(args);
-  globalThis.fetch = fetchImpl;
+  installGlobal("fetch", fetchImpl);
   window.fetch = fetchImpl;
 
   const vite = await createServer({
@@ -135,7 +151,7 @@ async function withTopNav({ state, fetchImpl }, callback) {
     restoreEnvironmentVariable("VITE_FUNNEL_STATE", previous.state);
     restoreEnvironmentVariable("VITE_API_BASE_URL", previous.apiBase);
     restoreEnvironmentVariable("VITE_GA4_ID", previous.ga4);
-    globalThis.fetch = previous.fetch;
+    installGlobal("fetch", previous.fetch);
   }
 }
 
