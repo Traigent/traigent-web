@@ -200,7 +200,9 @@ test("all top-nav entry points use the attributed lead funnel, including dormant
 
         await click(dialog.querySelector('button[aria-label="Close"]'));
         assert.equal(
-          document.querySelector('dialog[aria-label="Get started with Traigent"]'),
+          document.querySelector(
+            'dialog[aria-label="Get started with Traigent"]',
+          ),
           null,
         );
       }
