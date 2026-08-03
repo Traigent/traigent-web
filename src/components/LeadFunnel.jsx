@@ -1,13 +1,20 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useRef, useState } from "react";
-import { ShieldCheck, Github, ArrowRight } from "lucide-react";
+import { ShieldCheck, Github } from "lucide-react";
 import ConsentGate from "./ConsentGate";
 import ConsentCheckbox from "./ConsentCheckbox";
 import InstallCommand from "./InstallCommand";
 import CodeEntryForm from "./CodeEntryForm";
 import EmailEntryForm from "./EmailEntryForm";
-import { captureLead, verifyLead, leadErrorMessage, isLeadFunnelEnabled } from "../lib/leadApi";
+import {
+  captureLead,
+  verifyLead,
+  leadErrorMessage,
+  isLeadFunnelEnabled,
+  isLeadFunnelUnavailableError,
+} from "../lib/leadApi";
 import { trackEvent } from "../lib/analytics";
+import { priorityModalFocusRegion } from "../lib/modalFocus";
 
 // Fallback only. Every capture 202 states the authoritative cooldown in
 // `resend_after_seconds` (lead_routes.py:100-106) and that value wins; this
@@ -21,7 +28,6 @@ const FIRST_RUN_REPO_URL = "https://github.com/Traigent/traigent-first-run";
 // the next step.
 export const FIRST_RUN_INIT_PROMPT = `Help me run my first Traigent optimization.
 Clone ${FIRST_RUN_REPO_URL} and follow GUIDE.md.`;
-const DEMO_BOOKING_URL = "https://meetings-eu1.hubspot.com/amir8";
 
 /**
  * Lead-funnel front door (Marketing front door unit A2). Three steps:
@@ -52,7 +58,12 @@ const DEMO_BOOKING_URL = "https://meetings-eu1.hubspot.com/amir8";
  * dropped server-side and the client never branches on them. The whole email
  * step stays behind ConsentGate / ConsentCheckbox (GDPR).
  */
-export default function LeadFunnel({ surface = "homepage_hero", onVerified }) {
+// No `onVerified` callback: the only render site (LeadFunnelModal) never passed
+// one, so the guarded call below was unreachable and the prop advertised a hook
+// that never fired. This component owns its own success step; a caller that
+// genuinely needs the verified address should have the prop added back
+// deliberately, together with the call site that supplies it.
+export default function LeadFunnel({ surface = "homepage_hero" }) {
   const [step, setStep] = useState("email"); // email | code | success
   const [email, setEmail] = useState("");
   const [consent, setConsent] = useState(false);
@@ -62,10 +73,13 @@ export default function LeadFunnel({ surface = "homepage_hero", onVerified }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [cooldown, setCooldown] = useState(0);
+  const [runtimeUnavailable, setRuntimeUnavailable] = useState(false);
   // ISO-8601 instant the emailed access code stops working, straight from the
   // verify 200 (lead_routes.py:477). A timestamp, never a credential.
   const [accessCodeExpiresAt, setAccessCodeExpiresAt] = useState("");
   const codeInputRef = useRef(null);
+  const emailInputRef = useRef(null);
+  const transitionHeadingRef = useRef(null);
   // When the funnel mounted — capture reports the seconds elapsed since, so the
   // backend can silently drop implausibly fast (bot) submissions.
   const mountedAt = useRef(Date.now());
@@ -77,8 +91,22 @@ export default function LeadFunnel({ surface = "homepage_hero", onVerified }) {
   }, [cooldown]);
 
   useEffect(() => {
+    if (priorityModalFocusRegion(document)) return;
     if (step === "code" && codeInputRef.current) codeInputRef.current.focus();
+    if (step === "email" && emailInputRef.current) {
+      emailInputRef.current.focus();
+    }
   }, [step]);
+
+  const isFunnelConfigured = isLeadFunnelEnabled();
+  const isDormant = !isFunnelConfigured || runtimeUnavailable;
+
+  useEffect(() => {
+    if (priorityModalFocusRegion(document)) return;
+    if ((isDormant || step === "success") && transitionHeadingRef.current) {
+      transitionHeadingRef.current.focus({ preventScroll: true });
+    }
+  }, [isDormant, step]);
 
   const sendCode = async () => {
     setBusy(true);
@@ -100,6 +128,9 @@ export default function LeadFunnel({ surface = "homepage_hero", onVerified }) {
       // instead of a client guess that can silently drift from the real limit.
       setCooldown(result.resendAfterSeconds || RESEND_COOLDOWN_FALLBACK_S);
       trackEvent("lead_capture_submitted", { location: surface });
+    } else if (isLeadFunnelUnavailableError(result.errorCode)) {
+      setError("");
+      setRuntimeUnavailable(true);
     } else {
       setError(leadErrorMessage(result.errorCode));
     }
@@ -109,13 +140,19 @@ export default function LeadFunnel({ surface = "homepage_hero", onVerified }) {
     setBusy(true);
     setError("");
     trackEvent("lead_verify_submitted", { location: surface });
-    const result = await verifyLead({ email: email.trim(), runId, code: code.trim() });
+    const result = await verifyLead({
+      email: email.trim(),
+      runId,
+      code: code.trim(),
+    });
     setBusy(false);
     if (result.ok) {
       trackEvent("lead_verify_succeeded", { location: surface });
       setAccessCodeExpiresAt(result.expiresAt);
       setStep("success");
-      if (onVerified) onVerified(email.trim().toLowerCase());
+    } else if (isLeadFunnelUnavailableError(result.errorCode)) {
+      setError("");
+      setRuntimeUnavailable(true);
     } else {
       // No step reset here. The backend collapses wrong / expired / exhausted
       // into ONE indistinguishable 400 (LEAD_CODE_INVALID, lead_routes.py:418-427)
@@ -127,12 +164,20 @@ export default function LeadFunnel({ surface = "homepage_hero", onVerified }) {
     }
   };
 
-  if (step === "success") {
-    return <SuccessView email={email.trim()} surface={surface} expiresAt={accessCodeExpiresAt} />;
-  }
-
-  if (step === "code") {
-    return (
+  let body;
+  if (isDormant) {
+    body = <DormantView headingRef={transitionHeadingRef} />;
+  } else if (step === "success") {
+    body = (
+      <SuccessView
+        email={email.trim()}
+        surface={surface}
+        expiresAt={accessCodeExpiresAt}
+        headingRef={transitionHeadingRef}
+      />
+    );
+  } else if (step === "code") {
+    body = (
       <CodeEntryForm
         email={email}
         code={code}
@@ -154,31 +199,8 @@ export default function LeadFunnel({ surface = "homepage_hero", onVerified }) {
         submitBusyLabel="Verifying…"
       />
     );
-  }
-
-  // step === "email" — pick the body without a nested ternary
-  let emailStepBody;
-  if (!isLeadFunnelEnabled()) {
-    emailStepBody = (
-      <div className="rounded-xl border border-slate-700/60 bg-slate-950/40 p-6 text-center">
-        <p className="mb-4 text-sm leading-relaxed text-slate-300">
-          Self-serve signup is not switched on for this site yet. In the
-          meantime, book a quick demo and we&apos;ll get you set up.
-        </p>
-        <a
-          href={DEMO_BOOKING_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => trackEvent("demo_booking_clicked", { location: `${surface}_lead_dormant` })}
-          className="inline-flex items-center rounded-lg bg-[#1A6BF5] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#4D8EF8]"
-        >
-          Book a demo
-          <ArrowRight className="ml-2 h-4 w-4" />
-        </a>
-      </div>
-    );
-  } else if (consent) {
-    emailStepBody = (
+  } else {
+    const emailStepBody = consent ? (
       <EmailEntryForm
         surface={surface}
         email={email}
@@ -186,11 +208,21 @@ export default function LeadFunnel({ surface = "homepage_hero", onVerified }) {
         onSubmit={sendCode}
         busy={busy}
         error={error}
+        emailInputRef={emailInputRef}
         extraFields={
           /* Honeypot — visually hidden and out of the tab order so a real user
              never sees or fills it. Bots that autofill it are silently dropped
              by the backend (the 202 stays byte-identical). */
-          <div aria-hidden="true" style={{ position: "absolute", left: "-9999px", width: "1px", height: "1px", overflow: "hidden" }}>
+          <div
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              left: "-9999px",
+              width: "1px",
+              height: "1px",
+              overflow: "hidden",
+            }}
+          >
             <label htmlFor={`${surface}-website`}>Leave this field empty</label>
             <input
               id={`${surface}-website`}
@@ -204,32 +236,49 @@ export default function LeadFunnel({ surface = "homepage_hero", onVerified }) {
           </div>
         }
       />
+    ) : (
+      <p className="text-xs text-slate-500">Tick the box above to continue.</p>
     );
-  } else {
-    emailStepBody = <p className="text-xs text-slate-500">Tick the box above to continue.</p>;
+
+    body = (
+      <div>
+        <h2 className="text-2xl font-bold text-white mb-2">
+          Start free — get the SDK
+        </h2>
+        <p className="text-slate-400 mb-6">
+          Verify your work email with a 6-digit code. We&apos;ll then email you
+          an access code to finish setting up in the portal — no card, no spend.
+        </p>
+        <ConsentGate>
+          <div className="mb-4">
+            <ConsentCheckbox
+              id={`${surface}-consent`}
+              checked={consent}
+              onChange={setConsent}
+            />
+          </div>
+          {emailStepBody}
+        </ConsentGate>
+      </div>
+    );
   }
 
+  return body;
+}
+
+function DormantView({ headingRef }) {
   return (
     <div>
-      <h2 className="text-2xl font-bold text-white mb-2">Connect your agent</h2>
-      <p className="text-sm font-medium text-slate-300 mb-2">
-        Copy this and paste it into your local coding agent — strongest model (e.g. Claude Opus):
+      <h2
+        ref={headingRef}
+        tabIndex={-1}
+        className="text-2xl font-bold text-white mb-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-400"
+      >
+        Self-serve setup is unavailable
+      </h2>
+      <p className="leading-relaxed text-slate-300">
+        Please close this window and try again later.
       </p>
-      <div className="mb-6">
-        <InstallCommand
-          command={FIRST_RUN_INIT_PROMPT}
-          secondary="It clones the walkthrough and runs your first optimization. No keys needed until the run connects."
-        />
-      </div>
-      <p className="text-slate-400 mb-6 text-sm">
-        Then leave your email — we&apos;ll send a 6-digit code and your access code to finish in the portal. No card, no spend.
-      </p>
-      <ConsentGate>
-        <div className="mb-4">
-          <ConsentCheckbox id={`${surface}-consent`} checked={consent} onChange={setConsent} />
-        </div>
-        {emailStepBody}
-      </ConsentGate>
     </div>
   );
 }
@@ -260,10 +309,14 @@ function formatCodeValidity(expiresAt) {
  * agent-setup prompt (the same canonical /agent-setup/prompt.md the homepage
  * hero copies).
  */
-function SuccessView({ email, surface, expiresAt }) {
+function SuccessView({ email, surface, expiresAt, headingRef }) {
   return (
     <div>
-      <h2 className="text-2xl font-bold text-white mb-2 flex items-center gap-2">
+      <h2
+        ref={headingRef}
+        tabIndex={-1}
+        className="text-2xl font-bold text-white mb-2 flex items-center gap-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-400"
+      >
         <ShieldCheck className="w-6 h-6 text-emerald-400 shrink-0" />
         Email verified
       </h2>

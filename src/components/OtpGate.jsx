@@ -7,6 +7,7 @@ import EmailEntryForm from "./EmailEntryForm";
 import { requestCode, verifyCode, otpErrorMessage } from "../lib/otpAccess";
 import { getUnlockedEmail } from "../lib/startNowGate";
 import { trackEvent } from "../lib/analytics";
+import { priorityModalFocusRegion } from "../lib/modalFocus";
 
 const RESEND_COOLDOWN_S = 30;
 
@@ -29,6 +30,7 @@ export default function OtpGate({ surface = "start_now", onVerified }) {
   const [error, setError] = useState("");
   const [cooldown, setCooldown] = useState(0);
   const codeInputRef = useRef(null);
+  const emailInputRef = useRef(null);
 
   useEffect(() => {
     if (cooldown <= 0) return undefined;
@@ -37,7 +39,11 @@ export default function OtpGate({ surface = "start_now", onVerified }) {
   }, [cooldown]);
 
   useEffect(() => {
+    if (priorityModalFocusRegion(document)) return;
     if (step === "code" && codeInputRef.current) codeInputRef.current.focus();
+    if (step === "email" && emailInputRef.current) {
+      emailInputRef.current.focus();
+    }
   }, [step]);
 
   const sendCode = async () => {
@@ -109,6 +115,7 @@ export default function OtpGate({ surface = "start_now", onVerified }) {
           onSubmit={sendCode}
           busy={busy}
           error={error}
+          emailInputRef={emailInputRef}
         />
       ) : (
         <p className="text-xs text-slate-500">Tick the box above to continue.</p>
