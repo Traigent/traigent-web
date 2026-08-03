@@ -38,7 +38,7 @@ jobs:
         env:
           # Exercise the non-dormant guard path in PR CI. This value is used only
           # in the throwaway CI bundle and is already admitted by the meta CSP.
-          FUNNEL_REQUIRED: "1"
+          VITE_FUNNEL_STATE: active
           VITE_API_BASE_URL: https://otp.traigent.ai
         run: npm run build
 

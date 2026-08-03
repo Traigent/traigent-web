@@ -20,8 +20,7 @@ import { LEAD_API_PATHS } from "../src/lib/leadApiContract.js";
 
 export const BUILD_MODE = "production";
 
-const TRUE_VALUES = new Set(["1", "true", "yes"]);
-const FALSE_VALUES = new Set(["", "0", "false", "no"]);
+const FUNNEL_STATES = new Set(["active", "dormant"]);
 const SCHEME_ONLY_SOURCE = /^([a-z][a-z0-9+.-]*):$/i;
 const EXPLICIT_SOURCE_SCHEME = /^[a-z][a-z0-9+.-]*:\/\//i;
 const CSP_HOST_LABEL = "[a-z0-9-]+";
@@ -149,20 +148,20 @@ export function resolveBuildEnvironment({
   const base = String(
     processEnv.VITE_API_BASE_URL ?? fileEnv.VITE_API_BASE_URL ?? "",
   ).trim();
-  const rawRequiredValue = String(
-    processEnv.FUNNEL_REQUIRED ?? fileEnv.FUNNEL_REQUIRED ?? "",
+  const rawFunnelState = String(
+    processEnv.VITE_FUNNEL_STATE ?? fileEnv.VITE_FUNNEL_STATE ?? "",
   ).trim();
-  const requiredValue = rawRequiredValue.toLowerCase();
-  if (!TRUE_VALUES.has(requiredValue) && !FALSE_VALUES.has(requiredValue)) {
+  const funnelState = rawFunnelState.toLowerCase();
+  if (!FUNNEL_STATES.has(funnelState)) {
     throw new CspGuardError(
-      "FUNNEL_REQUIRED must be empty/0/false/no or 1/true/yes; " +
-        `received ${JSON.stringify(rawRequiredValue)}.`,
+      "VITE_FUNNEL_STATE must be exactly active or dormant; " +
+        `received ${JSON.stringify(rawFunnelState)}.`,
     );
   }
 
   return {
     base,
-    funnelRequired: TRUE_VALUES.has(requiredValue),
+    funnelState,
   };
 }
 
@@ -633,29 +632,31 @@ export function runGuard({
   error = console.error,
 } = {}) {
   try {
-    const { base, funnelRequired } = resolveBuildEnvironment({
+    const { base, funnelState } = resolveBuildEnvironment({
       root,
       processEnv,
       loadEnvFn,
     });
 
-    if (!base) {
-      if (funnelRequired) {
-        throw new CspGuardError(
-          "FUNNEL_REQUIRED is set but VITE_API_BASE_URL is empty; " +
-            "this build would deploy the funnel dormant.",
-        );
-      }
+    if (funnelState === "dormant") {
       log(
-        "[csp-check] VITE_API_BASE_URL is unset — funnel intentionally dormant.",
+        "[csp-check] VITE_FUNNEL_STATE=dormant — funnel intentionally dormant; " +
+          "any configured API URL is ignored by the browser client.",
       );
       return 0;
     }
 
-    const apiBase = parseApiBase(base);
-    if (funnelRequired && apiBase.protocol !== "https:") {
+    if (!base) {
       throw new CspGuardError(
-        "FUNNEL_REQUIRED builds must use an HTTPS VITE_API_BASE_URL.",
+        "VITE_FUNNEL_STATE is active but VITE_API_BASE_URL is empty; " +
+          "this build would deploy the funnel dormant.",
+      );
+    }
+
+    const apiBase = parseApiBase(base);
+    if (apiBase.protocol !== "https:") {
+      throw new CspGuardError(
+        "VITE_FUNNEL_STATE=active builds must use an HTTPS VITE_API_BASE_URL.",
       );
     }
     // `root` exists only to model Vite's environment-file precedence in tests.

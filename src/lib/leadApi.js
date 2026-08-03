@@ -37,8 +37,9 @@
 //   { success: false, error, rate_limit: {...} }  — no ``message``, no
 // ``error_code`` — so that one is normalized from the HTTP status instead.
 //
-// Base URL comes from VITE_API_BASE_URL. Empty = funnel dormant (no relative
-// POSTs to the marketing origin — the UI shows a "not available yet" message).
+// The committed VITE_FUNNEL_STATE controls activation; VITE_API_BASE_URL only
+// supplies the environment-specific backend origin. Dormant state performs no
+// relative POSTs to the marketing origin even if an API URL remains configured.
 //
 // DEPLOY PREREQUISITES. Keep the funnel dormant until all of these are true:
 //   1. Compatible backend registration and portal registration changes are live.
@@ -49,7 +50,7 @@
 //   4. Backend and ingress/Istio CORS allow the apex and www marketing origins.
 //   5. Both enforced CSPs admit the backend: index.html's committed meta policy
 //      AND the independently managed Cloudflare response header.
-//   6. The deploy's FUNNEL_REQUIRED assertion is enabled so configuration
+//   6. Committed .env.production has VITE_FUNNEL_STATE=active so configuration
 //      removal cannot silently ship a dormant funnel.
 //
 // The build guard checks the committed meta CSP and exact lead endpoint URLs.
@@ -58,6 +59,7 @@
 
 import {
   CLIENT_ERROR_DISABLED,
+  isLeadFunnelConfigurationEnabled,
   LEAD_CAPTURE_PATH,
   LEAD_ROUTE_NOT_FOUND,
   LEAD_VERIFY_PATH,
@@ -81,10 +83,13 @@ function stripTrailingSlashes(url) {
 const API_BASE = stripTrailingSlashes(
   (import.meta.env.VITE_API_BASE_URL || "").trim(),
 );
+const FUNNEL_STATE = (import.meta.env.VITE_FUNNEL_STATE || "")
+  .trim()
+  .toLowerCase();
 
-/** True once VITE_API_BASE_URL is configured; until then the funnel is dormant. */
+/** True only when the reviewed state is active and the backend origin exists. */
 export function isLeadFunnelEnabled() {
-  return Boolean(API_BASE);
+  return isLeadFunnelConfigurationEnabled(FUNNEL_STATE, API_BASE);
 }
 
 // Client-side outcomes that never came from the backend. Namespaced apart from

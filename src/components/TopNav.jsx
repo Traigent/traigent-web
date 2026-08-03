@@ -230,8 +230,13 @@ function MobileSectionLabel({ children }) {
 
 export default function TopNav() {
   const [openMenu, setOpenMenu] = useState(null);
-  const [showStartNow, setShowStartNow] = useState(false);
+  const [leadFunnelLocation, setLeadFunnelLocation] = useState(null);
   const [showPortalGate, setShowPortalGate] = useState(false);
+
+  const openLeadFunnel = (location) => {
+    trackEvent("lead_funnel_opened", { location });
+    setLeadFunnelLocation(location);
+  };
 
   // Click handler for the "Open portal" CTA. Three paths:
   //   1. Locally unlocked → open portal immediately + silent re-notify
@@ -406,14 +411,12 @@ export default function TopNav() {
 
             {/* Desktop CTAs */}
             <div className="hidden xl:flex items-center gap-3 sm:gap-4">
-              {/* Code access is email-gated: the GitHub icon opens the Start
-                  Now modal (unlocked visitors see the repo + install command
-                  immediately; unknown visitors leave an email first). */}
+              {/* Every self-serve entry point opens the same verified-email
+                  funnel; location remains distinct for attribution. */}
               <button
                 type="button"
                 onClick={() => {
-                  trackEvent("github_gate_opened", { location: "topnav" });
-                  setShowStartNow(true);
+                  openLeadFunnel("topnav_github");
                 }}
                 className="text-slate-400 hover:text-white transition-colors"
                 title="Get the SDK (GitHub)"
@@ -427,6 +430,15 @@ export default function TopNav() {
                 className="text-sm text-slate-300 hover:text-white transition-colors whitespace-nowrap"
               >
                 Open portal
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  openLeadFunnel("topnav");
+                }}
+                className="border border-slate-600 hover:border-slate-400 text-slate-200 hover:text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
+              >
+                Start Now
               </button>
               <a
                 href={DEMO_URL}
@@ -647,6 +659,16 @@ export default function TopNav() {
               >
                 Open portal
               </button>
+              <button
+                type="button"
+                onClick={() => {
+                  openLeadFunnel("topnav_mobile");
+                  closeMobile();
+                }}
+                className="border border-slate-600 hover:border-slate-400 text-slate-200 hover:text-white py-3 rounded-lg text-sm font-medium transition-colors"
+              >
+                Start Now
+              </button>
               <a
                 href={DEMO_URL}
                 target="_blank"
@@ -658,7 +680,7 @@ export default function TopNav() {
               </a>
               <button
                 type="button"
-                onClick={() => { trackEvent("github_gate_opened", { location: "topnav_mobile" }); closeMobile(); setShowStartNow(true); }}
+                onClick={() => { closeMobile(); openLeadFunnel("topnav_mobile_github"); }}
                 className="inline-flex items-center justify-center gap-2 text-xs text-slate-500 hover:text-white pt-2 transition-colors"
               >
                 <Github className="w-4 h-4" />
@@ -669,7 +691,12 @@ export default function TopNav() {
         </div>
       )}
 
-      {showStartNow && <LeadFunnelModal onClose={() => setShowStartNow(false)} location="topnav" />}
+      {leadFunnelLocation !== null && (
+        <LeadFunnelModal
+          onClose={() => setLeadFunnelLocation(null)}
+          location={leadFunnelLocation}
+        />
+      )}
       {showPortalGate && <PortalGateModal onClose={() => setShowPortalGate(false)} location="topnav" />}
     </>
   );

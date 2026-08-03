@@ -461,13 +461,13 @@ test("build environment is pinned to Vite production mode and process wins", () 
     root: "/unused",
     processEnv: {
       VITE_API_BASE_URL: "https://process.example.test",
-      FUNNEL_REQUIRED: "YES",
+      VITE_FUNNEL_STATE: "ACTIVE",
     },
     loadEnvFn: (mode) => {
       observedMode = mode;
       return {
         VITE_API_BASE_URL: "https://file.example.test",
-        FUNNEL_REQUIRED: "false",
+        VITE_FUNNEL_STATE: "dormant",
       };
     },
   });
@@ -475,32 +475,34 @@ test("build environment is pinned to Vite production mode and process wins", () 
   assert.equal(observedMode, BUILD_MODE);
   assert.deepEqual(result, {
     base: "https://process.example.test",
-    funnelRequired: true,
+    funnelState: "active",
   });
 });
 
-test("build environment trims the runtime URL and rejects a required-flag typo", () => {
+test("build environment trims values and rejects missing or invalid state", () => {
   assert.deepEqual(
     resolveBuildEnvironment({
       root: "/unused",
       processEnv: {
         VITE_API_BASE_URL: `  ${API_ORIGIN}  `,
-        FUNNEL_REQUIRED: " false ",
+        VITE_FUNNEL_STATE: " active ",
       },
       loadEnvFn: () => ({}),
     }),
-    { base: API_ORIGIN, funnelRequired: false },
+    { base: API_ORIGIN, funnelState: "active" },
   );
 
-  assert.throws(
-    () =>
-      resolveBuildEnvironment({
-        root: "/unused",
-        processEnv: { FUNNEL_REQUIRED: "tru" },
-        loadEnvFn: () => ({}),
-      }),
-    /FUNNEL_REQUIRED must be/,
-  );
+  for (const processEnv of [{}, { VITE_FUNNEL_STATE: "activ" }]) {
+    assert.throws(
+      () =>
+        resolveBuildEnvironment({
+          root: "/unused",
+          processEnv,
+          loadEnvFn: () => ({}),
+        }),
+      /VITE_FUNNEL_STATE must be exactly active or dormant/,
+    );
+  }
 });
 
 test("real Vite env precedence uses production.local over lower layers", () => {
@@ -508,7 +510,8 @@ test("real Vite env precedence uses production.local over lower layers", () => {
     {
       ".env": "VITE_API_BASE_URL=https://base.example.test\n",
       ".env.local": "VITE_API_BASE_URL=https://local.example.test\n",
-      ".env.production": "VITE_API_BASE_URL=https://production.example.test\n",
+      ".env.production":
+        "VITE_API_BASE_URL=https://production.example.test\nVITE_FUNNEL_STATE=dormant\n",
       ".env.production.local":
         "VITE_API_BASE_URL=https://production-local.example.test\n",
     },
@@ -531,7 +534,7 @@ test("real Vite env precedence uses production.local over lower layers", () => {
   );
 });
 
-test("runGuard distinguishes dormant, required, allowed, and blocked builds", () => {
+test("runGuard distinguishes committed dormant, active, and blocked builds", () => {
   const html = DOCUMENT(META(`${API_ORIGIN} 'self'`));
   withFixture(
     {
@@ -551,7 +554,7 @@ test("runGuard distinguishes dormant, required, allowed, and blocked builds", ()
           root,
           html,
           selfOrigin: SELF_ORIGIN,
-          processEnv: {},
+          processEnv: { VITE_FUNNEL_STATE: "dormant" },
           loadEnvFn,
           log: logger,
           error: logger,
@@ -566,14 +569,14 @@ test("runGuard distinguishes dormant, required, allowed, and blocked builds", ()
           root,
           html,
           selfOrigin: SELF_ORIGIN,
-          processEnv: { FUNNEL_REQUIRED: "1" },
+          processEnv: { VITE_FUNNEL_STATE: "active" },
           loadEnvFn,
           log: logger,
           error: logger,
         }),
         1,
       );
-      assert.match(messages[0], /FUNNEL_REQUIRED/);
+      assert.match(messages[0], /VITE_FUNNEL_STATE is active/);
 
       messages.length = 0;
       assert.equal(
@@ -581,14 +584,14 @@ test("runGuard distinguishes dormant, required, allowed, and blocked builds", ()
           root,
           html,
           selfOrigin: SELF_ORIGIN,
-          processEnv: { FUNNEL_REQUIRED: "tru" },
+          processEnv: { VITE_FUNNEL_STATE: "activ" },
           loadEnvFn,
           log: logger,
           error: logger,
         }),
         1,
       );
-      assert.match(messages[0], /FUNNEL_REQUIRED must be/);
+      assert.match(messages[0], /VITE_FUNNEL_STATE must be/);
 
       messages.length = 0;
       assert.equal(
@@ -597,7 +600,25 @@ test("runGuard distinguishes dormant, required, allowed, and blocked builds", ()
           html,
           selfOrigin: SELF_ORIGIN,
           processEnv: {
-            FUNNEL_REQUIRED: "1",
+            VITE_FUNNEL_STATE: "dormant",
+            VITE_API_BASE_URL: API_ORIGIN,
+          },
+          loadEnvFn,
+          log: logger,
+          error: logger,
+        }),
+        0,
+      );
+      assert.match(messages[0], /intentionally dormant/);
+
+      messages.length = 0;
+      assert.equal(
+        runGuard({
+          root,
+          html,
+          selfOrigin: SELF_ORIGIN,
+          processEnv: {
+            VITE_FUNNEL_STATE: "active",
             VITE_API_BASE_URL: "http://api.example.test",
           },
           loadEnvFn,
@@ -615,7 +636,7 @@ test("runGuard distinguishes dormant, required, allowed, and blocked builds", ()
           html,
           selfOrigin: SELF_ORIGIN,
           processEnv: {
-            FUNNEL_REQUIRED: "1",
+            VITE_FUNNEL_STATE: "active",
             VITE_API_BASE_URL: API_ORIGIN,
           },
           loadEnvFn,
@@ -634,7 +655,7 @@ test("runGuard distinguishes dormant, required, allowed, and blocked builds", ()
           html,
           selfOrigin: SELF_ORIGIN,
           processEnv: {
-            FUNNEL_REQUIRED: "1",
+            VITE_FUNNEL_STATE: "active",
             VITE_API_BASE_URL: "https://blocked.example.test",
           },
           loadEnvFn,
@@ -668,7 +689,7 @@ test("runGuard never follows the environment root for committed policy inputs", 
         runGuard({
           ...common,
           processEnv: {
-            FUNNEL_REQUIRED: "1",
+            VITE_FUNNEL_STATE: "active",
             VITE_API_BASE_URL: "https://otp.traigent.ai",
           },
         }),
@@ -681,7 +702,7 @@ test("runGuard never follows the environment root for committed policy inputs", 
         runGuard({
           ...common,
           processEnv: {
-            FUNNEL_REQUIRED: "1",
+            VITE_FUNNEL_STATE: "active",
             VITE_API_BASE_URL: SELF_ORIGIN,
           },
         }),

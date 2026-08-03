@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useRef, useState } from "react";
-import { ShieldCheck, Github, ArrowRight } from "lucide-react";
+import { ShieldCheck, Github } from "lucide-react";
 import ConsentGate from "./ConsentGate";
 import ConsentCheckbox from "./ConsentCheckbox";
 import InstallCommand from "./InstallCommand";
@@ -28,7 +28,6 @@ const FIRST_RUN_REPO_URL = "https://github.com/Traigent/traigent-first-run";
 // the next step.
 export const FIRST_RUN_INIT_PROMPT = `Help me run my first Traigent optimization.
 Clone ${FIRST_RUN_REPO_URL} and follow GUIDE.md.`;
-const DEMO_BOOKING_URL = "https://meetings-eu1.hubspot.com/amir8";
 
 /**
  * Lead-funnel front door (Marketing front door unit A2). Three steps:
@@ -167,7 +166,7 @@ export default function LeadFunnel({ surface = "homepage_hero" }) {
 
   let body;
   if (isDormant) {
-    body = <DormantView surface={surface} headingRef={transitionHeadingRef} />;
+    body = <DormantView headingRef={transitionHeadingRef} />;
   } else if (step === "success") {
     body = (
       <SuccessView
@@ -267,7 +266,7 @@ export default function LeadFunnel({ surface = "homepage_hero" }) {
   return body;
 }
 
-function DormantView({ surface, headingRef }) {
+function DormantView({ headingRef }) {
   return (
     <div>
       <h2
@@ -277,23 +276,9 @@ function DormantView({ surface, headingRef }) {
       >
         Self-serve setup is unavailable
       </h2>
-      <p className="mb-6 leading-relaxed text-slate-300">
-        Book a quick demo and we&apos;ll help you get started.
+      <p className="leading-relaxed text-slate-300">
+        Please close this window and try again later.
       </p>
-      <a
-        href={DEMO_BOOKING_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={() =>
-          trackEvent("demo_booking_clicked", {
-            location: `${surface}_lead_dormant`,
-          })
-        }
-        className="inline-flex items-center rounded-lg bg-[#1A6BF5] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#4D8EF8]"
-      >
-        Book a demo
-        <ArrowRight className="ml-2 h-4 w-4" />
-      </a>
     </div>
   );
 }

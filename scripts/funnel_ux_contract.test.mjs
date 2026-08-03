@@ -1,9 +1,12 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import test from "node:test";
 
 import {
   CLIENT_ERROR_DISABLED,
   LEAD_ROUTE_NOT_FOUND,
+  isLeadFunnelConfigurationEnabled,
   isLeadFunnelUnavailableError,
 } from "../src/lib/leadApiContract.js";
 import {
@@ -24,6 +27,8 @@ import {
   REGISTRATION_RECOVERY_URL,
   consumeRegistrationRecoveryQuery,
 } from "../src/lib/registrationRecovery.js";
+
+const REPOSITORY_ROOT = resolve(import.meta.dirname, "..");
 
 function focusable(name) {
   return {
@@ -232,6 +237,48 @@ test("only a disabled client or missing backend route makes the funnel dormant",
     false,
   );
   assert.equal(isLeadFunnelUnavailableError("CLIENT_NETWORK_ERROR"), false);
+});
+
+test("the committed state and API origin must both enable the browser funnel", () => {
+  assert.equal(
+    isLeadFunnelConfigurationEnabled("active", "https://api.example.test"),
+    true,
+  );
+  assert.equal(
+    isLeadFunnelConfigurationEnabled(" ACTIVE ", " https://api.example.test "),
+    true,
+  );
+  assert.equal(
+    isLeadFunnelConfigurationEnabled("dormant", "https://api.example.test"),
+    false,
+  );
+  assert.equal(isLeadFunnelConfigurationEnabled("active", ""), false);
+  assert.equal(
+    isLeadFunnelConfigurationEnabled("", "https://api.example.test"),
+    false,
+  );
+});
+
+test("top-nav entry points share the lead funnel and its dormant view has no demo CTA", () => {
+  const topNav = readFileSync(
+    resolve(REPOSITORY_ROOT, "src/components/TopNav.jsx"),
+    "utf8",
+  );
+  const leadFunnel = readFileSync(
+    resolve(REPOSITORY_ROOT, "src/components/LeadFunnel.jsx"),
+    "utf8",
+  );
+
+  assert.match(topNav, /import LeadFunnelModal from/);
+  assert.doesNotMatch(topNav, /StartNowModal/);
+  assert.match(topNav, /openLeadFunnel\("topnav"\)/);
+  assert.match(topNav, /location=\{leadFunnelLocation\}/);
+  assert.doesNotMatch(
+    leadFunnel,
+    /DEMO_BOOKING_URL|Book a demo|demo_booking_clicked/,
+  );
+  assert.match(leadFunnel, /Help me run my first Traigent optimization\./);
+  assert.match(leadFunnel, /follow GUIDE\.md\./);
 });
 
 test("registration recovery URL is HashRouter-canonical", () => {

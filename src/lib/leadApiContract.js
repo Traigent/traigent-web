@@ -8,9 +8,20 @@ export const LEAD_API_PATHS = Object.freeze([
   LEAD_VERIFY_PATH,
 ]);
 
-// The two exact conditions where the self-serve UI must retire and expose its
-// real demo-booking fallback. Transient network/rate-limit errors remain
-// retryable and must not silently turn into a different journey.
+export const FUNNEL_ACTIVE_STATE = "active";
+
+export function isLeadFunnelConfigurationEnabled(state, apiBase) {
+  return (
+    String(state ?? "")
+      .trim()
+      .toLowerCase() === FUNNEL_ACTIVE_STATE &&
+    Boolean(String(apiBase ?? "").trim())
+  );
+}
+
+// The two exact conditions where the self-serve UI must retire. Transient
+// network/rate-limit errors remain retryable and must not silently turn into a
+// different journey.
 export const CLIENT_ERROR_DISABLED = "CLIENT_FUNNEL_DISABLED";
 export const LEAD_ROUTE_NOT_FOUND = "NOT_FOUND";
 

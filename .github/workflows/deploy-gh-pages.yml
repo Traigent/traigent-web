@@ -57,20 +57,12 @@ jobs:
           VITE_RECIPIENT_PACKAGES_JSON: ${{ vars.VITE_RECIPIENT_PACKAGES_JSON }}
           # Lead funnel front door (Marketing front door unit A2) — base URL of
           # the TraigentBackend host serving POST /api/v1/leads + /leads/verify.
-          # Empty = funnel dormant: the hero CTA opens the modal but shows a
-          # "book a demo instead" message. Because Vite inlines VITE_* at BUILD
-          # time, setting the Actions Variable is not enough on its own — it has
-          # to be wired here, or the deployed bundle is dormant no matter what
-          # the variable says. Setting it also requires the backend host to be
-          # present in index.html's committed CSP connect-src allowlist and the
-          # backend to run with ENABLE_LEAD_ACCESS_ONBOARDING=true; see
-          # .env.example for the complete activation prerequisite list.
+          # The reviewed active/dormant state lives in committed
+          # .env.production. VITE_API_BASE_URL remains environment-specific, but
+          # it cannot activate or silently deactivate the funnel by itself. In
+          # active state the build requires this origin to be HTTPS and admitted
+          # by the committed CSP. See docs/LEAD_FUNNEL_ACTIVATION.md.
           VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
-          # Build-only assertion, not exposed to the browser. Leave unset while
-          # the funnel is deliberately dormant; set the Actions Variable to "1"
-          # when production activation is approved so clearing the API URL fails
-          # the deployment instead of silently restoring the dormant experience.
-          FUNNEL_REQUIRED: ${{ vars.FUNNEL_REQUIRED }}
         run: npm run build
 
       - name: Deploy
