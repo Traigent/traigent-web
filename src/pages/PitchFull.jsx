@@ -1362,6 +1362,7 @@ export function PitchDeck({ slides }) {
           <button
             onClick={prev}
             disabled={current === 0}
+            aria-label="Previous slide"
             className="text-slate-500 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center gap-1 text-sm"
           >
             <ChevronLeft className="w-5 h-5" />
@@ -1384,6 +1385,7 @@ export function PitchDeck({ slides }) {
           <button
             onClick={next}
             disabled={current === total - 1}
+            aria-label="Next slide"
             className="text-slate-500 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center gap-1 text-sm"
           >
             <span className="hidden md:inline">Next</span>
