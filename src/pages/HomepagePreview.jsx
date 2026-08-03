@@ -15,6 +15,7 @@ import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import versionInfo from "../version.json";
 import { Helmet } from "react-helmet-async";
 import LeadFunnelModal from "../components/LeadFunnelModal";
+import { FIRST_RUN_INIT_PROMPT } from "../components/LeadFunnel";
 import ContactSection from "../components/ContactSection";
 import BlogHighlights from "../components/BlogHighlights";
 import { trackEvent } from "../lib/analytics";
@@ -159,6 +160,7 @@ export default function HomepagePreview() {
                 type="button"
                 onClick={() => {
                   trackEvent("lead_funnel_opened", { location: "homepage_hero" });
+                  navigator.clipboard?.writeText?.(FIRST_RUN_INIT_PROMPT);
                   setShowLeadFunnel(true);
                 }}
                 className="treasure-halo inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white text-base md:text-lg font-semibold transition-colors"
