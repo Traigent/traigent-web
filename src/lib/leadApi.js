@@ -210,7 +210,7 @@ const GENERIC_RETRY =
 const GENERIC_UNREACHABLE =
   "We couldn't reach the lead service. Please try again in a few minutes.";
 const NOT_AVAILABLE =
-  "Self-serve signup isn't switched on yet. Book a demo and we'll set you up.";
+  "Self-serve signup isn't available right now. Please try again later.";
 
 /**
  * Friendly copy for a token returned by captureLead / verifyLead.
