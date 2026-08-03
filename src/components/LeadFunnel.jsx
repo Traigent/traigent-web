@@ -20,7 +20,7 @@ const FIRST_RUN_REPO_URL = "https://github.com/Traigent/traigent-first-run";
 // material and is deliberately placed after it so it cannot be mistaken for
 // the next step.
 const FIRST_RUN_INIT_PROMPT = `Help me run my first Traigent optimization.
-Clone ${FIRST_RUN_REPO_URL} and follow GUIDE.md.`;
+Clone ${FIRST_RUN_REPO_URL}, open GUIDE.md, and walk me through it step by step — ask me for anything you need (like an API key) as you go.`;
 const DEMO_BOOKING_URL = "https://meetings-eu1.hubspot.com/amir8";
 
 /**

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { ChevronDown, Github, Menu, X } from "lucide-react";
-import StartNowModal from "./StartNowModal";
+import LeadFunnelModal from "./LeadFunnelModal";
 import PortalGateModal from "./PortalGateModal";
 import BrandMark from "./BrandMark";
 import { trackEvent } from "../lib/analytics";
@@ -436,7 +436,7 @@ export default function TopNav() {
                 }}
                 className="border border-slate-600 hover:border-slate-400 text-slate-200 hover:text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
               >
-                Start Now
+                Connect your agent
               </button>
               <a
                 href={DEMO_URL}
@@ -666,7 +666,7 @@ export default function TopNav() {
                 }}
                 className="border border-slate-600 hover:border-slate-400 text-slate-200 hover:text-white py-3 rounded-lg text-sm font-medium transition-colors"
               >
-                Start Now
+                Connect your agent
               </button>
               <a
                 href={DEMO_URL}
@@ -690,7 +690,7 @@ export default function TopNav() {
         </div>
       )}
 
-      {showStartNow && <StartNowModal onClose={() => setShowStartNow(false)} location="topnav" />}
+      {showStartNow && <LeadFunnelModal onClose={() => setShowStartNow(false)} location="topnav" />}
       {showPortalGate && <PortalGateModal onClose={() => setShowPortalGate(false)} location="topnav" />}
     </>
   );
