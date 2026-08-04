@@ -30,6 +30,15 @@ export const FIRST_RUN_INIT_PROMPT = `Help me run my first Traigent optimization
 Clone ${FIRST_RUN_REPO_URL} and follow GUIDE.md.`;
 
 /**
+ * Copy the canonical first-run prompt to the clipboard (best-effort, within a
+ * user gesture). Every "Connect your agent" / "Start Now" CTA calls this so the
+ * behaviour is identical everywhere: copy the prompt, then open the LeadFunnel.
+ */
+export function copyFirstRunPrompt() {
+  if (typeof navigator !== "undefined") navigator.clipboard?.writeText?.(FIRST_RUN_INIT_PROMPT);
+}
+
+/**
  * Lead-funnel front door (Marketing front door unit A2). Three steps:
  *   1. email + consent tick     -> capture  (POST /api/v1/leads)
  *   2. 6-digit code entry        -> verify   (POST /api/v1/leads/verify)

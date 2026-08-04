@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { ChevronDown, Github, Menu, X } from "lucide-react";
 import LeadFunnelModal from "./LeadFunnelModal";
+import { copyFirstRunPrompt } from "./LeadFunnel";
 import PortalGateModal from "./PortalGateModal";
 import BrandMark from "./BrandMark";
 import { trackEvent } from "../lib/analytics";
@@ -235,6 +236,7 @@ export default function TopNav() {
 
   const openLeadFunnel = (location) => {
     trackEvent("lead_funnel_opened", { location });
+    copyFirstRunPrompt();
     setLeadFunnelLocation(location);
   };
 

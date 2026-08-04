@@ -12,7 +12,8 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { trackEvent } from "../lib/analytics";
-import StartNowModal from "../components/StartNowModal";
+import LeadFunnelModal from "../components/LeadFunnelModal";
+import { copyFirstRunPrompt } from "../components/LeadFunnel";
 import { useKnownContactNotify } from "../lib/useKnownContactNotify";
 import { notifyPricingViewed } from "../lib/hubspotForms";
 
@@ -341,6 +342,7 @@ export default function Pricing() {
                     type="button"
                     onClick={() => {
                       trackEvent("pricing_cta_clicked", { tier: "free" });
+                      copyFirstRunPrompt();
                       setShowStartNow(true);
                     }}
                     className="inline-flex items-center justify-center gap-2 w-full h-12 bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white px-5 rounded-lg font-medium transition-colors"
@@ -615,7 +617,7 @@ export default function Pricing() {
           </FadeIn>
         </div>
       </section>
-      {showStartNow && <StartNowModal onClose={() => setShowStartNow(false)} location="pricing" />}
+      {showStartNow && <LeadFunnelModal onClose={() => setShowStartNow(false)} location="pricing" />}
     </div>
   );
 }

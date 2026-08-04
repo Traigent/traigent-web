@@ -2,7 +2,8 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Home, Maximize2 } from "lucide-react";
 import { Link } from "react-router-dom";
-import StartNowModal from "../components/StartNowModal";
+import LeadFunnelModal from "../components/LeadFunnelModal";
+import { copyFirstRunPrompt } from "../components/LeadFunnel";
 import { Helmet } from "react-helmet-async";
 import { ConvergenceDiagram, KillerStatsGrid, ThreeProductsGrid } from "./pitch/shared";
 import { useKnownContactNotify } from "../lib/useKnownContactNotify";
@@ -150,7 +151,7 @@ function SlideCTA() {
   return (
     <div className="text-center max-w-5xl mx-auto">
       {showStartNow && (
-        <StartNowModal onClose={() => setShowStartNow(false)} location="pitch_cta" />
+        <LeadFunnelModal onClose={() => setShowStartNow(false)} location="pitch_cta" />
       )}
       <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
         Two Ways to See It in 15 Minutes
@@ -164,7 +165,7 @@ function SlideCTA() {
           <p className="text-slate-400 mb-5 text-sm">No API keys. No spend. ~6 seconds to a real result.</p>
           <button
             type="button"
-            onClick={() => setShowStartNow(true)}
+            onClick={() => { copyFirstRunPrompt(); setShowStartNow(true); }}
             className="w-full bg-slate-950 border border-slate-700 hover:border-blue-500/60 rounded-lg px-4 py-3 font-mono text-sm text-slate-200 text-left transition-colors"
           >
             <span className="text-slate-500">$ </span>uv tool install "traigent[…]"
