@@ -205,7 +205,11 @@ test("all top-nav entry points use the attributed lead funnel, including dormant
           'dialog[aria-label="Get started with Traigent"]',
         );
         assert.ok(dialog, `${location} opens a dialog`);
-        assert.match(dialog.textContent, /Self-serve setup is unavailable/);
+        // Dormant now delivers the product, not a dead end: the first-run prompt
+        // to paste into a coding agent, plus the optional advanced-features email
+        // capture. (The prompt clones traigent-first-run.)
+        assert.match(dialog.textContent, /traigent-first-run/);
+        assert.match(dialog.textContent, /get access to our most advanced features/i);
         assert.doesNotMatch(dialog.textContent, /Book a demo/);
         assert.equal(dialog.querySelector('a[href*="meetings"]'), null);
         assert.deepEqual(analyticsEvents.at(-1), [
