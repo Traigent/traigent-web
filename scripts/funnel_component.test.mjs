@@ -688,3 +688,121 @@ test("a slow failing mirror cannot wipe another address's dedupe", async () => {
     },
   );
 });
+
+test("the CRM dedupe is case-folded, like every system on either side of it", async () => {
+  // A case-SENSITIVE key treats `A@corp.com` and `a@corp.com` as two people and
+  // mirrors both. Both systems the key sits between disagree with that: the
+  // backend normalises with `.strip().lower()`, and HubSpot keys contacts on a
+  // case-insensitive address. So the duplicate is real, just spelled with a
+  // shift key -- exactly the record this set exists to stop.
+  const mirrored = [];
+  await withTopNav(
+    {
+      state: "active",
+      fetchImpl: async (url, options) => {
+        if (new URL(String(url)).host === "api.hsforms.com") {
+          mirrored.push(
+            JSON.parse(options.body).fields.find((f) => f.name === "email")
+              .value,
+          );
+          return new Response(JSON.stringify({}), { status: 200 });
+        }
+        return new Response(
+          JSON.stringify({
+            data: { run_id: "run-case-fold", resend_after_seconds: 30 },
+          }),
+          { status: 202, headers: { "content-type": "application/json" } },
+        );
+      },
+    },
+    async () => {
+      await click(buttonWithText("Start Now", 0));
+      const dialog = document.querySelector(
+        'dialog[aria-label="Get started with Traigent"]',
+      );
+      await click(dialog.querySelector('input[type="checkbox"]'));
+
+      const submit = async (address) => {
+        await changeInput(
+          dialog.querySelector('input[aria-label="Work email"]'),
+          address,
+        );
+        await click(buttonWithText("Email me a code"));
+        const back = [...dialog.querySelectorAll("button")].find((button) =>
+          /different email/i.test(button.textContent),
+        );
+        await click(back);
+      };
+
+      await submit("Casey@Example.com");
+      await submit("casey@example.com");
+      await submit("  CASEY@EXAMPLE.COM  ");
+
+      // One person, one CRM record -- and the address HubSpot receives is the
+      // normalised one, matching what the backend stored for the same capture.
+      assert.deepEqual(mirrored, ["casey@example.com"]);
+    },
+  );
+});
+
+test("the dormant fallback does not re-mirror an address the live path already sent", async () => {
+  // The two views share one dedupe set because a visitor can cross between
+  // them. A 5xx carrying NOT_FOUND flips `runtimeUnavailable` mid-session, so
+  // the live path can mirror an address and THEN hand the same visitor to the
+  // dormant form, whose submit posts to HubSpot directly. Checking only within
+  // each component would miss precisely that crossing.
+  const mirrored = [];
+  await withTopNav(
+    {
+      state: "active",
+      fetchImpl: async (url, options) => {
+        if (new URL(String(url)).host === "api.hsforms.com") {
+          mirrored.push(
+            JSON.parse(options.body).fields.find((f) => f.name === "email")
+              .value,
+          );
+          return new Response(JSON.stringify({}), { status: 200 });
+        }
+        // The flag is off behind the edge: the exact envelope lead_routes.py
+        // returns when ENABLE_LEAD_ACCESS_ONBOARDING is false.
+        return new Response(
+          JSON.stringify({ error: "Not found", error_code: "NOT_FOUND" }),
+          { status: 404, headers: { "content-type": "application/json" } },
+        );
+      },
+    },
+    async () => {
+      await click(buttonWithText("Start Now", 0));
+      const dialog = document.querySelector(
+        'dialog[aria-label="Get started with Traigent"]',
+      );
+      await click(dialog.querySelector('input[type="checkbox"]'));
+      await changeInput(
+        dialog.querySelector('input[aria-label="Work email"]'),
+        "crossing@example.com",
+      );
+      await click(buttonWithText("Email me a code"));
+
+      assert.equal(
+        mirrored.length,
+        1,
+        "the live path mirrored before the backend refused",
+      );
+
+      // The 404 retired the self-serve UI. DormantView keeps its OWN consent
+      // state, so its form only appears once the box is ticked again.
+      await click(dialog.querySelector('input[type="checkbox"]'));
+      const dormantEmail = dialog.querySelector('input[type="email"]');
+      assert.ok(
+        dormantEmail?.id.endsWith("-dormant-email"),
+        "a NOT_FOUND capture collapses the modal back to the dormant form",
+      );
+      await changeInput(dormantEmail, "Crossing@Example.com");
+      await click(buttonWithText("Unlock advanced features"));
+
+      // Still one record. The visitor is told they are done either way -- the
+      // dormant form must not look broken just because the CRM already has them.
+      assert.deepEqual(mirrored, ["crossing@example.com"]);
+    },
+  );
+});

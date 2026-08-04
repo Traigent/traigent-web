@@ -31,6 +31,15 @@ const RESEND_COOLDOWN_FALLBACK_S = 30;
 // wrote A twice.
 const MIRRORED_ADDRESSES_KEY = "traigent_hubspot_mirrored";
 
+// The dedupe key is case-folded because the two systems on either side of it
+// are. The backend normalises with `.strip().lower()` (`normalize_lead_email`),
+// and HubSpot keys contacts on a case-insensitive address. A case-SENSITIVE key
+// would treat `A@corp.com` and `a@corp.com` as two people and mirror both --
+// the exact duplicate this set exists to prevent, just spelled differently.
+function normalizeMirrorAddress(address) {
+  return address.trim().toLowerCase();
+}
+
 function readMirroredAddresses() {
   try {
     return new Set(
@@ -40,6 +49,17 @@ function readMirroredAddresses() {
     // Private mode or a corrupt value: the worst case is mirroring once more.
     return new Set();
   }
+}
+
+// Claim an address, atomically enough for a single tab: returns false when it
+// was already claimed, so callers read as "claim it or skip" and cannot mirror
+// the same person twice by forgetting to check first.
+function rememberMirroredAddress(address) {
+  const addresses = readMirroredAddresses();
+  if (addresses.has(address)) return false;
+  addresses.add(address);
+  writeMirroredAddresses(addresses);
+  return true;
 }
 
 function forgetMirroredAddress(address) {
@@ -212,15 +232,13 @@ export default function LeadFunnel({ surface = "homepage_hero" }) {
    * duplicate a server constant that can drift, so HubSpot sees exactly the
    * submissions the dormant path already sent it - no new exposure.
    */
-  const mirrorCaptureToHubSpot = (address) => {
+  const mirrorCaptureToHubSpot = (rawAddress) => {
     // Once per address, not once per submit. A capture is retried in ordinary
     // conditions -- a backend 429/500, or a 404 while the funnel flag is still
     // off -- and each retry would otherwise write another CRM record and another
     // founder notification for the same person.
-    const mirrored = readMirroredAddresses();
-    if (mirrored.has(address)) return;
-    mirrored.add(address);
-    writeMirroredAddresses(mirrored);
+    const address = normalizeMirrorAddress(rawAddress);
+    if (!rememberMirroredAddress(address)) return;
     submitStartNowLead({ email: address, location: surface })
       .then((result) => {
         if (result?.ok) {
@@ -251,7 +269,7 @@ export default function LeadFunnel({ surface = "homepage_hero" }) {
   // a new one. The dedupe store above makes that true regardless of wiring, and
   // `re-submitting the same address writes exactly one CRM record` pins it.
   const submitEmailStep = () => {
-    mirrorCaptureToHubSpot(email.trim());
+    mirrorCaptureToHubSpot(email);
     return sendCode();
   };
 
@@ -405,14 +423,29 @@ function DormantView({ headingRef, surface }) {
   const onSubmit = async (e) => {
     e.preventDefault();
     if (busy || !email.trim() || !consent) return;
+    const address = normalizeMirrorAddress(email);
+    // Same once-per-address rule the live path uses, and it shares the same set
+    // on purpose: the two views are not sealed off from each other. A 5xx flips
+    // `runtimeUnavailable` mid-session, so a visitor whose address the LIVE path
+    // already mirrored can land back on this form and submit it again. Checking
+    // only within this component would miss exactly that crossing.
+    if (readMirroredAddresses().has(address)) {
+      setDone(true);
+      return;
+    }
     setBusy(true);
     setError("");
     const result = await submitStartNowLead({
-      email: email.trim(),
+      email: address,
       location: surface,
     });
     setBusy(false);
     if (result.ok) {
+      // Recorded AFTER success here, but BEFORE the request on the live path.
+      // The asymmetry is deliberate: this path awaits its result and can record
+      // the truth, while a fire-and-forget mirror has to claim optimistically
+      // and release the address again if the request fails.
+      rememberMirroredAddress(address);
       trackEvent("lead_hubspot_submitted", { location: surface });
       setDone(true);
     } else if (result.reason === "business_email") {
