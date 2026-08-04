@@ -5,7 +5,8 @@
 // The Forms API endpoint is CORS-enabled and our CSP already allows
 // api.hsforms.com via the *.hsforms.com connect-src entry.
 
-const HUBSPOT_PORTAL_ID = "148486827";
+import { HUBSPOT_PORTAL_ID } from "./hubspotConfig";
+
 const STARTNOW_FORM_ID = "35384a3e-7386-45b0-924e-84e5d6f637e4";
 const PORTAL_FORM_ID = "692b03aa-e984-411c-8792-2e86baed2614";
 // Tracking-only forms — surfaces are intentionally NOT gated (anyone can
