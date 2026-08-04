@@ -265,6 +265,16 @@ export default function HomepagePreview() {
         </div>
       </section>
 
+      {/* Reserved footprint for an in-process customer quote, awaiting sign-off.
+          EXACT-size/location empty placeholder so the section below already
+          starts where it will once the quote lands, and the approved quote drops
+          in with zero layout shift. No quote text ships here until approved. */}
+      <section aria-hidden="true" className="bg-[#080808] border-t border-slate-800/50 py-14 md:py-20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="min-h-[20rem] md:min-h-[18rem]" />
+        </div>
+      </section>
+
       {/* Slide 2 of /short-summary — the four-pillar methodology (SlideFourPillars);
           leads the content immediately after the 3-box market band. */}
       <section id="solution" className="pt-8 md:pt-12 pb-8 md:pb-12 bg-[#080808] border-t border-slate-800/50 scroll-mt-20">
