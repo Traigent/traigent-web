@@ -73,6 +73,9 @@ export default function HomepagePreview() {
   }, []);
   const [benefitsOpen, setBenefitsOpen] = useState(false);
   const benefitsRef = useRef(null);
+  // Language tab for the "One Decorator" code panel: "python" | "ts". Lets a
+  // JS/TS-first visitor see the same one-call optimize() story, not just Python.
+  const [codeLang, setCodeLang] = useState("python");
 
   // The portal uses this canonical HashRouter query when a registration code
   // needs replacing. Consume only the exact value, keep unrelated campaign
@@ -275,7 +278,7 @@ export default function HomepagePreview() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
             <span className="inline-block px-6 py-2.5 rounded-full bg-[#1A6BF5]/15 border border-[#1A6BF5]/40 text-[#4D8EF8] text-xl md:text-3xl font-bold uppercase tracking-wide mb-5">
-              Privacy Preserving yet Super Powerful
+              Privacy Preserving <span className="lowercase font-normal text-base md:text-xl">yet</span> Super Powerful
             </span>
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Traigent&apos;s unique architecture yields a super feature</h2>
             <p className="text-slate-400 max-w-3xl mx-auto leading-relaxed">
@@ -507,7 +510,7 @@ export default function HomepagePreview() {
                 Engineer-First
               </span>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-                One Decorator. Instant Optimization.
+                One Wrapper. Instant Optimization.
               </h2>
               <p className="text-lg text-gray-600 mb-6">
                 No rewrites. Just attach to your existing agent calls, specify what you want (and your constraints), then apply the best config—no dashboard required.
@@ -538,11 +541,29 @@ export default function HomepagePreview() {
                 <div className="w-3 h-3 rounded-full bg-red-500"></div>
                 <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
                 <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                <span className="ml-2">my_agent.py</span>
+                <span className="ml-2">{codeLang === "python" ? "my_agent.py" : "my_agent.ts"}</span>
+                <div className="ml-auto flex flex-shrink-0 items-center gap-1 text-xs">
+                  <button
+                    type="button"
+                    onClick={() => setCodeLang("python")}
+                    aria-pressed={codeLang === "python"}
+                    className={`rounded px-2 py-0.5 transition-colors ${codeLang === "python" ? "bg-slate-700 text-white" : "text-slate-500 hover:text-slate-300"}`}
+                  >
+                    Python
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCodeLang("ts")}
+                    aria-pressed={codeLang === "ts"}
+                    className={`rounded px-2 py-0.5 transition-colors ${codeLang === "ts" ? "bg-slate-700 text-white" : "text-slate-500 hover:text-slate-300"}`}
+                  >
+                    JS / TS
+                  </button>
+                </div>
               </div>
               <div className="-mx-2 overflow-x-auto px-2">
                 <SyntaxHighlighter
-                  language="python"
+                  language={codeLang === "python" ? "python" : "typescript"}
                   style={vscDarkPlus}
                   customStyle={{
                     margin: 0,
@@ -555,7 +576,8 @@ export default function HomepagePreview() {
                   }}
                   showLineNumbers={false}
                 >
-{`import traigent
+{codeLang === "python"
+  ? `import traigent
 from langchain_openai import ChatOpenAI
 
 @traigent.optimize(
@@ -580,7 +602,33 @@ def answer_question(question: str) -> str:
     context = retrieve_docs(question, k=top_k) if use_rag else ""
 
     llm = ChatOpenAI(model=model, temperature=temperature)
-    return llm.invoke(f"{context}\\n\\nQ: {question}").content`}
+    return llm.invoke(f"{context}\\n\\nQ: {question}").content`
+  : `import { optimize, getTrialParam, param } from "@traigent/sdk";
+import { ChatOpenAI } from "@langchain/openai";
+
+const answerQuestion = optimize({
+  configurationSpace: {
+    model: param.enum(["gpt-4o-mini", "gpt-4o"]),
+    temperature: param.enum([0.1, 0.5, 0.9]),
+    useRag: param.enum([true, false]),
+    topK: param.enum([1, 2, 3]),
+  },
+  evaluation: {
+    data: "eval.jsonl",
+    metrics: { accuracy, cost },
+  },
+})(async (question) => {
+  // Tuned variables from the trial config
+  const model = getTrialParam("model", "gpt-4o-mini");
+  const temperature = getTrialParam("temperature", 0.1);
+  const useRag = getTrialParam("useRag", false);
+  const topK = getTrialParam("topK", 1);
+
+  const context = useRag ? await retrieveDocs(question, topK) : "";
+
+  const llm = new ChatOpenAI({ model, temperature });
+  return (await llm.invoke(\`\${context}\\n\\nQ: \${question}\`)).content;
+});`}
                 </SyntaxHighlighter>
               </div>
             </motion.div>
