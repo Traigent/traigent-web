@@ -348,7 +348,12 @@ test("a failing HubSpot mirror never blocks the capture", async () => {
         state: "active",
         fetchImpl: async (url, options) => {
           const target = String(url);
-          if (target.includes("hsforms.com")) {
+          // Exact host, not a substring: "hsforms.com" can appear anywhere in a
+          // URL, so a substring test would also route
+          // https://hsforms.com.evil.test/... into the HubSpot branch. The stub
+          // decides which failure to inject, so being loose here would let a
+          // future mis-targeted request quietly take the HubSpot path and pass.
+          if (new URL(target).host === "api.hsforms.com") {
             requests.push({ url: target });
             if (failureMode === "reject") {
               throw new TypeError("Failed to fetch");
