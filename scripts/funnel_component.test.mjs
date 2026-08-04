@@ -288,11 +288,25 @@ test("all top-nav entry points use the attributed lead funnel, including dormant
         dialog.textContent,
         /Clone https:\/\/github\.com\/Traigent\/traigent-first-run and follow GUIDE\.md\./,
       );
+      // The HubSpot submission comes FIRST and is part of the contract, not
+      // incidental traffic. Before activation, DormantView's HubSpot POST was
+      // the only thing the front door did, so every homepage lead reached the
+      // CRM; the active path has to keep doing it or flipping
+      // VITE_FUNNEL_STATE silently ends marketing's lead flow with no error and
+      // no log. Asserted as an exact ordered set so a future refactor cannot
+      // drop the call without reddening this test.
+      const hubspotPath =
+        "/submissions/v3/integration/submit/148486827/35384a3e-7386-45b0-924e-84e5d6f637e4";
       assert.deepEqual(
         requests.map(({ url }) => new URL(url).pathname),
-        ["/api/v1/leads", "/api/v1/leads/verify"],
+        [hubspotPath, "/api/v1/leads", "/api/v1/leads/verify"],
       );
-      assert.deepEqual(requests[1].body, {
+      assert.equal(new URL(requests[0].url).host, "api.hsforms.com");
+      assert.equal(
+        requests[0].body.fields.find((field) => field.name === "email").value,
+        "dev@example.com",
+      );
+      assert.deepEqual(requests[2].body, {
         email: "dev@example.com",
         run_id: "run-component-test",
         code: "123456",
@@ -304,6 +318,11 @@ test("all top-nav entry points use the attributed lead funnel, including dormant
         ]),
         [
           ["lead_funnel_opened", { location: "topnav" }],
+          // Emitted by the active path's HubSpot mirror. It lands before the
+          // capture event because the mirror is fired first and does not block
+          // on the backend -- which is the point: the CRM must never gate the
+          // funnel.
+          ["lead_hubspot_submitted", { location: "topnav" }],
           ["lead_capture_submitted", { location: "topnav" }],
           ["lead_verify_submitted", { location: "topnav" }],
           ["lead_verify_succeeded", { location: "topnav" }],
@@ -311,4 +330,66 @@ test("all top-nav entry points use the attributed lead funnel, including dormant
       );
     },
   );
+});
+
+test("a failing HubSpot mirror never blocks the capture", async () => {
+  // The CRM mirror is fire-and-forget by design: HubSpot is a marketing nicety
+  // and the funnel is the product path, so an outage, a blocked-domain refusal
+  // or an ad-blocker eating the request must not cost the visitor their signup.
+  //
+  // This is the assertion that makes the "fire-and-forget" claim testable. The
+  // happy-path test above proves the call HAPPENS; only this one proves it
+  // cannot HURT -- and the two failure modes are different, so both shapes are
+  // exercised: a rejected promise (network/ad-blocker) and a 500 (HubSpot down).
+  for (const failureMode of ["reject", "server-error"]) {
+    const requests = [];
+    await withTopNav(
+      {
+        state: "active",
+        fetchImpl: async (url, options) => {
+          const target = String(url);
+          if (target.includes("hsforms.com")) {
+            requests.push({ url: target });
+            if (failureMode === "reject") {
+              throw new TypeError("Failed to fetch");
+            }
+            return new Response("upstream boom", { status: 500 });
+          }
+          requests.push({ url: target, body: JSON.parse(options.body) });
+          return new Response(
+            JSON.stringify({
+              data: { run_id: "run-hubspot-down", resend_after_seconds: 30 },
+            }),
+            { status: 202, headers: { "content-type": "application/json" } },
+          );
+        },
+      },
+      async () => {
+        await click(buttonWithText("Start Now", 0));
+        const dialog = document.querySelector(
+          'dialog[aria-label="Get started with Traigent"]',
+        );
+        await click(dialog.querySelector('input[type="checkbox"]'));
+        await changeInput(
+          dialog.querySelector('input[aria-label="Work email"]'),
+          "dev@example.com",
+        );
+        await click(buttonWithText("Email me a code"));
+
+        // The visitor still advances to the code step, and sees no error.
+        assert.match(dialog.textContent, /Check your email for the code/);
+        assert.doesNotMatch(dialog.textContent, /something went wrong/i);
+
+        // ...and the capture genuinely reached the backend rather than being
+        // skipped along with the CRM call.
+        assert.deepEqual(
+          requests.map(({ url }) => new URL(url).pathname),
+          [
+            "/submissions/v3/integration/submit/148486827/35384a3e-7386-45b0-924e-84e5d6f637e4",
+            "/api/v1/leads",
+          ],
+        );
+      },
+    );
+  }
 });
