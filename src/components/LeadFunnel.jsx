@@ -21,7 +21,13 @@ import { priorityModalFocusRegion } from "../lib/modalFocus";
 // `resend_after_seconds` (lead_routes.py:100-106) and that value wins; this
 // covers the case where the field is missing or unusable.
 const RESEND_COOLDOWN_FALLBACK_S = 30;
-// Addresses already mirrored to HubSpot in this tab.
+// Addresses CONFIRMED in HubSpot in this tab -- written only after a mirror
+// comes back ok, never before.
+//
+// "Confirmed" and "being mirrored" are deliberately NOT the same set. Conflating
+// them is how a failed mirror turns into a lie: the live path fires
+// fire-and-forget, so if its claim counted as a record, DormantView would read
+// it and tell the visitor "You're in" for a lead that reached nothing.
 //
 // sessionStorage rather than a component ref, because the guarantee is "one CRM
 // record per lead" and the modal UNMOUNTS every time it closes -- a ref resets
@@ -30,6 +36,12 @@ const RESEND_COOLDOWN_FALLBACK_S = 30;
 // CONSECUTIVE addresses: correcting a typo and correcting it back (A -> B -> A)
 // wrote A twice.
 const MIRRORED_ADDRESSES_KEY = "traigent_hubspot_mirrored";
+
+// Addresses whose mirror is in flight RIGHT NOW. Module scope rather than
+// sessionStorage on purpose: an in-flight request cannot outlive the page, and
+// must not be remembered as if it could -- a reload carrying a stale "in
+// flight" entry would suppress that address's mirror forever.
+const inFlightMirrors = new Set();
 
 // The dedupe key is case-folded because the two systems on either side of it
 // are. The backend normalises with `.strip().lower()` (`normalize_lead_email`),
@@ -51,20 +63,13 @@ function readMirroredAddresses() {
   }
 }
 
-// Claim an address, atomically enough for a single tab: returns false when it
-// was already claimed, so callers read as "claim it or skip" and cannot mirror
-// the same person twice by forgetting to check first.
+// Record that HubSpot has accepted this address. Call ONLY on a successful
+// mirror -- the whole value of this set is that membership means "the CRM has
+// them", so anything written speculatively destroys the guarantee.
 function rememberMirroredAddress(address) {
   const addresses = readMirroredAddresses();
-  if (addresses.has(address)) return false;
+  if (addresses.has(address)) return;
   addresses.add(address);
-  writeMirroredAddresses(addresses);
-  return true;
-}
-
-function forgetMirroredAddress(address) {
-  const addresses = readMirroredAddresses();
-  if (!addresses.delete(address)) return;
   writeMirroredAddresses(addresses);
 }
 
@@ -207,9 +212,10 @@ export default function LeadFunnel({ surface = "homepage_hero" }) {
   /**
    * Mirror the captured address into HubSpot.
    *
-   * DormantView already does this on every submit (it is the ONLY thing the
-   * dormant front door does), so before activation every homepage lead reached
-   * the CRM. Activating the funnel makes the live path the one visitors take,
+   * DormantView does this on every submit that is not already confirmed (it is
+   * the ONLY thing the dormant front door does), so before activation every
+   * homepage lead reached the CRM. Activating the funnel makes the live path
+   * the one visitors take,
    * and without this call marketing would silently stop receiving homepage
    * leads the moment `VITE_FUNNEL_STATE` flips - a regression with no error, no
    * log and no obvious symptom. `lead_access_grants` is a Postgres table, not a
@@ -238,25 +244,31 @@ export default function LeadFunnel({ surface = "homepage_hero" }) {
     // off -- and each retry would otherwise write another CRM record and another
     // founder notification for the same person.
     const address = normalizeMirrorAddress(rawAddress);
-    if (!rememberMirroredAddress(address)) return;
+    // Two separate reasons to skip, and they are not the same reason. Already in
+    // the CRM: nothing to do. Already in flight: a second request would race the
+    // first for the same person. Neither is recorded as a confirmed record here
+    // -- that only happens below, once HubSpot has actually accepted it.
+    if (readMirroredAddresses().has(address)) return;
+    if (inFlightMirrors.has(address)) return;
+    inFlightMirrors.add(address);
     submitStartNowLead({ email: address, location: surface })
       .then((result) => {
+        inFlightMirrors.delete(address);
         if (result?.ok) {
+          rememberMirroredAddress(address);
           trackEvent("lead_hubspot_submitted", { location: surface });
           return;
         }
-        // Re-open THIS address for a later attempt, and make the drop visible.
-        // Keyed by address on purpose: an unconditional clear let a slow, failing
-        // mirror for A wipe the dedupe that a later, successful mirror for B had
-        // just recorded, so re-submitting B wrote a second record.
-        forgetMirroredAddress(address);
+        // Nothing to un-record: the address was never written as confirmed, so a
+        // later attempt -- including the dormant form, if a refusal sends the
+        // visitor there -- finds it absent and tries again.
         trackEvent("lead_hubspot_failed", {
           location: surface,
           reason: result?.reason || "unknown",
         });
       })
       .catch(() => {
-        forgetMirroredAddress(address);
+        inFlightMirrors.delete(address);
         trackEvent("lead_hubspot_failed", {
           location: surface,
           reason: "generic",
@@ -424,11 +436,19 @@ function DormantView({ headingRef, surface }) {
     e.preventDefault();
     if (busy || !email.trim() || !consent) return;
     const address = normalizeMirrorAddress(email);
-    // Same once-per-address rule the live path uses, and it shares the same set
-    // on purpose: the two views are not sealed off from each other. A 5xx flips
-    // `runtimeUnavailable` mid-session, so a visitor whose address the LIVE path
-    // already mirrored can land back on this form and submit it again. Checking
-    // only within this component would miss exactly that crossing.
+    // Shares the live path's set on purpose: the two views are not sealed off
+    // from each other. A NOT_FOUND capture flips `runtimeUnavailable`, so a
+    // visitor whose address the LIVE path already mirrored can land back on this
+    // form. Checking only within this component would miss that crossing.
+    //
+    // Skips only on a CONFIRMED record, never on an in-flight one. If the live
+    // mirror is still running -- or already failed -- this form is the visitor's
+    // last remaining path into the CRM, and short-circuiting it would show
+    // "You're in" for a lead that reached nothing and suppress the retry copy
+    // below. That makes a duplicate possible when a slow mirror is overtaken,
+    // and that is the intended trade: HubSpot upserts contacts by email, so the
+    // cost is one extra notification, while the cost of the other error is a
+    // silently lost lead.
     if (readMirroredAddresses().has(address)) {
       setDone(true);
       return;
@@ -441,10 +461,6 @@ function DormantView({ headingRef, surface }) {
     });
     setBusy(false);
     if (result.ok) {
-      // Recorded AFTER success here, but BEFORE the request on the live path.
-      // The asymmetry is deliberate: this path awaits its result and can record
-      // the truth, while a fire-and-forget mirror has to claim optimistically
-      // and release the address again if the request fails.
       rememberMirroredAddress(address);
       trackEvent("lead_hubspot_submitted", { location: surface });
       setDone(true);

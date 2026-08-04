@@ -800,9 +800,162 @@ test("the dormant fallback does not re-mirror an address the live path already s
       await changeInput(dormantEmail, "Crossing@Example.com");
       await click(buttonWithText("Unlock advanced features"));
 
-      // Still one record. The visitor is told they are done either way -- the
-      // dormant form must not look broken just because the CRM already has them.
+      // Still one record. AND the visitor is actually told so -- asserting the
+      // array alone let a build where the dormant submit silently does nothing
+      // ship green.
       assert.deepEqual(mirrored, ["crossing@example.com"]);
+      assert.match(dialog.textContent, /You're in/);
+    },
+  );
+});
+
+test("a FAILED live mirror leaves the dormant form able to reach the CRM", async () => {
+  // The regression this pins: when "claimed" and "confirmed" were one set, the
+  // live path's optimistic claim made DormantView short-circuit and render
+  // "You're in" -- while the mirror it was trusting went on to fail. Net: zero
+  // CRM records, and a visitor told they had succeeded. Membership must mean
+  // HubSpot ACCEPTED the address, never merely that something tried.
+  const attempts = [];
+  await withTopNav(
+    {
+      state: "active",
+      fetchImpl: async (url, options) => {
+        const target = String(url);
+        if (new URL(target).host === "api.hsforms.com") {
+          const address = JSON.parse(options.body).fields.find(
+            (f) => f.name === "email",
+          ).value;
+          attempts.push(address);
+          // The live path's mirror fails; the dormant form's later one works.
+          return new Response(JSON.stringify({}), {
+            status: attempts.length === 1 ? 500 : 200,
+          });
+        }
+        return new Response(
+          JSON.stringify({ error: "Not found", error_code: "NOT_FOUND" }),
+          { status: 404, headers: { "content-type": "application/json" } },
+        );
+      },
+    },
+    async () => {
+      await click(buttonWithText("Start Now", 0));
+      const dialog = document.querySelector(
+        'dialog[aria-label="Get started with Traigent"]',
+      );
+      await click(dialog.querySelector('input[type="checkbox"]'));
+      await changeInput(
+        dialog.querySelector('input[aria-label="Work email"]'),
+        "ghost@example.com",
+      );
+      await click(buttonWithText("Email me a code"));
+
+      await click(dialog.querySelector('input[type="checkbox"]'));
+      await changeInput(
+        dialog.querySelector('input[type="email"]'),
+        "ghost@example.com",
+      );
+      await click(buttonWithText("Unlock advanced features"));
+
+      // The dormant form really submitted -- it did not trust the dead claim.
+      assert.deepEqual(attempts, ["ghost@example.com", "ghost@example.com"]);
+      // And the success it reports is a real one: the second attempt returned ok.
+      assert.match(dialog.textContent, /You're in/);
+    },
+  );
+});
+
+test("a dormant submit is recorded, so reopening the modal does not re-mirror", async () => {
+  // Pins the write half of the dormant path. Deleting the record-on-success left
+  // the whole suite green, because closing the modal unmounts DormantView and
+  // wipes its local `done` -- so nothing else notices the record is missing.
+  const attempts = [];
+  await withTopNav(
+    {
+      state: "dormant",
+      fetchImpl: async (url, options) => {
+        attempts.push(
+          JSON.parse(options.body).fields.find((f) => f.name === "email").value,
+        );
+        return new Response(JSON.stringify({}), { status: 200 });
+      },
+    },
+    async () => {
+      const openAndSubmit = async () => {
+        await click(buttonWithText("Start Now", 0));
+        const dialog = document.querySelector(
+          'dialog[aria-label="Get started with Traigent"]',
+        );
+        await click(dialog.querySelector('input[type="checkbox"]'));
+        await changeInput(
+          dialog.querySelector('input[type="email"]'),
+          "TWICE@Example.com",
+        );
+        await click(buttonWithText("Unlock advanced features"));
+        assert.match(dialog.textContent, /You're in/);
+        await click(dialog.querySelector('button[aria-label="Close"]'));
+      };
+
+      await openAndSubmit();
+      await openAndSubmit();
+
+      // One record, normalised -- and the second visit still says "You're in".
+      assert.deepEqual(attempts, ["twice@example.com"]);
+    },
+  );
+});
+
+test("a live mirror still IN FLIGHT does not short-circuit the dormant form", async () => {
+  // The sibling test covers a mirror that has already failed. This covers the
+  // window before it resolves -- the one an in-flight guard would wrongly treat
+  // as "the CRM has them". It does not: an unresolved request is not a record,
+  // and if it never lands, this form is the only thing that will reach HubSpot.
+  const attempts = [];
+  await withTopNav(
+    {
+      state: "active",
+      fetchImpl: async (url, options) => {
+        const target = String(url);
+        if (new URL(target).host === "api.hsforms.com") {
+          attempts.push(
+            JSON.parse(options.body).fields.find((f) => f.name === "email")
+              .value,
+          );
+          // Never settles: the live mirror is still in flight for the rest of
+          // the test, so `inFlightMirrors` still holds this address.
+          if (attempts.length === 1) return new Promise(() => {});
+          return new Response(JSON.stringify({}), { status: 200 });
+        }
+        return new Response(
+          JSON.stringify({ error: "Not found", error_code: "NOT_FOUND" }),
+          { status: 404, headers: { "content-type": "application/json" } },
+        );
+      },
+    },
+    async () => {
+      await click(buttonWithText("Start Now", 0));
+      const dialog = document.querySelector(
+        'dialog[aria-label="Get started with Traigent"]',
+      );
+      await click(dialog.querySelector('input[type="checkbox"]'));
+      await changeInput(
+        dialog.querySelector('input[aria-label="Work email"]'),
+        "hung@example.com",
+      );
+      await click(buttonWithText("Email me a code"));
+
+      await click(dialog.querySelector('input[type="checkbox"]'));
+      await changeInput(
+        dialog.querySelector('input[type="email"]'),
+        "hung@example.com",
+      );
+      await click(buttonWithText("Unlock advanced features"));
+
+      assert.deepEqual(
+        attempts,
+        ["hung@example.com", "hung@example.com"],
+        "the dormant form submits rather than trusting an unresolved mirror",
+      );
+      assert.match(dialog.textContent, /You're in/);
     },
   );
 });
