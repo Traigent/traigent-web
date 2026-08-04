@@ -312,22 +312,33 @@ test("all top-nav entry points use the attributed lead funnel, including dormant
         code: "123456",
       });
       assert.deepEqual(
-        analyticsEvents.map(([, eventName, properties]) => [
-          eventName,
-          properties,
-        ]),
+        analyticsEvents
+          // The CRM mirror's event is asserted separately, below, by count
+          // rather than by position -- see the comment there.
+          .filter(([, eventName]) => !eventName.startsWith("lead_hubspot_"))
+          .map(([, eventName, properties]) => [eventName, properties]),
         [
           ["lead_funnel_opened", { location: "topnav" }],
-          // Emitted by the active path's HubSpot mirror. It lands before the
-          // capture event because the mirror is fired first and does not block
-          // on the backend -- which is the point: the CRM must never gate the
-          // funnel.
-          ["lead_hubspot_submitted", { location: "topnav" }],
           ["lead_capture_submitted", { location: "topnav" }],
           ["lead_verify_submitted", { location: "topnav" }],
           ["lead_verify_succeeded", { location: "topnav" }],
         ],
       );
+
+      // The mirror's event is asserted SEPARATELY, by presence and count rather
+      // than by position. Its ordering against lead_capture_submitted is a race
+      // between two independent requests: it happens to be deterministic here
+      // only because both mocks resolve instantly and the HubSpot path is one
+      // microtask shorter (it skips res.json() on success). With real latency
+      // the capture normally lands first, so pinning the interleaving would
+      // encode an invariant production does not guarantee and would go red on
+      // an unrelated change.
+      const hubspotEvents = analyticsEvents.filter(
+        ([, eventName]) => eventName === "lead_hubspot_submitted",
+      );
+      assert.deepEqual(hubspotEvents, [
+        ["event", "lead_hubspot_submitted", { location: "topnav" }],
+      ]);
     },
   );
 });
@@ -397,4 +408,123 @@ test("a failing HubSpot mirror never blocks the capture", async () => {
       },
     );
   }
+});
+
+const HUBSPOT_SUBMIT_PATH =
+  "/submissions/v3/integration/submit/148486827/35384a3e-7386-45b0-924e-84e5d6f637e4";
+
+test("a HubSpot mirror that never settles does not block the capture", async () => {
+  // The sibling test proves a FAILING mirror cannot abort the capture. This one
+  // proves a SLOW one cannot stall it, which is a different property and the
+  // more likely outage: submitStartNowLead passes no AbortSignal and sets no
+  // timeout, so a hung api.hsforms.com connection neither resolves nor rejects.
+  // Awaiting it would leave the visitor on a spinner forever with no error and
+  // no reachable retry -- and every failure-shaped test would still pass.
+  const requests = [];
+  await withTopNav(
+    {
+      state: "active",
+      fetchImpl: async (url, options) => {
+        const target = String(url);
+        if (new URL(target).host === "api.hsforms.com") {
+          requests.push({ url: target });
+          return new Promise(() => {}); // never settles
+        }
+        requests.push({ url: target, body: JSON.parse(options.body) });
+        return new Response(
+          JSON.stringify({
+            data: { run_id: "run-hubspot-hung", resend_after_seconds: 30 },
+          }),
+          { status: 202, headers: { "content-type": "application/json" } },
+        );
+      },
+    },
+    async () => {
+      await click(buttonWithText("Start Now", 0));
+      const dialog = document.querySelector(
+        'dialog[aria-label="Get started with Traigent"]',
+      );
+      await click(dialog.querySelector('input[type="checkbox"]'));
+      await changeInput(
+        dialog.querySelector('input[aria-label="Work email"]'),
+        "dev@example.com",
+      );
+      await click(buttonWithText("Email me a code"));
+
+      assert.match(dialog.textContent, /Check your email for the code/);
+      assert.deepEqual(
+        requests.map(({ url }) => new URL(url).pathname),
+        [HUBSPOT_SUBMIT_PATH, "/api/v1/leads"],
+      );
+    },
+  );
+});
+
+test("re-submitting the same address writes exactly one CRM record", async () => {
+  // The mirror must fire once per LEAD, not once per submit attempt. A capture
+  // is retried in ordinary conditions -- a backend 429/500, or a 404 while
+  // ENABLE_LEAD_ACCESS_ONBOARDING is still off, which is the most likely
+  // day-one state -- and each retry would otherwise write another CRM record
+  // and another founder notification for the same person.
+  //
+  // Driving it through "Use a different email" rather than the resend button is
+  // deliberate: resend is gated behind a cooldown the client clamps to 30s
+  // (a server-sent 0 is falsy and falls back), so a resend-driven test would
+  // click a disabled control and prove nothing. This exercises the same
+  // guarantee with no timers.
+  const requests = [];
+  await withTopNav(
+    {
+      state: "active",
+      fetchImpl: async (url, options) => {
+        const target = String(url);
+        if (new URL(target).host === "api.hsforms.com") {
+          requests.push({ url: target });
+          return new Response(JSON.stringify({}), { status: 200 });
+        }
+        requests.push({ url: target, body: JSON.parse(options.body) });
+        return new Response(
+          JSON.stringify({
+            data: { run_id: "run-resubmit", resend_after_seconds: 30 },
+          }),
+          { status: 202, headers: { "content-type": "application/json" } },
+        );
+      },
+    },
+    async () => {
+      await click(buttonWithText("Start Now", 0));
+      const dialog = document.querySelector(
+        'dialog[aria-label="Get started with Traigent"]',
+      );
+      await click(dialog.querySelector('input[type="checkbox"]'));
+
+      const submitSameAddress = async () => {
+        await changeInput(
+          dialog.querySelector('input[aria-label="Work email"]'),
+          "dev@example.com",
+        );
+        await click(buttonWithText("Email me a code"));
+        assert.match(dialog.textContent, /Check your email for the code/);
+      };
+
+      await submitSameAddress();
+      const goBack = [...dialog.querySelectorAll("button")].find((button) =>
+        /different email/i.test(button.textContent),
+      );
+      assert.ok(goBack, "the code step offers a way back to the email step");
+      await click(goBack);
+      await submitSameAddress();
+
+      const hubspotCalls = requests.filter(
+        ({ url }) => new URL(url).host === "api.hsforms.com",
+      );
+      const captureCalls = requests.filter(
+        ({ url }) => new URL(url).pathname === "/api/v1/leads",
+      );
+      // The backend genuinely saw two captures, so the single CRM record is
+      // deduplication and not a click that silently did nothing.
+      assert.equal(captureCalls.length, 2, "the second submit really happened");
+      assert.equal(hubspotCalls.length, 1, "exactly one CRM record per lead");
+    },
+  );
 });

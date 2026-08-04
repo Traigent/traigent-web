@@ -36,8 +36,7 @@ Clone ${FIRST_RUN_REPO_URL} and follow GUIDE.md.`;
  * behaviour is identical everywhere: copy the prompt, then open the LeadFunnel.
  */
 export function copyFirstRunPrompt() {
-  if (typeof navigator !== "undefined")
-    navigator.clipboard?.writeText?.(FIRST_RUN_INIT_PROMPT);
+  if (typeof navigator !== "undefined") navigator.clipboard?.writeText?.(FIRST_RUN_INIT_PROMPT);
 }
 
 /**
@@ -94,6 +93,10 @@ export default function LeadFunnel({ surface = "homepage_hero" }) {
   // When the funnel mounted — capture reports the seconds elapsed since, so the
   // backend can silently drop implausibly fast (bot) submissions.
   const mountedAt = useRef(Date.now());
+  // Last address mirrored to HubSpot, so a retried capture does not write a
+  // second CRM record for the same person. Cleared on failure so a later
+  // attempt can retry.
+  const mirroredEmail = useRef("");
 
   useEffect(() => {
     if (cooldown <= 0) return undefined;
@@ -154,35 +157,56 @@ export default function LeadFunnel({ surface = "homepage_hero" }) {
    * dormant front door does), so before activation every homepage lead reached
    * the CRM. Activating the funnel makes the live path the one visitors take,
    * and without this call marketing would silently stop receiving homepage
-   * leads the moment `VITE_FUNNEL_STATE` flips -- a regression with no error,
-   * no log and no obvious symptom. The backend's `lead_access_grants` table is
-   * not a CRM and nothing forwards it onward.
+   * leads the moment `VITE_FUNNEL_STATE` flips - a regression with no error, no
+   * log and no obvious symptom. `lead_access_grants` is a Postgres table, not a
+   * CRM, and nothing forwards it onward.
    *
    * Fire-and-forget on purpose: HubSpot is a marketing nicety and the funnel is
    * the product path, so a slow or failing CRM must never delay or fail a
    * capture. `submitStartNowLead` already swallows its own network errors; the
    * `.catch` covers anything else so this can never reject unhandled.
    *
+   * A FAILURE IS REPORTED, not swallowed into silence. Without the failure
+   * event this function would reproduce the exact class it exists to prevent:
+   * HubSpot re-enabling its free-provider block, a rotated form GUID or a CSP
+   * change would stop every homepage lead reaching the CRM with nothing to
+   * notice it by. The visitor still sees nothing - the funnel is unaffected -
+   * but the drop is now visible in analytics.
+   *
    * Bot filtering deliberately stays server-side (honeypot + elapsed-time, both
-   * checked by the backend). Re-implementing the thresholds here would duplicate
-   * a server constant that can drift. HubSpot therefore sees exactly the
-   * submissions the dormant path already sent it -- no new exposure.
+   * checked by the backend). Re-implementing the thresholds here would
+   * duplicate a server constant that can drift, so HubSpot sees exactly the
+   * submissions the dormant path already sent it - no new exposure.
    */
   const mirrorCaptureToHubSpot = (address) => {
+    // Once per address, not once per submit. A capture can be retried (backend
+    // 429/500, or a 404 while the funnel flag is still off) and each retry would
+    // otherwise write another CRM record for the same person.
+    if (mirroredEmail.current === address) return;
+    mirroredEmail.current = address;
     submitStartNowLead({ email: address, location: surface })
       .then((result) => {
-        if (result?.ok)
+        if (result?.ok) {
           trackEvent("lead_hubspot_submitted", { location: surface });
+          return;
+        }
+        // Allow a later attempt for this address to try again, and make the
+        // drop visible.
+        mirroredEmail.current = "";
+        trackEvent("lead_hubspot_failed", {
+          location: surface,
+          reason: result?.reason || "unknown",
+        });
       })
       .catch(() => {
-        /* never let the CRM break the funnel */
+        mirroredEmail.current = "";
+        trackEvent("lead_hubspot_failed", { location: surface, reason: "generic" });
       });
   };
 
-  // The EMAIL STEP's submit. Deliberately not `sendCode` itself: that is also
+  // The EMAIL STEP's submit. Deliberately NOT `sendCode` itself: that is also
   // wired to the code step's "resend" button, and a resend is the same lead, not
-  // a new one -- mirroring it again would inflate HubSpot submissions every time
-  // a visitor's first code was slow to arrive.
+  // a new one. Pinned by `a resend does not mirror the lead to HubSpot again`.
   const submitEmailStep = () => {
     mirrorCaptureToHubSpot(email.trim());
     return sendCode();
@@ -340,10 +364,7 @@ function DormantView({ headingRef, surface }) {
     if (busy || !email.trim() || !consent) return;
     setBusy(true);
     setError("");
-    const result = await submitStartNowLead({
-      email: email.trim(),
-      location: surface,
-    });
+    const result = await submitStartNowLead({ email: email.trim(), location: surface });
     setBusy(false);
     if (result.ok) {
       trackEvent("lead_hubspot_submitted", { location: surface });
@@ -365,8 +386,8 @@ function DormantView({ headingRef, surface }) {
         Connect your agent
       </h2>
       <p className="text-slate-400 mb-4">
-        Copy this and paste it into your coding agent — to run your first free
-        Traigent optimization.
+        Copy this and paste it into your coding agent — to run your first free Traigent
+        optimization.
       </p>
       <InstallCommand
         command={FIRST_RUN_INIT_PROMPT}
@@ -379,14 +400,12 @@ function DormantView({ headingRef, surface }) {
         {done ? (
           <p className="flex items-center gap-2 text-sm text-emerald-300">
             <ShieldCheck className="h-4 w-4 shrink-0" />
-            You&apos;re in — we&apos;ll be in touch about unlocking advanced
-            features.
+            You&apos;re in — we&apos;ll be in touch about unlocking advanced features.
           </p>
         ) : (
           <ConsentGate>
             <p className="text-slate-400 mb-4">
-              Enter your email below to get access to our most advanced
-              features.
+              Enter your email below to get access to our most advanced features.
             </p>
             <div className="mb-3">
               <ConsentCheckbox
@@ -419,9 +438,7 @@ function DormantView({ headingRef, surface }) {
                 </button>
               </form>
             ) : (
-              <p className="text-xs text-slate-500">
-                Tick the box above to continue.
-              </p>
+              <p className="text-xs text-slate-500">Tick the box above to continue.</p>
             )}
           </ConsentGate>
         )}
@@ -432,8 +449,8 @@ function DormantView({ headingRef, surface }) {
         )}
         {error === "generic" && (
           <p className="text-amber-400 text-sm mt-3" role="alert">
-            Something went wrong. Try again, or email amir@traigent.ai and
-            we&apos;ll set you up directly.
+            Something went wrong. Try again, or email amir@traigent.ai and we&apos;ll set you up
+            directly.
           </p>
         )}
       </div>
@@ -443,11 +460,7 @@ function DormantView({ headingRef, surface }) {
           href={FIRST_RUN_REPO_URL}
           target="_blank"
           rel="noopener noreferrer"
-          onClick={() =>
-            trackEvent("first_run_repo_clicked", {
-              location: `${surface}_lead_dormant`,
-            })
-          }
+          onClick={() => trackEvent("first_run_repo_clicked", { location: `${surface}_lead_dormant` })}
           className="inline-flex items-center text-slate-400 hover:text-white transition-colors"
         >
           <Github className="mr-1.5 h-3.5 w-3.5" />
@@ -457,11 +470,7 @@ function DormantView({ headingRef, surface }) {
           href={SDK_REPO_URL}
           target="_blank"
           rel="noopener noreferrer"
-          onClick={() =>
-            trackEvent("sdk_repo_clicked", {
-              location: `${surface}_lead_dormant`,
-            })
-          }
+          onClick={() => trackEvent("sdk_repo_clicked", { location: `${surface}_lead_dormant` })}
           className="inline-flex items-center text-slate-400 hover:text-white transition-colors"
         >
           <Github className="mr-1.5 h-3.5 w-3.5" />
@@ -510,23 +519,19 @@ function SuccessView({ email, surface, expiresAt, headingRef }) {
         Email verified
       </h2>
       <p className="text-slate-300 mb-2">
-        We just sent a <span className="font-semibold text-white">second</span>{" "}
-        email to <span className="font-semibold text-white">{email}</span> —
-        this one carries your{" "}
-        <span className="font-semibold text-white">access code</span>. Open the
-        registration page from that email, enter the code to create your
-        Traigent account, then generate your API key from the highlighted key
-        button in the portal&apos;s top bar.
+        We just sent a <span className="font-semibold text-white">second</span> email to{" "}
+        <span className="font-semibold text-white">{email}</span> — this one carries your{" "}
+        <span className="font-semibold text-white">access code</span>. Open the registration page
+        from that email, enter the code to create your Traigent account, then generate your API key
+        from the highlighted key button in the portal&apos;s top bar.
       </p>
       <p className="text-xs text-slate-500 mb-6">
-        The code works once and {formatCodeValidity(expiresAt)}. It is the only
-        way in from here — we don&apos;t sign you in on this page. Check spam if
-        it hasn&apos;t arrived within a minute.
+        The code works once and {formatCodeValidity(expiresAt)}. It is the only way in from here — we
+        don&apos;t sign you in on this page. Check spam if it hasn&apos;t arrived within a minute.
       </p>
 
       <p className="text-sm font-medium text-slate-300 mb-2">
-        While you wait — copy this and paste it into your local coding agent
-        (ideally on its strongest model):
+        While you wait — copy this and paste it into your local coding agent (ideally on its strongest model):
       </p>
       <InstallCommand
         command={FIRST_RUN_INIT_PROMPT}
@@ -545,11 +550,7 @@ function SuccessView({ email, surface, expiresAt, headingRef }) {
           href={FIRST_RUN_REPO_URL}
           target="_blank"
           rel="noopener noreferrer"
-          onClick={() =>
-            trackEvent("first_run_repo_clicked", {
-              location: `${surface}_lead_success`,
-            })
-          }
+          onClick={() => trackEvent("first_run_repo_clicked", { location: `${surface}_lead_success` })}
           className="inline-flex items-center text-slate-400 hover:text-white transition-colors"
         >
           <Github className="mr-1.5 h-3.5 w-3.5" />
@@ -559,11 +560,7 @@ function SuccessView({ email, surface, expiresAt, headingRef }) {
           href={SDK_REPO_URL}
           target="_blank"
           rel="noopener noreferrer"
-          onClick={() =>
-            trackEvent("sdk_repo_clicked", {
-              location: `${surface}_lead_success`,
-            })
-          }
+          onClick={() => trackEvent("sdk_repo_clicked", { location: `${surface}_lead_success` })}
           className="inline-flex items-center text-slate-400 hover:text-white transition-colors"
         >
           <Github className="mr-1.5 h-3.5 w-3.5" />
