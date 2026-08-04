@@ -14,8 +14,10 @@ depend on synchronizing an Actions Variable deletion with a deployment.
 
 1. Deploy the compatible Backend registration/lead routes and portal
    registration flow.
-2. Provision `LEAD_ACCESS_RUN_ID_SECRET`,
-   `PORTAL_ACCESS_IDENTITY_HMAC_SECRET`, and the lead-email provider bindings.
+2. Provision distinct `LEAD_ACCESS_RUN_ID_SECRET`, `LEAD_ACCESS_HASH_SECRET`,
+   and `PORTAL_ACCESS_IDENTITY_HMAC_SECRET` values, plus the lead-email provider
+   bindings. The run-ID and identity-HMAC values are effectively non-rotatable
+   after production use; preserve them in the managed secret store.
 3. Enable `ENABLE_LEAD_ACCESS_ONBOARDING` in Backend; both lead routes return
    404 while it is disabled.
 4. Allow `https://traigent.ai` and `https://www.traigent.ai` in Backend and
