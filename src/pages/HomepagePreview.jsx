@@ -1,6 +1,6 @@
 ﻿import React, { useCallback, useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Check, ChevronRight, ChevronDown, ExternalLink, Play, Pause, Terminal } from "lucide-react";
+import { ArrowRight, ArrowUp, ArrowDown, Check, ChevronRight, ChevronDown, ExternalLink, Play, Pause, Terminal } from "lucide-react";
 import {
   OptimizationEngineBody,
   FeedbackLoopConnector,
@@ -8,7 +8,7 @@ import {
   BenchmarkCardBody,
   ObservabilityCardBody,
 } from "../components/PlatformShowcase";
-import { SlideMarketOpportunity, SlideFourPillars, SlideCustomerObjectiveSpider, SlideParetoFrontier } from "./PitchShort";
+import { SlideMarketOpportunity, SlideFourPillars, SlideCustomerObjectiveSpider, SlideParetoFrontier, OptimizerRing } from "./PitchShort";
 import { Link, useSearchParams } from "react-router-dom";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -181,7 +181,7 @@ export default function HomepagePreview() {
               className="whitespace-nowrap font-bold text-slate-100 leading-[1.15] tracking-tight mb-6"
               style={{ fontSize: 'clamp(1rem, 4.5vw, 3.6rem)', letterSpacing: '-0.02em' }}
             >
-              Vibe Coding <span className="text-[#4D8EF8]">Optimal</span> <span className="text-white">AI Agents</span>
+              Evolving <span className="text-[#4D8EF8]">Optimized</span> <span className="text-white">AI Agents</span>
             </motion.p>
             {/* Hero CTA row — ONE journey start.
                 "Connect your agent" opens the lead funnel (email -> 6-digit
@@ -238,22 +238,19 @@ export default function HomepagePreview() {
                 Others just observe, measure, and test your agent. Traigent goes much further …
               </p>
               <p className="text-white text-xl md:text-3xl font-semibold mb-5 md:whitespace-nowrap">
-                Traigent <span className="text-[#4D8EF8]">builds</span> the optimal agent — with <span className="text-[#4D8EF8]">better outcomes,</span> at <span className="text-[#4D8EF8]">lower costs</span>
+                Traigent <span className="text-[#4D8EF8]">evolves</span> agents to <span className="text-[#4D8EF8]">better outcomes,</span> at <span className="text-[#4D8EF8]">lower costs</span>
               </p>
               <div className="flex flex-wrap items-center justify-center gap-2">
-                <span className="text-[#4D8EF8] font-semibold text-lg md:text-2xl mr-1">Better</span>
-                {["Accuracy", "Guardrailing", "Conversion", "Resolution", "Speed", "Grounding"].map((kpi) => (
+                <span className="text-[#4D8EF8] font-medium text-lg md:text-2xl mr-1">Better</span>
+                {["Accuracy", "Guardrails", "Conversion", "Resolution", "Speed"].map((kpi) => (
                   <span
                     key={kpi}
-                    className="px-4 py-2 rounded-full border border-slate-700 bg-slate-900/50 text-slate-200 text-lg md:text-2xl"
+                    className="px-3 py-1 rounded-md border text-lg md:text-2xl font-medium text-white"
+                    style={{ backgroundColor: "#000000", borderColor: "#ffffff" }}
                   >
                     {kpi}
                   </span>
                 ))}
-                <div className="w-full mt-2 text-lg md:text-2xl">
-                  <span className="text-slate-400 italic">…or any KPI you can measure</span>
-                  <span className="ml-1 font-semibold text-slate-300">— at <span className="text-[#4D8EF8]">lower costs</span></span>
-                </div>
               </div>
             </motion.div>
             {/* Two-column value summary removed — the "A Problem About to Explode"
@@ -265,13 +262,43 @@ export default function HomepagePreview() {
         </div>
       </section>
 
-      {/* Reserved footprint for an in-process customer quote, awaiting sign-off.
-          EXACT-size/location empty placeholder so the section below already
-          starts where it will once the quote lands, and the approved quote drops
-          in with zero layout shift. No quote text ships here until approved. */}
-      <section aria-hidden="true" className="bg-[#080808] border-t border-slate-800/50 py-14 md:py-20">
+      {/* Temporary filler for the reserved quote spot: the "Automated
+          Optimization" card (Traigent's Analyze → Deduce → Improve → Repeat loop
+          + outcome benefits), shown until the in-process customer quote is
+          approved — then the quote swaps back into this exact spot. Laid out
+          compact/horizontal to keep it short. */}
+      <section className="bg-[#080808] border-t border-slate-800/50 py-10 md:py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="min-h-[20rem] md:min-h-[18rem]" />
+          <div className="rounded-2xl border-2 bg-slate-950 p-5 md:p-6" style={{ borderColor: "#4D8EF8" }}>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-5">
+              <OptimizerRing size={170} gradientId="ringGradQuoteFiller" />
+              <h3 className="text-xl md:text-2xl font-bold text-white leading-tight text-center">Automated Agent Evolution</h3>
+            </div>
+            {/* 3 benefit boxes — horizontal row so the card stays short */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 md:gap-3 mt-4">
+              <div className="bg-slate-900/70 border-2 rounded-lg px-3 py-2 text-center" style={{ borderColor: "#f59e0b66" }}>
+                <div className="flex items-center justify-center gap-1.5" style={{ color: "#f59e0b" }}>
+                  <ArrowDown className="w-5 h-5" strokeWidth={3} />
+                  <span className="text-xl md:text-2xl font-extrabold tracking-tight leading-none">up to 60%</span>
+                </div>
+                <div className="text-[10px] md:text-xs font-mono uppercase tracking-wider text-slate-300 mt-1">LLM cost reduction</div>
+              </div>
+              <div className="bg-slate-900/70 border-2 rounded-lg px-3 py-2 text-center" style={{ borderColor: "#4D8EF866" }}>
+                <div className="flex items-center justify-center gap-1.5" style={{ color: "#4D8EF8" }}>
+                  <ArrowDown className="w-5 h-5" strokeWidth={3} />
+                  <span className="text-xl md:text-2xl font-extrabold tracking-tight leading-none">up to 8 wks</span>
+                </div>
+                <div className="text-[10px] md:text-xs font-mono uppercase tracking-wider text-slate-300 mt-1">Engineering time reclaimed</div>
+              </div>
+              <div className="bg-slate-900/70 border-2 rounded-lg px-3 py-2 text-center" style={{ borderColor: "#a78bfa66" }}>
+                <div className="flex items-center justify-center gap-1.5" style={{ color: "#a78bfa" }}>
+                  <ArrowUp className="w-5 h-5" strokeWidth={3} />
+                  <span className="text-xl md:text-2xl font-extrabold tracking-tight leading-none">100%</span>
+                </div>
+                <div className="text-[10px] md:text-xs font-mono uppercase tracking-wider text-slate-300 mt-1">confidence in what you ship</div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
