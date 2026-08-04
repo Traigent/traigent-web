@@ -14,6 +14,7 @@ import {
   isLeadFunnelUnavailableError,
 } from "../lib/leadApi";
 import { trackEvent } from "../lib/analytics";
+import { submitStartNowLead } from "../lib/hubspotForms";
 import { priorityModalFocusRegion } from "../lib/modalFocus";
 
 // Fallback only. Every capture 202 states the authoritative cooldown in
@@ -175,7 +176,7 @@ export default function LeadFunnel({ surface = "homepage_hero" }) {
 
   let body;
   if (isDormant) {
-    body = <DormantView headingRef={transitionHeadingRef} />;
+    body = <DormantView headingRef={transitionHeadingRef} surface={surface} />;
   } else if (step === "success") {
     body = (
       <SuccessView
@@ -275,7 +276,40 @@ export default function LeadFunnel({ surface = "homepage_hero" }) {
   return body;
 }
 
-function DormantView({ headingRef }) {
+/**
+ * Dormant front door. When the 6-digit lead funnel's backend is not wired
+ * (`isLeadFunnelEnabled()` false, or a runtime 5xx flipped `runtimeUnavailable`),
+ * the button's whole job is unchanged: hand the visitor the one sentence to paste
+ * into their coding agent. No email gate — the prompt is the product. It is also
+ * already on their clipboard (the CTA copies it on click); this modal shows it
+ * with a copy button and the paste instructions so nothing is hidden. This is what
+ * "Connect your agent" shows everywhere until TraigentBackend#2551 turns the real
+ * funnel on; when that lands, `isDormant` goes false and this path is skipped.
+ */
+function DormantView({ headingRef, surface }) {
+  const [email, setEmail] = useState("");
+  const [consent, setConsent] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(""); // "" | "business_email" | "generic"
+  const [done, setDone] = useState(false);
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    if (busy || !email.trim() || !consent) return;
+    setBusy(true);
+    setError("");
+    const result = await submitStartNowLead({ email: email.trim(), location: surface });
+    setBusy(false);
+    if (result.ok) {
+      trackEvent("lead_hubspot_submitted", { location: surface });
+      setDone(true);
+    } else if (result.reason === "business_email") {
+      setError("business_email");
+    } else {
+      setError("generic");
+    }
+  };
+
   return (
     <div>
       <h2
@@ -283,11 +317,100 @@ function DormantView({ headingRef }) {
         tabIndex={-1}
         className="text-2xl font-bold text-white mb-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-400"
       >
-        Self-serve setup is unavailable
+        Connect your agent
       </h2>
-      <p className="leading-relaxed text-slate-300">
-        Please close this window and try again later.
+      <p className="text-slate-400 mb-4">
+        Copy this and paste it into your coding agent — to run your first free Traigent
+        optimization.
       </p>
+      <InstallCommand
+        command={FIRST_RUN_INIT_PROMPT}
+        secondary="Paste this into your local coding agent — Claude Code, Cursor, Codex, whichever you use — ideally running the strongest model available. It clones the walkthrough and runs your first optimization. No keys or credit card required."
+      />
+
+      {/* Optional email unlock — does NOT gate the prompt above. Captured
+          straight into HubSpot's Start-Now form (always live). */}
+      <div className="mt-6 pt-6 border-t border-slate-800">
+        {done ? (
+          <p className="flex items-center gap-2 text-sm text-emerald-300">
+            <ShieldCheck className="h-4 w-4 shrink-0" />
+            You&apos;re in — we&apos;ll be in touch about unlocking advanced features.
+          </p>
+        ) : (
+          <ConsentGate>
+            <p className="text-slate-400 mb-4">
+              Enter your email below to get access to our most advanced features.
+            </p>
+            <div className="mb-3">
+              <ConsentCheckbox
+                id={`${surface}-dormant-consent`}
+                checked={consent}
+                onChange={setConsent}
+              />
+            </div>
+            {consent ? (
+              <form onSubmit={onSubmit} className="space-y-3">
+                <label htmlFor={`${surface}-dormant-email`} className="sr-only">
+                  Email address
+                </label>
+                <input
+                  id={`${surface}-dormant-email`}
+                  type="email"
+                  required
+                  placeholder="you@yourcompany.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={busy}
+                  className="w-full px-4 py-3 rounded-lg bg-slate-950/60 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-[#4D8EF8] transition-colors"
+                />
+                <button
+                  type="submit"
+                  disabled={busy || !email.trim() || !consent}
+                  className="w-full bg-[#1A6BF5] hover:bg-[#4D8EF8] disabled:opacity-60 disabled:cursor-not-allowed text-white px-5 py-3 rounded-lg font-medium transition-colors"
+                >
+                  {busy ? "Sending…" : "Unlock advanced features"}
+                </button>
+              </form>
+            ) : (
+              <p className="text-xs text-slate-500">Tick the box above to continue.</p>
+            )}
+          </ConsentGate>
+        )}
+        {error === "business_email" && (
+          <p className="text-amber-400 text-sm mt-3" role="alert">
+            Please enter your <u>business</u> email.
+          </p>
+        )}
+        {error === "generic" && (
+          <p className="text-amber-400 text-sm mt-3" role="alert">
+            Something went wrong. Try again, or email amir@traigent.ai and we&apos;ll set you up
+            directly.
+          </p>
+        )}
+      </div>
+
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-5 text-sm">
+        <a
+          href={FIRST_RUN_REPO_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => trackEvent("first_run_repo_clicked", { location: `${surface}_lead_dormant` })}
+          className="inline-flex items-center text-slate-400 hover:text-white transition-colors"
+        >
+          <Github className="mr-1.5 h-3.5 w-3.5" />
+          Browse the walkthrough this clones
+        </a>
+        <a
+          href={SDK_REPO_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => trackEvent("sdk_repo_clicked", { location: `${surface}_lead_dormant` })}
+          className="inline-flex items-center text-slate-400 hover:text-white transition-colors"
+        >
+          <Github className="mr-1.5 h-3.5 w-3.5" />
+          Browse the Traigent SDK before you install
+        </a>
+      </div>
     </div>
   );
 }

@@ -58,6 +58,64 @@ export async function notifyRepeatVisit({ email, formId, location, label }) {
   }
 }
 
+/**
+ * HubSpot rejects a submission with 400 + an errors[] entry referencing a
+ * blocked domain when the form's "block free email providers" rule is on.
+ * The Start-Now form has that rule turned OFF (any email is accepted), so this
+ * normally never fires — kept as a defensive branch in case it is re-enabled.
+ */
+function isBlockedEmailDomainError(status, body) {
+  if (status !== 400 || !body || !Array.isArray(body.errors)) return false;
+  return body.errors.some((e) => {
+    const t = String(e.errorType || "").toUpperCase();
+    const m = String(e.message || "").toLowerCase();
+    return (
+      t === "BLOCKED_EMAIL_DOMAIN" ||
+      t === "EMAIL_INVALID" ||
+      m.includes("blocked from form submissions") ||
+      m.includes("free email") ||
+      m.includes("business email")
+    );
+  });
+}
+
+/**
+ * USER-FACING Start-Now lead submission — the fallback path the LeadFunnel uses
+ * when its own backend (the 6-digit funnel) is dormant. Unlike notifyRepeatVisit
+ * (silent, fire-and-forget), this surfaces success/failure so the modal can show
+ * a real form and react to the result. Portal ID is hardcoded above, so this
+ * works in any environment without an Actions Variable.
+ *
+ * @returns {Promise<{ok: true} | {ok: false, reason: "business_email" | "generic"}>}
+ */
+export async function submitStartNowLead({ email, location }) {
+  const url = `https://api.hsforms.com/submissions/v3/integration/submit/${HUBSPOT_PORTAL_ID}/${STARTNOW_FORM_ID}`;
+  let res;
+  try {
+    res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        submittedAt: Date.now(),
+        fields: [{ objectTypeId: "0-1", name: "email", value: email }],
+        context: {
+          hutk: readHubSpotCookie(),
+          pageUri: typeof window !== "undefined" ? window.location.href : "",
+          pageName: `Traigent — Start Now (${location || "unknown"})`,
+        },
+      }),
+    });
+  } catch {
+    return { ok: false, reason: "generic" };
+  }
+  if (res.ok) return { ok: true };
+  const body = await res.json().catch(() => null);
+  if (isBlockedEmailDomainError(res.status, body)) {
+    return { ok: false, reason: "business_email" };
+  }
+  return { ok: false, reason: "generic" };
+}
+
 /** Convenience wrappers so call sites don't have to remember form IDs. */
 export function notifyStartNowRepeat({ email, location }) {
   return notifyRepeatVisit({ email, formId: STARTNOW_FORM_ID, location, label: "Start Now" });
