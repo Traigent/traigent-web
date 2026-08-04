@@ -8,7 +8,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { trackEvent } from "../lib/analytics";
 import { ArrowRight, ArrowDown, ArrowUp, ArrowUpRight, Blocks, ChevronsDown, Database, DollarSign, Check, Clock, MessageSquare, Play, RefreshCw, ShieldCheck, Target, TrendingDown, TrendingUp, Users, X, Zap } from "lucide-react";
-import StartNowModal from "../components/StartNowModal";
+import LeadFunnelModal from "../components/LeadFunnelModal";
+import { copyFirstRunPrompt } from "../components/LeadFunnel";
 
 // Shared optimizer ring — clockwise Learn → Deduce → <thirdLabel> → Repeat
 // loop. Used by slide 1, slide 2 (BEFORE/TRAIGENT/AFTER middle panel — also
@@ -517,7 +518,7 @@ function SlideInvestorCTA() {
             </p>
             <button
               type="button"
-              onClick={() => setShowStartNow(true)}
+              onClick={() => { copyFirstRunPrompt(); setShowStartNow(true); }}
               className="mt-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-lg font-bold text-white shadow-xl transition-transform hover:scale-105 active:scale-100"
               style={{
                 background: "linear-gradient(135deg, #4D8EF8 0%, #1A6BF5 100%)",
@@ -564,7 +565,7 @@ function SlideInvestorCTA() {
         </div>
       </div>
       {showStartNow && (
-        <StartNowModal
+        <LeadFunnelModal
           onClose={() => setShowStartNow(false)}
           location="investor_pitch_cta"
         />
@@ -1613,18 +1614,18 @@ function TrafficDot({ c }) {
 // recommended, and improved, on a repeating cycle. Product-concept slide.
 export function SlideFourPillars() {
   const pillars = [
-    { num: "1 · DATASET", name: "The dataset", one: 'What "good" is measured on.',
+    { num: "1 · DATASET", name: "The dataset", one: 'What the agent is optimized against.',
       light: "a", label: "Amber", lc: "#f59e0b",
       rec: "Reconstruct from logs, harden for coverage & discrimination." },
     { num: "2 · EVALUATION", name: "The evaluation", one: "How we grade it — the scorer & its rules.",
       light: "r", label: "Red", lc: "#f43f5e",
       rec: "Manufacture a verifier or calibrate the judge; confirm it picks the true winner." },
-    { num: "3 · DIMENSIONS", name: "Agent config dimensions", one: "Thousands of optional permutations evaluated.",
+    { num: "3 · DIMENSIONS", name: "Agent config dimensions", one: "Consider all building block options",
       light: "a", label: "Amber", lc: "#f59e0b",
-      rec: "model · retrieval · prompt · format · examples · reasoning · multi-model routing/cascading …" },
+      rec: "models · parameters · retrieval · prompt · format · examples · reasoning · tools · multi-model routing/cascading …" },
     { num: "4 · SEARCH", name: "Finding the optimal values", one: "ML algorithms converge rapidly.",
       light: "g", label: "Green", lc: "#34d399",
-      rec: "Seeded hypothesis-chain → the accuracy → cost/latency Pareto." },
+      rec: "Reaching the Maximized KPIs vs. cost/latency Pareto frontier." },
   ];
   const steps = ["Assess", "Score", "Recommend", "Improve"];
   return (
@@ -1632,10 +1633,10 @@ export function SlideFourPillars() {
       <div className="text-center mb-5">
         <div className="text-2xl md:text-3xl font-mono uppercase tracking-[0.2em] text-blue-400 mb-3">The Traigent Solution</div>
         <p className="text-lg md:text-2xl font-semibold text-slate-200 mt-2 leading-snug">
-          Traigent builds <span className="text-blue-400">THE OPTIMAL agent</span> from the ground up — programming it across <span className="text-white">4 pillars</span>
+          Traigent builds <span className="text-blue-400">THE OPTIMAL agent</span> from the ground up — optimizing it across <span className="text-white">4 pillars</span>
         </p>
         <p className="text-lg md:text-2xl font-semibold text-slate-200 mt-1.5 leading-snug">
-          Just install <span className="text-white">Traigent</span> on <span className="text-blue-400">your coding agent</span>
+          Install <span className="text-white">Traigent</span> via <span className="text-blue-400">your coding agent</span> to get started
         </p>
       </div>
       <div className="grid grid-cols-4 gap-3">
@@ -1961,7 +1962,7 @@ function SlideCompetition() {
     ["Measure agent quality", [2, 2, 1, 0, 1]],
     ["Improve the benchmark (dataset + evaluator)", [2, 1, 0, 0, 1]],
     ["Build the optimal agent from the ground up", [2, 0, 0, 1, 1]],
-    ["Utilize all config options (model · retrieval · prompt · format · examples · routing, cascading)", [2, 0, 1, 0, 1]],
+    ["Utilize all config options (models · parameters · retrieval · prompt · format · examples · tools · routing, cascading)", [2, 0, 1, 0, 1]],
     ["Prove the optimal (Pareto) frontier", [2, 0, 0, 0, 0]],
     ["Optimize cost + latency, not just accuracy", [2, 1, 0, 0, 1]],
     ["Runs through any coding agent (Claude Code / Codex / Gemini)", [2, 0, 0, 0, 0]],

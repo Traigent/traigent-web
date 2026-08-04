@@ -14,7 +14,8 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import versionInfo from "../version.json";
 import { Helmet } from "react-helmet-async";
-import StartNowModal from "../components/StartNowModal";
+import LeadFunnelModal from "../components/LeadFunnelModal";
+import { copyFirstRunPrompt } from "../components/LeadFunnel";
 import ContactSection from "../components/ContactSection";
 import BlogHighlights from "../components/BlogHighlights";
 import { trackEvent } from "../lib/analytics";
@@ -118,7 +119,7 @@ export default function Homepage() {
           })}
         </script>
       </Helmet>
-      {showStartNow && <StartNowModal onClose={() => setShowStartNow(false)} location="homepage_hero" />}
+      {showStartNow && <LeadFunnelModal onClose={() => setShowStartNow(false)} location="homepage_hero" />}
       {/* Hero Section */}
       <section className="relative overflow-x-clip bg-[#080808] text-white">
         {/* Noise texture overlay */}
@@ -621,6 +622,7 @@ def answer_question(question: str) -> str:
               <button
                 onClick={() => {
                   trackEvent("start_now_clicked", { location: "cta_section" });
+                  copyFirstRunPrompt();
                   setShowStartNow(true);
                 }}
                 className="border border-slate-600 hover:border-slate-400 text-slate-200 hover:text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
@@ -695,6 +697,7 @@ def answer_question(question: str) -> str:
                     type="button"
                     onClick={() => {
                       trackEvent("github_gate_opened", { location: "homepage_footer" });
+                      copyFirstRunPrompt();
                       setShowStartNow(true);
                     }}
                     className="text-slate-400 hover:text-white transition-colors"

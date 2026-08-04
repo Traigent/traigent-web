@@ -6,7 +6,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { trackEvent } from "../lib/analytics";
 import { useSharedSetting } from "../lib/useSharedSetting";
 import { useCustomSearchSpace } from "../lib/useCustomSearchSpace";
-import StartNowModal from "../components/StartNowModal";
+import LeadFunnelModal from "../components/LeadFunnelModal";
+import { copyFirstRunPrompt } from "../components/LeadFunnel";
 import CalculatorTopBar from "../components/CalculatorTopBar";
 import { useKnownContactNotify } from "../lib/useKnownContactNotify";
 import { notifyRoiCalcViewed } from "../lib/hubspotForms";
@@ -276,7 +277,6 @@ export default function ROICalculator() {
                     <button
                       key={p.value}
                       type="button"
-                      aria-pressed={active}
                       onClick={() => {
                         setMonthlySpend(p.value);
                         trackEvent("roi_spend_preset_clicked", { preset: p.value });
@@ -302,8 +302,6 @@ export default function ROICalculator() {
                 step="1"
                 value={positionFromSpend(monthlySpend)}
                 onChange={(e) => setMonthlySpend(spendFromPosition(Number(e.target.value)))}
-                aria-label="Monthly LLM spend"
-                aria-valuetext={`${formatUSD(monthlySpend)} / month`}
                 className="w-full accent-[#1A6BF5]"
               />
               <div className="flex justify-between text-xs text-slate-500 mt-2 font-mono">
@@ -338,8 +336,6 @@ export default function ROICalculator() {
                 step="1"
                 value={passesPerYear}
                 onChange={(e) => setPassesPerYear(Number(e.target.value))}
-                aria-label="Optimization passes per year"
-                aria-valuetext={`${passesPerYear} ${passesPerYear === 1 ? "pass" : "passes"} per year`}
                 className="w-full accent-[#1A6BF5]"
               />
               <div className="flex justify-between text-xs text-slate-500 mt-2 font-mono">
@@ -368,8 +364,6 @@ export default function ROICalculator() {
                 step="5"
                 value={hourlyRate}
                 onChange={(e) => setHourlyRate(Number(e.target.value))}
-                aria-label="Engineer hourly rate (fully-loaded)"
-                aria-valuetext={`$${hourlyRate} per hour`}
                 className="w-full accent-[#1A6BF5]"
               />
               <div className="flex justify-between text-xs text-slate-500 mt-2 font-mono">
@@ -397,7 +391,6 @@ export default function ROICalculator() {
               {Object.entries(TIERS).map(([key, t]) => (
                 <button
                   key={key}
-                  aria-pressed={tier === key}
                   onClick={() => setTier(key)}
                   className={`text-left rounded-xl p-4 border transition-all ${
                     tier === key
@@ -458,7 +451,6 @@ export default function ROICalculator() {
                 return (
                   <button
                     key={opt.key}
-                    aria-pressed={isActive}
                     onClick={() => {
                       setSavingsScenario(opt.key);
                       // When Custom is clicked, always reset to 15% so it opens at a clean default.
@@ -499,8 +491,6 @@ export default function ROICalculator() {
                   step="1"
                   value={customSavingsPct}
                   onChange={(e) => setCustomSavingsPct(Number(e.target.value))}
-                  aria-label="Custom savings percentage"
-                  aria-valuetext={`${customSavingsPct}% of monthly LLM spend`}
                   className="w-full accent-[#1A6BF5]"
                 />
                 <div className="flex justify-between text-xs text-slate-500 mt-2 font-mono">
@@ -804,6 +794,7 @@ export default function ROICalculator() {
                 type="button"
                 onClick={() => {
                   trackEvent("start_now_clicked", { location: "roi_calculator" });
+                  copyFirstRunPrompt();
                   setShowStartNow(true);
                 }}
                 className="inline-flex items-center border border-slate-600 hover:border-slate-400 text-slate-200 hover:text-white font-medium px-6 py-3 rounded-lg transition-colors"
@@ -825,7 +816,7 @@ export default function ROICalculator() {
           </motion.div>
         </div>
       </section>
-      {showStartNow && <StartNowModal onClose={() => setShowStartNow(false)} location="roi_calculator" />}
+      {showStartNow && <LeadFunnelModal onClose={() => setShowStartNow(false)} location="roi_calculator" />}
     </>
   );
 }

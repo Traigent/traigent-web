@@ -15,7 +15,7 @@ import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import versionInfo from "../version.json";
 import { Helmet } from "react-helmet-async";
 import LeadFunnelModal from "../components/LeadFunnelModal";
-import { FIRST_RUN_INIT_PROMPT } from "../components/LeadFunnel";
+import { copyFirstRunPrompt } from "../components/LeadFunnel";
 import ContactSection from "../components/ContactSection";
 import BlogHighlights from "../components/BlogHighlights";
 import { trackEvent } from "../lib/analytics";
@@ -68,6 +68,7 @@ export default function HomepagePreview() {
   // location are the same value by construction and cannot drift apart again.
   const openLeadFunnel = useCallback((location) => {
     trackEvent("lead_funnel_opened", { location });
+    copyFirstRunPrompt();
     setLeadFunnelLocation(location);
   }, []);
   const [benefitsOpen, setBenefitsOpen] = useState(false);
@@ -202,7 +203,6 @@ export default function HomepagePreview() {
               <button
                 type="button"
                 onClick={() => {
-                  navigator.clipboard?.writeText?.(FIRST_RUN_INIT_PROMPT);
                   openLeadFunnel("homepage_hero");
                 }}
                 className="treasure-halo inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white text-base md:text-lg font-semibold transition-colors"
@@ -224,21 +224,41 @@ export default function HomepagePreview() {
                 </span>
               </Link>
             </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15, duration: 0.5 }}
+              className="mt-8 max-w-6xl mx-auto text-center"
+            >
+              <p className="text-slate-400 text-lg md:text-xl mb-6">
+                Others just observe, measure, and test your agent. Traigent goes much further …
+              </p>
+              <p className="text-white text-xl md:text-3xl font-semibold mb-5 md:whitespace-nowrap">
+                Traigent <span className="text-[#4D8EF8]">builds</span> the optimal agent — with <span className="text-[#4D8EF8]">better outcomes</span>, at <span className="text-[#4D8EF8]">lower costs</span>
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                <span className="text-[#4D8EF8] font-semibold text-lg md:text-2xl mr-1">Better</span>
+                {["Accuracy", "Guardrailing", "Conversion", "Resolution", "Speed", "Grounding"].map((kpi) => (
+                  <span
+                    key={kpi}
+                    className="px-4 py-2 rounded-full border border-slate-700 bg-slate-900/50 text-slate-200 text-lg md:text-2xl"
+                  >
+                    {kpi}
+                  </span>
+                ))}
+                <div className="w-full mt-2 text-lg md:text-2xl">
+                  <span className="text-slate-400 italic">…or any KPI you can measure</span>
+                  <span className="ml-1 font-semibold text-slate-300">— at <span className="text-[#4D8EF8]">lower costs</span></span>
+                </div>
+              </div>
+            </motion.div>
             {/* Two-column value summary removed — the "A Problem About to Explode"
                 (SlideMarketOpportunity) graphic below now sits directly under the hero. */}
 
             {/* Customers band moved out of the hero — now its own section below. */}
           </div>
 
-        </div>
-      </section>
-
-      {/* How It Works — three-panel BEFORE / TRAIGENT / AFTER story.
-          Component is shared with /pitch-short(-2) slide 21 so the visual
-          stays identical between the homepage and the deck. */}
-      <section className="pt-0 pb-8 md:pb-10 bg-[#080808]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SlideMarketOpportunity hideHeader compact />
         </div>
       </section>
 
@@ -600,6 +620,13 @@ def answer_question(question: str) -> str:
               to { transform: translateX(-50%); }
             }
           `}</style>
+        </div>
+      </section>
+
+      {/* Wave / Pain / Cure (SlideMarketOpportunity) — moved to just above Contact Us. */}
+      <section className="pt-8 md:pt-12 pb-8 md:pb-12 bg-[#080808] border-t border-slate-800/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <SlideMarketOpportunity hideHeader compact />
         </div>
       </section>
 

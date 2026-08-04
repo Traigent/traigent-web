@@ -20,7 +20,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, ChevronDown, ChevronUp, Pause, Play, RotateCcw, SkipBack, SkipForward, Sparkles } from "lucide-react";
 import { useRemoveChatWidget } from "../lib/useRemoveChatWidget";
 import ChatKillerStyle from "../lib/ChatKillerStyle";
-import StartNowModal from "../components/StartNowModal";
+import LeadFunnelModal from "../components/LeadFunnelModal";
+import { copyFirstRunPrompt } from "../components/LeadFunnel";
 import { notifyStoryWatched } from "../lib/hubspotForms";
 import { useKnownContactNotify } from "../lib/useKnownContactNotify";
 import { usePageView } from "../lib/usePageView";
@@ -456,7 +457,7 @@ function Act5Punch({ onComplete, startAtEnd = false, paused = false }) {
             booker in a new tab. */}
         <button
           type="button"
-          onClick={() => setShowStartNow(true)}
+          onClick={() => { copyFirstRunPrompt(); setShowStartNow(true); }}
           className="border border-slate-600 hover:border-slate-400 text-slate-200 hover:text-white px-6 py-3 rounded-lg text-base font-medium transition-colors whitespace-nowrap"
         >
           Start Now
@@ -470,7 +471,7 @@ function Act5Punch({ onComplete, startAtEnd = false, paused = false }) {
           Book a demo
         </a>
       </motion.div>
-      {showStartNow && <StartNowModal onClose={() => setShowStartNow(false)} location="story_act_5" />}
+      {showStartNow && <LeadFunnelModal onClose={() => setShowStartNow(false)} location="story_act_5" />}
     </div>
   );
 }

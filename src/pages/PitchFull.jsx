@@ -6,7 +6,8 @@ import { Helmet } from "react-helmet-async";
 import { ConvergenceDiagram, KillerStatsGrid, ThreeProductsGrid } from "./pitch/shared";
 import { OnePager2Slide } from "./OnePager2";
 import BrandMark from "../components/BrandMark";
-import StartNowModal from "../components/StartNowModal";
+import LeadFunnelModal from "../components/LeadFunnelModal";
+import { copyFirstRunPrompt } from "../components/LeadFunnel";
 import { useKnownContactNotify } from "../lib/useKnownContactNotify";
 import { notifyPitchDeckViewed } from "../lib/hubspotForms";
 import { usePageView } from "../lib/usePageView";
@@ -937,7 +938,7 @@ export function Slide20GetStarted({ bookingHref = "https://meetings-eu1.hubspot.
   return (
     <div className="text-center max-w-5xl mx-auto">
       {showStartNow && (
-        <StartNowModal onClose={() => setShowStartNow(false)} location="pitch_slide20" />
+        <LeadFunnelModal onClose={() => setShowStartNow(false)} location="pitch_slide20" />
       )}
       <h2 className="text-5xl md:text-6xl font-bold text-white mb-4">Get Started</h2>
       <p className="text-xl text-slate-400 mb-12">Low risk. Fast result. Pick your path.</p>
@@ -948,7 +949,7 @@ export function Slide20GetStarted({ bookingHref = "https://meetings-eu1.hubspot.
           <p className="text-slate-400 mb-5 text-sm">No API keys. No spend. ~6 seconds to a real result on your laptop.</p>
           <button
             type="button"
-            onClick={() => setShowStartNow(true)}
+            onClick={() => { copyFirstRunPrompt(); setShowStartNow(true); }}
             className="w-full bg-slate-950 border border-slate-700 hover:border-blue-500/60 rounded-lg px-4 py-3 font-mono text-sm text-slate-200 text-left transition-colors"
           >
             <span className="text-slate-500">$ </span>uv tool install <span style={{ color: AMBER }}>"traigent[…]"</span>
@@ -1362,7 +1363,6 @@ export function PitchDeck({ slides }) {
           <button
             onClick={prev}
             disabled={current === 0}
-            aria-label="Previous slide"
             className="text-slate-500 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center gap-1 text-sm"
           >
             <ChevronLeft className="w-5 h-5" />
@@ -1385,7 +1385,6 @@ export function PitchDeck({ slides }) {
           <button
             onClick={next}
             disabled={current === total - 1}
-            aria-label="Next slide"
             className="text-slate-500 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center gap-1 text-sm"
           >
             <span className="hidden md:inline">Next</span>
