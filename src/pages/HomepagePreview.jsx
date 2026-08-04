@@ -235,7 +235,7 @@ export default function HomepagePreview() {
                 Others just observe, measure, and test your agent. Traigent goes much further …
               </p>
               <p className="text-white text-xl md:text-3xl font-semibold mb-5 md:whitespace-nowrap">
-                Traigent <span className="text-[#4D8EF8]">builds</span> the optimal agent — with <span className="text-[#4D8EF8]">better outcomes</span>, at <span className="text-[#4D8EF8]">lower costs</span>
+                Traigent <span className="text-[#4D8EF8]">builds</span> the optimal agent — with <span className="text-[#4D8EF8]">better outcomes,</span> at <span className="text-[#4D8EF8]">lower costs</span>
               </p>
               <div className="flex flex-wrap items-center justify-center gap-2">
                 <span className="text-[#4D8EF8] font-semibold text-lg md:text-2xl mr-1">Better</span>
@@ -267,6 +267,52 @@ export default function HomepagePreview() {
       <section id="solution" className="pt-8 md:pt-12 pb-8 md:pb-12 bg-[#080808] border-t border-slate-800/50 scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <SlideFourPillars />
+        </div>
+      </section>
+
+      {/* Privacy — the architectural advantage. Sits at the bottom of the solution segment. */}
+      <section id="privacy" className="bg-[#080808] border-t border-slate-800/50 py-14 md:py-20 scroll-mt-20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <span className="inline-block px-6 py-2.5 rounded-full bg-[#1A6BF5]/15 border border-[#1A6BF5]/40 text-[#4D8EF8] text-xl md:text-3xl font-bold uppercase tracking-wide mb-5">
+              Privacy Preserving yet Super Powerful
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Traigent&apos;s unique architecture yields a super feature</h2>
+            <p className="text-slate-400 max-w-3xl mx-auto leading-relaxed">
+              Traigent optimizes your agent <span className="text-white font-semibold">without ever seeing what your agent sees</span>.<br />
+              Your most sensitive context stays with you.
+            </p>
+            <p className="text-slate-400 max-w-3xl mx-auto leading-relaxed mt-3">
+              Traigent deduces all it needs to know from non-private information only <span className="text-slate-500">(KPI scores and the config parameters that produced them)</span>. Traigent then directs your coding agent, which is privy to much more, to do the rest. <span className="text-[#4D8EF8] font-semibold italic">It&apos;s truly magic.</span>
+            </p>
+            <p className="text-slate-400 max-w-3xl mx-auto leading-relaxed mt-4">
+              Traigent offers observability as well, but it&apos;s not a pre-requisite for building optimal agents.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6 items-stretch">
+            <div className="rounded-2xl border border-[#1A6BF5]/30 bg-slate-900/60 p-8">
+              <div className="text-sm font-semibold uppercase tracking-wider text-[#4D8EF8] mb-4">Your coding agent sees everything</div>
+              <ul className="space-y-3 text-slate-300">
+                <li className="flex gap-3"><Check className="w-5 h-5 text-[#4D8EF8] flex-shrink-0 mt-0.5" />Your logs — and every failure</li>
+                <li className="flex gap-3"><Check className="w-5 h-5 text-[#4D8EF8] flex-shrink-0 mt-0.5" />Your agent&apos;s actual implementation</li>
+                <li className="flex gap-3"><Check className="w-5 h-5 text-[#4D8EF8] flex-shrink-0 mt-0.5" />Your corporate &amp; regulatory guidelines</li>
+              </ul>
+              <p className="mt-5 text-sm text-slate-500">Far more than you&apos;d ever hand a cloud vendor — and none of it leaves your environment.</p>
+            </div>
+            <div className="rounded-2xl border border-slate-700/60 bg-slate-900/60 p-8">
+              <div className="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-4">Traigent&apos;s cloud only ever sees</div>
+              <ul className="space-y-3 text-slate-300">
+                <li className="flex gap-3"><Check className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />KPI scores</li>
+                <li className="flex gap-3"><Check className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />Which config produced them</li>
+              </ul>
+              <p className="mt-5 text-sm text-slate-500">No prompts, no data, no code — only the optimization history that makes every next run smarter.</p>
+            </div>
+          </div>
+
+          <p className="text-center mt-10 text-lg md:text-2xl font-semibold text-white">
+            <span className="text-[#4D8EF8]">Privacy is power.</span> Leveraging more pertinent information is power. Traigent gives you both.
+          </p>
         </div>
       </section>
 
