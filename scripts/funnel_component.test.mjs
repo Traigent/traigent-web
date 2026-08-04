@@ -333,8 +333,12 @@ test("all top-nav entry points use the attributed lead funnel, including dormant
       // the capture normally lands first, so pinning the interleaving would
       // encode an invariant production does not guarantee and would go red on
       // an unrelated change.
-      const hubspotEvents = analyticsEvents.filter(
-        ([, eventName]) => eventName === "lead_hubspot_submitted",
+      // Asserted as the COMPLETE set of lead_hubspot_* events, not just a count
+      // of the success one: filtering the whole prefix out of the ordered
+      // comparison above means a `lead_hubspot_failed` firing alongside a
+      // success would otherwise be invisible here too.
+      const hubspotEvents = analyticsEvents.filter(([, eventName]) =>
+        eventName.startsWith("lead_hubspot_"),
       );
       assert.deepEqual(hubspotEvents, [
         ["event", "lead_hubspot_submitted", { location: "topnav" }],
@@ -380,7 +384,7 @@ test("a failing HubSpot mirror never blocks the capture", async () => {
           );
         },
       },
-      async () => {
+      async ({ analyticsEvents }) => {
         await click(buttonWithText("Start Now", 0));
         const dialog = document.querySelector(
           'dialog[aria-label="Get started with Traigent"]',
@@ -403,6 +407,23 @@ test("a failing HubSpot mirror never blocks the capture", async () => {
           [
             "/submissions/v3/integration/submit/148486827/35384a3e-7386-45b0-924e-84e5d6f637e4",
             "/api/v1/leads",
+          ],
+        );
+
+        // The failure must be REPORTED, not merely survived. Without this the
+        // whole lead_hubspot_failed mechanism could be deleted with the suite
+        // green -- which is the exact "a drop with nothing to notice it by"
+        // class the event was added to close.
+        assert.deepEqual(
+          analyticsEvents.filter(([, eventName]) =>
+            eventName.startsWith("lead_hubspot_"),
+          ),
+          [
+            [
+              "event",
+              "lead_hubspot_failed",
+              { location: "topnav", reason: "generic" },
+            ],
           ],
         );
       },
@@ -525,6 +546,145 @@ test("re-submitting the same address writes exactly one CRM record", async () =>
       // deduplication and not a click that silently did nothing.
       assert.equal(captureCalls.length, 2, "the second submit really happened");
       assert.equal(hubspotCalls.length, 1, "exactly one CRM record per lead");
+    },
+  );
+});
+
+test("correcting a typo and correcting it back writes one record per address", async () => {
+  // A -> B -> A. The previous guard held only the LAST address, so it deduped
+  // CONSECUTIVE submits and nothing else: an ordinary correction loop wrote two
+  // CRM records and two founder notifications for the same person. Three
+  // distinct submits, two distinct addresses, two records.
+  const requests = [];
+  await withTopNav(
+    {
+      state: "active",
+      fetchImpl: async (url, options) => {
+        const target = String(url);
+        if (new URL(target).host === "api.hsforms.com") {
+          requests.push({ url: target, body: JSON.parse(options.body) });
+          return new Response(JSON.stringify({}), { status: 200 });
+        }
+        requests.push({ url: target, body: JSON.parse(options.body) });
+        return new Response(
+          JSON.stringify({
+            data: { run_id: "run-typo-loop", resend_after_seconds: 30 },
+          }),
+          { status: 202, headers: { "content-type": "application/json" } },
+        );
+      },
+    },
+    async () => {
+      await click(buttonWithText("Start Now", 0));
+      const dialog = document.querySelector(
+        'dialog[aria-label="Get started with Traigent"]',
+      );
+      await click(dialog.querySelector('input[type="checkbox"]'));
+
+      const submit = async (address) => {
+        await changeInput(
+          dialog.querySelector('input[aria-label="Work email"]'),
+          address,
+        );
+        await click(buttonWithText("Email me a code"));
+        assert.match(dialog.textContent, /Check your email for the code/);
+        const back = [...dialog.querySelectorAll("button")].find((button) =>
+          /different email/i.test(button.textContent),
+        );
+        assert.ok(back, "the code step offers a way back to the email step");
+        await click(back);
+      };
+
+      await submit("typo@example.com");
+      await submit("correct@example.com");
+      await submit("typo@example.com");
+
+      const mirrored = requests
+        .filter(({ url }) => new URL(url).host === "api.hsforms.com")
+        .map(({ body }) => body.fields.find((f) => f.name === "email").value);
+      assert.deepEqual(mirrored, ["typo@example.com", "correct@example.com"]);
+
+      // All three submits really reached the backend, so the two CRM records
+      // are deduplication rather than a click that silently did nothing.
+      assert.equal(
+        requests.filter(({ url }) => new URL(url).pathname === "/api/v1/leads")
+          .length,
+        3,
+      );
+    },
+  );
+});
+
+test("a slow failing mirror cannot wipe another address's dedupe", async () => {
+  // The stale-clobber path, and the reason the failure clear is keyed by
+  // address. Sequence: A's mirror is still in flight when B's succeeds; A then
+  // fails. An unconditional `clear everything` on failure wipes the record that
+  // B had just written, so re-submitting B mirrors it a second time -- a
+  // duplicate-write path created by the very guard meant to prevent duplicates.
+  const mirroredAddresses = [];
+  let releaseSlowFailure;
+  const slowFailure = new Promise((resolve) => {
+    releaseSlowFailure = resolve;
+  });
+
+  await withTopNav(
+    {
+      state: "active",
+      fetchImpl: async (url, options) => {
+        const target = String(url);
+        if (new URL(target).host === "api.hsforms.com") {
+          const address = JSON.parse(options.body).fields.find(
+            (field) => field.name === "email",
+          ).value;
+          mirroredAddresses.push(address);
+          if (address === "slow@example.com") {
+            await slowFailure;
+            return new Response("upstream boom", { status: 500 });
+          }
+          return new Response(JSON.stringify({}), { status: 200 });
+        }
+        return new Response(
+          JSON.stringify({
+            data: { run_id: "run-clobber", resend_after_seconds: 30 },
+          }),
+          { status: 202, headers: { "content-type": "application/json" } },
+        );
+      },
+    },
+    async () => {
+      await click(buttonWithText("Start Now", 0));
+      const dialog = document.querySelector(
+        'dialog[aria-label="Get started with Traigent"]',
+      );
+      await click(dialog.querySelector('input[type="checkbox"]'));
+
+      const submit = async (address) => {
+        await changeInput(
+          dialog.querySelector('input[aria-label="Work email"]'),
+          address,
+        );
+        await click(buttonWithText("Email me a code"));
+        const back = [...dialog.querySelectorAll("button")].find((button) =>
+          /different email/i.test(button.textContent),
+        );
+        await click(back);
+      };
+
+      await submit("slow@example.com"); // mirror hangs, will fail
+      await submit("fast@example.com"); // mirror succeeds and is recorded
+
+      releaseSlowFailure();
+      await act(async () => {
+        await slowFailure;
+        await Promise.resolve();
+      });
+
+      await submit("fast@example.com"); // must NOT mirror again
+
+      assert.deepEqual(mirroredAddresses, [
+        "slow@example.com",
+        "fast@example.com",
+      ]);
     },
   );
 });
