@@ -11,14 +11,13 @@ import { ArrowRight, ArrowDown, ArrowUp, ArrowUpRight, Blocks, ChevronsDown, Dat
 import LeadFunnelModal from "../components/LeadFunnelModal";
 import { copyFirstRunPrompt } from "../components/LeadFunnel";
 
-// Shared optimizer ring — clockwise Learn → Deduce → <thirdLabel> → Repeat
-// loop. Used by slide 1, slide 2 (BEFORE/TRAIGENT/AFTER middle panel — also
-// rendered on the homepage hero), and slide 24 (Market Opportunity THE
-// CURE). `thirdLabel` defaults to "TEST" so the homepage stays unchanged;
-// the /investor-pitch slide 1 passes "EVALUATE" explicitly.
-// Gradient id is parameterized so multiple instances on the same page
-// don't collide.
-function OptimizerRing({ size = 190, gradientId = "ringGrad", thirdLabel = "TEST" }) {
+// Shared optimizer ring — clockwise Analyze → Deduce → <thirdLabel> → Repeat
+// loop (Traigent's optimization loop). Used by slide 1, slide 2, slide 24
+// (Market Opportunity THE CURE), and the homepage quote-spot filler.
+// `thirdLabel` defaults to "IMPROVE". Exported so pages outside this file can
+// render the same canonical loop. Gradient id is parameterized so multiple
+// instances on the same page don't collide.
+export function OptimizerRing({ size = 190, gradientId = "ringGrad", thirdLabel = "IMPROVE" }) {
   return (
     <svg viewBox="0 0 240 240" className="flex-shrink-0" style={{ width: size, height: size }} xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -37,10 +36,10 @@ function OptimizerRing({ size = 190, gradientId = "ringGrad", thirdLabel = "TEST
       />
       <polygon points="38,96 22,128 54,128" fill="#1A6BF5"/>
       <circle cx="120" cy="120" r="58" fill="#020617" stroke="#334155" strokeWidth="1"/>
-      <text x="120" y="101" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">LEARN</text>
-      <text x="120" y="119" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">DEDUCE</text>
-      <text x="120" y="137" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">{thirdLabel}</text>
-      <text x="120" y="155" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">REPEAT</text>
+      <text x="120" y="98" textAnchor="middle" fill="#cbd5e1" fontSize="16" fontFamily="ui-sans-serif, system-ui" fontWeight="700">ANALYZE</text>
+      <text x="120" y="118" textAnchor="middle" fill="#cbd5e1" fontSize="16" fontFamily="ui-sans-serif, system-ui" fontWeight="700">DEDUCE</text>
+      <text x="120" y="138" textAnchor="middle" fill="#cbd5e1" fontSize="16" fontFamily="ui-sans-serif, system-ui" fontWeight="700">{thirdLabel}</text>
+      <text x="120" y="158" textAnchor="middle" fill="#cbd5e1" fontSize="16" fontFamily="ui-sans-serif, system-ui" fontWeight="700">REPEAT</text>
     </svg>
   );
 }
@@ -343,9 +342,9 @@ export function SlideParetoFrontier() {
               <polygon points="38,96 22,128 54,128" fill="#1A6BF5"/>
 
               <circle cx="120" cy="120" r="58" fill="#020617" stroke="#334155" strokeWidth="1"/>
-              <text x="120" y="101" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">LEARN</text>
+              <text x="120" y="101" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">ANALYZE</text>
               <text x="120" y="119" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">DEDUCE</text>
-              <text x="120" y="137" textAnchor="middle" fill="#cbd5e1" fontSize="12" fontFamily="ui-sans-serif, system-ui" fontWeight="700">EVALUATE</text>
+              <text x="120" y="137" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">IMPROVE</text>
               <text x="120" y="155" textAnchor="middle" fill="#cbd5e1" fontSize="13" fontFamily="ui-sans-serif, system-ui" fontWeight="700">REPEAT</text>
             </svg>
             {/* Traigent.ai brand — directly under the loop circle (negative
@@ -798,7 +797,7 @@ export function SlideMarketOpportunity({ subtitle, painIntro, painItems, waveNot
 
           {/* Optimizer ring with Traigent.ai brand to the right */}
           <div className="flex justify-center mb-2 flex-1 items-center gap-3">
-            <OptimizerRing size={170} gradientId="ringGradMarket" thirdLabel="EVALUATE" />
+            <OptimizerRing size={170} gradientId="ringGradMarket" thirdLabel="IMPROVE" />
             <div
               className="text-xl font-bold leading-tight tracking-tight whitespace-nowrap"
               style={{ color: "#4D8EF8" }}
