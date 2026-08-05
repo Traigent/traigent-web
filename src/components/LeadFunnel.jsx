@@ -94,7 +94,7 @@ Clone ${FIRST_RUN_REPO_URL} and follow GUIDE.md.`;
 
 /**
  * Copy the canonical first-run prompt to the clipboard (best-effort, within a
- * user gesture). Every "Connect your agent" / "Start Now" CTA calls this so the
+ * user gesture). Every "Start evolving your agent" / "Start Now" CTA calls this so the
  * behaviour is identical everywhere: copy the prompt, then open the LeadFunnel.
  */
 export function copyFirstRunPrompt() {
@@ -422,7 +422,7 @@ export default function LeadFunnel({ surface = "homepage_hero" }) {
  * into their coding agent. No email gate — the prompt is the product. It is also
  * already on their clipboard (the CTA copies it on click); this modal shows it
  * with a copy button and the paste instructions so nothing is hidden. This is what
- * "Connect your agent" shows everywhere until TraigentBackend#2551 turns the real
+ * "Start evolving your agent" shows everywhere until TraigentBackend#2551 turns the real
  * funnel on; when that lands, `isDormant` goes false and this path is skipped.
  */
 // Remember the visitor's email on THIS browser across sessions, so a return
@@ -509,11 +509,11 @@ function DormantView({ headingRef, surface }) {
         tabIndex={-1}
         className="text-2xl font-bold text-white mb-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-400"
       >
-        Connect your agent
+        Start evolving your agent
       </h2>
       <p className="text-slate-400 mb-4">
-        Copy this and paste it into your coding agent — to run your first free
-        Traigent optimization.
+        Copy this and paste it into your coding agent (e.g. Claude Code, Cursor,
+        Codex) — to run your first free Traigent optimization.
       </p>
       <InstallCommand
         command={FIRST_RUN_INIT_PROMPT}

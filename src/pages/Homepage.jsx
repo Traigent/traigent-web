@@ -202,7 +202,7 @@ export default function Homepage() {
                   )}
                 </span>
                 <span className="text-base md:text-lg font-medium text-slate-100">
-                  {promptCopied ? "Copied — paste into your agent" : "Connect your agent"}
+                  {promptCopied ? "Copied — paste into your agent" : "Start evolving your agent"}
                 </span>
               </button>
             </motion.div>

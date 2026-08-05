@@ -1632,10 +1632,10 @@ export function SlideFourPillars() {
       <div className="text-center mb-5">
         <div className="text-2xl md:text-3xl font-mono uppercase tracking-[0.2em] text-blue-400 mb-3">The Traigent Solution</div>
         <p className="text-lg md:text-2xl font-semibold text-slate-200 mt-2 leading-snug">
-          Traigent evolves <span className="text-blue-400">optimized agents</span> across <span className="text-white">4 pillars</span>
+          <span className="text-white">Traigent</span> harnesses <span className="text-blue-400">your coding agent</span> <span className="text-slate-400 font-normal">(Claude Code, Cursor, Codex, etc.)</span> to get it done
         </p>
         <p className="text-lg md:text-2xl font-semibold text-slate-200 mt-1.5 leading-snug">
-          <span className="text-white">Traigent</span> harnesses <span className="text-blue-400">your coding agent</span> to get it done
+          Traigent evolves <span className="text-blue-400">optimized agents</span> across <span className="text-white">4 pillars</span>
         </p>
       </div>
       <div className="grid grid-cols-4 gap-3">

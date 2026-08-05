@@ -234,7 +234,7 @@ export default function GetStarted() {
                 className="mb-6"
               />
               <div className="border-t border-slate-800 pt-6">
-                <h3 className="text-lg font-semibold mb-2">Connect your agent in one paste</h3>
+                <h3 className="text-lg font-semibold mb-2">Start evolving your agent in one paste</h3>
                 <p className="text-slate-300 mb-4 max-w-3xl">
                   Copy the canonical setup prompt and paste it into your coding agent. It installs
                   the skills and the SDK, wires your <code className="px-1 py-0.5 rounded bg-slate-800 text-sm">TRAIGENT_API_KEY</code>,
@@ -252,7 +252,7 @@ export default function GetStarted() {
                   ) : (
                     <Copy className="h-4 w-4" />
                   )}
-                  {promptCopied ? "Copied — paste into your agent" : "Connect your agent"}
+                  {promptCopied ? "Copied — paste into your agent" : "Start evolving your agent"}
                 </button>
               </div>
             </>
