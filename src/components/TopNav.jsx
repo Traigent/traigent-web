@@ -39,6 +39,11 @@ const PITCH_DECK_OPTIONS = [
     href: "/#/extended-product-presentation",
   },
   {
+    label: "Product Presentation",
+    desc: "Hero · Solution · Privacy · Pareto · Multidimensional · Wave/Pain/Cure · Competitive-by-KPI",
+    href: "/#/product-presentation",
+  },
+  {
     label: "Short summary",
     desc: "Slides 1–5 + live demo — the headline arc",
     href: "/#/short-summary",

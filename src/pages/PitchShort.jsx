@@ -2051,6 +2051,168 @@ function SlideTeam() {
   );
 }
 
+// ── PRODUCT PRESENTATION SLIDES (deck: /product-presentation) ─────────────────
+// Hero, Privacy, and the competitive compelling-events grouped into the 5 hero
+// KPI pills. Composed into the "product-presentation" preset in PitchShort2.
+function SlideProductHero() {
+  const boxes = [
+    { color: "#34d399", arrow: ArrowUp, big: "Better", label: "outcomes & KPIs" },
+    { color: "#f59e0b", arrow: ArrowDown, big: "up to 60%", label: "LLM cost reduction" },
+    { color: "#4D8EF8", arrow: ArrowDown, big: "up to 8 wks", label: "Engineering time reclaimed" },
+    { color: "#a78bfa", arrow: ArrowUp, big: "100%", label: "confidence in what you ship" },
+  ];
+  return (
+    <div className="w-full text-center">
+      <p className="text-slate-400 text-base md:text-xl mb-3">
+        Others just observe, measure, and test agents. Traigent improves the agent itself.
+      </p>
+      <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-3" style={{ letterSpacing: "-0.02em" }}>
+        Evolving <span className="text-[#4D8EF8]">Optimized</span> <span className="text-white">AI Agents</span>
+      </h1>
+      <p className="text-white text-xl md:text-3xl font-semibold mb-5">
+        Traigent <span className="text-[#4D8EF8]">evolves</span> agents to <span className="text-[#4D8EF8]">better outcomes,</span> at <span className="text-[#4D8EF8] underline underline-offset-4">lower costs</span>
+      </p>
+      <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
+        <span className="text-[#4D8EF8] font-medium text-lg md:text-2xl mr-1">Better</span>
+        {["Accuracy", "Guardrails", "Conversion", "Resolution", "Speed"].map((k) => (
+          <span key={k} className="px-3 py-1 rounded-md border text-lg md:text-2xl font-medium text-white" style={{ backgroundColor: "#000000", borderColor: "#ffffff" }}>{k}</span>
+        ))}
+      </div>
+      <div className="max-w-4xl mx-auto">
+        <div className="rounded-2xl border-2 bg-slate-950 p-5 md:p-6" style={{ borderColor: "#4D8EF8" }}>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-5">
+            <OptimizerRing size={140} gradientId="ringGradProdHero" />
+            <h3 className="text-xl md:text-2xl font-bold text-white leading-tight text-center">Automated Agent Evolution</h3>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-3 mt-4">
+            {boxes.map((b, i) => {
+              const A = b.arrow;
+              return (
+                <div key={i} className="bg-slate-900/70 border-2 rounded-lg px-3 py-2 text-center" style={{ borderColor: b.color + "66" }}>
+                  <div className="flex items-center justify-center gap-1.5" style={{ color: b.color }}>
+                    <A className="w-5 h-5" strokeWidth={3} />
+                    <span className="text-xl md:text-2xl font-extrabold tracking-tight leading-none">{b.big}</span>
+                  </div>
+                  <div className="text-[10px] md:text-xs font-mono uppercase tracking-wider text-slate-300 mt-1">{b.label}</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SlideProductPrivacy() {
+  return (
+    <div className="w-full text-center">
+      <span className="inline-block px-6 py-2.5 rounded-full bg-[#1A6BF5]/15 border border-[#1A6BF5]/40 text-[#4D8EF8] text-xl md:text-3xl font-bold uppercase tracking-wide mb-5">
+        Privacy Preserving <span className="lowercase font-normal text-base md:text-xl">yet</span> Super Powerful
+      </span>
+      <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Traigent&apos;s unique architecture yields a super feature</h2>
+      <p className="text-slate-400 max-w-3xl mx-auto leading-relaxed">
+        Traigent optimizes your agent <span className="text-white font-semibold">without ever seeing what your agent sees</span>.<br />
+        Your most sensitive context stays with you.
+      </p>
+      <p className="text-slate-400 max-w-3xl mx-auto leading-relaxed mt-3">
+        Traigent deduces all it needs to know from non-private information only <span className="text-slate-500">(KPI scores and the config parameters that produced them)</span>. Traigent then directs your coding agent, which is privy to much more, to do the rest. <span className="text-[#4D8EF8] font-semibold italic">It&apos;s truly magic.</span>
+      </p>
+      <p className="text-slate-400 max-w-3xl mx-auto leading-relaxed mt-4">
+        Traigent offers observability as well, but it&apos;s not a pre-requisite for building optimal agents.
+      </p>
+      <div className="grid md:grid-cols-2 gap-6 items-stretch max-w-5xl mx-auto mt-8 text-left">
+        <div className="rounded-2xl border border-[#1A6BF5]/30 bg-slate-900/60 p-6">
+          <div className="text-sm font-semibold uppercase tracking-wider text-[#4D8EF8] mb-3">Your coding agent sees everything</div>
+          <ul className="space-y-2 text-slate-300 text-sm">
+            <li>Your logs — and every failure</li>
+            <li>Your agent&apos;s actual implementation</li>
+            <li>Your corporate &amp; regulatory guidelines</li>
+          </ul>
+        </div>
+        <div className="rounded-2xl border border-slate-700/60 bg-slate-900/60 p-6">
+          <div className="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-3">Traigent&apos;s cloud only ever sees</div>
+          <ul className="space-y-2 text-slate-300 text-sm">
+            <li>KPI scores</li>
+            <li>Which config produced them</li>
+          </ul>
+        </div>
+      </div>
+      <p className="text-center mt-6 text-lg md:text-2xl font-semibold text-white">
+        <span className="text-[#4D8EF8]">Privacy is power.</span> Leveraging more pertinent information is power. Traigent gives you both.
+      </p>
+    </div>
+  );
+}
+
+function SlideProductCompetitiveKPI() {
+  const cols = [
+    { pill: "Accuracy", color: "#4D8EF8", items: ["Not good enough (the universal lead)", "Can't measure quality", "No test data", "Quality drifted", "CI regression gate", "RAG gives wrong answers", "Won't blow up in prod"] },
+    { pill: "Guardrails", color: "#34d399", items: ["Runtime safety / guardrail", "Prove it to auditors"] },
+    { pill: "Conversion", color: "#f59e0b", items: ["Increase conversion (revenue)"] },
+    { pill: "Resolution", color: "#a78bfa", items: ["Increase resolution / deflection"] },
+    { pill: "Speed", color: "#22d3ee", items: ["Too slow"] },
+  ];
+  return (
+    <div className="w-full text-center">
+      <div className="text-2xl md:text-3xl font-mono uppercase tracking-[0.2em] text-blue-400 mb-2">Every buyer problem → one KPI we optimize</div>
+      <p className="text-lg md:text-2xl font-semibold text-slate-200 mb-6">The compelling events, grouped into the outcomes we lead with</p>
+      <div className="grid grid-cols-5 gap-3 max-w-6xl mx-auto text-left">
+        {cols.map((c) => (
+          <div key={c.pill} className="rounded-xl border-2 bg-slate-950 p-3" style={{ borderColor: c.color + "66" }}>
+            <div className="text-center text-base md:text-lg font-bold uppercase tracking-wide mb-3" style={{ color: c.color }}>{c.pill}</div>
+            <ul className="space-y-2">
+              {c.items.map((it, i) => (
+                <li key={i} className="text-slate-300 text-xs md:text-sm leading-snug">• {it}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+      <p className="text-slate-400 text-base md:text-lg mt-6">
+        <span className="text-white font-semibold">…and cheaper too</span> — cost is the silent bonus. Delivered by <span className="text-[#4D8EF8]">optimizing your agent</span> end-to-end.
+      </p>
+    </div>
+  );
+}
+
+// Customer proof — Truelogic. Quote is not yet formally signed off by the
+// customer. Owner authorized shipping it ONLY via this unlinked, hard-to-
+// discover deck route. Keep it OFF the public homepage / nav until formal
+// sign-off on the exact wording + attribution.
+function SlideProductQuote() {
+  return (
+    <div className="w-full flex items-center justify-center">
+      <figure className="relative overflow-hidden rounded-2xl border border-slate-700/60 bg-gradient-to-br from-slate-900/80 to-slate-950 p-8 md:p-14 shadow-2xl max-w-4xl">
+        <div className="pointer-events-none absolute -top-20 -right-20 h-64 w-64 rounded-full bg-[#1A6BF5]/20 blur-3xl" />
+        <div className="pointer-events-none absolute top-3 left-6 select-none font-serif text-8xl md:text-9xl leading-none text-[#4D8EF8]/20">&ldquo;</div>
+        <blockquote className="relative pt-8 text-2xl md:text-4xl font-medium leading-snug text-slate-100">
+          We just let Traigent go to work. A few hours later we had an agent with a{" "}
+          <span className="font-semibold text-[#4D8EF8]">better KPI</span> at{" "}
+          <span className="font-semibold text-[#4D8EF8]">75% lower cost.</span>
+        </blockquote>
+        <figcaption className="relative mt-8 flex items-center gap-4">
+          <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-[#1A6BF5]/40 bg-[#1A6BF5]/15 text-lg font-bold text-[#4D8EF8]">T</div>
+          <div className="text-left">
+            <div className="font-semibold text-white">Engineering team</div>
+            <div className="text-sm text-slate-400">Truelogic · truelogic.ai</div>
+          </div>
+          <div className="ml-auto hidden items-end gap-6 sm:flex">
+            <div className="flex flex-col items-end">
+              <ArrowUp className="h-7 w-7 text-emerald-400" strokeWidth={2.5} />
+              <div className="mt-1 text-xs uppercase tracking-wider text-slate-500">KPI</div>
+            </div>
+            <div className="flex flex-col items-end">
+              <div className="text-3xl font-bold leading-none text-[#4D8EF8]">&minus;75%</div>
+              <div className="mt-1 text-xs uppercase tracking-wider text-slate-500">cost</div>
+            </div>
+          </div>
+        </figcaption>
+      </figure>
+    </div>
+  );
+}
+
 export const SHORT_SLIDES = [
   // ----- TEXT-ONLY ONE-PAGER (opener — swapped in from slot 22) -----
   { title: "One-Pager Test — Text Only (V2)", section: "Traigent intro", component: SlideOnePagerTextTestV2 },
@@ -2125,6 +2287,11 @@ export const SHORT_SLIDES = [
   { title: "Why Invest — Category Bet + The Ask", section: "Investor", component: SlideWhyInvest },
   { title: "Competition — the Optimization Layer", section: "Investor", component: SlideCompetition },
   { title: "Team — Amir (CEO) + Nimrod (Chief Research Scientist)", section: "Investor", component: SlideTeam },
+  // ----- PRODUCT PRESENTATION (indices 47-49) — /product-presentation deck -----
+  { title: "Evolving Optimized AI Agents (hero)", section: "Product", component: SlideProductHero },
+  { title: "Privacy Preserving yet Super Powerful", section: "Product", component: SlideProductPrivacy },
+  { title: "Compelling Events → 5 KPIs (competitive)", section: "Product", component: SlideProductCompetitiveKPI },
+  { title: "Customer proof — Truelogic (awaiting sign-off)", section: "Product", component: SlideProductQuote },
 ];
 
 export default function PitchShort() {
