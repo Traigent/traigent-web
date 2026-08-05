@@ -52,6 +52,7 @@ export default function App() {
       <Route path="pitch-short-2/:preset" element={<PitchShort2 />} />
       {/* Short, shareable aliases for outreach (no /pitch-short-2/ prefix) */}
       <Route path="extended-product-presentation" element={<PitchShort2 forcedPreset="extended-product-presentation" />} />
+      <Route path="product-presentation" element={<PitchShort2 forcedPreset="product-presentation" />} />
       <Route path="short-summary" element={<PitchShort2 forcedPreset="short-summary" />} />
       <Route path="market-opportunity" element={<PitchShort2 forcedPreset="market-opportunity" />} />
       <Route path="investor-pitch" element={<PitchShort2 forcedPreset="investor-pitch" />} />
