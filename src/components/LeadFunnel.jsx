@@ -425,12 +425,41 @@ export default function LeadFunnel({ surface = "homepage_hero" }) {
  * "Connect your agent" shows everywhere until TraigentBackend#2551 turns the real
  * funnel on; when that lands, `isDormant` goes false and this path is skipped.
  */
+// Remember the visitor's email on THIS browser across sessions, so a return
+// visit to the dormant capture doesn't ask for it again. localStorage (not the
+// session-scoped mirror set): written only after a successful capture or an
+// already-mirrored short-circuit; cleared by the "use a different email" reset.
+const REMEMBERED_EMAIL_KEY = "traigent_lead_email";
+function readRememberedEmail() {
+  try {
+    return (localStorage.getItem(REMEMBERED_EMAIL_KEY) || "").trim();
+  } catch {
+    return "";
+  }
+}
+function rememberEmail(address) {
+  try {
+    localStorage.setItem(REMEMBERED_EMAIL_KEY, address);
+  } catch {
+    /* private mode — soft-degrade */
+  }
+}
+function forgetRememberedEmail() {
+  try {
+    localStorage.removeItem(REMEMBERED_EMAIL_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
 function DormantView({ headingRef, surface }) {
-  const [email, setEmail] = useState("");
+  // Recognise a returning visitor: if this browser already captured an email,
+  // start in the confirmed state instead of asking for it again.
+  const [email, setEmail] = useState(readRememberedEmail);
   const [consent, setConsent] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(""); // "" | "business_email" | "generic"
-  const [done, setDone] = useState(false);
+  const [done, setDone] = useState(() => !!readRememberedEmail());
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -450,6 +479,7 @@ function DormantView({ headingRef, surface }) {
     // cost is one extra notification, while the cost of the other error is a
     // silently lost lead.
     if (readMirroredAddresses().has(address)) {
+      rememberEmail(address);
       setDone(true);
       return;
     }
@@ -462,6 +492,7 @@ function DormantView({ headingRef, surface }) {
     setBusy(false);
     if (result.ok) {
       rememberMirroredAddress(address);
+      rememberEmail(address);
       trackEvent("lead_hubspot_submitted", { location: surface });
       setDone(true);
     } else if (result.reason === "business_email") {
@@ -493,11 +524,30 @@ function DormantView({ headingRef, surface }) {
           straight into HubSpot's Start-Now form (always live). */}
       <div className="mt-6 pt-6 border-t border-slate-800">
         {done ? (
-          <p className="flex items-center gap-2 text-sm text-emerald-300">
-            <ShieldCheck className="h-4 w-4 shrink-0" />
-            You&apos;re in — we&apos;ll be in touch about unlocking advanced
-            features.
-          </p>
+          <div>
+            <p className="flex items-center gap-2 text-sm text-emerald-300">
+              <ShieldCheck className="h-4 w-4 shrink-0" />
+              You&apos;re in{email.trim() ? (
+                <>
+                  {" "}
+                  — <span className="text-white">{email.trim()}</span>
+                </>
+              ) : null}
+              . We&apos;ll be in touch about unlocking advanced features.
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                forgetRememberedEmail();
+                setDone(false);
+                setEmail("");
+                setConsent(false);
+              }}
+              className="mt-2 text-xs text-slate-500 underline hover:text-slate-300"
+            >
+              Use a different email
+            </button>
+          </div>
         ) : (
           <ConsentGate>
             <p className="text-slate-400 mb-4">

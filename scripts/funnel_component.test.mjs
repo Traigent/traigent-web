@@ -895,10 +895,23 @@ test("a dormant submit is recorded, so reopening the modal does not re-mirror", 
         await click(dialog.querySelector('button[aria-label="Close"]'));
       };
 
-      await openAndSubmit();
+      // First visit records the address.
       await openAndSubmit();
 
-      // One record, normalised -- and the second visit still says "You're in".
+      // Second visit: this browser remembers the address, so the modal opens
+      // straight to "You're in" -- no form, and no second CRM write.
+      await click(buttonWithText("Start Now", 0));
+      const reopened = document.querySelector(
+        'dialog[aria-label="Get started with Traigent"]',
+      );
+      assert.match(reopened.textContent, /You're in/);
+      assert.equal(
+        reopened.querySelector('input[type="email"]'),
+        null,
+        "a remembered visitor is not asked for the email again",
+      );
+
+      // One record, normalised -- the second visit did not write again.
       assert.deepEqual(attempts, ["twice@example.com"]);
     },
   );
