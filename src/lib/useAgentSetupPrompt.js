@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 const PROMPT_URL = "/agent-setup/prompt.md";
 
 /**
- * Shared clipboard behaviour for the "Connect your agent" CTAs.
+ * Shared clipboard behaviour for the "Start evolving your agent" CTAs.
  *
  * Prefetches the served prompt once on mount so the click handler can write to
  * the clipboard within the user gesture (some browsers reject an async

@@ -544,7 +544,7 @@ export default function OnboardingSimulation() {
                   </button>
                 ) : (
                   <Link to="/get-started" className="mt-7 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-emerald-300 px-4 py-3 text-sm font-semibold text-emerald-950 transition hover:bg-emerald-200">
-                    Connect your agent <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                    Start evolving your agent <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </Link>
                 )}
               </aside>
@@ -593,7 +593,7 @@ export default function OnboardingSimulation() {
           <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-400">Bring the agent and evaluation setup you have. Traigent diagnoses the weak links and guides the next improvement.</p>
           <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
             <Link to="/get-started" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-white px-6 py-3 font-semibold text-slate-950 transition hover:bg-blue-50">
-              Connect your agent <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              Start evolving your agent <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>
             <Link to="/" className="inline-flex min-h-12 items-center justify-center rounded-full border border-slate-600 px-6 py-3 font-semibold text-white transition hover:border-slate-400">Explore the lifecycle</Link>
           </div>

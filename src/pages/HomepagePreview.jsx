@@ -184,7 +184,7 @@ export default function HomepagePreview() {
               Evolving <span className="text-[#4D8EF8]">Optimized</span> <span className="text-white">AI Agents</span>
             </motion.p>
             {/* Hero CTA row — ONE journey start.
-                "Connect your agent" opens the lead funnel (email -> 6-digit
+                "Start evolving your agent" opens the lead funnel (email -> 6-digit
                 confirmation code -> emailed access code -> portal registration)
                 and carries the treasure
                 halo, which is the only such cue on the site: a first-time
@@ -211,7 +211,7 @@ export default function HomepagePreview() {
                 className="treasure-halo inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-[#1A6BF5] hover:bg-[#4D8EF8] text-white text-base md:text-lg font-semibold transition-colors"
               >
                 <Terminal className="w-5 h-5" />
-                Connect your agent
+                Start evolving your agent
                 <ArrowRight className="w-4 h-4" />
               </button>
               <Link
@@ -235,10 +235,10 @@ export default function HomepagePreview() {
               className="mt-8 max-w-6xl mx-auto text-center"
             >
               <p className="text-slate-400 text-lg md:text-xl mb-6">
-                Others just observe, measure, and test your agent. Traigent goes much further …
+                Others just observe, measure, and test agents. Traigent improves the agent itself.
               </p>
               <p className="text-white text-xl md:text-3xl font-semibold mb-5 md:whitespace-nowrap">
-                Traigent <span className="text-[#4D8EF8]">evolves</span> agents to <span className="text-[#4D8EF8]">better outcomes,</span> at <span className="text-[#4D8EF8]">lower costs</span>
+                Traigent <span className="text-[#4D8EF8]">evolves</span> agents to <span className="text-[#4D8EF8]">better outcomes,</span> at <span className="text-[#4D8EF8] underline underline-offset-4">lower costs</span>
               </p>
               <div className="flex flex-wrap items-center justify-center gap-2">
                 <span className="text-[#4D8EF8] font-medium text-lg md:text-2xl mr-1">Better</span>
@@ -275,7 +275,14 @@ export default function HomepagePreview() {
               <h3 className="text-xl md:text-2xl font-bold text-white leading-tight text-center">Automated Agent Evolution</h3>
             </div>
             {/* 3 benefit boxes — horizontal row so the card stays short */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 md:gap-3 mt-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-3 mt-4">
+              <div className="bg-slate-900/70 border-2 rounded-lg px-3 py-2 text-center" style={{ borderColor: "#34d39966" }}>
+                <div className="flex items-center justify-center gap-1.5" style={{ color: "#34d399" }}>
+                  <ArrowUp className="w-5 h-5" strokeWidth={3} />
+                  <span className="text-xl md:text-2xl font-extrabold tracking-tight leading-none">Better</span>
+                </div>
+                <div className="text-[10px] md:text-xs font-mono uppercase tracking-wider text-slate-300 mt-1">outcomes &amp; KPIs</div>
+              </div>
               <div className="bg-slate-900/70 border-2 rounded-lg px-3 py-2 text-center" style={{ borderColor: "#f59e0b66" }}>
                 <div className="flex items-center justify-center gap-1.5" style={{ color: "#f59e0b" }}>
                   <ArrowDown className="w-5 h-5" strokeWidth={3} />
@@ -696,7 +703,7 @@ const answerQuestion = optimize({
               transition={{ duration: 0.5, delay: 0.2 }}
               className="flex flex-wrap justify-center gap-3"
             >
-              {/* Same journey as the hero's "Connect your agent" - one entry
+              {/* Same journey as the hero's "Start evolving your agent" - one entry
                   point, not two competing ones. Previously opened the legacy
                   StartNowModal (a different OTP gate that never reached the
                   portal funnel). */}
@@ -706,7 +713,7 @@ const answerQuestion = optimize({
                 }}
                 className="border border-slate-600 hover:border-slate-400 text-slate-200 hover:text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
               >
-                Connect your agent
+                Start evolving your agent
               </button>
               <a
                 href="https://meetings-eu1.hubspot.com/amir8"
