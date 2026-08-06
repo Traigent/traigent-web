@@ -235,7 +235,7 @@ export default function HomepagePreview() {
               className="mt-8 max-w-6xl mx-auto text-center"
             >
               <p className="text-slate-400 text-lg md:text-xl mb-6">
-                Others just observe, measure, and test agents. Traigent improves the agent itself.
+                Others mostly observe and measure agents. Traigent goes further to improve the agent.
               </p>
               <p className="text-white text-xl md:text-3xl font-semibold mb-5 md:whitespace-nowrap">
                 Traigent <span className="text-[#4D8EF8]">evolves</span> agents to <span className="text-[#4D8EF8]">better outcomes,</span> at <span className="text-[#4D8EF8] underline underline-offset-4">lower costs</span>

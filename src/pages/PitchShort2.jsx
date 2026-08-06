@@ -26,11 +26,11 @@ const PRESETS = {
   // Position 1 (SlideOnePagerTextTestV2) is dropped — it's redundant with the
   // redesigned SlideParetoFrontier at position 2.
   "extended-product-presentation": { range:   "24,2-23,27-29" },
-  // Product presentation: Hero(47) · Truelogic quote(50) · Four Pillars(38) ·
-  // Privacy(48) · Pareto(2) · Multidimensional spider(33) · Wave/Pain/Cure(24)
+  // Product presentation: Hero(47) · Truelogic quote(50) · Multidimensional
+  // spider(33) · Four Pillars(38) · Privacy(48) · Pareto(2) · Wave/Pain/Cure(24)
   // · Competitive-by-KPI(49). Slide 2 (Truelogic) is not yet formally signed
   // off — it ships ONLY on this unlinked deck route, never the homepage / nav.
-  "product-presentation":          { range:   "47,50,38,48,2,33,24,49" },
+  "product-presentation":          { range:   "47,50,33,38,48,2,24,49" },
   // The Cloudzone channel deck minus its recipient cover: market opener (24),
   // methodology (38), slide 2, SPIDER text2SQL proof (33), architecture (39),
   // foundational slides (4-5, 20, 28), CTA (29).

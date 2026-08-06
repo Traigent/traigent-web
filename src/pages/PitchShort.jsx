@@ -711,7 +711,7 @@ export function SlideMarketOpportunity({ subtitle, painIntro, painItems, waveNot
             A Problem <span className="text-[#4D8EF8]">About to Explode</span>
           </h2>
           <p className="text-xl md:text-2xl text-slate-300 leading-snug">
-            {subtitle || (<>The AI Agent <span className="font-semibold text-white underline decoration-2 underline-offset-4 px-1 rounded" style={{ textDecorationColor: "#f59e0b", backgroundColor: "rgba(245,158,11,0.18)" }}>cost vs. accuracy tuning</span> crisis is just <span className="font-bold text-white">starting</span>.</>)}
+            {subtitle || (<>The AI Agent <span className="font-semibold text-white underline decoration-2 underline-offset-4 px-1 rounded" style={{ textDecorationColor: "#f59e0b", backgroundColor: "rgba(245,158,11,0.18)" }}>cost vs. quality tuning</span> crisis is just <span className="font-bold text-white">starting</span>.</>)}
           </p>
         </div>
       )}
@@ -723,11 +723,13 @@ export function SlideMarketOpportunity({ subtitle, painIntro, painItems, waveNot
           <div className="text-2xl font-mono font-bold uppercase tracking-widest mb-3 text-center" style={{ color: "#4D8EF8" }}>The Wave</div>
           <h3 className="text-2xl font-bold text-white leading-tight mb-3">
             Exponential adoption ahead
-            <span className="block">LLM costs set to explode</span>
           </h3>
           <p className="text-base font-semibold leading-snug mb-3" style={{ color: "#f59e0b" }}>
             {waveNote || "Business Processes and Customer Interactions are being Agentized rapidly"}
           </p>
+          <h3 className="text-2xl font-bold text-white leading-tight mb-3">
+            LLM costs set to explode
+          </h3>
 
           {/* Hockey-stick chart */}
           <svg viewBox="0 0 280 130" className="w-full mb-4 flex-1" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
@@ -2064,7 +2066,7 @@ function SlideProductHero() {
   return (
     <div className="w-full text-center">
       <p className="text-slate-400 text-base md:text-xl mb-3">
-        Others just observe, measure, and test agents. Traigent improves the agent itself.
+        Others mostly observe and measure agents. Traigent goes further to improve the agent.
       </p>
       <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-3" style={{ letterSpacing: "-0.02em" }}>
         Evolving <span className="text-[#4D8EF8]">Optimized</span> <span className="text-white">AI Agents</span>
