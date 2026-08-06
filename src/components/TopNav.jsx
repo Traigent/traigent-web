@@ -44,6 +44,11 @@ const PITCH_DECK_OPTIONS = [
     href: "/#/product-presentation",
   },
   {
+    label: "Moat Matrix — INTERNAL",
+    desc: "Competitive board: 16 pains × what the market offers × Traigent's 4 moats. Internal only — don't open in front of customers.",
+    href: "/#/moat-matrix",
+  },
+  {
     label: "Short summary",
     desc: "Slides 1–5 + live demo — the headline arc",
     href: "/#/short-summary",

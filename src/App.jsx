@@ -11,6 +11,7 @@ import Pitch from './pages/Pitch'
 import PitchFull from './pages/PitchFull'
 import PitchShort from './pages/PitchShort'
 import PitchShort2 from './pages/PitchShort2'
+import MoatMatrix from './pages/MoatMatrix'
 import Blog from './pages/Blog'
 import BlogPost from './pages/BlogPost'
 import Research from './pages/Research'
@@ -53,6 +54,10 @@ export default function App() {
       {/* Short, shareable aliases for outreach (no /pitch-short-2/ prefix) */}
       <Route path="extended-product-presentation" element={<PitchShort2 forcedPreset="extended-product-presentation" />} />
       <Route path="product-presentation" element={<PitchShort2 forcedPreset="product-presentation" />} />
+      {/* Live debate surface for the competitive Pains × Solution Types × Moats
+          matrix. Standalone (not a fixed slide) so a 17×8 grid stays legible;
+          folds into the product deck once the content is locked. */}
+      <Route path="moat-matrix" element={<MoatMatrix />} />
       <Route path="short-summary" element={<PitchShort2 forcedPreset="short-summary" />} />
       <Route path="market-opportunity" element={<PitchShort2 forcedPreset="market-opportunity" />} />
       <Route path="investor-pitch" element={<PitchShort2 forcedPreset="investor-pitch" />} />
