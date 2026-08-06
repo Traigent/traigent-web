@@ -13,6 +13,8 @@
 // When tr is present it renders on its own green line under the vendors.
 // moats = [buildsBetter, proof, insideInfo] booleans (✓ = applies significantly).
 
+import { Helmet } from "react-helmet-async";
+
 const DASH = "—";
 // adv = optional { level: "red" | "yellow", text } — a competitor-advantage note.
 // red = competitor is genuinely ahead here; yellow = they lead this cell but a
