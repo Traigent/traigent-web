@@ -2065,9 +2065,6 @@ function SlideProductHero() {
   ];
   return (
     <div className="w-full text-center">
-      <p className="text-slate-400 text-base md:text-xl mb-3">
-        Others mostly observe and measure agents. Traigent goes further to improve the agent.
-      </p>
       <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-3" style={{ letterSpacing: "-0.02em" }}>
         Evolving <span className="text-[#4D8EF8]">Optimized</span> <span className="text-white">AI Agents</span>
       </h1>
@@ -2102,6 +2099,9 @@ function SlideProductHero() {
           </div>
         </div>
       </div>
+      <p className="text-slate-300 text-lg md:text-2xl mt-6">
+        Others mostly observe and measure agents. <span className="text-white font-semibold">Traigent goes further to improve the <span className="text-[#4D8EF8]">agent itself</span>.</span>
+      </p>
     </div>
   );
 }
@@ -2158,7 +2158,7 @@ function SlideProductCompetitiveKPI() {
   return (
     <div className="w-full text-center">
       <div className="text-2xl md:text-3xl font-mono uppercase tracking-[0.2em] text-blue-400 mb-2">Every buyer problem → one KPI we optimize</div>
-      <p className="text-lg md:text-2xl font-semibold text-slate-200 mb-6">The compelling events, grouped into the outcomes we lead with</p>
+      <p className="text-lg md:text-2xl font-semibold text-slate-200 mb-6">The most common customer pains, grouped into the outcomes we improve</p>
       <div className="grid grid-cols-5 gap-3 max-w-6xl mx-auto text-left">
         {cols.map((c) => (
           <div key={c.pill} className="rounded-xl border-2 bg-slate-950 p-3" style={{ borderColor: c.color + "66" }}>
