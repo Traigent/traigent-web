@@ -234,8 +234,8 @@ export default function HomepagePreview() {
               transition={{ delay: 0.15, duration: 0.5 }}
               className="mt-8 max-w-6xl mx-auto text-center"
             >
-              <p className="text-slate-400 text-lg md:text-xl mb-6">
-                Others mostly observe and measure agents. Traigent goes further to improve the agent.
+              <p className="text-slate-300 text-xl md:text-2xl mb-6">
+                Others mostly observe and measure agents. <span className="text-white font-semibold">Traigent goes further to improve the <span className="text-[#4D8EF8]">agent itself</span>.</span>
               </p>
               <p className="text-white text-xl md:text-3xl font-semibold mb-5 md:whitespace-nowrap">
                 Traigent <span className="text-[#4D8EF8]">evolves</span> agents to <span className="text-[#4D8EF8]">better outcomes,</span> at <span className="text-[#4D8EF8] underline underline-offset-4">lower costs</span>
