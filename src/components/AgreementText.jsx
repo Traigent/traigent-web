@@ -90,9 +90,13 @@ export default function AgreementText({ compact = false }) {
         any non-public information disclosed to You.
       </p>
       <p className={p}>
-        <strong className="text-white">Open-source note.</strong> If You separately obtain SDK
-        components from Traigent&apos;s public repositories under their open-source license, that
-        copy is governed by that license. Everything provided to You under this Agreement —
+        <strong className="text-white">Open-source note.</strong> If You separately obtain{" "}
+        <strong className="text-white">any materials from Traigent&apos;s public repositories</strong>{" "}
+        — the SDK, agent skills, onboarding guides, specifications, or any other published
+        component — under the open-source license that repository states, that copy is governed by
+        that license, and{" "}
+        <strong className="text-white">nothing in this Agreement reduces the rights that license
+        grants You</strong> in that copy. Everything provided to You under this Agreement —
         including the SDK as made available to You through Start Now — is governed by this
         Agreement, including the SDK terms in Section 2.
       </p>
