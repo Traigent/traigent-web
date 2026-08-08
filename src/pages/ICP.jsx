@@ -106,7 +106,7 @@ export default function ICP() {
         <div className="rounded-lg bg-[#1F2A44] px-5 py-3 mb-5">
           <h1 className="text-xl md:text-2xl font-bold text-white">Ideal Customer Profile — channel-first</h1>
           <div className="text-[13px] text-slate-300 mt-1">
-            Two lenses. <span className="text-white font-semibold">Who</span> — the <span className="text-amber-300 font-semibold">channel</span> (MSPs &amp; integrators) and the customers it serves, by size (Enterprise · Mid-Market · SMB/SME).
+            Two lenses. <span className="text-white font-semibold">Who</span> — the <span className="text-amber-300 font-semibold">channel</span> (MSPs &amp; integrators) and the customer types it serves, by size (Enterprise · Mid-Market · SMB/SME).
             {" "}<span className="text-white font-semibold">How</span> — the <span className="text-emerald-300 font-semibold">GTM motions</span>, in priority order (Channel → Direct → PLG).
           </div>
         </div>
@@ -142,11 +142,11 @@ export default function ICP() {
         {/* ② THE CUSTOMERS THEY SERVE — by size tier */}
         <section className="mb-6">
           <div className="flex flex-wrap items-center gap-2 mb-1">
-            <h2 className="text-lg md:text-xl font-extrabold text-white">The customers the channel serves</h2>
-            <span className="text-[12px] text-slate-400 italic">by size — the correct firmographic cut</span>
+            <h2 className="text-lg md:text-xl font-extrabold text-white">Customer types</h2>
+            <span className="text-[12px] text-slate-400 italic">the same types channels may serve — and our direct / PLG targets, by size</span>
           </div>
           <div className="text-[11px] text-slate-500 mb-3">
-            Channel primarily serves <span className="text-slate-300">Enterprise + Mid-Market</span> (they need someone to build &amp; run the agent); <span className="text-slate-300">SMB/SME</span> comes mostly through PLG.
+            Shared TAM, not the partner's accounts: channel mostly serves <span className="text-slate-300">Enterprise + Mid-Market</span> (they need someone to build &amp; run the agent); <span className="text-slate-300">SMB/SME</span> comes mostly through PLG.
           </div>
           <div className="overflow-x-auto rounded-lg border border-slate-800">
             <table className="w-full border-collapse text-left">
