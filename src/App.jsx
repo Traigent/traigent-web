@@ -34,6 +34,8 @@ import DemoGallery from './pages/DemoGallery'
 import RecipientPackagePage from './pages/RecipientPackagePage'
 import AccessAgreement from './pages/AccessAgreement'
 import RecipientPackageBlankPage from './pages/RecipientPackageBlankPage'
+import MoatMatrix from './pages/MoatMatrix'
+import ICP from './pages/ICP'
 import Layout from './layout'
 import ExternalRedirect from './components/ExternalRedirect'
 import CookieConsent from './components/CookieConsent'
@@ -53,8 +55,10 @@ export default function App() {
       {/* Short, shareable aliases for outreach (no /pitch-short-2/ prefix) */}
       <Route path="extended-product-presentation" element={<PitchShort2 forcedPreset="extended-product-presentation" />} />
       <Route path="product-presentation" element={<PitchShort2 forcedPreset="product-presentation" />} />
-      {/* Moat Matrix + ICP moved to the internal, password-gated Power Tool Suite
-          (traigent-pricing-simulator) — kept out of this PUBLIC repo. */}
+      {/* Internal, hidden + noindex. Reached via the right-click ▸ Presentations
+          menu; not in the public sitemap. */}
+      <Route path="moat-matrix" element={<MoatMatrix />} />
+      <Route path="icp" element={<ICP />} />
       <Route path="short-summary" element={<PitchShort2 forcedPreset="short-summary" />} />
       <Route path="market-opportunity" element={<PitchShort2 forcedPreset="market-opportunity" />} />
       <Route path="investor-pitch" element={<PitchShort2 forcedPreset="investor-pitch" />} />
