@@ -61,14 +61,14 @@ const MOTIONS = [
   {
     n: "②", name: "Direct", tone: "direct", tag: "",
     who: "AE / inside sales",
-    serves: "Enterprise + Mid-Market",
-    why: "Business-outcome & regulated deals not reached via a partner. ROI-priced to revenue / deflection / LLM spend saved — the enterprise band.",
+    serves: "Enterprise + Mid-Market — new logos AND grown-up PLG accounts",
+    why: "Two sources: (a) outbound to enterprise & regulated deals a partner doesn't cover; and (b) land-and-expand UP from PLG — self-serve accounts that grow become product-qualified leads a rep converts to the enterprise band. ROI-priced to revenue / deflection / spend saved.",
   },
   {
     n: "③", name: "PLG", tone: "plg", tag: "",
     who: "Self-serve · product-led",
-    serves: "SMB / SME",
-    why: "The free first optimization is the loss-leader wedge — the dummie / first install draws everyone and converts bottoms-up into usage-based self-serve.",
+    serves: "SMB / SME → feeds Direct",
+    why: "The free first optimization is the loss-leader wedge — the dummie / first install draws everyone and converts bottoms-up into usage-based self-serve. The biggest accounts then graduate into Direct expansion.",
   },
 ];
 
@@ -106,16 +106,15 @@ export default function ICP() {
         <div className="rounded-lg bg-[#1F2A44] px-5 py-3 mb-5">
           <h1 className="text-xl md:text-2xl font-bold text-white">Ideal Customer Profile — channel-first</h1>
           <div className="text-[13px] text-slate-300 mt-1">
-            <span className="text-amber-300 font-semibold">① Land the channel</span> (MSPs &amp; integrators) →
-            <span className="text-white font-semibold"> ② they serve customers by size</span> (Enterprise · Mid-Market · SMB/SME) →
-            <span className="text-slate-300"> reached via </span><span className="text-emerald-300 font-semibold">③ three GTM motions</span> (Channel → Direct → PLG).
+            Two lenses. <span className="text-white font-semibold">Who</span> — the <span className="text-amber-300 font-semibold">channel</span> (MSPs &amp; integrators) and the customers it serves, by size (Enterprise · Mid-Market · SMB/SME).
+            {" "}<span className="text-white font-semibold">How</span> — the <span className="text-emerald-300 font-semibold">GTM motions</span>, in priority order (Channel → Direct → PLG).
           </div>
         </div>
 
-        {/* ① THE CHANNEL */}
+        {/* WHO — the channel + the customers it serves */}
+        <div className="text-[11px] font-mono uppercase tracking-widest text-slate-500 mb-2">Who we sell to</div>
         <section className="rounded-xl border border-amber-500/40 bg-gradient-to-br from-amber-500/[0.12] to-slate-900/30 p-5 mb-6">
           <div className="flex flex-wrap items-center gap-2 mb-3">
-            <span className="text-[11px] font-mono font-bold text-amber-300 border border-amber-500/50 rounded px-1.5 py-0.5">STEP 1</span>
             <h2 className="text-lg md:text-xl font-extrabold text-white">The Channel — MSPs &amp; Integrators</h2>
             <span className="text-[12px] text-slate-400 italic">the force multiplier</span>
             <span className="ml-auto text-[10px] font-bold text-amber-200 border border-amber-500/60 rounded px-2 py-0.5">LAND THESE FIRST</span>
@@ -143,7 +142,6 @@ export default function ICP() {
         {/* ② THE CUSTOMERS THEY SERVE — by size tier */}
         <section className="mb-6">
           <div className="flex flex-wrap items-center gap-2 mb-1">
-            <span className="text-[11px] font-mono font-bold text-emerald-300 border border-emerald-500/50 rounded px-1.5 py-0.5">STEP 2</span>
             <h2 className="text-lg md:text-xl font-extrabold text-white">The customers the channel serves</h2>
             <span className="text-[12px] text-slate-400 italic">by size — the correct firmographic cut</span>
           </div>
@@ -180,12 +178,15 @@ export default function ICP() {
           </div>
         </section>
 
-        {/* ③ GTM MOTION — priority order */}
+        {/* HOW — GTM motions, a separate axis (not a next step) */}
+        <div className="text-[11px] font-mono uppercase tracking-widest text-slate-500 mb-2 mt-8">How we go to market</div>
         <section className="mb-6">
-          <div className="flex flex-wrap items-center gap-2 mb-3">
-            <span className="text-[11px] font-mono font-bold text-white border border-slate-600 rounded px-1.5 py-0.5">STEP 3</span>
-            <h2 className="text-lg md:text-xl font-extrabold text-white">GTM motion</h2>
-            <span className="text-[12px] text-slate-400 italic">in priority order — each reaches a size tier</span>
+          <div className="flex flex-wrap items-center gap-2 mb-1">
+            <h2 className="text-lg md:text-xl font-extrabold text-white">GTM motion — in priority order</h2>
+            <span className="text-[12px] text-slate-400 italic">a separate lens (how we reach each tier) — not a next step</span>
+          </div>
+          <div className="text-[11px] text-slate-500 mb-3">
+            The three feed each other: <span className="text-emerald-300">PLG</span> lands SMB/SME bottoms-up, the biggest self-serve accounts graduate into <span className="text-[#4D8EF8]">Direct</span> expansion, and <span className="text-amber-300">Channel</span> multiplies both across partner books.
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             {MOTIONS.map((m) => (
