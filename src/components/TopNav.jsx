@@ -18,6 +18,10 @@ import { checkKnownContact } from "../lib/hubspotIdentify";
 
 const PORTAL_URL = "https://portal.traigent.ai";
 const DEMO_URL = "https://meetings-eu1.hubspot.com/amir8";
+// Internal, password-gated Power Tool Suite (Cloudflare Pages Basic Auth).
+// The Moat Matrix + ICP live there, NOT in this public repo — these menu
+// entries are just deep-links into the gated app (401 without credentials).
+const SUITE_URL = "https://traigent-power-tool-suite.pages.dev";
 
 // Hidden access point: presentations menu behind the obscure ▸ glyph in the
 // far-right of the nav. Each item opens the scroll-mode deck in a new tab
@@ -44,9 +48,14 @@ const PITCH_DECK_OPTIONS = [
     href: "/#/product-presentation",
   },
   {
-    label: "Moat Matrix — INTERNAL",
-    desc: "Competitive board: 16 pains × what the market offers × Traigent's 4 moats. Internal only — don't open in front of customers.",
-    href: "/#/moat-matrix",
+    label: "Moat Matrix — INTERNAL 🔒",
+    desc: "Competitive board (16 pains × market × Traigent's 4 moats). Opens the password-gated Power Tool Suite — not public.",
+    href: `${SUITE_URL}/#moat-matrix`,
+  },
+  {
+    label: "ICP — INTERNAL 🔒",
+    desc: "Ideal Customer Profile (channel-first). Opens the password-gated Power Tool Suite — not public.",
+    href: `${SUITE_URL}/#icp`,
   },
   {
     label: "Short summary",
