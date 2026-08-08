@@ -25,7 +25,7 @@ export default function AgreementText({ compact = false }) {
   return (
     <div>
       <p className={`${compact ? "text-[10px]" : "text-sm"} text-slate-500 mb-3 font-mono`}>
-        Version {AGREEMENT_VERSION} · Effective upon acceptance · Last updated June 12, 2026
+        Version {AGREEMENT_VERSION} · Effective upon acceptance · Last updated August 7, 2026
       </p>
 
       <p className={p}>
@@ -90,11 +90,20 @@ export default function AgreementText({ compact = false }) {
         any non-public information disclosed to You.
       </p>
       <p className={p}>
-        <strong className="text-white">Open-source note.</strong> If You separately obtain SDK
-        components from Traigent&apos;s public repositories under their open-source license, that
-        copy is governed by that license. Everything provided to You under this Agreement —
-        including the SDK as made available to You through Start Now — is governed by this
-        Agreement, including the SDK terms in Section 2.
+        <strong className="text-white">Open-source note.</strong> Some Traigent repositories are
+        published under an open-source license — including, without limitation, the SDK, agent
+        skills, onboarding guides, and specifications. If You obtain a copy of any such materials{" "}
+        <strong className="text-white">from the public repository, under the open-source license
+        that copy carries</strong>, that copy is governed by that license, and nothing in this
+        Agreement reduces the rights that license grants You in it.
+      </p>
+      <p className={p}>
+        Everything provided to You under this Agreement — including the SDK as made available to
+        You through Start Now — is governed by this Agreement, including the SDK terms in
+        Section 2.{" "}
+        <strong className="text-white">Which terms apply depends on how You obtained the copy, not
+        on the materials themselves</strong>: the same file may reach You under this Agreement or
+        under an open-source license, and each copy is governed by the terms it came with.
       </p>
 
       <h2 className={h}>2. Your license — what You may do</h2>

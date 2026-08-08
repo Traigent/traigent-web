@@ -31,7 +31,7 @@
 // competing product — but demonstrating to others is encouraged). Formal
 // acceptance line moved to the end of the preamble. Sec. 2 retitled
 // "Your license — what You may do".
-export const AGREEMENT_VERSION = "1.4";
+export const AGREEMENT_VERSION = "1.5";
 export const AGREEMENT_PATH = "/access-agreement";
 
 const STORAGE_KEY = "traigent_access_agreement";
