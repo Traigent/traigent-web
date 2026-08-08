@@ -34,11 +34,6 @@ const PITCH_DECK_OPTIONS = [
     href: "/#/one-pager-prospects",
   },
   {
-    label: "Extended product presentation",
-    desc: "Full product deck + live demo (no investor section)",
-    href: "/#/extended-product-presentation",
-  },
-  {
     label: "Product Presentation",
     desc: "Hero · Solution · Privacy · Pareto · Multidimensional · Wave/Pain/Cure · Competitive-by-KPI",
     href: "/#/product-presentation",
@@ -54,29 +49,14 @@ const PITCH_DECK_OPTIONS = [
     href: "/#/icp",
   },
   {
-    label: "Short summary",
-    desc: "Slides 1–5 + live demo — the headline arc",
-    href: "/#/short-summary",
-  },
-  {
     label: "Market opportunity",
     desc: "Investor section + live demo",
     href: "/#/market-opportunity",
   },
   {
-    label: "Investor presentation",
-    desc: "Seed-round narrative · problem → solution → market → team",
-    href: "/#/investor-pitch",
-  },
-  {
     label: "Business plan & investment",
     desc: "For the raise — market potential (TAM/SAM/SOM), business plan, why invest + the ask",
     href: "/#/invest",
-  },
-  {
-    label: "Customer",
-    desc: "For customers — the objective, via a real SPIDER text2SQL frontier",
-    href: "/#/customer-deck",
   },
   {
     label: "Knob explorer",
